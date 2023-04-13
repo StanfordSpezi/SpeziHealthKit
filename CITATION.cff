@@ -12,5 +12,12 @@ authors:
 - family-names: "Schmiedmayer"
   given-names: "Paul"
   orcid: "https://orcid.org/0000-0002-8607-9148"
+- family-names: "Schmiedmayer"
+  given-names: "Paul"
+  orcid: "https://orcid.org/0000-0002-8607-9148"
+- family-names: "Aalami"
+  given-names: "Oliver"
+  orcid: "https://orcid.org/0000-0002-7799-2429"
 title: "CardinalKitHealthKit"
+doi: 10.5281/zenodo.7824636
 url: "https://github.com/StanfordBDHG/CardinalKitHealthKit"
