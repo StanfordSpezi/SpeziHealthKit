@@ -1,7 +1,7 @@
 // swift-tools-version:5.7
 
 //
-// This source file is part of the TemplatePackage open source project
+// This source file is part of the CardinalKit open-source project
 // 
 // SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
 // 
@@ -12,21 +12,28 @@ import PackageDescription
 
 
 let package = Package(
-    name: "TemplatePackage",
+    name: "CardinalKitHealthKit",
+    defaultLocalization: "en",
     platforms: [
         .iOS(.v16)
     ],
     products: [
-        .library(name: "TemplatePackage", targets: ["TemplatePackage"])
+        .library(name: "CardinalKitHealthKit", targets: ["CardinalKitHealthKit"])
+    ],
+    dependencies: [
+        .package(url: "https://github.com/StanfordBDHG/CardinalKit", .upToNextMinor(from: "0.4.1"))
     ],
     targets: [
         .target(
-            name: "TemplatePackage"
+            name: "CardinalKitHealthKit",
+            dependencies: [
+                .product(name: "CardinalKit", package: "CardinalKit")
+            ]
         ),
         .testTarget(
-            name: "TemplatePackageTests",
+            name: "CardinalKitHealthKitTests",
             dependencies: [
-                .target(name: "TemplatePackage")
+                .target(name: "CardinalKitHealthKit")
             ]
         )
     ]
