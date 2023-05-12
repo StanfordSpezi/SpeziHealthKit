@@ -1,6 +1,6 @@
 <!--
 
-This source file is part of the CardinalKit open-source project.
+This source file is part of the Stanford Spezi open-source project.
 
 SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
 
@@ -35,5 +35,5 @@ Contributions to this project are welcome. Please make sure to read the [contrib
 
 This project is licensed under the MIT License. See [Licenses](https://github.com/StanfordBDHG/CardinalKitHealthKit/tree/main/LICENSES) for more information.
 
-![Stanford Byers Center for Biodesign Logo](https://raw.githubusercontent.com/StanfordBDHG/.github/main/assets/biodesign-footer-light.png#gh-light-mode-only)
-![Stanford Byers Center for Biodesign Logo](https://raw.githubusercontent.com/StanfordBDHG/.github/main/assets/biodesign-footer-dark.png#gh-dark-mode-only)
+![Spezi Footer](https://raw.githubusercontent.com/StanfordSpezi/.github/main/assets/FooterLight.png#gh-light-mode-only)
+![Spezi Footer](https://raw.githubusercontent.com/StanfordSpezi/.github/main/assets/FooterDark.png#gh-dark-mode-only)
