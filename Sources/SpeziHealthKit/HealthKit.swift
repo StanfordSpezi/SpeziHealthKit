@@ -1,13 +1,13 @@
 //
-// This source file is part of the CardinalKit open-source project
+// This source file is part of the Stanford Spezi open-source project
 //
 // SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
 // SPDX-License-Identifier: MIT
 //
 
-import CardinalKit
 import HealthKit
+import Spezi
 import SwiftUI
 
 
@@ -16,7 +16,7 @@ import SwiftUI
 /// Use the ``HealthKit/init(_:adapter:)`` initializer to define different ``HealthKitDataSourceDescription``s to define the data collection.
 /// You can, e.g., use ``CollectSample`` to collect a wide variaty of `HKSampleTypes`:
 /// ```swift
-/// class ExampleAppDelegate: CardinalKitAppDelegate {
+/// class ExampleAppDelegate: SpeziAppDelegate {
 ///     override var configuration: Configuration {
 ///         Configuration(standard: ExampleStandard()) {
 ///             if HKHealthStore.isHealthDataAvailable() {

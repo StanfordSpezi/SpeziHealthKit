@@ -8,7 +8,7 @@ SPDX-License-Identifier: MIT
   
 -->
 
-CardinalKitHealthKit contributors
+SpeziHealthKit contributors
 ====================
 
 * [Paul Schmiedmayer](https://github.com/PSchmiedmayer)
