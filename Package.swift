@@ -1,7 +1,7 @@
 // swift-tools-version:5.7
 
 //
-// This source file is part of the CardinalKit open-source project
+// This source file is part of the Stanford Spezi open-source project
 // 
 // SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
 // 
@@ -12,28 +12,28 @@ import PackageDescription
 
 
 let package = Package(
-    name: "CardinalKitHealthKit",
+    name: "SpeziHealthKit",
     defaultLocalization: "en",
     platforms: [
         .iOS(.v16)
     ],
     products: [
-        .library(name: "CardinalKitHealthKit", targets: ["CardinalKitHealthKit"])
+        .library(name: "SpeziHealthKit", targets: ["SpeziHealthKit"])
     ],
     dependencies: [
-        .package(url: "https://github.com/StanfordBDHG/CardinalKit", .upToNextMinor(from: "0.4.1"))
+        .package(url: "https://github.com/StanfordSpezi/Spezi", .upToNextMinor(from: "0.5.0"))
     ],
     targets: [
         .target(
-            name: "CardinalKitHealthKit",
+            name: "SpeziHealthKit",
             dependencies: [
-                .product(name: "CardinalKit", package: "CardinalKit")
+                .product(name: "Spezi", package: "Spezi")
             ]
         ),
         .testTarget(
-            name: "CardinalKitHealthKitTests",
+            name: "SpeziHealthKitTests",
             dependencies: [
-                .target(name: "CardinalKitHealthKit")
+                .target(name: "SpeziHealthKit")
             ]
         )
     ]

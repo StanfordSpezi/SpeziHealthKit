@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2F61BDC329DD02D600D71D33 /* CardinalKitHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 2F61BDC229DD02D600D71D33 /* CardinalKitHealthKit */; };
+		2F61BDC329DD02D600D71D33 /* SpeziHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 2F61BDC229DD02D600D71D33 /* SpeziHealthKit */; };
 		2F6D139A28F5F386007C25D6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F6D139928F5F386007C25D6 /* Assets.xcassets */; };
-		2F85826E29E776690021D637 /* CardinalKitHealthKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F85826D29E776690021D637 /* CardinalKitHealthKitTests.swift */; };
+		2F85826E29E776690021D637 /* SpeziHealthKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F85826D29E776690021D637 /* SpeziHealthKitTests.swift */; };
 		2F85827129E776780021D637 /* HealthKitTestsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F85827029E776780021D637 /* HealthKitTestsView.swift */; };
 		2F85827329E776AC0021D637 /* TestAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F85827229E776AC0021D637 /* TestAppDelegate.swift */; };
-		2F85827629E776D10021D637 /* CardinalKit in Frameworks */ = {isa = PBXBuildFile; productRef = 2F85827529E776D10021D637 /* CardinalKit */; };
-		2F85827829E776D10021D637 /* XCTCardinalKit in Frameworks */ = {isa = PBXBuildFile; productRef = 2F85827729E776D10021D637 /* XCTCardinalKit */; };
+		2F85827629E776D10021D637 /* Spezi in Frameworks */ = {isa = PBXBuildFile; productRef = 2F85827529E776D10021D637 /* Spezi */; };
+		2F85827829E776D10021D637 /* XCTSpezi in Frameworks */ = {isa = PBXBuildFile; productRef = 2F85827729E776D10021D637 /* XCTSpezi */; };
 		2F85827A29E777980021D637 /* TestAppHealthKitAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F85827929E777980021D637 /* TestAppHealthKitAdapter.swift */; };
 		2F85827F29E7782C0021D637 /* XCTestExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 2F85827E29E7782C0021D637 /* XCTestExtensions */; };
 		2F85828229E7784C0021D637 /* XCTHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 2F85828129E7784C0021D637 /* XCTHealthKit */; };
@@ -31,11 +31,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		2F61BDC129DD023E00D71D33 /* CardinalKitHealthKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = CardinalKitHealthKit; path = ../..; sourceTree = "<group>"; };
+		2F61BDC129DD023E00D71D33 /* SpeziHealthKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = SpeziHealthKit; path = ../..; sourceTree = "<group>"; };
 		2F6D139228F5F384007C25D6 /* TestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F6D139928F5F386007C25D6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2F6D13AC28F5F386007C25D6 /* TestAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TestAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		2F85826D29E776690021D637 /* CardinalKitHealthKitTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CardinalKitHealthKitTests.swift; sourceTree = "<group>"; };
+		2F85826D29E776690021D637 /* SpeziHealthKitTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeziHealthKitTests.swift; sourceTree = "<group>"; };
 		2F85827029E776780021D637 /* HealthKitTestsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthKitTestsView.swift; sourceTree = "<group>"; };
 		2F85827229E776AC0021D637 /* TestAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAppDelegate.swift; sourceTree = "<group>"; };
 		2F85827929E777980021D637 /* TestAppHealthKitAdapter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestAppHealthKitAdapter.swift; sourceTree = "<group>"; };
@@ -49,9 +49,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2F85827829E776D10021D637 /* XCTCardinalKit in Frameworks */,
-				2F61BDC329DD02D600D71D33 /* CardinalKitHealthKit in Frameworks */,
-				2F85827629E776D10021D637 /* CardinalKit in Frameworks */,
+				2F85827829E776D10021D637 /* XCTSpezi in Frameworks */,
+				2F61BDC329DD02D600D71D33 /* SpeziHealthKit in Frameworks */,
+				2F85827629E776D10021D637 /* Spezi in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,7 +71,7 @@
 			isa = PBXGroup;
 			children = (
 				2FB0758A299DDB9000C0B37F /* TestApp.xctestplan */,
-				2F61BDC129DD023E00D71D33 /* CardinalKitHealthKit */,
+				2F61BDC129DD023E00D71D33 /* SpeziHealthKit */,
 				2F6D139428F5F384007C25D6 /* TestApp */,
 				2F6D13AF28F5F386007C25D6 /* TestAppUITests */,
 				2F6D139328F5F384007C25D6 /* Products */,
@@ -104,7 +104,7 @@
 		2F6D13AF28F5F386007C25D6 /* TestAppUITests */ = {
 			isa = PBXGroup;
 			children = (
-				2F85826D29E776690021D637 /* CardinalKitHealthKitTests.swift */,
+				2F85826D29E776690021D637 /* SpeziHealthKitTests.swift */,
 			);
 			path = TestAppUITests;
 			sourceTree = "<group>";
@@ -133,9 +133,9 @@
 			);
 			name = TestApp;
 			packageProductDependencies = (
-				2F61BDC229DD02D600D71D33 /* CardinalKitHealthKit */,
-				2F85827529E776D10021D637 /* CardinalKit */,
-				2F85827729E776D10021D637 /* XCTCardinalKit */,
+				2F61BDC229DD02D600D71D33 /* SpeziHealthKit */,
+				2F85827529E776D10021D637 /* Spezi */,
+				2F85827729E776D10021D637 /* XCTSpezi */,
 			);
 			productName = Example;
 			productReference = 2F6D139228F5F384007C25D6 /* TestApp.app */;
@@ -192,7 +192,7 @@
 			);
 			mainGroup = 2F6D138928F5F384007C25D6;
 			packageReferences = (
-				2F85827429E776D10021D637 /* XCRemoteSwiftPackageReference "CardinalKit" */,
+				2F85827429E776D10021D637 /* XCRemoteSwiftPackageReference "Spezi" */,
 				2F85827B29E778110021D637 /* XCRemoteSwiftPackageReference "XCTestExtensions" */,
 				2F85828029E7784C0021D637 /* XCRemoteSwiftPackageReference "XCTHealthKit" */,
 			);
@@ -240,7 +240,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2F85826E29E776690021D637 /* CardinalKitHealthKitTests.swift in Sources */,
+				2F85826E29E776690021D637 /* SpeziHealthKitTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -393,7 +393,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = edu.stanford.cardinalkit.healthkit.testapp;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.stanford.spezi.healthkit.testapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -426,7 +426,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = edu.stanford.cardinalkit.healthkit.testapp;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.stanford.spezi.healthkit.testapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -444,7 +444,7 @@
 				DEVELOPMENT_TEAM = 637867499T;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = edu.stanford.cardinalkit.healthkit.testappuitests;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.stanford.spezi.healthkit.testappuitests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -463,7 +463,7 @@
 				DEVELOPMENT_TEAM = 637867499T;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = edu.stanford.cardinalkit.healthkit.testappuitests;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.stanford.spezi.healthkit.testappuitests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -557,7 +557,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = edu.stanford.cardinalkit.healthkit.testapp;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.stanford.spezi.healthkit.testapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -575,7 +575,7 @@
 				DEVELOPMENT_TEAM = 637867499T;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = edu.stanford.cardinalkit.healthkit.testappuitests;
+				PRODUCT_BUNDLE_IDENTIFIER = edu.stanford.spezi.healthkit.testappuitests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -621,20 +621,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		2F85827429E776D10021D637 /* XCRemoteSwiftPackageReference "CardinalKit" */ = {
+		2F85827429E776D10021D637 /* XCRemoteSwiftPackageReference "Spezi" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/StanfordBDHG/CardinalKit.git";
+			repositoryURL = "https://github.com/StanfordSpezi/Spezi.git";
 			requirement = {
 				kind = upToNextMinorVersion;
-				minimumVersion = 0.4.1;
+				minimumVersion = 0.5.0;
 			};
 		};
 		2F85827B29E778110021D637 /* XCRemoteSwiftPackageReference "XCTestExtensions" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/StanfordBDHG/XCTestExtensions";
+			repositoryURL = "https://github.com/StanfordSpezi/XCTestExtensions";
 			requirement = {
 				kind = upToNextMinorVersion;
-				minimumVersion = 0.4.0;
+				minimumVersion = 0.4.1;
 			};
 		};
 		2F85828029E7784C0021D637 /* XCRemoteSwiftPackageReference "XCTHealthKit" */ = {
@@ -648,19 +648,19 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		2F61BDC229DD02D600D71D33 /* CardinalKitHealthKit */ = {
+		2F61BDC229DD02D600D71D33 /* SpeziHealthKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = CardinalKitHealthKit;
+			productName = SpeziHealthKit;
 		};
-		2F85827529E776D10021D637 /* CardinalKit */ = {
+		2F85827529E776D10021D637 /* Spezi */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 2F85827429E776D10021D637 /* XCRemoteSwiftPackageReference "CardinalKit" */;
-			productName = CardinalKit;
+			package = 2F85827429E776D10021D637 /* XCRemoteSwiftPackageReference "Spezi" */;
+			productName = Spezi;
 		};
-		2F85827729E776D10021D637 /* XCTCardinalKit */ = {
+		2F85827729E776D10021D637 /* XCTSpezi */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 2F85827429E776D10021D637 /* XCRemoteSwiftPackageReference "CardinalKit" */;
-			productName = XCTCardinalKit;
+			package = 2F85827429E776D10021D637 /* XCRemoteSwiftPackageReference "Spezi" */;
+			productName = XCTSpezi;
 		};
 		2F85827E29E7782C0021D637 /* XCTestExtensions */ = {
 			isa = XCSwiftPackageProductDependency;
