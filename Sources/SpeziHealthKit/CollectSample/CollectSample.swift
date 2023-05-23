@@ -22,9 +22,16 @@ public struct CollectSample: HealthKitDataSourceDescription {
     
     /// - Parameters:
     ///   - sampleType: The `HKSampleType` that should be collected
+    ///   - predicate: A custom predicate that should be passed to the HealthKit query.
+    ///                The default predicate collects all samples that have been collected from the first time that the user
+    ///                provided the application authorization to collect the samples.
     ///   - deliverySetting: The ``HealthKitDeliverySetting`` that should be used to collect the sample type. `.manual` is the default argument used.
-    public init<S: HKSampleType>(_ sampleType: S, deliverySetting: HealthKitDeliverySetting = .manual()) {
-        self.collectSamples = CollectSamples([sampleType], deliverySetting: deliverySetting)
+    public init<S: HKSampleType>(
+        _ sampleType: S,
+        predicate: NSPredicate? = nil,
+        deliverySetting: HealthKitDeliverySetting = .manual()
+    ) {
+        self.collectSamples = CollectSamples([sampleType], predicate: predicate, deliverySetting: deliverySetting)
     }
     
     
