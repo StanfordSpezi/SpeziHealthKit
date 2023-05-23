@@ -98,22 +98,21 @@ public final class HealthKit<ComponentStandard: Standard>: Module {
     /// Displays the user interface to ask for authorization for all HealthKit data defined by the ``HealthKitDataSourceDescription``s.
     ///
     /// Call this function when you want to start HealthKit data collection.
-    /// - Parameter objectTypes: Additional `HKObjectType` instances that should be authorized.
-    public func askForAuthorization(_ objectTypes: Set<HKObjectType> = []) async throws {
-        var objectTypes: Set<HKSampleType> = []
+    public func askForAuthorization() async throws {
+        var sampleTypes: Set<HKSampleType> = []
         
         for healthKitDataSourceDescription in healthKitDataSourceDescriptions {
-            objectTypes = objectTypes.union(healthKitDataSourceDescription.sampleTypes)
+            sampleTypes = sampleTypes.union(healthKitDataSourceDescription.sampleTypes)
         }
         
         let requestedSampleTypes = Set(UserDefaults.standard.stringArray(forKey: UserDefaults.Keys.healthKitRequestedSampleTypes) ?? [])
-        guard !Set(objectTypes.map { $0.identifier }).isSubset(of: requestedSampleTypes) else {
+        guard !Set(sampleTypes.map { $0.identifier }).isSubset(of: requestedSampleTypes) else {
             return
         }
         
-        try await healthStore.requestAuthorization(toShare: [], read: objectTypes)
+        try await healthStore.requestAuthorization(toShare: [], read: sampleTypes)
         
-        UserDefaults.standard.set(objectTypes.map { $0.identifier }, forKey: UserDefaults.Keys.healthKitRequestedSampleTypes)
+        UserDefaults.standard.set(sampleTypes.map { $0.identifier }, forKey: UserDefaults.Keys.healthKitRequestedSampleTypes)
         
         for healthKitComponent in healthKitComponents {
             healthKitComponent.askedForAuthorization()
