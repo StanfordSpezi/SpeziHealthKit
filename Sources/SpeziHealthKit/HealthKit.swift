@@ -64,6 +64,18 @@ public final class HealthKit<ComponentStandard: Standard>: Module {
             .flatMap { $0.dataSources(healthStore: healthStore, standard: standard, adapter: adapter) }
     }()
     
+    /// Indicates whether the necessary authorizations to collect all HealthKit data defined by the ``HealthKitDataSourceDescription``s are already granted.
+    public var authorized: Bool {
+        let sampleTypes = healthKitDataSourceDescriptions.reduce(into: Set()) { partialResult, healthKitDataSourceDescription in
+            partialResult = partialResult.union(
+                healthKitDataSourceDescription.sampleTypes.map { $0.identifier }
+            )
+        }
+        let alreadyRequestedSampleTypes = Set(UserDefaults.standard.stringArray(forKey: UserDefaults.Keys.healthKitRequestedSampleTypes) ?? [])
+        
+        return sampleTypes.isSubset(of: alreadyRequestedSampleTypes)
+    }
+    
     
     /// Creates a new instance of the ``HealthKit`` module.
     /// - Parameters:
