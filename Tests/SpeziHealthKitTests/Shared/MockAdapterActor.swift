@@ -6,9 +6,9 @@
 // SPDX-License-Identifier: MIT
 //
 
+import HealthKit
 import Spezi
 import SpeziHealthKit
-import HealthKit
 import XCTSpezi
 
 actor MockAdapterActor: Adapter {

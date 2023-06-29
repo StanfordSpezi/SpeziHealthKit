@@ -6,8 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
-@testable import SpeziHealthKit
 import HealthKit
+@testable import SpeziHealthKit
 import XCTest
 import XCTSpezi
 
@@ -24,7 +24,7 @@ final class SpeziHealthKitTests: XCTestCase {
             )
         } adapter: {
             MockAdapterActor()
-        }
+    }
     
     /// No authorizations for HealthKit data are given in the ``UserDefaults``
     func testSpeziHealthKitCollectionNotAuthorized1() {
