@@ -166,7 +166,6 @@ final class HealthKitTests: XCTestCase {
             },
             object: .none
         )
-
         wait(for: [expectation], timeout: 2)
         
         XCTAssert(!app.buttons["Ask for authorization"].isEnabled)
