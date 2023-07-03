@@ -155,6 +155,7 @@ final class HealthKitTests: XCTestCase {
         
         app.activate()
         XCTAssert(app.buttons["Ask for authorization"].waitForExistence(timeout: 2))
+        XCTAssert(app.buttons["Ask for authorization"].isEnabled)
         app.buttons["Ask for authorization"].tap()
         
         try app.handleHealthKitAuthorization()
