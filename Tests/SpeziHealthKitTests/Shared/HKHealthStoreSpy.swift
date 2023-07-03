@@ -13,6 +13,10 @@ class HKHealthStoreSpy: HKHealthStore {
     var configuredTypesToRead: Set<HKSampleType> = []
 
     override func statusForAuthorizationRequest(toShare typesToShare: Set<HKSampleType>, read typesToRead: Set<HKObjectType>) async throws -> HKAuthorizationRequestStatus {
-        typesToRead.isSubset(of: self.configuredTypesToRead) ? .unnecessary : .shouldRequest
+        if typesToRead.isSubset(of: self.configuredTypesToRead) {
+            return .unnecessary
+        } else {
+            return .shouldRequest
+        }
     }
 }
