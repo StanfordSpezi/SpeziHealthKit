@@ -26,36 +26,33 @@ final class SpeziHealthKitTests: XCTestCase {
             MockAdapterActor()
     }
     
+    override func setUp() {
+        super.setUp()
+        healthKitComponent.healthStore = HKHealthStoreSpy()
+    }
+    
     /// No authorizations for HealthKit data are given in the ``UserDefaults``
-    func testSpeziHealthKitCollectionNotAuthorized1() {
-        XCTAssertFalse(healthKitComponent.authorized)
+    func testSpeziHealthKitCollectionNotAuthorized1() async {
+        let authorization = await healthKitComponent.checkAuthorizations()
+        XCTAssert(!authorization)
     }
     
     /// Not enough authorizations for HealthKit data given in the ``UserDefaults``
-    func testSpeziHealthKitCollectionNotAuthorized2() {
-        // Set up UserDefaults
-        UserDefaults.standard.set(
-            Array(Self.collectedSamples.map { $0.identifier }.dropLast()),  // Drop one of the required authorizations
-            forKey: UserDefaults.Keys.healthKitRequestedSampleTypes
-        )
+    func testSpeziHealthKitCollectionNotAuthorized2() async {
+        (healthKitComponent.healthStore as? HKHealthStoreSpy)?.configuredTypesToRead = [HKQuantityType(.stepCount)]
         
-        XCTAssertFalse(healthKitComponent.authorized)
-        
-        // Clean up UserDefaults
-        UserDefaults.standard.removeObject(forKey: UserDefaults.Keys.healthKitRequestedSampleTypes)
+        let authorization = await healthKitComponent.checkAuthorizations()
+        XCTAssert(!authorization)
     }
     
     /// Authorization for HealthKit data are given in the ``UserDefaults``
-    func testSpeziHealthKitCollectionAlreadyAuthorized() {
-        // Set up UserDefaults
-        UserDefaults.standard.set(
-            Self.collectedSamples.map { $0.identifier },
-            forKey: UserDefaults.Keys.healthKitRequestedSampleTypes
-        )
+    func testSpeziHealthKitCollectionAlreadyAuthorized() async {
+        (healthKitComponent.healthStore as? HKHealthStoreSpy)?.configuredTypesToRead = [
+            HKQuantityType(.stepCount),
+            HKQuantityType(.distanceWalkingRunning)
+        ]
         
-        XCTAssertTrue(healthKitComponent.authorized)
-        
-        // Clean up UserDefaults
-        UserDefaults.standard.removeObject(forKey: UserDefaults.Keys.healthKitRequestedSampleTypes)
+        let authorization = await healthKitComponent.checkAuthorizations()
+        XCTAssert(authorization)
     }
 }

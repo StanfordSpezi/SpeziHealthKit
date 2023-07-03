@@ -17,13 +17,14 @@ struct HealthKitTestsView: View {
     @EnvironmentObject var standard: TestAppStandard
     @State var dataChanges: [String] = []
     @State var cancellable: AnyCancellable?
+    @State var authorizationDisabled = false
     
     
     var body: some View {
         Button("Ask for authorization") {
             askForAuthorization()
         }
-        .disabled(healthKitComponent.authorized)
+        .disabled(authorizationDisabled)
         
         Button("Trigger data source collection") {
             triggerDataSourceCollection()
@@ -50,8 +51,8 @@ struct HealthKitTestsView: View {
     private func askForAuthorization() {
         Task {
             try await healthKitComponent.askForAuthorization()
-            // Required as authorization button isn't rerendered otherwise
-            self.healthKitComponent.objectWillChange.send()
+
+            self.authorizationDisabled = await healthKitComponent.checkAuthorizations()
         }
     }
     

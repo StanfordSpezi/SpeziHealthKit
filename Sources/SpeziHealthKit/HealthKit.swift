@@ -56,26 +56,14 @@ public final class HealthKit<ComponentStandard: Standard>: Module {
     
     @StandardActor var standard: ComponentStandard
     
-    let healthStore: HKHealthStore
+    var healthStore: HKHealthStore  // Variable in order to inject Spy for testing
     let healthKitDataSourceDescriptions: [HealthKitDataSourceDescription]
     let adapter: HKSampleAdapter
     lazy var healthKitComponents: [any HealthKitDataSource] = {
         healthKitDataSourceDescriptions
             .flatMap { $0.dataSources(healthStore: healthStore, standard: standard, adapter: adapter) }
     }()
-    
-    /// Indicates whether the necessary authorizations to collect all HealthKit data defined by the ``HealthKitDataSourceDescription``s are already granted.
-    public var authorized: Bool {
-        let sampleTypes = healthKitDataSourceDescriptions.reduce(into: Set()) { partialResult, healthKitDataSourceDescription in
-            partialResult = partialResult.union(
-                healthKitDataSourceDescription.sampleTypes.map { $0.identifier }
-            )
-        }
-        let alreadyRequestedSampleTypes = Set(UserDefaults.standard.stringArray(forKey: UserDefaults.Keys.healthKitRequestedSampleTypes) ?? [])
-        
-        return sampleTypes.isSubset(of: alreadyRequestedSampleTypes)
-    }
-    
+
     
     /// Creates a new instance of the ``HealthKit`` module.
     /// - Parameters:
@@ -111,15 +99,12 @@ public final class HealthKit<ComponentStandard: Standard>: Module {
     ///
     /// Call this function when you want to start HealthKit data collection.
     public func askForAuthorization() async throws {
-        var sampleTypes: Set<HKSampleType> = []
-        
-        for healthKitDataSourceDescription in healthKitDataSourceDescriptions {
-            sampleTypes = sampleTypes.union(healthKitDataSourceDescription.sampleTypes)
+        guard await !checkAuthorizations() else {
+            return
         }
         
-        let requestedSampleTypes = Set(UserDefaults.standard.stringArray(forKey: UserDefaults.Keys.healthKitRequestedSampleTypes) ?? [])
-        guard !Set(sampleTypes.map { $0.identifier }).isSubset(of: requestedSampleTypes) else {
-            return
+        let sampleTypes = healthKitDataSourceDescriptions.reduce(into: Set()) {
+            $0 = $0.union($1.sampleTypes)
         }
         
         try await healthStore.requestAuthorization(toShare: [], read: sampleTypes)
@@ -128,6 +113,23 @@ public final class HealthKit<ComponentStandard: Standard>: Module {
         
         for healthKitComponent in healthKitComponents {
             healthKitComponent.askedForAuthorization()
+        }
+    }
+    
+    
+    /// Indicates whether the necessary authorizations to collect all HealthKit data defined by the ``HealthKitDataSourceDescription``s are already granted.
+    public func checkAuthorizations() async -> Bool {
+        let sampleTypes = healthKitDataSourceDescriptions.reduce(into: Set()) {
+            $0 = $0.union($1.sampleTypes)
+        }
+        
+        switch try? await healthStore.statusForAuthorizationRequest(toShare: [], read: sampleTypes) {
+        case .unnecessary:
+            return true
+        case .shouldRequest, .unknown, .none:
+            return false
+        @unknown default:
+            return false
         }
     }
     
