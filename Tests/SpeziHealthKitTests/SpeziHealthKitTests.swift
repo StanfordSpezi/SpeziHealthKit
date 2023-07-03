@@ -18,13 +18,13 @@ final class SpeziHealthKitTests: XCTestCase {
     ]
     
     let healthKitComponent: HealthKit<TestAppStandard> = HealthKit {
-            CollectSamples(
-                collectedSamples,
-                deliverySetting: .anchorQuery(.afterAuthorizationAndApplicationWillLaunch)
-            )
-        } adapter: {
-            MockAdapterActor()
-        }
+        CollectSamples(
+            collectedSamples,
+            deliverySetting: .anchorQuery(.afterAuthorizationAndApplicationWillLaunch)
+        )
+    } adapter: {
+        MockAdapterActor()
+    }
     
     override func tearDown() {
         // Clean up UserDefaults
