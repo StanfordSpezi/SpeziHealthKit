@@ -129,7 +129,9 @@ public final class HealthKit<ComponentStandard: Standard>: Module {
         }
         
         // Triggers an update of the UI in case the HealthKit authorizations are changed
-        self.objectWillChange.send()
+        Task { @MainActor in
+            self.objectWillChange.send()
+        }
     }
     
     
