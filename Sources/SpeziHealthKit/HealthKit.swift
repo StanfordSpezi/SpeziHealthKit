@@ -64,14 +64,21 @@ public final class HealthKit<ComponentStandard: Standard>: Module {
             .flatMap { $0.dataSources(healthStore: healthStore, standard: standard, adapter: adapter) }
     }()
     
+    private var healthKitSampleTypes: Set<HKSampleType> {
+        healthKitDataSourceDescriptions.reduce(into: Set()) {
+            $0 = $0.union($1.sampleTypes)
+        }
+    }
+    
+    private var healthKitSampleTypesIdentifiers: Set<String> {
+        Set(healthKitSampleTypes.map(\.identifier))
+    }
+    
     /// Indicates whether the necessary authorizations to collect all HealthKit data defined by the ``HealthKitDataSourceDescription``s are already granted.
     public var authorized: Bool {
-        let sampleTypes = healthKitDataSourceDescriptions.reduce(into: Set()) {
-            $0 = $0.union($1.sampleTypes.map(\.identifier))
-        }
         let alreadyRequestedSampleTypes = Set(UserDefaults.standard.stringArray(forKey: UserDefaults.Keys.healthKitRequestedSampleTypes) ?? [])
 
-        return sampleTypes.isSubset(of: alreadyRequestedSampleTypes)
+        return healthKitSampleTypesIdentifiers.isSubset(of: alreadyRequestedSampleTypes)
     }
 
     
@@ -113,17 +120,16 @@ public final class HealthKit<ComponentStandard: Standard>: Module {
             return
         }
         
-        let sampleTypes = healthKitDataSourceDescriptions.reduce(into: Set()) {
-            $0 = $0.union($1.sampleTypes)
-        }
+        try await healthStore.requestAuthorization(toShare: [], read: healthKitSampleTypes)
         
-        try await healthStore.requestAuthorization(toShare: [], read: sampleTypes)
-        
-        UserDefaults.standard.set(sampleTypes.map { $0.identifier }, forKey: UserDefaults.Keys.healthKitRequestedSampleTypes)
+        UserDefaults.standard.set(healthKitSampleTypesIdentifiers, forKey: UserDefaults.Keys.healthKitRequestedSampleTypes)
         
         for healthKitComponent in healthKitComponents {
             healthKitComponent.askedForAuthorization()
         }
+        
+        // Triggers an update of the UI in case the HealthKit authorizations are changed
+        self.objectWillChange.send()
     }
     
     
