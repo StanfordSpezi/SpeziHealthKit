@@ -122,7 +122,7 @@ public final class HealthKit<ComponentStandard: Standard>: Module {
         
         try await healthStore.requestAuthorization(toShare: [], read: healthKitSampleTypes)
         
-        UserDefaults.standard.set(healthKitSampleTypesIdentifiers, forKey: UserDefaults.Keys.healthKitRequestedSampleTypes)
+        UserDefaults.standard.set(Array(healthKitSampleTypesIdentifiers), forKey: UserDefaults.Keys.healthKitRequestedSampleTypes)
         
         for healthKitComponent in healthKitComponents {
             healthKitComponent.askedForAuthorization()
