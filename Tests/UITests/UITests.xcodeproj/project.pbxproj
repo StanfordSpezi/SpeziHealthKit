@@ -17,7 +17,6 @@
 		2F85827A29E777980021D637 /* TestAppHealthKitAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F85827929E777980021D637 /* TestAppHealthKitAdapter.swift */; };
 		2F85827F29E7782C0021D637 /* XCTestExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 2F85827E29E7782C0021D637 /* XCTestExtensions */; };
 		2FA7382C290ADFAA007ACEB9 /* TestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA7382B290ADFAA007ACEB9 /* TestApp.swift */; };
-		97A7D71B2A54D79D00D85923 /* XCTHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 97A7D71A2A54D79D00D85923 /* XCTHealthKit */; };
 		97B029102A5710C800946EF8 /* XCTHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 97B0290F2A5710C800946EF8 /* XCTHealthKit */; };
 /* End PBXBuildFile section */
 
@@ -61,7 +60,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				2F85827F29E7782C0021D637 /* XCTestExtensions in Frameworks */,
-				97A7D71B2A54D79D00D85923 /* XCTHealthKit in Frameworks */,
 				97B029102A5710C800946EF8 /* XCTHealthKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
