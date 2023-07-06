@@ -157,7 +157,6 @@
 			name = TestAppUITests;
 			packageProductDependencies = (
 				2F85827E29E7782C0021D637 /* XCTestExtensions */,
-				97A7D71A2A54D79D00D85923 /* XCTHealthKit */,
 				97B0290F2A5710C800946EF8 /* XCTHealthKit */,
 			);
 			productName = ExampleUITests;
@@ -667,10 +666,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2F85827B29E778110021D637 /* XCRemoteSwiftPackageReference "XCTestExtensions" */;
 			productName = XCTestExtensions;
-		};
-		97A7D71A2A54D79D00D85923 /* XCTHealthKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = XCTHealthKit;
 		};
 		97B0290F2A5710C800946EF8 /* XCTHealthKit */ = {
 			isa = XCSwiftPackageProductDependency;
