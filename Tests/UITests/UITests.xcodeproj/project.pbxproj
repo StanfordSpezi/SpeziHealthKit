@@ -17,7 +17,8 @@
 		2F85827A29E777980021D637 /* TestAppHealthKitAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F85827929E777980021D637 /* TestAppHealthKitAdapter.swift */; };
 		2F85827F29E7782C0021D637 /* XCTestExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 2F85827E29E7782C0021D637 /* XCTestExtensions */; };
 		2FA7382C290ADFAA007ACEB9 /* TestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA7382B290ADFAA007ACEB9 /* TestApp.swift */; };
-		97A7D7182A54D69700D85923 /* XCTHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 97A7D7172A54D69700D85923 /* XCTHealthKit */; };
+		97A7D71B2A54D79D00D85923 /* XCTHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 97A7D71A2A54D79D00D85923 /* XCTHealthKit */; };
+		97B029102A5710C800946EF8 /* XCTHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 97B0290F2A5710C800946EF8 /* XCTHealthKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,7 +61,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				2F85827F29E7782C0021D637 /* XCTestExtensions in Frameworks */,
-				97A7D7182A54D69700D85923 /* XCTHealthKit in Frameworks */,
+				97A7D71B2A54D79D00D85923 /* XCTHealthKit in Frameworks */,
+				97B029102A5710C800946EF8 /* XCTHealthKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -157,7 +159,8 @@
 			name = TestAppUITests;
 			packageProductDependencies = (
 				2F85827E29E7782C0021D637 /* XCTestExtensions */,
-				97A7D7172A54D69700D85923 /* XCTHealthKit */,
+				97A7D71A2A54D79D00D85923 /* XCTHealthKit */,
+				97B0290F2A5710C800946EF8 /* XCTHealthKit */,
 			);
 			productName = ExampleUITests;
 			productReference = 2F6D13AC28F5F386007C25D6 /* TestAppUITests.xctest */;
@@ -194,7 +197,7 @@
 			packageReferences = (
 				2F85827429E776D10021D637 /* XCRemoteSwiftPackageReference "Spezi" */,
 				2F85827B29E778110021D637 /* XCRemoteSwiftPackageReference "XCTestExtensions" */,
-				97A7D7162A54D69700D85923 /* XCRemoteSwiftPackageReference "XCTHealthKit" */,
+				97B0290E2A5710C800946EF8 /* XCRemoteSwiftPackageReference "XCTHealthKit" */,
 			);
 			productRefGroup = 2F6D139328F5F384007C25D6 /* Products */;
 			projectDirPath = "";
@@ -637,12 +640,12 @@
 				minimumVersion = 0.4.6;
 			};
 		};
-		97A7D7162A54D69700D85923 /* XCRemoteSwiftPackageReference "XCTHealthKit" */ = {
+		97B0290E2A5710C800946EF8 /* XCRemoteSwiftPackageReference "XCTHealthKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/philippzagar/XCTHealthKit";
+			repositoryURL = "https://github.com/StanfordBDHG/XCTHealthKit";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.3.5;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -667,9 +670,13 @@
 			package = 2F85827B29E778110021D637 /* XCRemoteSwiftPackageReference "XCTestExtensions" */;
 			productName = XCTestExtensions;
 		};
-		97A7D7172A54D69700D85923 /* XCTHealthKit */ = {
+		97A7D71A2A54D79D00D85923 /* XCTHealthKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 97A7D7162A54D69700D85923 /* XCRemoteSwiftPackageReference "XCTHealthKit" */;
+			productName = XCTHealthKit;
+		};
+		97B0290F2A5710C800946EF8 /* XCTHealthKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 97B0290E2A5710C800946EF8 /* XCRemoteSwiftPackageReference "XCTHealthKit" */;
 			productName = XCTHealthKit;
 		};
 /* End XCSwiftPackageProductDependency section */
