@@ -64,6 +64,23 @@ public final class HealthKit<ComponentStandard: Standard>: Module {
             .flatMap { $0.dataSources(healthStore: healthStore, standard: standard, adapter: adapter) }
     }()
     
+    private var healthKitSampleTypes: Set<HKSampleType> {
+        healthKitDataSourceDescriptions.reduce(into: Set()) {
+            $0 = $0.union($1.sampleTypes)
+        }
+    }
+    
+    private var healthKitSampleTypesIdentifiers: Set<String> {
+        Set(healthKitSampleTypes.map(\.identifier))
+    }
+    
+    /// Indicates whether the necessary authorizations to collect all HealthKit data defined by the ``HealthKitDataSourceDescription``s are already granted.
+    public var authorized: Bool {
+        let alreadyRequestedSampleTypes = Set(UserDefaults.standard.stringArray(forKey: UserDefaults.Keys.healthKitRequestedSampleTypes) ?? [])
+
+        return healthKitSampleTypesIdentifiers.isSubset(of: alreadyRequestedSampleTypes)
+    }
+
     
     /// Creates a new instance of the ``HealthKit`` module.
     /// - Parameters:
@@ -99,23 +116,21 @@ public final class HealthKit<ComponentStandard: Standard>: Module {
     ///
     /// Call this function when you want to start HealthKit data collection.
     public func askForAuthorization() async throws {
-        var sampleTypes: Set<HKSampleType> = []
-        
-        for healthKitDataSourceDescription in healthKitDataSourceDescriptions {
-            sampleTypes = sampleTypes.union(healthKitDataSourceDescription.sampleTypes)
-        }
-        
-        let requestedSampleTypes = Set(UserDefaults.standard.stringArray(forKey: UserDefaults.Keys.healthKitRequestedSampleTypes) ?? [])
-        guard !Set(sampleTypes.map { $0.identifier }).isSubset(of: requestedSampleTypes) else {
+        guard !authorized else {
             return
         }
         
-        try await healthStore.requestAuthorization(toShare: [], read: sampleTypes)
+        try await healthStore.requestAuthorization(toShare: [], read: healthKitSampleTypes)
         
-        UserDefaults.standard.set(sampleTypes.map { $0.identifier }, forKey: UserDefaults.Keys.healthKitRequestedSampleTypes)
+        UserDefaults.standard.set(Array(healthKitSampleTypesIdentifiers), forKey: UserDefaults.Keys.healthKitRequestedSampleTypes)
         
         for healthKitComponent in healthKitComponents {
             healthKitComponent.askedForAuthorization()
+        }
+        
+        // Triggers an update of the UI in case the HealthKit authorizations are changed
+        Task { @MainActor in
+            self.objectWillChange.send()
         }
     }
     

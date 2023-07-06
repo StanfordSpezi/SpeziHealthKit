@@ -33,6 +33,7 @@ let package = Package(
         .testTarget(
             name: "SpeziHealthKitTests",
             dependencies: [
+                .product(name: "XCTSpezi", package: "Spezi"),
                 .target(name: "SpeziHealthKit")
             ]
         )

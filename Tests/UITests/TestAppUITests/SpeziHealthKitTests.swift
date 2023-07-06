@@ -148,6 +148,29 @@ final class HealthKitTests: XCTestCase {
             ]
         )
     }
+    
+    func testRepeatedHealthKitAuthorization() throws {
+        let app = XCUIApplication()
+        app.deleteAndLaunch(withSpringboardAppName: "TestApp")
+        
+        app.activate()
+        XCTAssert(app.buttons["Ask for authorization"].waitForExistence(timeout: 2))
+        XCTAssert(app.buttons["Ask for authorization"].isEnabled)
+        app.buttons["Ask for authorization"].tap()
+        
+        try app.handleHealthKitAuthorization()
+        
+        // Wait for button to become disabled
+        let expectation = XCTNSPredicateExpectation(
+            predicate: NSPredicate { _, _ in
+                !app.buttons["Ask for authorization"].isEnabled
+            },
+            object: .none
+        )
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssert(!app.buttons["Ask for authorization"].isEnabled)
+    }
 }
 
 

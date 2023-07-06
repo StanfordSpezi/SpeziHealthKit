@@ -23,6 +23,8 @@ struct HealthKitTestsView: View {
         Button("Ask for authorization") {
             askForAuthorization()
         }
+        .disabled(healthKitComponent.authorized)
+        
         Button("Trigger data source collection") {
             triggerDataSourceCollection()
         }
