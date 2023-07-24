@@ -13,8 +13,11 @@ import XCTSpezi
 
 
 struct HealthKitTestsView: View {
-    @EnvironmentObject var healthKitComponent: HealthKit<TestAppStandard>
-    @EnvironmentObject var standard: TestAppStandard
+    @EnvironmentObject var healthKitComponent: HealthKit //<TestAppStandard>
+//    @EnvironmentObject var standard: TestAppStandard
+//    @StandardActor var standard: any HealthKitConstraint
+    
+    
     @State var dataChanges: [String] = []
     @State var cancellable: AnyCancellable?
     
@@ -35,11 +38,11 @@ struct HealthKitTestsView: View {
         }
             .task {
                 self.dataChanges = await standard.dataChanges.map { $0.id }
-                cancellable = standard.objectWillChange.sink {
-                    Task { @MainActor in
-                        self.dataChanges = await standard.dataChanges.map { $0.id }
-                    }
-                }
+//                cancellable = .standard.objectWillChange.sink {
+//                    Task { @MainActor in
+//                        self.dataChanges = await standard.dataChanges.map { $0.id }
+//                    }
+//                }
             }
             .onDisappear {
                 cancellable?.cancel()

@@ -11,6 +11,7 @@ import Spezi
 
 
 extension HKHealthStore {
+    
     func sampleQuery(
         for sampleType: HKSampleType,
         withPredicate predicate: NSPredicate? = nil
@@ -31,16 +32,40 @@ extension HKHealthStore {
     }
     
     
+//    func sampleQueryStream(
+//        for sampleType: HKSampleType,
+//        withPredicate predicate: NSPredicate? = nil
+//    ) -> AsyncThrowingStream<DataChange<HKSample, HKSample.ID>, Error> {
+//        AsyncThrowingStream { continuation in
+//            Task {
+//                for sample in try await sampleQuery(for: sampleType, withPredicate: predicate) {
+//                    continuation.yield(.addition(sample))
+//                }
+//                continuation.finish()
+//            }
+//        }
+//    }
+    
+    
     func sampleQueryStream(
         for sampleType: HKSampleType,
-        withPredicate predicate: NSPredicate? = nil
-    ) -> AsyncThrowingStream<DataChange<HKSample, HKSample.ID>, Error> {
-        AsyncThrowingStream { continuation in
-            Task {
-                for sample in try await sampleQuery(for: sampleType, withPredicate: predicate) {
-                    continuation.yield(.addition(sample))
-                }
-                continuation.finish()
+        withPredicate predicate: NSPredicate? = nil,
+        standard: any HealthKitConstraint
+    ) { //}-> AsyncThrowingStream<DataChange<HKSample, HKSample.ID>, Error> {
+//        AsyncThrowingStream { continuation in
+//            Task {
+//                for sample in try await sampleQuery(for: sampleType, withPredicate: predicate) {
+//                    continuation.yield(.addition(sample))
+//                }
+//                continuation.finish()
+//            }
+//        }
+
+        _Concurrency.Task {
+//            await standard.store(response)
+
+            for sample in try await sampleQuery(for: sampleType, withPredicate: predicate) {
+                await standard.add(sample)
             }
         }
     }

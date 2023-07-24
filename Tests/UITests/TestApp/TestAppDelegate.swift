@@ -11,11 +11,29 @@ import Spezi
 import SpeziHealthKit
 import XCTSpezi
 
+/// an example Standard used for the configuration
+actor ExampleStandard: Standard {
+    // ...
+}
+
+extension ExampleStandard: HealthKitConstraint {
+    func add(_ response: HKSample) async {
+        print("add")
+    }
+    
+    func remove(removalContext: SpeziHealthKit.HKSampleRemovalContext) {
+        print("remove")
+    }
+    
+    
+}
 
 class TestAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
-        Configuration(standard: TestAppStandard()) {
-            HealthKit<TestAppStandard> {
+//        Configuration(standard: TestAppStandard()) {
+        Configuration(standard: ExampleStandard()) {
+            
+            HealthKit {
                 CollectSample(
                     HKQuantityType.electrocardiogramType(),
                     deliverySetting: .background(.manual)
@@ -36,9 +54,10 @@ class TestAppDelegate: SpeziAppDelegate {
                     HKQuantityType(.restingHeartRate),
                     deliverySetting: .manual()
                 )
-            } adapter: {
-                TestAppHealthKitAdapter()
             }
+//        adapter: {
+//                TestAppHealthKitAdapter()
+//            }
         }
     }
 }

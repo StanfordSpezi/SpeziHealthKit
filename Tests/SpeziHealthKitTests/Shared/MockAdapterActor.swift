@@ -6,26 +6,26 @@
 // SPDX-License-Identifier: MIT
 //
 
-import HealthKit
-import Spezi
-import SpeziHealthKit
-import XCTSpezi
-
-actor MockAdapterActor: Adapter {
-    typealias InputElement = HKSample
-    typealias InputRemovalContext = HKSampleRemovalContext
-    typealias OutputElement = TestAppStandard.BaseType
-    typealias OutputRemovalContext = TestAppStandard.RemovalContext
-    
-    
-    func transform(
-        _ asyncSequence: some TypedAsyncSequence<DataChange<InputElement, InputRemovalContext>>
-    ) async -> any TypedAsyncSequence<DataChange<OutputElement, OutputRemovalContext>> {
-        asyncSequence.map { element in
-            element.map(
-                element: { OutputElement(id: String(describing: $0.id)) },
-                removalContext: { OutputRemovalContext(id: $0.id.uuidString) }
-            )
-        }
-    }
-}
+//import HealthKit
+//import Spezi
+//import SpeziHealthKit
+//import XCTSpezi
+//
+//actor MockAdapterActor: Adapter {
+//    typealias InputElement = HKSample
+//    typealias InputRemovalContext = HKSampleRemovalContext
+//    typealias OutputElement = TestAppStandard.BaseType
+//    typealias OutputRemovalContext = TestAppStandard.RemovalContext
+//    
+//
+//    func transform(
+//        _ asyncSequence: some TypedAsyncSequence<DataChange<InputElement, InputRemovalContext>>
+//    ) async -> any TypedAsyncSequence<DataChange<OutputElement, OutputRemovalContext>> {
+//        asyncSequence.map { element in
+//            element.map(
+//                element: { OutputElement(id: String(describing: $0.id)) },
+//                removalContext: { OutputRemovalContext(id: $0.id.uuidString) }
+//            )
+//        }
+//    }
+//}

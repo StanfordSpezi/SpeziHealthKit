@@ -16,31 +16,61 @@ extension HKSample: Identifiable {
     }
 }
 
-
 extension HKHealthStore {
+//    func anchoredSingleObjectQuery(
+//        for sampleType: HKSampleType,
+//        using anchor: HKQueryAnchor? = nil,
+//        withPredicate predicate: NSPredicate? = nil
+//    ) async throws -> (elements: [DataChange<HKSample, HKSampleRemovalContext>], anchor: HKQueryAnchor) {
+//        try await self.requestAuthorization(toShare: [], read: [sampleType])
+//
+//        let anchorDescriptor = anchorDescriptor(sampleType: sampleType, predicate: predicate, anchor: anchor)
+//
+//        let result = try await anchorDescriptor.result(for: self)
+//
+//        var elements: [DataChange<HKSample, HKSampleRemovalContext>] = []
+//        elements.reserveCapacity(result.deletedObjects.count + result.addedSamples.count)
+//
+//        for deletedObject in result.deletedObjects {
+//            elements.append(.removal(HKSampleRemovalContext(id: deletedObject.uuid, sampleType: sampleType)))
+//        }
+//
+//        for addedSample in result.addedSamples {
+//            elements.append(.addition(addedSample))
+//        }
+//
+//        return (elements, result.newAnchor)
+//    }
+    
     func anchoredSingleObjectQuery(
         for sampleType: HKSampleType,
         using anchor: HKQueryAnchor? = nil,
-        withPredicate predicate: NSPredicate? = nil
-    ) async throws -> (elements: [DataChange<HKSample, HKSampleRemovalContext>], anchor: HKQueryAnchor) {
+        withPredicate predicate: NSPredicate? = nil,
+        standard: any HealthKitConstraint
+    ) async throws -> (HKQueryAnchor) {
+    //-> (elements: [HKSample], anchor: HKQueryAnchor) {
         try await self.requestAuthorization(toShare: [], read: [sampleType])
-        
+
         let anchorDescriptor = anchorDescriptor(sampleType: sampleType, predicate: predicate, anchor: anchor)
-        
+
         let result = try await anchorDescriptor.result(for: self)
-        
-        var elements: [DataChange<HKSample, HKSampleRemovalContext>] = []
-        elements.reserveCapacity(result.deletedObjects.count + result.addedSamples.count)
-        
+
+//        var elements: [HKSample] = []
+//        elements.reserveCapacity(result.deletedObjects.count + result.addedSamples.count)
+
         for deletedObject in result.deletedObjects {
-            elements.append(.removal(HKSampleRemovalContext(id: deletedObject.uuid, sampleType: sampleType)))
+//            elements.append(.removal(HKSampleRemovalContext(id: deletedObject.uuid, sampleType: sampleType)))
+//            elements.append(.removal(HKSampleRemovalContext(id: deletedObject.uuid, sampleType: sampleType)))
+            await standard.remove(removalContext: HKSampleRemovalContext(id: deletedObject.uuid, sampleType: sampleType))
         }
-        
+
         for addedSample in result.addedSamples {
-            elements.append(.addition(addedSample))
+//            elements.append(.addition(addedSample))
+            await standard.add(addedSample)
         }
-        
-        return (elements, result.newAnchor)
+
+//        return (elements, result.newAnchor)
+        return (result.newAnchor)
     }
     
     

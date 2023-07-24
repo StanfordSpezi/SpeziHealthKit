@@ -6,24 +6,24 @@
 // SPDX-License-Identifier: MIT
 //
 
-@preconcurrency import HealthKit
-import Spezi
-import SpeziHealthKit
-import XCTSpezi
-
-
-actor TestAppHealthKitAdapter: SingleValueAdapter {
-    typealias InputElement = HKSample
-    typealias InputRemovalContext = HKSampleRemovalContext
-    typealias OutputElement = TestAppStandard.BaseType
-    typealias OutputRemovalContext = TestAppStandard.RemovalContext
-    
-    
-    func transform(element: InputElement) throws -> OutputElement {
-        TestAppStandard.BaseType(id: element.sampleType.identifier)
-    }
-    
-    func transform(removalContext: InputRemovalContext) throws -> OutputRemovalContext {
-        OutputRemovalContext(id: removalContext.id.uuidString)
-    }
-}
+//@preconcurrency import HealthKit
+//import Spezi
+//import SpeziHealthKit
+//import XCTSpezi
+//
+//
+//actor TestAppHealthKitAdapter: SingleValueAdapter {
+//    typealias InputElement = HKSample
+//    typealias InputRemovalContext = HKSampleRemovalContext
+//    typealias OutputElement = TestAppStandard.BaseType
+//    typealias OutputRemovalContext = TestAppStandard.RemovalContext
+//
+//
+//    func transform(element: InputElement) throws -> OutputElement {
+//        TestAppStandard.BaseType(id: element.sampleType.identifier)
+//    }
+//
+//    func transform(removalContext: InputRemovalContext) throws -> OutputRemovalContext {
+//        OutputRemovalContext(id: removalContext.id.uuidString)
+//    }
+//}
