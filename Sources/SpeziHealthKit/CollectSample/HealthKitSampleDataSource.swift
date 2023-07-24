@@ -101,7 +101,7 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
         guard !active else {
             return
         }
-        
+
         // TODO: reimplement
         switch deliverySetting {
         case .manual:
