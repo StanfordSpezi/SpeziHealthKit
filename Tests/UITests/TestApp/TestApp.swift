@@ -9,6 +9,7 @@
 import Spezi
 import SwiftUI
 
+// ATTENTION
 // TODO: Change back bundle ID to edu.stanford.HPDS.healthkit.testapp when done
 
 @main

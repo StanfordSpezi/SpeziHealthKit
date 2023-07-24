@@ -13,13 +13,11 @@ import SwiftUI
 
 final class HealthKitSampleDataSource: HealthKitDataSource {
     let healthStore: HKHealthStore
-    let standard: any HealthKitConstraint //ComponentStandard
+    let standard: any HealthKitConstraint
     
     let sampleType: HKSampleType
     let predicate: NSPredicate?
     let deliverySetting: HealthKitDeliverySetting
-//    let adapter: HealthKit<ComponentStandard>.HKSampleAdapter
-    
     var active = false
     
     private lazy var anchorUserDefaultsKey = UserDefaults.Keys.healthKitAnchorPrefix.appending(sampleType.identifier)
@@ -30,19 +28,17 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
     }
     
     
-    required init( // swiftlint:disable:this function_default_parameter_at_end
+    required init(
         healthStore: HKHealthStore,
         standard: any HealthKitConstraint,
         sampleType: HKSampleType,
         predicate: NSPredicate? = nil, // We order the parameters in a logical order and therefore don't put the predicate at the end here.
-        deliverySetting: HealthKitDeliverySetting //,
-//        adapter: HealthKit<ComponentStandard>.HKSampleAdapter
+        deliverySetting: HealthKitDeliverySetting
     ) {
         self.healthStore = healthStore
         self.standard = standard
         self.sampleType = sampleType
         self.deliverySetting = deliverySetting
-//        self.adapter = adapter
         
         if predicate == nil {
             self.predicate = HKQuery.predicateForSamples(
@@ -100,82 +96,44 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
         }
     }
     
+    //TODO: PAUL, what to do here
     func triggerDataSourceCollection() async {
         guard !active else {
             return
         }
         
         // TODO: reimplement
-//        switch deliverySetting {
-//        case .manual:
-//            await standard.registerDataSource(adapter.transform(anchoredSingleObjectQuery()))
-//        case .anchorQuery:
-//            active = true
-//            await standard.registerDataSource(adapter.transform(anchoredContinousObjectQuery()))
-//        case .background:
-//            active = true
-//            let healthKitSamples = healthStore.startObservation(for: [sampleType], withPredicate: predicate)
-//                .flatMap { _ in
-//                    self.anchoredSingleObjectQuery()
-//                }
-//            await standard.registerDataSource(adapter.transform(healthKitSamples))
-//        }
+        switch deliverySetting {
+        case .manual:
+            await standard.registerDataSource(adapter.transform(anchoredSingleObjectQuery()))
+        case .anchorQuery:
+            active = true
+            await standard.registerDataSource(adapter.transform(anchoredContinousObjectQuery()))
+        case .background:
+            active = true
+            let healthKitSamples = healthStore.startObservation(for: [sampleType], withPredicate: predicate)
+                .flatMap { _ in
+                    self.anchoredSingleObjectQuery()
+                }
+            await standard.registerDataSource(adapter.transform(healthKitSamples))
+        }
     }
     
     
-    private func anchoredSingleObjectQuery() { //}-> AsyncThrowingStream<DataChange<HKSample, HKSampleRemovalContext>, Error> {
-//        AsyncThrowingStream<Any, Error> { continuation in
-            Task {
-                let resultsAnchor = try await healthStore.anchoredSingleObjectQuery(
-                    for: self.sampleType,
-                    using: self.anchor,
-                    withPredicate: predicate,
-                    standard: self.standard
-                )
-                self.anchor = resultsAnchor // results.anchor
-//                for result in results.elements {
-//                    continuation.yield(result)
-//                }
-//                continuation.finish()
-            }
-//        }
+    private func anchoredSingleObjectQuery() {
+        Task {
+            let resultsAnchor = try await healthStore.anchoredSingleObjectQuery(
+                for: self.sampleType,
+                using: self.anchor,
+                withPredicate: predicate,
+                standard: self.standard
+            )
+            self.anchor = resultsAnchor
+        }
     }
     
-//    private func anchoredContinousObjectQuery() async -> any TypedAsyncSequence<DataChange<HKSample, HKSampleRemovalContext>> {
-//        AsyncThrowingStream { continuation in
-//            Task {
-//                try await healthStore.requestAuthorization(toShare: [], read: [sampleType])
-//
-//                let anchorDescriptor = healthStore.anchorDescriptor(sampleType: sampleType, predicate: predicate, anchor: anchor)
-//
-//                let updateQueue = anchorDescriptor.results(for: healthStore)
-//
-//                do {
-//                    for try await results in updateQueue {
-//                        if Task.isCancelled {
-//                            continuation.finish()
-//                            return
-//                        }
-//
-//                        for deletedObject in results.deletedObjects {
-//                            continuation.yield(.removal(HKSampleRemovalContext(id: deletedObject.uuid, sampleType: sampleType)))
-//                        }
-//
-//                        for addedSample in results.addedSamples {
-//                            continuation.yield(.addition(addedSample))
-//                        }
-//                        self.anchor = results.newAnchor
-//                    }
-//                } catch {
-//                    continuation.finish(throwing: error)
-//                }
-//            }
-//        }
-//    }
-    
-    // TODO: Solve this DataChange
+    // TODO: PAUL, is AsyncThrowingStream needed Here?
     private func anchoredContinousObjectQuery() async {
-//    -> any TypedAsyncSequence<DataChange<HKSample, HKSampleRemovalContext>> {
         AsyncThrowingStream<Any, Error> { continuation in
             _Concurrency.Task {
                 try await healthStore.requestAuthorization(toShare: [], read: [sampleType])
@@ -192,20 +150,16 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
                         }
                         
                         for deletedObject in results.deletedObjects {
-                            // continuation.yield(.removal(HKSampleRemovalContext(id: deletedObject.uuid, sampleType: sampleType)))
                             await standard.remove(removalContext: HKSampleRemovalContext(id: deletedObject.uuid, sampleType: sampleType))
                         }
                         
                         for addedSample in results.addedSamples {
-                            // continuation.yield(.addition(addedSample))
                             await standard.add(addedSample)
                         }
                         self.anchor = results.newAnchor
                     }
                 } catch {
-                    // continuation.finish(throwing: error)
                     continuation.finish(throwing: error)
-                    // TODO: what to put here
                 }
             }
         }

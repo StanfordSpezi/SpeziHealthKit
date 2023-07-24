@@ -6,11 +6,17 @@
 // SPDX-License-Identifier: MIT
 //
 
-import Spezi
-//import ModelsR4
 import HealthKit
+import Spezi
 
+/// A Standard which all Spezi HealthKit modules must follow
 public protocol HealthKitConstraint: Standard {
+    
+    /// Adds a new `HKSample` to the ``HealthKit`` module
+    /// - Parameter response: The `HKSample` that should be added.
     func add(_ response: HKSample) async
+    
+    /// Removes a `HKSampleRemovalContext` from the ``HealthKit`` module
+    /// - Parameter response: The `HKSampleRemovalContext` that contains information on the item that should be removed.
     func remove(removalContext: HKSampleRemovalContext)
 }

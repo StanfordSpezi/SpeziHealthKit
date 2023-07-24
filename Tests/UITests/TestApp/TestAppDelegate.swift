@@ -30,9 +30,7 @@ extension ExampleStandard: HealthKitConstraint {
 
 class TestAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
-//        Configuration(standard: TestAppStandard()) {
         Configuration(standard: ExampleStandard()) {
-            
             HealthKit {
                 CollectSample(
                     HKQuantityType.electrocardiogramType(),
@@ -55,9 +53,6 @@ class TestAppDelegate: SpeziAppDelegate {
                     deliverySetting: .manual()
                 )
             }
-//        adapter: {
-//                TestAppHealthKitAdapter()
-//            }
         }
     }
 }

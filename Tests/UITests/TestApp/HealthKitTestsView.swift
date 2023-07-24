@@ -13,11 +13,7 @@ import XCTSpezi
 
 
 struct HealthKitTestsView: View {
-    @EnvironmentObject var healthKitComponent: HealthKit //<TestAppStandard>
-//    @EnvironmentObject var standard: TestAppStandard
-//    @StandardActor var standard: any HealthKitConstraint
-    
-    
+    @EnvironmentObject var healthKitComponent: HealthKit
     @State var dataChanges: [String] = []
     @State var cancellable: AnyCancellable?
     
@@ -37,7 +33,9 @@ struct HealthKitTestsView: View {
             }
         }
             .task {
-                self.dataChanges = await standard.dataChanges.map { $0.id }
+                // TODO: Paul, what to do here
+                // ATTENTION: How to replace these lines of code for the new standard
+//                self.dataChanges = await standard.dataChanges.map { $0.id }
 //                cancellable = .standard.objectWillChange.sink {
 //                    Task { @MainActor in
 //                        self.dataChanges = await standard.dataChanges.map { $0.id }
