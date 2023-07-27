@@ -96,26 +96,26 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
         }
     }
     
-    //TODO: PAUL, what to do here
     func triggerDataSourceCollection() async {
         guard !active else {
             return
         }
-
-        // TODO: reimplement
-        switch deliverySetting {
-        case .manual:
-            await standard.registerDataSource(adapter.transform(anchoredSingleObjectQuery()))
-        case .anchorQuery:
-            active = true
-            await standard.registerDataSource(adapter.transform(anchoredContinousObjectQuery()))
-        case .background:
-            active = true
-            let healthKitSamples = healthStore.startObservation(for: [sampleType], withPredicate: predicate)
-                .flatMap { _ in
+        
+        do {
+            switch deliverySetting {
+            case .manual:
+                anchoredSingleObjectQuery()
+            case .anchorQuery:
+                active = true
+                try await anchoredContinousObjectQuery()
+            case .background:
+                active = true
+                for try await _ in healthStore.startObservation(for: [sampleType], withPredicate: predicate) {
                     self.anchoredSingleObjectQuery()
                 }
-            await standard.registerDataSource(adapter.transform(healthKitSamples))
+            }
+        } catch {
+            print(error)
         }
     }
     
@@ -132,36 +132,26 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
         }
     }
     
-    // TODO: PAUL, is AsyncThrowingStream needed Here?
-    private func anchoredContinousObjectQuery() async {
-        AsyncThrowingStream<Any, Error> { continuation in
-            _Concurrency.Task {
-                try await healthStore.requestAuthorization(toShare: [], read: [sampleType])
-                
-                let anchorDescriptor = healthStore.anchorDescriptor(sampleType: sampleType, predicate: predicate, anchor: anchor)
-                
-                let updateQueue = anchorDescriptor.results(for: healthStore)
-                
-                do {
-                    for try await results in updateQueue {
-                        if Task.isCancelled {
-                            continuation.finish()
-                            return
-                        }
-                        
-                        for deletedObject in results.deletedObjects {
-                            await standard.remove(removalContext: HKSampleRemovalContext(id: deletedObject.uuid, sampleType: sampleType))
-                        }
-                        
-                        for addedSample in results.addedSamples {
-                            await standard.add(addedSample)
-                        }
-                        self.anchor = results.newAnchor
-                    }
-                } catch {
-                    continuation.finish(throwing: error)
-                }
+    private func anchoredContinousObjectQuery() async throws {
+        try await healthStore.requestAuthorization(toShare: [], read: [sampleType])
+        
+        let anchorDescriptor = healthStore.anchorDescriptor(sampleType: sampleType, predicate: predicate, anchor: anchor)
+        
+        let updateQueue = anchorDescriptor.results(for: healthStore)
+        
+        for try await results in updateQueue {
+            if Task.isCancelled {
+                return
             }
+            
+            for deletedObject in results.deletedObjects {
+                await standard.remove(removalContext: HKSampleRemovalContext(id: deletedObject.uuid, sampleType: sampleType))
+            }
+            
+            for addedSample in results.addedSamples {
+                await standard.add(addedSample)
+            }
+            self.anchor = results.newAnchor
         }
     }
     
