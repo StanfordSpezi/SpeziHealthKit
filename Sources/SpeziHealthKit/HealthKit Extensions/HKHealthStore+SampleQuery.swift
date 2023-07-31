@@ -11,7 +11,6 @@ import Spezi
 
 
 extension HKHealthStore {
-    
     func sampleQuery(
         for sampleType: HKSampleType,
         withPredicate predicate: NSPredicate? = nil

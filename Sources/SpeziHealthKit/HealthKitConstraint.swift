@@ -9,9 +9,9 @@
 import HealthKit
 import Spezi
 
-/// A Standard which all Spezi HealthKit modules must follow
+
+/// A Constraint which all `Standard` instances must conform to when using the Spezi HealthKit module.
 public protocol HealthKitConstraint: Standard {
-    
     /// Adds a new `HKSample` to the ``HealthKit`` module
     /// - Parameter response: The `HKSample` that should be added.
     func add(_ response: HKSample) async

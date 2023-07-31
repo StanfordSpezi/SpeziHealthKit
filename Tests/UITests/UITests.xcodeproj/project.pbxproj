@@ -16,6 +16,7 @@
 		2F85827829E776D10021D637 /* XCTSpezi in Frameworks */ = {isa = PBXBuildFile; productRef = 2F85827729E776D10021D637 /* XCTSpezi */; };
 		2F85827F29E7782C0021D637 /* XCTestExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 2F85827E29E7782C0021D637 /* XCTestExtensions */; };
 		2FA7382C290ADFAA007ACEB9 /* TestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA7382B290ADFAA007ACEB9 /* TestApp.swift */; };
+		390F29612A785A98000A236E /* ExampleStandard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 390F29602A785A98000A236E /* ExampleStandard.swift */; };
 		97B029102A5710C800946EF8 /* XCTHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 97B0290F2A5710C800946EF8 /* XCTHealthKit */; };
 /* End PBXBuildFile section */
 
@@ -40,6 +41,7 @@
 		2F85828329E77C4A0021D637 /* TestApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TestApp.entitlements; sourceTree = "<group>"; };
 		2FA7382B290ADFAA007ACEB9 /* TestApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestApp.swift; sourceTree = "<group>"; };
 		2FB0758A299DDB9000C0B37F /* TestApp.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = TestApp.xctestplan; sourceTree = "<group>"; };
+		390F29602A785A98000A236E /* ExampleStandard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleStandard.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +93,7 @@
 			children = (
 				2FA7382B290ADFAA007ACEB9 /* TestApp.swift */,
 				2F85827229E776AC0021D637 /* TestAppDelegate.swift */,
+				390F29602A785A98000A236E /* ExampleStandard.swift */,
 				2F85827029E776780021D637 /* HealthKitTestsView.swift */,
 				2F85828329E77C4A0021D637 /* TestApp.entitlements */,
 				2F6D139928F5F386007C25D6 /* Assets.xcassets */,
@@ -123,6 +126,7 @@
 				2F6D138E28F5F384007C25D6 /* Sources */,
 				2F6D138F28F5F384007C25D6 /* Frameworks */,
 				2F6D139028F5F384007C25D6 /* Resources */,
+				390F295F2A78596E000A236E /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -221,12 +225,33 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		390F295F2A78596E000A236E /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export PATH=\"$PATH:/opt/homebrew/bin\"\nif which swiftlint > /dev/null; then\n  cd ../../ && swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		2F6D138E28F5F384007C25D6 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				2FA7382C290ADFAA007ACEB9 /* TestApp.swift in Sources */,
+				390F29612A785A98000A236E /* ExampleStandard.swift in Sources */,
 				2F85827129E776780021D637 /* HealthKitTestsView.swift in Sources */,
 				2F85827329E776AC0021D637 /* TestAppDelegate.swift in Sources */,
 			);
