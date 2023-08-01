@@ -17,6 +17,9 @@ extension HKSample: Identifiable {
 }
 
 extension HKHealthStore {
+    // We disable the SwiftLint as we order the parameters in a logical order and
+    // therefore don't put the predicate at the end here.
+    // swiftlint:disable function_default_parameter_at_end
     func anchoredSingleObjectQuery(
         for sampleType: HKSampleType,
         using anchor: HKQueryAnchor? = nil,
@@ -38,6 +41,7 @@ extension HKHealthStore {
 
         return (result.newAnchor)
     }
+    // swiftlint:enable function_default_parameter_at_end
     
     
     func anchorDescriptor(

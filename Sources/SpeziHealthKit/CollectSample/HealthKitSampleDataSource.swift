@@ -27,12 +27,14 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
         }
     }
     
-    
+    // We disable the SwiftLint as we order the parameters in a logical order and
+    // therefore don't put the predicate at the end here.
+    // swiftlint:disable function_default_parameter_at_end
     required init(
         healthStore: HKHealthStore,
         standard: any HealthKitConstraint,
         sampleType: HKSampleType,
-        predicate: NSPredicate? = nil, // We order the parameters in a logical order and therefore don't put the predicate at the end here.
+        predicate: NSPredicate? = nil,
         deliverySetting: HealthKitDeliverySetting
     ) {
         self.healthStore = healthStore
@@ -50,6 +52,7 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
             self.predicate = predicate
         }
     }
+    // swiftlint:enable function_default_parameter_at_end
     
     
     private static func loadDefaultQueryDate(for sampleType: HKSampleType) -> Date {

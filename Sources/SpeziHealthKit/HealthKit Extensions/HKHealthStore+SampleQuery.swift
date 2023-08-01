@@ -30,6 +30,9 @@ extension HKHealthStore {
         return try await sampleQueryDescriptor.result(for: self)
     }
     
+    // We disable the SwiftLint as we order the parameters in a logical order and
+    // therefore don't put the predicate at the end here.
+    // swiftlint:disable function_default_parameter_at_end
     func sampleQueryStream(
         for sampleType: HKSampleType,
         withPredicate predicate: NSPredicate? = nil,
@@ -41,4 +44,5 @@ extension HKHealthStore {
             }
         }
     }
+    // swiftlint:enable function_default_parameter_at_end
 }
