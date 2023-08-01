@@ -17,7 +17,7 @@ final class SpeziHealthKitTests: XCTestCase {
         HKQuantityType(.distanceWalkingRunning)
     ]
     
-    let healthKitComponent: HealthKit = HealthKit {
+    let healthKitComponent = HealthKit {
         CollectSamples(
             collectedSamples,
             deliverySetting: .anchorQuery(.afterAuthorizationAndApplicationWillLaunch)
