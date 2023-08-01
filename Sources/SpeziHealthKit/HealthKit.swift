@@ -13,6 +13,22 @@ import SwiftUI
 
 /// The ``HealthKit`` module enables the collection of HealthKit data and transforms it to the component's standard's base type using an `Adapter` (``HealthKit/HKSampleAdapter``)
 ///
+/// Configuration for the ``SpeziHealthKit`` module.
+///
+/// Make sure that your standard in your Spezi Application conforms to the ``HealthKitConstraint``
+/// protocol to receive HealthKit data.
+/// ```swift
+/// actor ExampleStandard: Standard, HealthKitConstraint {
+///    func add(_ response: HKSample) async {
+///        ...
+///    }
+///
+///    func remove(removalContext: SpeziHealthKit.HKSampleRemovalContext) {
+///        ...
+///    }
+/// }
+/// ```
+///
 /// Use the ``HealthKit/init(_:adapter:)`` initializer to define different ``HealthKitDataSourceDescription``s to define the data collection.
 /// You can, e.g., use ``CollectSample`` to collect a wide variaty of `HKSampleTypes`:
 /// ```swift
