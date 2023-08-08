@@ -148,11 +148,11 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
             }
             
             for deletedObject in results.deletedObjects {
-                await standard.remove(removalContext: HKSampleRemovalContext(id: deletedObject.uuid, sampleType: sampleType))
+                await standard.remove(sample: deletedObject)
             }
             
             for addedSample in results.addedSamples {
-                await standard.add(addedSample)
+                await standard.add(sample: addedSample)
             }
             self.anchor = results.newAnchor
         }

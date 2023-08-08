@@ -6,31 +6,28 @@
 // SPDX-License-Identifier: MIT
 //
 
-import HealthKit
+@preconcurrency import HealthKit
 import Spezi
 import SpeziHealthKit
 
 
-/// an example datatype for storing HealthSamples.
-struct HKItem {
-    var data: HKSample
-    var id: String
-}
-
-
 /// an example Standard used for the configuration.
-actor ExampleStandard: Standard, ObservableObjectProvider, ObservableObject {
-    var addedResponses = [HKItem]()
+actor ExampleStandard: Standard, ObservableObject, ObservableObjectProvider {
+    @Published @MainActor var addedResponses = [HKSample]()
 }
 
 extension ExampleStandard: HealthKitConstraint {
-    func add(_ response: HKSample) async {
-        addedResponses.append(.init(data: response, id: "\(UUID())"))
+    func add(sample: HKSample) async {
+        _Concurrency.Task { @MainActor in
+            addedResponses.append(sample)
+        }
     }
     
-    func remove(removalContext: SpeziHealthKit.HKSampleRemovalContext) {
-        if let index = addedResponses.firstIndex(where: { $0.data.sampleType == removalContext.sampleType && $0.id == "\(removalContext.id)" }) {
-            addedResponses.remove(at: index)
+    func remove(sample: HKDeletedObject) async {
+        _Concurrency.Task { @MainActor in
+            if let index = addedResponses.firstIndex(where: { $0.uuid == sample.uuid }) {
+                addedResponses.remove(at: index)
+            }
         }
     }
 }

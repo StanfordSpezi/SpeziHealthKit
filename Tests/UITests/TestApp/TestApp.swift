@@ -9,6 +9,7 @@
 import Spezi
 import SwiftUI
 
+
 @main
 struct UITestsApp: App {
     @UIApplicationDelegateAdaptor(TestAppDelegate.self) var appDelegate

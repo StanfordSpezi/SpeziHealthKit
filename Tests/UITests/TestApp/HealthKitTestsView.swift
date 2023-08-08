@@ -7,6 +7,7 @@
 //
 
 import Combine
+import HealthKit
 import SpeziHealthKit
 import SwiftUI
 import XCTSpezi
@@ -16,8 +17,8 @@ struct HealthKitTestsView: View {
     @EnvironmentObject var healthKitComponent: HealthKit
     @EnvironmentObject var standard: ExampleStandard
     
-    @State var dataChanges: [String] = []
-    @State var cancellable: AnyCancellable?
+//    @State var dataChanges: [HKSample] = []
+//    @State var cancellable: AnyCancellable?
     
     
     var body: some View {
@@ -30,21 +31,23 @@ struct HealthKitTestsView: View {
             triggerDataSourceCollection()
         }
         HStack {
-            List(dataChanges, id: \.self) { element in
-                Text(element)
+//            List(dataChanges, id: \.self) { element in
+            
+            List(standard.addedResponses, id: \.self) { element in
+                Text(element.sampleType.identifier)
             }
         }
-            .task {
-                self.dataChanges = await standard.addedResponses.map { $0.id }
-                cancellable = standard.objectWillChange.sink {
-                    Task { @MainActor in
-                        self.dataChanges = await standard.addedResponses.map { $0.id }
-                    }
-                }
-            }
-            .onDisappear {
-                cancellable?.cancel()
-            }
+//            .task {
+//                self.dataChanges = await standard.addedResponses //.map { $0.id }
+//                cancellable = standard.objectWillChange.sink {
+//                    Task { @MainActor in
+//                        self.dataChanges = await standard.addedResponses //.map { $0.id }
+//                    }
+//                }
+//            }
+//            .onDisappear {
+//                cancellable?.cancel()
+//            }
     }
     
     

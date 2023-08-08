@@ -40,7 +40,7 @@ extension HKHealthStore {
     ) {
         _Concurrency.Task {
             for sample in try await sampleQuery(for: sampleType, withPredicate: predicate) {
-                await standard.add(sample)
+                await standard.add(sample: sample)
             }
         }
     }

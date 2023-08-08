@@ -11,6 +11,7 @@ import Spezi
 import SpeziHealthKit
 import XCTSpezi
 
+
 class TestAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
         Configuration(standard: ExampleStandard()) {

@@ -19,11 +19,11 @@ import SwiftUI
 /// protocol to receive HealthKit data.
 /// ```swift
 /// actor ExampleStandard: Standard, HealthKitConstraint {
-///    func add(_ response: HKSample) async {
+///    func add(sample: HKSample) async {
 ///        ...
 ///    }
 ///
-///    func remove(removalContext: SpeziHealthKit.HKSampleRemovalContext) {
+///    func remove(sample: HKDeletedObject) {
 ///        ...
 ///    }
 /// }
