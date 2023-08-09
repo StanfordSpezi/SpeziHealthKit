@@ -32,7 +32,6 @@ extension HKHealthStore {
         let result = try await anchorDescriptor.result(for: self)
 
         for deletedObject in result.deletedObjects {
-//            await standard.remove(removalContext: HKSampleRemovalContext(id: deletedObject.uuid, sampleType: sampleType))
             await standard.remove(sample: deletedObject)
         }
 
