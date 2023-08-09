@@ -7,6 +7,7 @@
 //
 
 import HealthKit
+import OSLog
 import Spezi
 import SwiftUI
 
@@ -118,7 +119,7 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
                 }
             }
         } catch {
-            print(error)
+            Logger.healthKit.error("\(error.localizedDescription)")
         }
     }
     

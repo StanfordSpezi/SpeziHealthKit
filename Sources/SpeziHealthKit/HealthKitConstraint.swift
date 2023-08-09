@@ -28,7 +28,7 @@ import Spezi
 /// ```
 ///
 public protocol HealthKitConstraint: Standard {
-    /// Adds a new `HKSample` to the ``HealthKit`` module
+    /// Notifies the ``Standard`` about the addition of a HealthKit ``HKSample`` sample instance.
     /// - Parameter sample: The `HKSample` that should be added.
     func add(sample: HKSample) async
     
