@@ -35,11 +35,10 @@ public struct CollectSample: HealthKitDataSourceDescription {
     }
     
     
-    public func dataSources<S: Standard>(
+    public func dataSources(
         healthStore: HKHealthStore,
-        standard: S,
-        adapter: HealthKit<S>.HKSampleAdapter
+        standard: any HealthKitConstraint
     ) -> [any HealthKitDataSource] {
-        collectSamples.dataSources(healthStore: healthStore, standard: standard, adapter: adapter)
+        collectSamples.dataSources(healthStore: healthStore, standard: standard)
     }
 }

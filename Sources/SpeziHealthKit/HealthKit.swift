@@ -11,9 +11,25 @@ import Spezi
 import SwiftUI
 
 
-/// The ``HealthKit`` module enables the collection of HealthKit data and transforms it to the component's standard's base type using an `Adapter` (``HealthKit/HKSampleAdapter``)
+/// The ``HealthKit`` module enables the collection of HealthKit data.
 ///
-/// Use the ``HealthKit/init(_:adapter:)`` initializer to define different ``HealthKitDataSourceDescription``s to define the data collection.
+/// Configuration for the ``SpeziHealthKit`` module.
+///
+/// Make sure that your standard in your Spezi Application conforms to the ``HealthKitConstraint``
+/// protocol to receive HealthKit data.
+/// ```swift
+/// actor ExampleStandard: Standard, HealthKitConstraint {
+///    func add(sample: HKSample) async {
+///        ...
+///    }
+///
+///    func remove(sample: HKDeletedObject) {
+///        ...
+///    }
+/// }
+/// ```
+///
+/// Use the ``HealthKit/init(_:)`` initializer to define different ``HealthKitDataSourceDescription``s to define the data collection.
 /// You can, e.g., use ``CollectSample`` to collect a wide variaty of `HKSampleTypes`:
 /// ```swift
 /// class ExampleAppDelegate: SpeziAppDelegate {
@@ -41,27 +57,19 @@ import SwiftUI
 ///                         HKQuantityType(.restingHeartRate),
 ///                         deliverySetting: .manual()
 ///                     )
-///                 } adapter: {
-///                     TestAppHealthKitAdapter()
 ///                 }
 ///             }
 ///         }
 ///     }
 /// }
 /// ```
-public final class HealthKit<ComponentStandard: Standard>: Module {
-    /// The ``HealthKit/HKSampleAdapter`` type defines the mapping of `HKSample`s to the component's standard's base type.
-    public typealias HKSampleAdapter = any Adapter<HKSample, HKSampleRemovalContext, ComponentStandard.BaseType, ComponentStandard.RemovalContext>
-    
-    
-    @StandardActor var standard: ComponentStandard
-    
+public final class HealthKit: Module {
+    @StandardActor var standard: any HealthKitConstraint
     let healthStore: HKHealthStore
     let healthKitDataSourceDescriptions: [HealthKitDataSourceDescription]
-    let adapter: HKSampleAdapter
     lazy var healthKitComponents: [any HealthKitDataSource] = {
         healthKitDataSourceDescriptions
-            .flatMap { $0.dataSources(healthStore: healthStore, standard: standard, adapter: adapter) }
+            .flatMap { $0.dataSources(healthStore: healthStore, standard: standard) }
     }()
     
     private var healthKitSampleTypes: Set<HKSampleType> {
@@ -85,10 +93,8 @@ public final class HealthKit<ComponentStandard: Standard>: Module {
     /// Creates a new instance of the ``HealthKit`` module.
     /// - Parameters:
     ///   - healthKitDataSourceDescriptions: The ``HealthKitDataSourceDescription``s define what data is collected by the ``HealthKit`` module. You can, e.g., use ``CollectSample`` to collect a wide variaty of `HKSampleTypes`.
-    ///   - adapter: The ``HealthKit/HKSampleAdapter`` type defines the mapping of `HKSample`s to the component's standard's base type.
     public init(
-        @HealthKitDataSourceDescriptionBuilder _ healthKitDataSourceDescriptions: () -> ([HealthKitDataSourceDescription]),
-        @AdapterBuilder<ComponentStandard.BaseType, ComponentStandard.RemovalContext> adapter: () -> (HKSampleAdapter)
+        @HealthKitDataSourceDescriptionBuilder _ healthKitDataSourceDescriptions: () -> ([HealthKitDataSourceDescription])
     ) {
         precondition(
             HKHealthStore.isHealthDataAvailable(),
@@ -103,10 +109,8 @@ public final class HealthKit<ComponentStandard: Standard>: Module {
         )
         
         let healthStore = HKHealthStore()
-        let adapter = adapter()
         let healthKitDataSourceDescriptions = healthKitDataSourceDescriptions()
         
-        self.adapter = adapter
         self.healthKitDataSourceDescriptions = healthKitDataSourceDescriptions
         self.healthStore = healthStore
     }

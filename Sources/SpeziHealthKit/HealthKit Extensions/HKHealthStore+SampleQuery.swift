@@ -30,18 +30,19 @@ extension HKHealthStore {
         return try await sampleQueryDescriptor.result(for: self)
     }
     
-    
+    // We disable the SwiftLint as we order the parameters in a logical order and
+    // therefore don't put the predicate at the end here.
+    // swiftlint:disable function_default_parameter_at_end
     func sampleQueryStream(
         for sampleType: HKSampleType,
-        withPredicate predicate: NSPredicate? = nil
-    ) -> AsyncThrowingStream<DataChange<HKSample, HKSample.ID>, Error> {
-        AsyncThrowingStream { continuation in
-            Task {
-                for sample in try await sampleQuery(for: sampleType, withPredicate: predicate) {
-                    continuation.yield(.addition(sample))
-                }
-                continuation.finish()
+        withPredicate predicate: NSPredicate? = nil,
+        standard: any HealthKitConstraint
+    ) {
+        _Concurrency.Task {
+            for sample in try await sampleQuery(for: sampleType, withPredicate: predicate) {
+                await standard.add(sample: sample)
             }
         }
     }
+    // swiftlint:enable function_default_parameter_at_end
 }

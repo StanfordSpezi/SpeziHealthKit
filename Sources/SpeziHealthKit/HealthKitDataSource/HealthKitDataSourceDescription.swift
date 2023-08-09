@@ -16,10 +16,9 @@ public protocol HealthKitDataSourceDescription {
     var sampleTypes: Set<HKSampleType> { get }
     
     
-    /// The ``HealthKitDataSourceDescription/dataSources(healthStore:standard:adapter:)`` method creates ``HealthKitDataSource`` swhen the HealthKit component is instantiated.
+    /// The ``HealthKitDataSourceDescription/dataSources(healthStore:standard:)`` method creates ``HealthKitDataSource`` swhen the HealthKit component is instantiated.
     /// - Parameters:
     ///   - healthStore: The `HKHealthStore` instance that the queries should be performed on.
     ///   - standard: The `Standard` instance that is used in the software system.
-    ///   - adapter: An adapter that can adapt HealthKit data to the corresponding data standard.
-    func dataSources<S: Standard>(healthStore: HKHealthStore, standard: S, adapter: HealthKit<S>.HKSampleAdapter) -> [HealthKitDataSource]
+    func dataSources(healthStore: HKHealthStore, standard: any HealthKitConstraint) -> [HealthKitDataSource]
 }

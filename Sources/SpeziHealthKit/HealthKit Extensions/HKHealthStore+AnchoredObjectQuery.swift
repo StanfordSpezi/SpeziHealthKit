@@ -16,32 +16,32 @@ extension HKSample: Identifiable {
     }
 }
 
-
 extension HKHealthStore {
+    // We disable the SwiftLint as we order the parameters in a logical order and
+    // therefore don't put the predicate at the end here.
+    // swiftlint:disable function_default_parameter_at_end
     func anchoredSingleObjectQuery(
         for sampleType: HKSampleType,
         using anchor: HKQueryAnchor? = nil,
-        withPredicate predicate: NSPredicate? = nil
-    ) async throws -> (elements: [DataChange<HKSample, HKSampleRemovalContext>], anchor: HKQueryAnchor) {
+        withPredicate predicate: NSPredicate? = nil,
+        standard: any HealthKitConstraint
+    ) async throws -> (HKQueryAnchor) {
         try await self.requestAuthorization(toShare: [], read: [sampleType])
-        
+
         let anchorDescriptor = anchorDescriptor(sampleType: sampleType, predicate: predicate, anchor: anchor)
-        
         let result = try await anchorDescriptor.result(for: self)
-        
-        var elements: [DataChange<HKSample, HKSampleRemovalContext>] = []
-        elements.reserveCapacity(result.deletedObjects.count + result.addedSamples.count)
-        
+
         for deletedObject in result.deletedObjects {
-            elements.append(.removal(HKSampleRemovalContext(id: deletedObject.uuid, sampleType: sampleType)))
+            await standard.remove(sample: deletedObject)
         }
-        
+
         for addedSample in result.addedSamples {
-            elements.append(.addition(addedSample))
+            await standard.add(sample: addedSample)
         }
-        
-        return (elements, result.newAnchor)
+
+        return (result.newAnchor)
     }
+    // swiftlint:enable function_default_parameter_at_end
     
     
     func anchorDescriptor(

@@ -34,19 +34,17 @@ public struct CollectSamples: HealthKitDataSourceDescription {
     }
     
     
-    public func dataSources<S: Standard>(
+    public func dataSources(
         healthStore: HKHealthStore,
-        standard: S,
-        adapter: HealthKit<S>.HKSampleAdapter
+        standard: any HealthKitConstraint
     ) -> [any HealthKitDataSource] {
         sampleTypes.map { sampleType in
-            HealthKitSampleDataSource<S>(
+            HealthKitSampleDataSource(
                 healthStore: healthStore,
                 standard: standard,
                 sampleType: sampleType,
                 predicate: predicate,
-                deliverySetting: deliverySetting,
-                adapter: adapter
+                deliverySetting: deliverySetting
             )
         }
     }

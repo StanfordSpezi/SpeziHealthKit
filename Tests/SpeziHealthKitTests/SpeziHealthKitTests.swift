@@ -17,13 +17,11 @@ final class SpeziHealthKitTests: XCTestCase {
         HKQuantityType(.distanceWalkingRunning)
     ]
     
-    let healthKitComponent: HealthKit<TestAppStandard> = HealthKit {
+    let healthKitComponent = HealthKit {
         CollectSamples(
             collectedSamples,
             deliverySetting: .anchorQuery(.afterAuthorizationAndApplicationWillLaunch)
         )
-    } adapter: {
-        MockAdapterActor()
     }
     
     override func tearDown() {

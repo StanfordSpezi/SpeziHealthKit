@@ -7,19 +7,18 @@
 //
 
 import HealthKit
+import OSLog
 import Spezi
 import SwiftUI
 
 
-final class HealthKitSampleDataSource<ComponentStandard: Standard>: HealthKitDataSource {
+final class HealthKitSampleDataSource: HealthKitDataSource {
     let healthStore: HKHealthStore
-    let standard: ComponentStandard
+    let standard: any HealthKitConstraint
     
     let sampleType: HKSampleType
     let predicate: NSPredicate?
     let deliverySetting: HealthKitDeliverySetting
-    let adapter: HealthKit<ComponentStandard>.HKSampleAdapter
-    
     var active = false
     
     private lazy var anchorUserDefaultsKey = UserDefaults.Keys.healthKitAnchorPrefix.appending(sampleType.identifier)
@@ -29,24 +28,24 @@ final class HealthKitSampleDataSource<ComponentStandard: Standard>: HealthKitDat
         }
     }
     
-    
-    required init( // swiftlint:disable:this function_default_parameter_at_end
+    // We disable the SwiftLint as we order the parameters in a logical order and
+    // therefore don't put the predicate at the end here.
+    // swiftlint:disable function_default_parameter_at_end
+    required init(
         healthStore: HKHealthStore,
-        standard: ComponentStandard,
+        standard: any HealthKitConstraint,
         sampleType: HKSampleType,
-        predicate: NSPredicate? = nil, // We order the parameters in a logical order and therefore don't put the predicate at the end here.
-        deliverySetting: HealthKitDeliverySetting,
-        adapter: HealthKit<ComponentStandard>.HKSampleAdapter
+        predicate: NSPredicate? = nil,
+        deliverySetting: HealthKitDeliverySetting
     ) {
         self.healthStore = healthStore
         self.standard = standard
         self.sampleType = sampleType
         self.deliverySetting = deliverySetting
-        self.adapter = adapter
         
         if predicate == nil {
             self.predicate = HKQuery.predicateForSamples(
-                withStart: HealthKitSampleDataSource<ComponentStandard>.loadDefaultQueryDate(for: sampleType),
+                withStart: HealthKitSampleDataSource.loadDefaultQueryDate(for: sampleType),
                 end: nil,
                 options: .strictEndDate
             )
@@ -54,6 +53,7 @@ final class HealthKitSampleDataSource<ComponentStandard: Standard>: HealthKitDat
             self.predicate = predicate
         }
     }
+    // swiftlint:enable function_default_parameter_at_end
     
     
     private static func loadDefaultQueryDate(for sampleType: HKSampleType) -> Date {
@@ -105,69 +105,57 @@ final class HealthKitSampleDataSource<ComponentStandard: Standard>: HealthKitDat
             return
         }
         
-        switch deliverySetting {
-        case .manual:
-            await standard.registerDataSource(adapter.transform(anchoredSingleObjectQuery()))
-        case .anchorQuery:
-            active = true
-            await standard.registerDataSource(adapter.transform(anchoredContinousObjectQuery()))
-        case .background:
-            active = true
-            let healthKitSamples = healthStore.startObservation(for: [sampleType], withPredicate: predicate)
-                .flatMap { _ in
+        do {
+            switch deliverySetting {
+            case .manual:
+                anchoredSingleObjectQuery()
+            case .anchorQuery:
+                active = true
+                try await anchoredContinousObjectQuery()
+            case .background:
+                active = true
+                for try await _ in healthStore.startObservation(for: [sampleType], withPredicate: predicate) {
                     self.anchoredSingleObjectQuery()
                 }
-            await standard.registerDataSource(adapter.transform(healthKitSamples))
+            }
+        } catch {
+            Logger.healthKit.error("\(error.localizedDescription)")
         }
     }
     
     
-    private func anchoredSingleObjectQuery() -> AsyncThrowingStream<DataChange<HKSample, HKSampleRemovalContext>, Error> {
-        AsyncThrowingStream { continuation in
-            Task {
-                let results = try await healthStore.anchoredSingleObjectQuery(
-                    for: self.sampleType,
-                    using: self.anchor,
-                    withPredicate: predicate
-                )
-                self.anchor = results.anchor
-                for result in results.elements {
-                    continuation.yield(result)
-                }
-                continuation.finish()
-            }
+    private func anchoredSingleObjectQuery() {
+        Task {
+            let resultsAnchor = try await healthStore.anchoredSingleObjectQuery(
+                for: self.sampleType,
+                using: self.anchor,
+                withPredicate: predicate,
+                standard: self.standard
+            )
+            self.anchor = resultsAnchor
         }
     }
     
-    private func anchoredContinousObjectQuery() async -> any TypedAsyncSequence<DataChange<HKSample, HKSampleRemovalContext>> {
-        AsyncThrowingStream { continuation in
-            Task {
-                try await healthStore.requestAuthorization(toShare: [], read: [sampleType])
-                
-                let anchorDescriptor = healthStore.anchorDescriptor(sampleType: sampleType, predicate: predicate, anchor: anchor)
-                
-                let updateQueue = anchorDescriptor.results(for: healthStore)
-                
-                do {
-                    for try await results in updateQueue {
-                        if Task.isCancelled {
-                            continuation.finish()
-                            return
-                        }
-                        
-                        for deletedObject in results.deletedObjects {
-                            continuation.yield(.removal(HKSampleRemovalContext(id: deletedObject.uuid, sampleType: sampleType)))
-                        }
-                        
-                        for addedSample in results.addedSamples {
-                            continuation.yield(.addition(addedSample))
-                        }
-                        self.anchor = results.newAnchor
-                    }
-                } catch {
-                    continuation.finish(throwing: error)
-                }
+    private func anchoredContinousObjectQuery() async throws {
+        try await healthStore.requestAuthorization(toShare: [], read: [sampleType])
+        
+        let anchorDescriptor = healthStore.anchorDescriptor(sampleType: sampleType, predicate: predicate, anchor: anchor)
+        
+        let updateQueue = anchorDescriptor.results(for: healthStore)
+        
+        for try await results in updateQueue {
+            if Task.isCancelled {
+                return
             }
+            
+            for deletedObject in results.deletedObjects {
+                await standard.remove(sample: deletedObject)
+            }
+            
+            for addedSample in results.addedSamples {
+                await standard.add(sample: addedSample)
+            }
+            self.anchor = results.newAnchor
         }
     }
     

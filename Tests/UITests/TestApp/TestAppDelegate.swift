@@ -14,8 +14,8 @@ import XCTSpezi
 
 class TestAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
-        Configuration(standard: TestAppStandard()) {
-            HealthKit<TestAppStandard> {
+        Configuration(standard: ExampleStandard()) {
+            HealthKit {
                 CollectSample(
                     HKQuantityType.electrocardiogramType(),
                     deliverySetting: .background(.manual)
@@ -36,8 +36,6 @@ class TestAppDelegate: SpeziAppDelegate {
                     HKQuantityType(.restingHeartRate),
                     deliverySetting: .manual()
                 )
-            } adapter: {
-                TestAppHealthKitAdapter()
             }
         }
     }
