@@ -11,7 +11,7 @@ import Spezi
 import SpeziHealthKit
 
 
-/// an example Standard used for the configuration.
+/// An example Standard used for the configuration.
 actor ExampleStandard: Standard, ObservableObject, ObservableObjectProvider {
     @Published @MainActor var addedResponses = [HKSample]()
 }
