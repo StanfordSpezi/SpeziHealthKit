@@ -6,11 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
-import Combine
-import HealthKit
 import SpeziHealthKit
 import SwiftUI
-import XCTSpezi
 
 
 struct HealthKitTestsView: View {
@@ -22,8 +19,7 @@ struct HealthKitTestsView: View {
         Button("Ask for authorization") {
             askForAuthorization()
         }
-        .disabled(healthKitComponent.authorized)
-        
+            .disabled(healthKitComponent.authorized)
         Button("Trigger data source collection") {
             triggerDataSourceCollection()
         }

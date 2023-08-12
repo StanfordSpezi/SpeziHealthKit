@@ -16,6 +16,7 @@ actor ExampleStandard: Standard, ObservableObject, ObservableObjectProvider {
     @Published @MainActor var addedResponses = [HKSample]()
 }
 
+
 extension ExampleStandard: HealthKitConstraint {
     func add(sample: HKSample) async {
         _Concurrency.Task { @MainActor in

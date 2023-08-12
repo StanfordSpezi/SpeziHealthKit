@@ -6,10 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
-@preconcurrency import HealthKit
 import Spezi
 import SpeziHealthKit
-import XCTSpezi
 
 
 class TestAppDelegate: SpeziAppDelegate {
