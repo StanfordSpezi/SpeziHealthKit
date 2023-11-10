@@ -10,7 +10,7 @@ import HealthKit
 import Spezi
 
 
-/// Collects `HKSampleType`s  in the ``HealthKit`` component.
+/// Collects `HKSampleType`s  in the ``HealthKit`` module.
 public struct CollectSamples: HealthKitDataSourceDescription {
     public let sampleTypes: Set<HKSampleType>
     let predicate: NSPredicate?
@@ -18,7 +18,7 @@ public struct CollectSamples: HealthKitDataSourceDescription {
     
     
     /// - Parameters:
-    ///   - sampleType: The set of `HKSampleType`s that should be collected
+    ///   - sampleTypes: The set of `HKSampleType`s that should be collected
     ///   - predicate: A custom predicate that should be passed to the HealthKit query.
     ///                The default predicate collects all samples that have been collected from the first time that the user
     ///                provided the application authorization to collect the samples.

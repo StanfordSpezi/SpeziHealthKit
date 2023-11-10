@@ -10,7 +10,7 @@ import HealthKit
 import Spezi
 
 
-/// Collects a specificied `HKSampleType`  in the ``HealthKit`` component.
+/// Collects a specified `HKSampleType`  in the ``HealthKit`` module.
 public struct CollectSample: HealthKitDataSourceDescription {
     private let collectSamples: CollectSamples
     

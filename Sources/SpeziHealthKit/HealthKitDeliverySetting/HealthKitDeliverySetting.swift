@@ -7,7 +7,7 @@
 //
 
 
-/// Determines the data delivery settings for any ``HealthKitDataSource`` used in the HealthKit component.
+/// Determines the data delivery settings for any ``HealthKitDataSource`` used in the HealthKit module.
 public enum HealthKitDeliverySetting: Equatable {
     /// The HealthKit data is manually collected when the ``HealthKit/triggerDataSourceCollection()`` function is called.
     case manual(safeAnchor: Bool = true)

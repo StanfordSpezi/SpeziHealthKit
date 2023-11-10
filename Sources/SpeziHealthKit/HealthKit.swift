@@ -30,7 +30,7 @@ import SwiftUI
 /// ```
 ///
 /// Use the ``HealthKit/init(_:)`` initializer to define different ``HealthKitDataSourceDescription``s to define the data collection.
-/// You can, e.g., use ``CollectSample`` to collect a wide variaty of `HKSampleTypes`:
+/// You can, e.g., use ``CollectSample`` to collect a wide variety of `HKSampleTypes`:
 /// ```swift
 /// class ExampleAppDelegate: SpeziAppDelegate {
 ///     override var configuration: Configuration {
@@ -103,9 +103,9 @@ public final class HealthKit: Module, LifecycleHandler, EnvironmentAccessible {
     
     /// Creates a new instance of the ``HealthKit`` module.
     /// - Parameters:
-    ///   - healthKitDataSourceDescriptions: The ``HealthKitDataSourceDescription``s define what data is collected by the ``HealthKit`` module. You can, e.g., use ``CollectSample`` to collect a wide variaty of `HKSampleTypes`.
+    ///   - healthKitDataSourceDescriptions: The ``HealthKitDataSourceDescription``s define what data is collected by the ``HealthKit`` module. You can, e.g., use ``CollectSample`` to collect a wide variety of `HKSampleTypes`.
     public init(
-        @HealthKitDataSourceDescriptionBuilder _ healthKitDataSourceDescriptions: () -> ([HealthKitDataSourceDescription])
+        @HealthKitDataSourceDescriptionBuilder _ healthKitDataSourceDescriptions: () -> [HealthKitDataSourceDescription]
     ) {
         precondition(
             HKHealthStore.isHealthDataAvailable(),

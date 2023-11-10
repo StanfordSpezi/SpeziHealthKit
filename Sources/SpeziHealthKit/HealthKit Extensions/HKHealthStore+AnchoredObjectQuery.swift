@@ -25,7 +25,7 @@ extension HKHealthStore {
         using anchor: HKQueryAnchor? = nil,
         withPredicate predicate: NSPredicate? = nil,
         standard: any HealthKitConstraint
-    ) async throws -> (HKQueryAnchor) {
+    ) async throws -> HKQueryAnchor {
         try await self.requestAuthorization(toShare: [], read: [sampleType])
 
         let anchorDescriptor = anchorDescriptor(sampleType: sampleType, predicate: predicate, anchor: anchor)
