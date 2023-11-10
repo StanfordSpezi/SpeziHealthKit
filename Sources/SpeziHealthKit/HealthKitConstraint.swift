@@ -28,11 +28,11 @@ import Spezi
 /// ```
 ///
 public protocol HealthKitConstraint: Standard {
-    /// Notifies the ``Standard`` about the addition of a HealthKit ``HKSample`` sample instance.
+    /// Notifies the `Standard` about the addition of a HealthKit ``HKSample`` sample instance.
     /// - Parameter sample: The `HKSample` that should be added.
     func add(sample: HKSample) async
     
-    /// Notifies the ``Standard`` about the removal of a HealthKit sample as defined by the `HKDeletedObject`.
+    /// Notifies the `Standard` about the removal of a HealthKit sample as defined by the `HKDeletedObject`.
     /// - Parameter sample: The `HKDeletedObject` is a sample that should be removed.
     func remove(sample: HKDeletedObject) async
 }

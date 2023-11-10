@@ -11,9 +11,9 @@ import SwiftUI
 
 
 struct HealthKitTestsView: View {
-    @EnvironmentObject var healthKitComponent: HealthKit
-    @EnvironmentObject var standard: ExampleStandard
-    
+    @Environment(HealthKit.self) var healthKitComponent
+    @Environment(ExampleStandard.self) var standard
+
     
     var body: some View {
         Button("Ask for authorization") {
@@ -30,13 +30,14 @@ struct HealthKitTestsView: View {
         }
     }
     
-    
+    @MainActor
     private func askForAuthorization() {
         Task {
             try await healthKitComponent.askForAuthorization()
         }
     }
     
+    @MainActor
     private func triggerDataSourceCollection() {
         Task {
             await healthKitComponent.triggerDataSourceCollection()
