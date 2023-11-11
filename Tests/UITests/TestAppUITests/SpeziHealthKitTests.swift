@@ -115,7 +115,7 @@ final class HealthKitTests: XCTestCase {
             ]
         )
         
-        // Relaunch App to test delivery after the app has been terminted.
+        // Relaunch App to test delivery after the app has been terminated.
         app.terminate()
         app.activate()
         XCTAssert(app.wait(for: .runningForeground, timeout: 10.0))

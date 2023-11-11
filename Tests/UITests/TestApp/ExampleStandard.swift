@@ -10,10 +10,22 @@
 import Spezi
 import SpeziHealthKit
 
+@Observable
+private class ResponseList {
+    var addedResponses = [HKSample]()
+}
 
 /// An example Standard used for the configuration.
-actor ExampleStandard: Standard, ObservableObject, ObservableObjectProvider {
-    @Published @MainActor var addedResponses = [HKSample]()
+actor ExampleStandard: Standard, EnvironmentAccessible {
+    @MainActor private var responseList = ResponseList()
+    @MainActor var addedResponses: [HKSample] {
+        _read {
+            yield responseList.addedResponses
+        }
+        _modify {
+            yield &responseList.addedResponses
+        }
+    }
 }
 
 

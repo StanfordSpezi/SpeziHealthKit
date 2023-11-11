@@ -30,7 +30,7 @@ import SwiftUI
 /// ```
 ///
 /// Use the ``HealthKit/init(_:)`` initializer to define different ``HealthKitDataSourceDescription``s to define the data collection.
-/// You can, e.g., use ``CollectSample`` to collect a wide variaty of `HKSampleTypes`:
+/// You can, e.g., use ``CollectSample`` to collect a wide variety of `HKSampleTypes`:
 /// ```swift
 /// class ExampleAppDelegate: SpeziAppDelegate {
 ///     override var configuration: Configuration {
@@ -63,11 +63,12 @@ import SwiftUI
 ///     }
 /// }
 /// ```
-public final class HealthKit: Module {
-    @StandardActor var standard: any HealthKitConstraint
+@Observable
+public final class HealthKit: Module, LifecycleHandler, EnvironmentAccessible {
+    @ObservationIgnored @StandardActor var standard: any HealthKitConstraint
     let healthStore: HKHealthStore
     let healthKitDataSourceDescriptions: [HealthKitDataSourceDescription]
-    lazy var healthKitComponents: [any HealthKitDataSource] = {
+    @ObservationIgnored lazy var healthKitComponents: [any HealthKitDataSource] = {
         healthKitDataSourceDescriptions
             .flatMap { $0.dataSources(healthStore: healthStore, standard: standard) }
     }()
@@ -81,20 +82,30 @@ public final class HealthKit: Module {
     private var healthKitSampleTypesIdentifiers: Set<String> {
         Set(healthKitSampleTypes.map(\.identifier))
     }
+
+    private var alreadyRequestedSampleTypes: Set<String> {
+        get {
+            access(keyPath: \.alreadyRequestedSampleTypes)
+            return Set(UserDefaults.standard.stringArray(forKey: UserDefaults.Keys.healthKitRequestedSampleTypes) ?? [])
+        }
+        set {
+            withMutation(keyPath: \.alreadyRequestedSampleTypes) {
+                UserDefaults.standard.set(Array(newValue), forKey: UserDefaults.Keys.healthKitRequestedSampleTypes)
+            }
+        }
+    }
     
     /// Indicates whether the necessary authorizations to collect all HealthKit data defined by the ``HealthKitDataSourceDescription``s are already granted.
     public var authorized: Bool {
-        let alreadyRequestedSampleTypes = Set(UserDefaults.standard.stringArray(forKey: UserDefaults.Keys.healthKitRequestedSampleTypes) ?? [])
-
-        return healthKitSampleTypesIdentifiers.isSubset(of: alreadyRequestedSampleTypes)
+        healthKitSampleTypesIdentifiers.isSubset(of: alreadyRequestedSampleTypes)
     }
 
     
     /// Creates a new instance of the ``HealthKit`` module.
     /// - Parameters:
-    ///   - healthKitDataSourceDescriptions: The ``HealthKitDataSourceDescription``s define what data is collected by the ``HealthKit`` module. You can, e.g., use ``CollectSample`` to collect a wide variaty of `HKSampleTypes`.
+    ///   - healthKitDataSourceDescriptions: The ``HealthKitDataSourceDescription``s define what data is collected by the ``HealthKit`` module. You can, e.g., use ``CollectSample`` to collect a wide variety of `HKSampleTypes`.
     public init(
-        @HealthKitDataSourceDescriptionBuilder _ healthKitDataSourceDescriptions: () -> ([HealthKitDataSourceDescription])
+        @HealthKitDataSourceDescriptionBuilder _ healthKitDataSourceDescriptions: () -> [HealthKitDataSourceDescription]
     ) {
         precondition(
             HKHealthStore.isHealthDataAvailable(),
@@ -125,16 +136,12 @@ public final class HealthKit: Module {
         }
         
         try await healthStore.requestAuthorization(toShare: [], read: healthKitSampleTypes)
-        
-        UserDefaults.standard.set(Array(healthKitSampleTypesIdentifiers), forKey: UserDefaults.Keys.healthKitRequestedSampleTypes)
+
+        alreadyRequestedSampleTypes = healthKitSampleTypesIdentifiers
         
         for healthKitComponent in healthKitComponents {
+            // reads the above userDefault!
             healthKitComponent.askedForAuthorization()
-        }
-        
-        // Triggers an update of the UI in case the HealthKit authorizations are changed
-        Task { @MainActor in
-            self.objectWillChange.send()
         }
     }
     

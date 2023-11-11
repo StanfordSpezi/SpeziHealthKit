@@ -12,7 +12,6 @@
 		2F85826E29E776690021D637 /* SpeziHealthKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F85826D29E776690021D637 /* SpeziHealthKitTests.swift */; };
 		2F85827129E776780021D637 /* HealthKitTestsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F85827029E776780021D637 /* HealthKitTestsView.swift */; };
 		2F85827329E776AC0021D637 /* TestAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F85827229E776AC0021D637 /* TestAppDelegate.swift */; };
-		2F85827629E776D10021D637 /* Spezi in Frameworks */ = {isa = PBXBuildFile; productRef = 2F85827529E776D10021D637 /* Spezi */; };
 		2F85827F29E7782C0021D637 /* XCTestExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 2F85827E29E7782C0021D637 /* XCTestExtensions */; };
 		2FA7382C290ADFAA007ACEB9 /* TestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA7382B290ADFAA007ACEB9 /* TestApp.swift */; };
 		390F29612A785A98000A236E /* ExampleStandard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 390F29602A785A98000A236E /* ExampleStandard.swift */; };
@@ -49,7 +48,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				2F61BDC329DD02D600D71D33 /* SpeziHealthKit in Frameworks */,
-				2F85827629E776D10021D637 /* Spezi in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -133,7 +131,6 @@
 			name = TestApp;
 			packageProductDependencies = (
 				2F61BDC229DD02D600D71D33 /* SpeziHealthKit */,
-				2F85827529E776D10021D637 /* Spezi */,
 			);
 			productName = Example;
 			productReference = 2F6D139228F5F384007C25D6 /* TestApp.app */;
@@ -190,7 +187,6 @@
 			);
 			mainGroup = 2F6D138928F5F384007C25D6;
 			packageReferences = (
-				2F85827429E776D10021D637 /* XCRemoteSwiftPackageReference "Spezi" */,
 				2F85827B29E778110021D637 /* XCRemoteSwiftPackageReference "XCTestExtensions" */,
 				97B0290E2A5710C800946EF8 /* XCRemoteSwiftPackageReference "XCTHealthKit" */,
 			);
@@ -225,6 +221,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		390F295F2A78596E000A236E /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -323,7 +320,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -377,7 +374,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -545,7 +542,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -645,14 +642,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		2F85827429E776D10021D637 /* XCRemoteSwiftPackageReference "Spezi" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/StanfordSpezi/Spezi.git";
-			requirement = {
-				kind = upToNextMinorVersion;
-				minimumVersion = 0.7.0;
-			};
-		};
 		2F85827B29E778110021D637 /* XCRemoteSwiftPackageReference "XCTestExtensions" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/StanfordSpezi/XCTestExtensions";
@@ -675,11 +664,6 @@
 		2F61BDC229DD02D600D71D33 /* SpeziHealthKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SpeziHealthKit;
-		};
-		2F85827529E776D10021D637 /* Spezi */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 2F85827429E776D10021D637 /* XCRemoteSwiftPackageReference "Spezi" */;
-			productName = Spezi;
 		};
 		2F85827E29E7782C0021D637 /* XCTestExtensions */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -17,7 +17,7 @@ final class SpeziHealthKitTests: XCTestCase {
         HKQuantityType(.distanceWalkingRunning)
     ]
     
-    let healthKitComponent = HealthKit {
+    let healthKitModule = HealthKit {
         CollectSamples(
             collectedSamples,
             deliverySetting: .anchorQuery(.afterAuthorizationAndApplicationWillLaunch)
@@ -31,7 +31,7 @@ final class SpeziHealthKitTests: XCTestCase {
     
     /// No authorizations for HealthKit data are given in the ``UserDefaults``
     func testSpeziHealthKitCollectionNotAuthorized1() {
-        XCTAssert(!healthKitComponent.authorized)
+        XCTAssert(!healthKitModule.authorized)
     }
     
     /// Not enough authorizations for HealthKit data given in the ``UserDefaults``
@@ -42,7 +42,7 @@ final class SpeziHealthKitTests: XCTestCase {
             forKey: UserDefaults.Keys.healthKitRequestedSampleTypes
         )
         
-        XCTAssert(!healthKitComponent.authorized)
+        XCTAssert(!healthKitModule.authorized)
     }
     
     /// Authorization for HealthKit data are given in the ``UserDefaults``
@@ -53,6 +53,6 @@ final class SpeziHealthKitTests: XCTestCase {
             forKey: UserDefaults.Keys.healthKitRequestedSampleTypes
         )
         
-        XCTAssert(healthKitComponent.authorized)
+        XCTAssert(healthKitModule.authorized)
     }
 }

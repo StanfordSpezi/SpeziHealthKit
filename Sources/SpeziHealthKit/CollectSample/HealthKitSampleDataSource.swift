@@ -111,7 +111,7 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
                 anchoredSingleObjectQuery()
             case .anchorQuery:
                 active = true
-                try await anchoredContinousObjectQuery()
+                try await anchoredContinuousObjectQuery()
             case .background:
                 active = true
                 for try await _ in healthStore.startObservation(for: [sampleType], withPredicate: predicate) {
@@ -136,7 +136,7 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
         }
     }
     
-    private func anchoredContinousObjectQuery() async throws {
+    private func anchoredContinuousObjectQuery() async throws {
         try await healthStore.requestAuthorization(toShare: [], read: [sampleType])
         
         let anchorDescriptor = healthStore.anchorDescriptor(sampleType: sampleType, predicate: predicate, anchor: anchor)

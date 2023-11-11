@@ -16,7 +16,8 @@ public protocol HealthKitDataSourceDescription {
     var sampleTypes: Set<HKSampleType> { get }
     
     
-    /// The ``HealthKitDataSourceDescription/dataSources(healthStore:standard:)`` method creates ``HealthKitDataSource`` swhen the HealthKit component is instantiated.
+    /// The ``HealthKitDataSourceDescription/dataSources(healthStore:standard:)`` method creates ``HealthKitDataSource``
+    /// when the HealthKit module is instantiated.
     /// - Parameters:
     ///   - healthStore: The `HKHealthStore` instance that the queries should be performed on.
     ///   - standard: The `Standard` instance that is used in the software system.
