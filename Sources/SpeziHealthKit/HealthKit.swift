@@ -64,10 +64,10 @@ import SwiftUI
 /// }
 /// ```
 @Observable
-public final class HealthKit: Module, LifecycleHandler, EnvironmentAccessible {
+public final class HealthKit: Module, LifecycleHandler, EnvironmentAccessible, DefaultInitializable {
     @ObservationIgnored @StandardActor private var standard: any HealthKitConstraint
     private let healthStore: HKHealthStore
-    private var healthKitDataSourceDescriptions: [HealthKitDataSourceDescription]
+    private var healthKitDataSourceDescriptions: [HealthKitDataSourceDescription] = []
     @ObservationIgnored private lazy var healthKitComponents: [any HealthKitDataSource] = {
         healthKitDataSourceDescriptions
             .flatMap { $0.dataSources(healthStore: healthStore, standard: standard) }
@@ -104,9 +104,15 @@ public final class HealthKit: Module, LifecycleHandler, EnvironmentAccessible {
     /// Creates a new instance of the ``HealthKit`` module.
     /// - Parameters:
     ///   - healthKitDataSourceDescriptions: The ``HealthKitDataSourceDescription``s define what data is collected by the ``HealthKit`` module. You can, e.g., use ``CollectSample`` to collect a wide variety of `HKSampleTypes`.
-    public init(
+    public convenience init(
         @HealthKitDataSourceDescriptionBuilder _ healthKitDataSourceDescriptions: () -> [HealthKitDataSourceDescription]
     ) {
+        self.init()
+        
+        self.healthKitDataSourceDescriptions = healthKitDataSourceDescriptions()
+    }
+    
+    public init() {
         precondition(
             HKHealthStore.isHealthDataAvailable(),
             """
@@ -119,11 +125,7 @@ public final class HealthKit: Module, LifecycleHandler, EnvironmentAccessible {
             """
         )
         
-        let healthStore = HKHealthStore()
-        let healthKitDataSourceDescriptions = healthKitDataSourceDescriptions()
-        
-        self.healthKitDataSourceDescriptions = healthKitDataSourceDescriptions
-        self.healthStore = healthStore
+        self.healthStore = HKHealthStore()
     }
     
     
