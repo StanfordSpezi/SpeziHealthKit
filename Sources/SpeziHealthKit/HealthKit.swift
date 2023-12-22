@@ -65,10 +65,10 @@ import SwiftUI
 /// ```
 @Observable
 public final class HealthKit: Module, LifecycleHandler, EnvironmentAccessible {
-    @ObservationIgnored @StandardActor var standard: any HealthKitConstraint
-    let healthStore: HKHealthStore
-    let healthKitDataSourceDescriptions: [HealthKitDataSourceDescription]
-    @ObservationIgnored lazy var healthKitComponents: [any HealthKitDataSource] = {
+    @ObservationIgnored @StandardActor private var standard: any HealthKitConstraint
+    private let healthStore: HKHealthStore
+    private var healthKitDataSourceDescriptions: [HealthKitDataSourceDescription]
+    @ObservationIgnored private lazy var healthKitComponents: [any HealthKitDataSource] = {
         healthKitDataSourceDescriptions
             .flatMap { $0.dataSources(healthStore: healthStore, standard: standard) }
     }()
@@ -145,10 +145,25 @@ public final class HealthKit: Module, LifecycleHandler, EnvironmentAccessible {
         }
     }
     
+    public func execute(_ healthKitDataSourceDescription: HealthKitDataSourceDescription) {
+        healthKitDataSourceDescriptions.append(healthKitDataSourceDescription)
+        let dataSources = healthKitDataSourceDescription.dataSources(healthStore: healthStore, standard: standard)
+        for dataSource in dataSources {
+            dataSource.willFinishLaunchingWithOptions()
+        }
+    }
     
+    public func execute(@HealthKitDataSourceDescriptionBuilder _ healthKitDataSourceDescriptions: () -> [HealthKitDataSourceDescription]) {
+        for healthKitDataSourceDescription in healthKitDataSourceDescriptions() {
+            execute(healthKitDataSourceDescription)
+        }
+    }
+    
+    
+    @_documentation(visibility: internal)
     public func willFinishLaunchingWithOptions(_ application: UIApplication, launchOptions: [UIApplication.LaunchOptionsKey: Any]) {
         for healthKitComponent in healthKitComponents {
-            healthKitComponent.willFinishLaunchingWithOptions(application, launchOptions: launchOptions)
+            healthKitComponent.willFinishLaunchingWithOptions()
         }
     }
     
