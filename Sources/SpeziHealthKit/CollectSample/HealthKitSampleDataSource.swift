@@ -84,7 +84,7 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
         }
     }
     
-    func willFinishLaunchingWithOptions(_ application: UIApplication, launchOptions: [UIApplication.LaunchOptionsKey: Any]) {
+    func willFinishLaunchingWithOptions() {
         guard askedForAuthorization(for: sampleType) else {
             return
         }
