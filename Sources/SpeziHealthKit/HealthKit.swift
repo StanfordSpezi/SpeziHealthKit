@@ -11,12 +11,11 @@ import Spezi
 import SwiftUI
 
 
-/// The ``HealthKit`` module enables the collection of HealthKit data.
+/// The `HealthKit` module enables the collection of HealthKit data.
 ///
-/// Configuration for the ``SpeziHealthKit`` module.
+/// The `HealthKit` module simplifies access to HealthKit samples ranging from single, anchored, and background queries.
 ///
-/// Make sure that your standard in your Spezi Application conforms to the ``HealthKitConstraint``
-/// protocol to receive HealthKit data.
+/// Before you configure the ``HealthKit`` module, make sure your `Standard` in your Spezi Application conforms to the ``HealthKitConstraint`` protocol to receive HealthKit data.
 /// ```swift
 /// actor ExampleStandard: Standard, HealthKitConstraint {
 ///    func add(sample: HKSample) async {
@@ -28,8 +27,9 @@ import SwiftUI
 ///    }
 /// }
 /// ```
-///
-/// Use the ``HealthKit/init(_:)`` initializer to define different ``HealthKitDataSourceDescription``s to define the data collection.
+/// 
+/// Then, you can configure the ``HealthKit`` module in the configuration section of your `SpeziAppDelegate`.
+/// Provide ``HealthKitDataSourceDescription`` to define the data collection.
 /// You can, e.g., use ``CollectSample`` to collect a wide variety of `HKSampleTypes`:
 /// ```swift
 /// class ExampleAppDelegate: SpeziAppDelegate {
