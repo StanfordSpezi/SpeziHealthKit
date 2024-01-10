@@ -16,10 +16,74 @@ SPDX-License-Identifier: MIT
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FStanfordSpezi%2FSpeziHealthKit%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/StanfordSpezi/SpeziHealthKit)
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FStanfordSpezi%2FSpeziHealthKit%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/StanfordSpezi/SpeziHealthKit)
 
+Simplifies access to HealthKit samples ranging from single, anchored, and background queries.
+
+## Overview
+
 The Spezi HealthKit module simplifies access to HealthKit samples ranging from single, anchored, and background queries.
 
-For more information, please refer to the [API documentation](https://swiftpackageindex.com/StanfordSpezi/SpeziHealthKit/documentation).
+### Setup
 
+You need to add the Spezi HealthKit Swift package to
+[your app in Xcode](https://developer.apple.com/documentation/xcode/adding-package-dependencies-to-your-app) or
+[Swift package](https://developer.apple.com/documentation/xcode/creating-a-standalone-swift-package-with-xcode#Add-a-dependency-on-another-Swift-package).
+
+> Important: If your application is not yet configured to use Spezi, follow the
+[Spezi setup article](https://swiftpackageindex.com/stanfordspezi/spezi/documentation/spezi/initial-setup) and set up the core Spezi infrastructure.
+
+### Example
+
+Before you configure the ``HealthKit`` module, make sure your `Standard` in your Spezi Application conforms to the ``HealthKitConstraint`` protocol to receive HealthKit data.
+```swift
+actor ExampleStandard: Standard, HealthKitConstraint {
+    func add(sample: HKSample) async {
+        // ...
+    }
+
+    func remove(sample: HKDeletedObject) {
+        // ...
+    }
+}
+```
+
+
+Then, you can configure the ``HealthKit`` module in the configuration section of your `SpeziAppDelegate`.
+Provide ``HealthKitDataSourceDescription`` to define the data collection.
+You can, e.g., use ``CollectSample`` to collect a wide variety of `HKSampleTypes`:
+```swift
+class ExampleAppDelegate: SpeziAppDelegate {
+    override var configuration: Configuration {
+        Configuration(standard: ExampleStandard()) {
+            if HKHealthStore.isHealthDataAvailable() {
+                HealthKit {
+                    CollectSample(
+                        HKQuantityType.electrocardiogramType(),
+                        deliverySetting: .background(.manual)
+                    )
+                    CollectSample(
+                        HKQuantityType(.stepCount),
+                        deliverySetting: .background(.afterAuthorizationAndApplicationWillLaunch)
+                    )
+                    CollectSample(
+                        HKQuantityType(.pushCount),
+                        deliverySetting: .anchorQuery(.manual)
+                    )
+                    CollectSample(
+                        HKQuantityType(.activeEnergyBurned),
+                        deliverySetting: .anchorQuery(.afterAuthorizationAndApplicationWillLaunch)
+                    )
+                    CollectSample(
+                        HKQuantityType(.restingHeartRate),
+                        deliverySetting: .manual()
+                    )
+                }
+            }
+        }
+    }
+}
+```
+
+For more information, please refer to the [API documentation](https://swiftpackageindex.com/StanfordSpezi/SpeziHealthKit/documentation).
 
 ## The Spezi Template Application
 
