@@ -11,7 +11,8 @@ import Spezi
 
 
 extension HKHealthStore {
-    static var activeObservations: [HKObjectType: Int] = [:]
+    private static var activeObservations: [HKObjectType: Int] = [:]
+    private static let activeObservationsLock = NSLock()
     
     
     func startObservation(
@@ -48,9 +49,7 @@ extension HKHealthStore {
                 
                 continuation.onTermination = { @Sendable _ in
                     self.stop(observerQuery)
-                    Task {
-                        await self.disableBackgroundDelivery(for: sampleTypes)
-                    }
+                    self.disableBackgroundDelivery(for: sampleTypes)
                 }
             }
         }
@@ -68,28 +67,32 @@ extension HKHealthStore {
             for objectType in objectTypes {
                 try await self.enableBackgroundDelivery(for: objectType, frequency: frequency)
                 enabledObjectTypes.insert(objectType)
-                HKHealthStore.activeObservations[objectType] = HKHealthStore.activeObservations[objectType, default: 0] + 1
+                Self.activeObservationsLock.withLock {
+                    HKHealthStore.activeObservations[objectType] = HKHealthStore.activeObservations[objectType, default: 0] + 1
+                }
             }
         } catch {
             // Revert all changes as enable background delivery for the object types failed.
-            await disableBackgroundDelivery(for: enabledObjectTypes)
+            disableBackgroundDelivery(for: enabledObjectTypes)
         }
     }
     
     
     func disableBackgroundDelivery(
         for objectTypes: Set<HKObjectType>
-    ) async {
+    ) {
         for objectType in objectTypes {
-            if let activeObservation = HKHealthStore.activeObservations[objectType] {
-                let newActiveObservation = activeObservation - 1
-                if newActiveObservation <= 0 {
-                    HKHealthStore.activeObservations[objectType] = nil
-                    do {
-                        try await self.disableBackgroundDelivery(for: objectType)
-                    } catch {}
-                } else {
-                    HKHealthStore.activeObservations[objectType] = newActiveObservation
+            Self.activeObservationsLock.withLock {
+                if let activeObservation = HKHealthStore.activeObservations[objectType] {
+                    let newActiveObservation = activeObservation - 1
+                    if newActiveObservation <= 0 {
+                        HKHealthStore.activeObservations[objectType] = nil
+                        Task {
+                            try await self.disableBackgroundDelivery(for: objectType)
+                        }
+                    } else {
+                        HKHealthStore.activeObservations[objectType] = newActiveObservation
+                    }
                 }
             }
         }
