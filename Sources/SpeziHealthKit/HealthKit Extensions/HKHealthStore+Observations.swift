@@ -49,9 +49,7 @@ extension HKHealthStore {
                 
                 continuation.onTermination = { @Sendable _ in
                     self.stop(observerQuery)
-                    Task {
-                        await self.disableBackgroundDelivery(for: sampleTypes)
-                    }
+                    self.disableBackgroundDelivery(for: sampleTypes)
                 }
             }
         }
@@ -75,14 +73,14 @@ extension HKHealthStore {
             }
         } catch {
             // Revert all changes as enable background delivery for the object types failed.
-            await disableBackgroundDelivery(for: enabledObjectTypes)
+            disableBackgroundDelivery(for: enabledObjectTypes)
         }
     }
     
     
     func disableBackgroundDelivery(
         for objectTypes: Set<HKObjectType>
-    ) async {
+    ) {
         for objectType in objectTypes {
             Self.activeObservationsLock.withLock {
                 if let activeObservation = HKHealthStore.activeObservations[objectType] {
