@@ -14,13 +14,15 @@ import Spezi
 ///
 ///
 /// Make sure that your standard in your Spezi Application conforms to the ``HealthKitConstraint``
-/// protocol to receive HealthKit data.
+/// protocol to receive HealthKit data. The `add()` function is triggered once for every newly collected
+/// HealthKit sample, and the `remove()` function is triggered once for every deleted HealthKit sample.
 /// ```swift
 /// actor ExampleStandard: Standard, HealthKitConstraint {
+///    // Add the newly collected HKSample to your application.
 ///    func add(sample: HKSample) async {
 ///        ...
 ///    }
-///
+///    // Remove the deleted HKSample from your application.
 ///    func remove(sample: HKDeletedObject) {
 ///        ...
 ///    }

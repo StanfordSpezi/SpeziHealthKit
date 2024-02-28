@@ -11,6 +11,30 @@ import Spezi
 
 
 /// Collects a specified `HKSampleType`  in the ``HealthKit`` module.
+///
+/// This structure define what and how the HealthKit samples are collected. By default, all samples of the provided `HKSampleType` after you provide the application authorization to collect the samples will be collected when the ``HealthKit/triggerDataSourceCollection()`` function is called.
+///
+/// Your can filter and specify when to collect the HealthKit sample. You can, e.g. specify a time range by defining and providing your `predicate` and set the `deliverySetting` during initialization:
+/// ```swift
+/// private var predicateOneMonth: NSPredicate {
+///     let calendar = Calendar(identifier: .gregorian)
+///     let today = calendar.startOfDay(for: Date())
+///     guard let endDate = calendar.date(byAdding: .day, value: 1, to: today) else {
+///         fatalError("*** Unable to calculate the end time ***")
+///     }
+///     // Collect the data in the previous month.
+///     guard let startDate = calendar.date(byAdding: .month, value: -1, to: endDate) else {
+///         fatalError("*** Unable to calculate the start time ***")
+///     }
+///     return HKQuery.predicateForSamples(withStart: startDate, end: endDate)
+/// }
+/// ...
+/// CollectSample(
+///     HKQuantityType(.stepCount),
+///     predicate: predicateOneMonth,
+///     deliverySetting: .background(.afterAuthorizationAndApplicationWillLaunch)
+/// )
+/// ```
 public struct CollectSample: HealthKitDataSourceDescription {
     private let collectSamples: CollectSamples
     
