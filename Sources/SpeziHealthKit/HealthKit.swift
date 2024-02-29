@@ -15,8 +15,8 @@ import SwiftUI
 ///
 /// The `HealthKit` module simplifies access to HealthKit samples ranging from single, anchored, and background queries.
 ///
-/// Before you configure the ``HealthKit`` module, make sure your `Standard` in your Spezi Application conforms to the ``HealthKitConstraint`` protocol to receive HealthKit data.  The `add()` function is triggered once for every newly collected HealthKit sample, and the `remove()` function
-/// is triggered once for every deleted HealthKit sample.
+/// Before you configure the ``HealthKit`` module, make sure your `Standard` in your Spezi Application conforms to the ``HealthKitConstraint`` protocol to receive HealthKit data.
+/// The ``HealthKitConstraint/add(sample:)`` function is triggered once for every newly collected HealthKit sample, and the ``HealthKitConstraint/remove(sample:)`` function is triggered once for every deleted HealthKit sample.
 /// ```swift
 /// actor ExampleStandard: Standard, HealthKitConstraint {
 ///    // Add the newly collected HKSample to your application.
