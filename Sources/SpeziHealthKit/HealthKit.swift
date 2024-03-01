@@ -23,6 +23,7 @@ import SwiftUI
 ///    func add(sample: HKSample) async {
 ///        ...
 ///    }
+///  
 ///    // Remove the deleted HKSample from your application.
 ///    func remove(sample: HKDeletedObject) {
 ///        ...
