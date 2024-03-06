@@ -21,7 +21,7 @@ let package = Package(
         .library(name: "SpeziHealthKit", targets: ["SpeziHealthKit"])
     ],
     dependencies: [
-        .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.0.0")
+        .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.2.0")
     ],
     targets: [
         .target(

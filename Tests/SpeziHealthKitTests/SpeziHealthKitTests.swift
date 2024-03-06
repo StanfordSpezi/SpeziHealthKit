@@ -20,7 +20,7 @@ final class SpeziHealthKitTests: XCTestCase {
     let healthKitModule = HealthKit {
         CollectSamples(
             collectedSamples,
-            deliverySetting: .anchorQuery(.afterAuthorizationAndApplicationWillLaunch)
+            deliverySetting: .anchorQuery(.automatic)
         )
     }
     

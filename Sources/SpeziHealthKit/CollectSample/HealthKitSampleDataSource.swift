@@ -80,27 +80,27 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
         }
         
         Task {
-            await triggerDataSourceCollection()
+            await triggerManualDataSourceCollection()
         }
     }
     
-    func willFinishLaunchingWithOptions() {
+    func startAutomaticDataCollection() {
         guard askedForAuthorization(for: sampleType) else {
             return
         }
         
         switch deliverySetting {
-        case let .anchorQuery(startSetting, _) where startSetting == .afterAuthorizationAndApplicationWillLaunch,
-            let .background(startSetting, _) where startSetting == .afterAuthorizationAndApplicationWillLaunch:
+        case let .anchorQuery(startSetting, _) where startSetting == .automatic,
+            let .background(startSetting, _) where startSetting == .automatic:
             Task {
-                await triggerDataSourceCollection()
+                await triggerManualDataSourceCollection()
             }
         default:
             break
         }
     }
     
-    func triggerDataSourceCollection() async {
+    func triggerManualDataSourceCollection() async {
         guard !active else {
             return
         }
@@ -108,14 +108,15 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
         do {
             switch deliverySetting {
             case .manual:
-                anchoredSingleObjectQuery()
+                try await anchoredSingleObjectQuery()
             case .anchorQuery:
                 active = true
                 try await anchoredContinuousObjectQuery()
             case .background:
                 active = true
+                try await self.anchoredSingleObjectQuery()
                 for try await _ in healthStore.startObservation(for: [sampleType], withPredicate: predicate) {
-                    self.anchoredSingleObjectQuery()
+                    try await self.anchoredSingleObjectQuery()
                 }
             }
         } catch {
@@ -124,16 +125,14 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
     }
     
     
-    private func anchoredSingleObjectQuery() {
-        Task {
-            let resultsAnchor = try await healthStore.anchoredSingleObjectQuery(
-                for: self.sampleType,
-                using: self.anchor,
-                withPredicate: predicate,
-                standard: self.standard
-            )
-            self.anchor = resultsAnchor
-        }
+    private func anchoredSingleObjectQuery() async throws {
+        let resultsAnchor = try await healthStore.anchoredSingleObjectQuery(
+            for: self.sampleType,
+            using: self.anchor,
+            withPredicate: predicate,
+            standard: self.standard
+        )
+        self.anchor = resultsAnchor
     }
     
     private func anchoredContinuousObjectQuery() async throws {

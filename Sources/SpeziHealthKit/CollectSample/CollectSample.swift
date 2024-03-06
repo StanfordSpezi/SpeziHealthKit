@@ -40,7 +40,7 @@ import Spezi
 /// CollectSample(
 ///     HKQuantityType(.stepCount),
 ///     predicate: predicateOneMonth,
-///     deliverySetting: .background(.afterAuthorizationAndApplicationWillLaunch)
+///     deliverySetting: .background(.automatic)
 /// )
 /// ```
 public struct CollectSample: HealthKitDataSourceDescription {

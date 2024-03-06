@@ -58,7 +58,7 @@ class ExampleAppDelegate: SpeziAppDelegate {
                     )
                     CollectSample(
                         HKQuantityType(.stepCount),
-                        deliverySetting: .background(.afterAuthorizationAndApplicationWillLaunch)
+                        deliverySetting: .background(.automatic)
                     )
                     CollectSample(
                         HKQuantityType(.pushCount),
@@ -66,7 +66,7 @@ class ExampleAppDelegate: SpeziAppDelegate {
                     )
                     CollectSample(
                         HKQuantityType(.activeEnergyBurned),
-                        deliverySetting: .anchorQuery(.afterAuthorizationAndApplicationWillLaunch)
+                        deliverySetting: .anchorQuery(.automatic)
                     )
                     CollectSample(
                         HKQuantityType(.restingHeartRate),

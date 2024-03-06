@@ -13,6 +13,17 @@ public enum HealthKitDeliveryStartSetting: Equatable {
     case manual
     /// The delivery is started automatically after the user provided authorization and the application has launched.
     /// You can request authorization using the ``HealthKit/askForAuthorization()`` function.
-    case afterAuthorizationAndApplicationWillLaunch // swiftlint:disable:this identifier_name
+    case automatic
+    
+    
+    @available(
+        *,
+        deprecated,
+        message:
+        """
+        Please use `.automatic`.
+        """
+    )
+    public static let afterAuthorizationAndApplicationWillLaunch: HealthKitDeliveryStartSetting = .automatic // swiftlint:disable:this identifier_name
     // We use a name longer than 40 characters to indicate the full depth of this setting.
 }
