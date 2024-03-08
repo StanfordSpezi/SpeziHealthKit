@@ -13,10 +13,10 @@ public enum HealthKitDeliverySetting: Equatable {
     case manual(safeAnchor: Bool = true)
     /// The HealthKit data is collected based on the `HealthKitDeliveryStartSetting` and constantly listens to updates while the application is running.
     /// If `safeAnchor` is enabled the `HKQueryAnchor` is persisted across multiple application launches using the user defaults.
-    case anchorQuery(HealthKitDeliveryStartSetting = .afterAuthorizationAndApplicationWillLaunch, saveAnchor: Bool = true)
+    case anchorQuery(HealthKitDeliveryStartSetting = .automatic, saveAnchor: Bool = true)
     /// The HealthKit data is collected based on the `HealthKitDeliveryStartSetting` and constantly listens to updates even if the application is not running.
     /// If `safeAnchor` is enabled the `HKQueryAnchor` is persisted across multiple application launches using the user defaults.
-    case background(HealthKitDeliveryStartSetting = .afterAuthorizationAndApplicationWillLaunch, saveAnchor: Bool = true)
+    case background(HealthKitDeliveryStartSetting = .automatic, saveAnchor: Bool = true)
     
     
     var saveAnchor: Bool {

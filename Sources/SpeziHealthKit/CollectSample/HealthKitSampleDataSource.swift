@@ -80,27 +80,27 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
         }
         
         Task {
-            await triggerDataSourceCollection()
+            await triggerManualDataSourceCollection()
         }
     }
     
-    func willFinishLaunchingWithOptions() {
+    func startAutomaticDataCollection() {
         guard askedForAuthorization(for: sampleType) else {
             return
         }
         
         switch deliverySetting {
-        case let .anchorQuery(startSetting, _) where startSetting == .afterAuthorizationAndApplicationWillLaunch,
-            let .background(startSetting, _) where startSetting == .afterAuthorizationAndApplicationWillLaunch:
+        case let .anchorQuery(startSetting, _) where startSetting == .automatic,
+            let .background(startSetting, _) where startSetting == .automatic:
             Task {
-                await triggerDataSourceCollection()
+                await triggerManualDataSourceCollection()
             }
         default:
             break
         }
     }
     
-    func triggerDataSourceCollection() async {
+    func triggerManualDataSourceCollection() async {
         guard !active else {
             return
         }
@@ -108,32 +108,50 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
         do {
             switch deliverySetting {
             case .manual:
-                anchoredSingleObjectQuery()
+                try await anchoredSingleObjectQuery()
             case .anchorQuery:
                 active = true
                 try await anchoredContinuousObjectQuery()
             case .background:
                 active = true
-                for try await _ in healthStore.startObservation(for: [sampleType], withPredicate: predicate) {
-                    self.anchoredSingleObjectQuery()
+                try await healthStore.startBackgroundDelivery(for: [sampleType]) { result in
+                    Task {
+                        guard case let .success((sampleTypes, completionHandler)) = result else {
+                            return
+                        }
+                        
+                        guard sampleTypes.contains(self.sampleType) else {
+                            Logger.healthKit.warning("Recieved Observation query types (\(sampleTypes)) are not corresponding to the CollectSample type \(self.sampleType)")
+                            completionHandler()
+                            return
+                        }
+                        
+                        do {
+                            try await self.anchoredSingleObjectQuery()
+                            Logger.healthKit.debug("Successfully processed background update for \(self.sampleType)")
+                        } catch {
+                            Logger.healthKit.error("Could not query samples in a background update for \(self.sampleType): \(error)")
+                        }
+                        
+                        // Provide feedback to HealthKit that the data has been processed: https://developer.apple.com/documentation/healthkit/hkobserverquerycompletionhandler
+                        completionHandler()
+                    }
                 }
             }
         } catch {
-            Logger.healthKit.error("\(error.localizedDescription)")
+            Logger.healthKit.error("Could not Process HealthKit data collection: \(error.localizedDescription)")
         }
     }
     
     
-    private func anchoredSingleObjectQuery() {
-        Task {
-            let resultsAnchor = try await healthStore.anchoredSingleObjectQuery(
-                for: self.sampleType,
-                using: self.anchor,
-                withPredicate: predicate,
-                standard: self.standard
-            )
-            self.anchor = resultsAnchor
-        }
+    private func anchoredSingleObjectQuery() async throws {
+        let resultsAnchor = try await healthStore.anchoredSingleObjectQuery(
+            for: self.sampleType,
+            using: self.anchor,
+            withPredicate: predicate,
+            standard: self.standard
+        )
+        self.anchor = resultsAnchor
     }
     
     private func anchoredContinuousObjectQuery() async throws {
@@ -143,19 +161,21 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
         
         let updateQueue = anchorDescriptor.results(for: healthStore)
         
-        for try await results in updateQueue {
-            if Task.isCancelled {
-                return
+        Task {
+            for try await results in updateQueue {
+                if Task.isCancelled {
+                    return
+                }
+                
+                for deletedObject in results.deletedObjects {
+                    await standard.remove(sample: deletedObject)
+                }
+                
+                for addedSample in results.addedSamples {
+                    await standard.add(sample: addedSample)
+                }
+                self.anchor = results.newAnchor
             }
-            
-            for deletedObject in results.deletedObjects {
-                await standard.remove(sample: deletedObject)
-            }
-            
-            for addedSample in results.addedSamples {
-                await standard.add(sample: addedSample)
-            }
-            self.anchor = results.newAnchor
         }
     }
     

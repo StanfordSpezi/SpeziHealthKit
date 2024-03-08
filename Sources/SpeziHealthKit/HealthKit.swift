@@ -46,7 +46,7 @@ import SwiftUI
 ///                     )
 ///                     CollectSample(
 ///                         HKQuantityType(.stepCount),
-///                         deliverySetting: .background(.afterAuthorizationAndApplicationWillLaunch)
+///                         deliverySetting: .background(.automatic)
 ///                     )
 ///                     CollectSample(
 ///                         HKQuantityType(.pushCount),
@@ -54,7 +54,7 @@ import SwiftUI
 ///                     )
 ///                     CollectSample(
 ///                         HKQuantityType(.activeEnergyBurned),
-///                         deliverySetting: .anchorQuery(.afterAuthorizationAndApplicationWillLaunch)
+///                         deliverySetting: .anchorQuery(.automatic)
 ///                     )
 ///                     CollectSample(
 ///                         HKQuantityType(.restingHeartRate),
@@ -67,7 +67,7 @@ import SwiftUI
 /// }
 /// ```
 @Observable
-public final class HealthKit: Module, LifecycleHandler, EnvironmentAccessible, DefaultInitializable {
+public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializable {
     @ObservationIgnored @StandardActor private var standard: any HealthKitConstraint
     private let healthStore: HKHealthStore
     private var healthKitDataSourceDescriptions: [HealthKitDataSourceDescription] = []
@@ -132,6 +132,12 @@ public final class HealthKit: Module, LifecycleHandler, EnvironmentAccessible, D
     }
     
     
+    public func configure() {
+        for healthKitComponent in healthKitComponents {
+            healthKitComponent.startAutomaticDataCollection()
+        }
+    }
+    
     /// Displays the user interface to ask for authorization for all HealthKit data defined by the ``HealthKitDataSourceDescription``s.
     ///
     /// Call this function when you want to start HealthKit data collection.
@@ -154,7 +160,7 @@ public final class HealthKit: Module, LifecycleHandler, EnvironmentAccessible, D
         healthKitDataSourceDescriptions.append(healthKitDataSourceDescription)
         let dataSources = healthKitDataSourceDescription.dataSources(healthStore: healthStore, standard: standard)
         for dataSource in dataSources {
-            dataSource.willFinishLaunchingWithOptions()
+            dataSource.startAutomaticDataCollection()
         }
     }
     
@@ -164,21 +170,12 @@ public final class HealthKit: Module, LifecycleHandler, EnvironmentAccessible, D
         }
     }
     
-    
-    @_documentation(visibility: internal)
-    public func willFinishLaunchingWithOptions(_ application: UIApplication, launchOptions: [UIApplication.LaunchOptionsKey: Any]) {
-        for healthKitComponent in healthKitComponents {
-            healthKitComponent.willFinishLaunchingWithOptions()
-        }
-    }
-    
-    
     /// Triggers any ``HealthKitDeliverySetting/manual(safeAnchor:)`` collections and starts the collection for all ``HealthKitDeliveryStartSetting/manual`` HealthKit data collections.
     public func triggerDataSourceCollection() async {
         await withTaskGroup(of: Void.self) { group in
             for healthKitComponent in healthKitComponents {
                 group.addTask {
-                    await healthKitComponent.triggerDataSourceCollection()
+                    await healthKitComponent.triggerManualDataSourceCollection()
                 }
             }
             await group.waitForAll()

@@ -16,9 +16,9 @@ public protocol HealthKitDataSource {
     /// Called after the used was asked for authorization.
     func askedForAuthorization()
     /// Called to trigger the manual data collection.
-    func triggerDataSourceCollection() async
-    /// Called when the application finished launching with options.
-    func willFinishLaunchingWithOptions()
+    func triggerManualDataSourceCollection() async
+    /// Called to start the automatic data collection.
+    func startAutomaticDataCollection()
 }
 
 

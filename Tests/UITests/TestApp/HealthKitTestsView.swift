@@ -7,40 +7,38 @@
 //
 
 import SpeziHealthKit
+import SpeziViews
 import SwiftUI
 
 
 struct HealthKitTestsView: View {
     @Environment(HealthKit.self) var healthKitModule
-    @Environment(ExampleStandard.self) var standard
+    @Environment(HealthKitStore.self) var healthKitStore
 
     
     var body: some View {
-        Button("Ask for authorization") {
-            askForAuthorization()
-        }
-            .disabled(healthKitModule.authorized)
-        Button("Trigger data source collection") {
-            triggerDataSourceCollection()
-        }
-        HStack {
-            List(standard.addedResponses, id: \.self) { element in
-                Text(element.sampleType.identifier)
+        List {
+            AsyncButton("Ask for authorization") {
+                try? await healthKitModule.askForAuthorization()
             }
-        }
-    }
-    
-    @MainActor
-    private func askForAuthorization() {
-        Task {
-            try await healthKitModule.askForAuthorization()
-        }
-    }
-    
-    @MainActor
-    private func triggerDataSourceCollection() {
-        Task {
-            await healthKitModule.triggerDataSourceCollection()
+                .disabled(healthKitModule.authorized)
+            AsyncButton("Trigger data source collection") {
+                await healthKitModule.triggerDataSourceCollection()
+            }
+            Section("Collected Samples Since App Launch") {
+                ForEach(healthKitStore.samples, id: \.self) { element in
+                    Text(element.sampleType.identifier)
+                }
+            }
+            if !HealthKitStore.collectedSamplesOnly {
+                Section("Background Persistance Log") {
+                    ForEach(healthKitStore.backgroundPersistance, id: \.self) { element in
+                        Text(element)
+                            .multilineTextAlignment(.leading)
+                            .lineLimit(10)
+                    }
+                }
+            }
         }
     }
 }

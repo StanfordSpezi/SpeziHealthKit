@@ -12,25 +12,25 @@ import SpeziHealthKit
 
 class TestAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
-        Configuration(standard: ExampleStandard()) {
+        Configuration(standard: HealthKitTestAppStandard()) {
             HealthKit {
-                CollectSample(
+                CollectSample( //
                     HKQuantityType.electrocardiogramType(),
                     deliverySetting: .background(.manual)
                 )
-                CollectSample(
+                CollectSample( //
                     HKQuantityType(.stepCount),
-                    deliverySetting: .background(.afterAuthorizationAndApplicationWillLaunch)
+                    deliverySetting: .background(.automatic)
                 )
                 CollectSample(
                     HKQuantityType(.pushCount),
                     deliverySetting: .anchorQuery(.manual)
                 )
-                CollectSample(
+                CollectSample( //
                     HKQuantityType(.activeEnergyBurned),
-                    deliverySetting: .anchorQuery(.afterAuthorizationAndApplicationWillLaunch)
+                    deliverySetting: .anchorQuery(.automatic)
                 )
-                CollectSample(
+                CollectSample( //
                     HKQuantityType(.restingHeartRate),
                     deliverySetting: .manual()
                 )

@@ -14,6 +14,7 @@ import XCTHealthKit
 final class HealthKitTests: XCTestCase {
     func testHealthKit() throws { // swiftlint:disable:this function_body_length
         let app = XCUIApplication()
+        app.launchArguments = ["--collectedSamplesOnly"]
         app.deleteAndLaunch(withSpringboardAppName: "TestApp")
         
         try exitAppAndOpenHealth(.electrocardiograms)
@@ -33,6 +34,7 @@ final class HealthKitTests: XCTestCase {
             ]
         )
         
+        XCTAssert(app.buttons["Trigger data source collection"].waitForExistence(timeout: 2))
         app.buttons["Trigger data source collection"].tap()
         app.hkTypeIdentifierAssert(
             [
@@ -104,6 +106,7 @@ final class HealthKitTests: XCTestCase {
             ]
         )
         
+        XCTAssert(app.buttons["Trigger data source collection"].waitForExistence(timeout: 2))
         app.buttons["Trigger data source collection"].tap()
         app.hkTypeIdentifierAssert(
             [
@@ -119,6 +122,7 @@ final class HealthKitTests: XCTestCase {
         app.terminate()
         app.activate()
         XCTAssert(app.wait(for: .runningForeground, timeout: 10.0))
+        XCTAssert(app.buttons["Trigger data source collection"].waitForExistence(timeout: 2))
         app.buttons["Trigger data source collection"].tap()
         app.hkTypeIdentifierAssert([:])
         
@@ -137,6 +141,7 @@ final class HealthKitTests: XCTestCase {
             ]
         )
         
+        XCTAssert(app.buttons["Trigger data source collection"].waitForExistence(timeout: 2))
         app.buttons["Trigger data source collection"].tap()
         app.hkTypeIdentifierAssert(
             [
