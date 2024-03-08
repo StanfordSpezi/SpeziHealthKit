@@ -50,6 +50,7 @@ class HealthKitStore: Module, DefaultInitializable, EnvironmentAccessible {
         }
     }
     
+    @MainActor
     func add(sample: HKSample) async {
         samples.append(sample)
         
@@ -64,6 +65,7 @@ class HealthKitStore: Module, DefaultInitializable, EnvironmentAccessible {
         try? await UNUserNotificationCenter.current().add(request)
     }
     
+    @MainActor
     func remove(sample: HKDeletedObject) async {
         if let index = samples.firstIndex(where: { $0.uuid == sample.uuid }) {
             samples.remove(at: index)

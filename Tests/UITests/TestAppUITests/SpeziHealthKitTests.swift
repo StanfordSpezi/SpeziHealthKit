@@ -34,6 +34,7 @@ final class HealthKitTests: XCTestCase {
             ]
         )
         
+        XCTAssert(app.buttons["Trigger data source collection"].waitForExistence(timeout: 2))
         app.buttons["Trigger data source collection"].tap()
         app.hkTypeIdentifierAssert(
             [
@@ -105,6 +106,7 @@ final class HealthKitTests: XCTestCase {
             ]
         )
         
+        XCTAssert(app.buttons["Trigger data source collection"].waitForExistence(timeout: 2))
         app.buttons["Trigger data source collection"].tap()
         app.hkTypeIdentifierAssert(
             [
@@ -120,6 +122,7 @@ final class HealthKitTests: XCTestCase {
         app.terminate()
         app.activate()
         XCTAssert(app.wait(for: .runningForeground, timeout: 10.0))
+        XCTAssert(app.buttons["Trigger data source collection"].waitForExistence(timeout: 2))
         app.buttons["Trigger data source collection"].tap()
         app.hkTypeIdentifierAssert([:])
         
@@ -138,6 +141,7 @@ final class HealthKitTests: XCTestCase {
             ]
         )
         
+        XCTAssert(app.buttons["Trigger data source collection"].waitForExistence(timeout: 2))
         app.buttons["Trigger data source collection"].tap()
         app.hkTypeIdentifierAssert(
             [
