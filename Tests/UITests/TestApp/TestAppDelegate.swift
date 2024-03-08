@@ -34,6 +34,10 @@ class TestAppDelegate: SpeziAppDelegate {
                     HKQuantityType(.restingHeartRate),
                     deliverySetting: .manual()
                 )
+                CollectSample(
+                    HKQuantityType(.vo2Max),
+                    deliverySetting: .background(.automatic)
+                )
             }
         }
     }

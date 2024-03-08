@@ -7,6 +7,7 @@
 //
 
 import HealthKit
+import OSLog
 import Spezi
 
 
@@ -15,48 +16,43 @@ extension HKHealthStore {
     private static let activeObservationsLock = NSLock()
     
     
-    func startObservation(
+    func startBackgroundDelivery(
         for sampleTypes: Set<HKSampleType>,
         withPredicate predicate: NSPredicate? = nil
-    ) -> AsyncThrowingStream<(Set<HKSampleType>, HKObserverQueryCompletionHandler), Error> {
-        AsyncThrowingStream { continuation in
-            Task {
-                do {
-                    try await enableBackgroundDelivery(for: sampleTypes)
-                } catch {
+    ) async throws -> AsyncThrowingStream<(sampleTypes: Set<HKSampleType>, observerQueryCompletionHandler: HKObserverQueryCompletionHandler), Error> {
+        try await enableBackgroundDelivery(for: sampleTypes)
+        
+        return AsyncThrowingStream { continuation in
+            var queryDescriptors: [HKQueryDescriptor] = []
+            for sampleType in sampleTypes {
+                queryDescriptors.append(
+                    HKQueryDescriptor(sampleType: sampleType, predicate: predicate)
+                )
+            }
+            
+            let observerQuery = HKObserverQuery(queryDescriptors: queryDescriptors) { query, samples, completionHandler, error in
+                guard error == nil,
+                      let samples else {
+                    Logger.healthKit.error("Failed HealthKit background delivery for observer query \(query) with error: \(error)")
                     continuation.finish(throwing: error)
+                    completionHandler()
+                    return
                 }
                 
-                var queryDescriptors: [HKQueryDescriptor] = []
-                for sampleType in sampleTypes {
-                    queryDescriptors.append(
-                        HKQueryDescriptor(sampleType: sampleType, predicate: predicate)
-                    )
-                }
-                
-                let observerQuery = HKObserverQuery(queryDescriptors: queryDescriptors) { _, samples, completionHandler, error in
-                    guard error == nil,
-                          let samples else {
-                        continuation.finish(throwing: error)
-                        completionHandler()
-                        return
-                    }
-                    
-                    continuation.yield((samples, completionHandler))
-                }
-                
-                self.execute(observerQuery)
-                
-                continuation.onTermination = { @Sendable _ in
-                    self.stop(observerQuery)
-                    self.disableBackgroundDelivery(for: sampleTypes)
-                }
+                continuation.yield((samples, completionHandler))
+            }
+            
+            self.execute(observerQuery)
+            
+            continuation.onTermination = { @Sendable _ in
+                self.stop(observerQuery)
+                self.disableBackgroundDelivery(for: sampleTypes)
             }
         }
     }
     
     
-    func enableBackgroundDelivery(
+    private func enableBackgroundDelivery(
         for objectTypes: Set<HKObjectType>,
         frequency: HKUpdateFrequency = .immediate
     ) async throws {
@@ -72,13 +68,14 @@ extension HKHealthStore {
                 }
             }
         } catch {
+            Logger.healthKit.error("Could not enable HealthKit Backgound access for \(objectTypes): \(error.localizedDescription)")
             // Revert all changes as enable background delivery for the object types failed.
             disableBackgroundDelivery(for: enabledObjectTypes)
         }
     }
     
     
-    func disableBackgroundDelivery(
+    private func disableBackgroundDelivery(
         for objectTypes: Set<HKObjectType>
     ) {
         for objectType in objectTypes {
@@ -87,7 +84,7 @@ extension HKHealthStore {
                     let newActiveObservation = activeObservation - 1
                     if newActiveObservation <= 0 {
                         HKHealthStore.activeObservations[objectType] = nil
-                        Task {
+                        Task { @MainActor in
                             try await self.disableBackgroundDelivery(for: objectType)
                         }
                     } else {

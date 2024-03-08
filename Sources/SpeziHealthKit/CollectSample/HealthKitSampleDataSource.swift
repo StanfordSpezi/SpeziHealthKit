@@ -114,13 +114,26 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
                 try await anchoredContinuousObjectQuery()
             case .background:
                 active = true
-                try await self.anchoredSingleObjectQuery()
-                for try await _ in healthStore.startObservation(for: [sampleType], withPredicate: predicate) {
-                    try await self.anchoredSingleObjectQuery()
+                for try await sampleUpdate in try await healthStore.startBackgroundDelivery(for: [sampleType]) {
+                    guard sampleUpdate.sampleTypes.contains(sampleType) else {
+                        Logger.healthKit.warning("Recieved Observation query types (\(sampleUpdate.sampleTypes)) are not corresponding to the CollectSample type \(self.sampleType)")
+                        sampleUpdate.observerQueryCompletionHandler()
+                        continue
+                    }
+                    
+                    do {
+                        try await anchoredSingleObjectQuery()
+                        Logger.healthKit.debug("Successfully processed background update for \(self.sampleType)")
+                    } catch {
+                        Logger.healthKit.error("Could not query samples in a background update for \(self.sampleType): \(error)")
+                    }
+                    
+                    // Provide feedback to HealthKit that the data has been processed: https://developer.apple.com/documentation/healthkit/hkobserverquerycompletionhandler
+                    sampleUpdate.observerQueryCompletionHandler()
                 }
             }
         } catch {
-            Logger.healthKit.error("\(error.localizedDescription)")
+            Logger.healthKit.error("Could not Process HealthKit data collection: \(error.localizedDescription)")
         }
     }
     
