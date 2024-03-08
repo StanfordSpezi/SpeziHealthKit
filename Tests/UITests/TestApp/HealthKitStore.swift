@@ -14,7 +14,7 @@ import UserNotifications
 
 
 @Observable
-class HealthKitStore: Module, DefaultInitializable {
+class HealthKitStore: Module, DefaultInitializable, EnvironmentAccessible {
     private enum StorageKeys {
         static let backgroundPersistance = "HealthKitStore.backgroundPersistance"
     }
@@ -33,16 +33,22 @@ class HealthKitStore: Module, DefaultInitializable {
     }
     
     
+    func configure() {
+        Task {
+            try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])
+        }
+    }
+    
     func add(sample: HKSample) async {
         samples.append(sample)
         
         logger.debug("Added sample: \(sample.debugDescription)")
         
-        backgroundPersistance.append("Added sample \(sample.sampleType.description) (\(sample.uuid.uuidString) at \(Date.now.formatted(date: .numeric, time: .complete))")
+        backgroundPersistance.append("Added sample \(sample.sampleType.description) (\(sample.uuid.uuidString)) at \(Date.now.formatted(date: .numeric, time: .complete)): \((sample as? HKQuantitySample)?.quantity.description ?? "Unknown")")
         
         let content = UNMutableNotificationContent()
         content.title = "Spezi HealthKit Test App"
-        content.body = "Added sample \(sample.sampleType.description) (\(sample.uuid.uuidString) at \(Date.now.formatted(date: .numeric, time: .complete))"
+        content.body = "Added sample \(sample.sampleType.description) (\(sample.uuid.uuidString) at \(Date.now.formatted(date: .numeric, time: .complete)): \((sample as? HKQuantitySample)?.quantity.description ?? "Unknown")"
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
         try? await UNUserNotificationCenter.current().add(request)
     }

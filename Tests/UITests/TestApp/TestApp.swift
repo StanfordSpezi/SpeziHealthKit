@@ -21,9 +21,6 @@ struct UITestsApp: App {
                 HealthKitTestsView()
                     .navigationTitle("HealthKit")
                     .spezi(appDelegate)
-                    .task {
-                        _ = try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])
-                    }
             }
         }
     }

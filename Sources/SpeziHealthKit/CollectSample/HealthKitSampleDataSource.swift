@@ -161,19 +161,21 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
         
         let updateQueue = anchorDescriptor.results(for: healthStore)
         
-        for try await results in updateQueue {
-            if Task.isCancelled {
-                return
+        Task {
+            for try await results in updateQueue {
+                if Task.isCancelled {
+                    return
+                }
+                
+                for deletedObject in results.deletedObjects {
+                    await standard.remove(sample: deletedObject)
+                }
+                
+                for addedSample in results.addedSamples {
+                    await standard.add(sample: addedSample)
+                }
+                self.anchor = results.newAnchor
             }
-            
-            for deletedObject in results.deletedObjects {
-                await standard.remove(sample: deletedObject)
-            }
-            
-            for addedSample in results.addedSamples {
-                await standard.add(sample: addedSample)
-            }
-            self.anchor = results.newAnchor
         }
     }
     

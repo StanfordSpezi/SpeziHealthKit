@@ -17,21 +17,25 @@ struct HealthKitTestsView: View {
 
     
     var body: some View {
-        AsyncButton("Ask for authorization") {
-            try? await healthKitModule.askForAuthorization()
-        }
-            .disabled(healthKitModule.authorized)
-        AsyncButton("Trigger data source collection") {
-            await healthKitModule.triggerDataSourceCollection()
-        }
-        VStack {
-            List(healthKitStore.backgroundPersistance, id: \.self) { element in
-                Text(element)
-                    .multilineTextAlignment(.leading)
-                    .lineLimit(10)
+        List {
+            AsyncButton("Ask for authorization") {
+                try? await healthKitModule.askForAuthorization()
             }
-            List(healthKitStore.samples, id: \.self) { element in
-                Text(element.sampleType.identifier)
+                .disabled(healthKitModule.authorized)
+            AsyncButton("Trigger data source collection") {
+                await healthKitModule.triggerDataSourceCollection()
+            }
+            Section("Collected Samples Since App Launch") {
+                ForEach(healthKitStore.samples, id: \.self) { element in
+                    Text(element.sampleType.identifier)
+                }
+            }
+            Section("Background Persistance Log") {
+                ForEach(healthKitStore.backgroundPersistance, id: \.self) { element in
+                    Text(element)
+                        .multilineTextAlignment(.leading)
+                        .lineLimit(10)
+                }
             }
         }
     }
