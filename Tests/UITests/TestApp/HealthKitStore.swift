@@ -19,23 +19,34 @@ class HealthKitStore: Module, DefaultInitializable, EnvironmentAccessible {
         static let backgroundPersistance = "HealthKitStore.backgroundPersistance"
     }
     
+    static let collectedSamplesOnly = CommandLine.arguments.contains("--collectedSamplesOnly")
+    
     private let logger = Logger(subsystem: "TestApp", category: "ExampleStandard")
     
     private(set) var samples: [HKSample] = []
     private(set) var backgroundPersistance: [String] {
         didSet {
-            UserDefaults.standard.setValue(backgroundPersistance.rawValue, forKey: StorageKeys.backgroundPersistance)
+            if !HealthKitStore.collectedSamplesOnly {
+                UserDefaults.standard.setValue(backgroundPersistance.rawValue, forKey: StorageKeys.backgroundPersistance)
+            }
         }
     }
     
     required init() {
-        backgroundPersistance = UserDefaults.standard.string(forKey: StorageKeys.backgroundPersistance).flatMap { [String].init(rawValue: $0) } ?? []
+        if !HealthKitStore.collectedSamplesOnly {
+            backgroundPersistance = UserDefaults.standard.string(forKey: StorageKeys.backgroundPersistance)
+                .flatMap { [String].init(rawValue: $0) } ?? []
+        } else {
+            backgroundPersistance = []
+        }
     }
     
     
     func configure() {
-        Task {
-            try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])
+        if !HealthKitStore.collectedSamplesOnly {
+            Task {
+                try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])
+            }
         }
     }
     

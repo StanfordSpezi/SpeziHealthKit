@@ -30,11 +30,13 @@ struct HealthKitTestsView: View {
                     Text(element.sampleType.identifier)
                 }
             }
-            Section("Background Persistance Log") {
-                ForEach(healthKitStore.backgroundPersistance, id: \.self) { element in
-                    Text(element)
-                        .multilineTextAlignment(.leading)
-                        .lineLimit(10)
+            if !HealthKitStore.collectedSamplesOnly {
+                Section("Background Persistance Log") {
+                    ForEach(healthKitStore.backgroundPersistance, id: \.self) { element in
+                        Text(element)
+                            .multilineTextAlignment(.leading)
+                            .lineLimit(10)
+                    }
                 }
             }
         }

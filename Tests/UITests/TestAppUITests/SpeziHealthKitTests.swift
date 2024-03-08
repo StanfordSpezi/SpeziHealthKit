@@ -14,6 +14,7 @@ import XCTHealthKit
 final class HealthKitTests: XCTestCase {
     func testHealthKit() throws { // swiftlint:disable:this function_body_length
         let app = XCUIApplication()
+        app.launchArguments = ["--collectedSamplesOnly"]
         app.deleteAndLaunch(withSpringboardAppName: "TestApp")
         
         try exitAppAndOpenHealth(.electrocardiograms)
