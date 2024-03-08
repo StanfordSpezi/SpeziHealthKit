@@ -7,40 +7,32 @@
 //
 
 import SpeziHealthKit
+import SpeziViews
 import SwiftUI
 
 
 struct HealthKitTestsView: View {
     @Environment(HealthKit.self) var healthKitModule
-    @Environment(ExampleStandard.self) var standard
+    @Environment(HealthKitStore.self) var healthKitStore
 
     
     var body: some View {
-        Button("Ask for authorization") {
-            askForAuthorization()
+        AsyncButton("Ask for authorization") {
+            try? await healthKitModule.askForAuthorization()
         }
             .disabled(healthKitModule.authorized)
-        Button("Trigger data source collection") {
-            triggerDataSourceCollection()
+        AsyncButton("Trigger data source collection") {
+            await healthKitModule.triggerDataSourceCollection()
         }
-        HStack {
-            List(standard.addedResponses, id: \.self) { element in
+        VStack {
+            List(healthKitStore.backgroundPersistance, id: \.self) { element in
+                Text(element)
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(10)
+            }
+            List(healthKitStore.samples, id: \.self) { element in
                 Text(element.sampleType.identifier)
             }
-        }
-    }
-    
-    @MainActor
-    private func askForAuthorization() {
-        Task {
-            try await healthKitModule.askForAuthorization()
-        }
-    }
-    
-    @MainActor
-    private func triggerDataSourceCollection() {
-        Task {
-            await healthKitModule.triggerDataSourceCollection()
         }
     }
 }

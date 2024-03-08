@@ -12,7 +12,7 @@ import SpeziHealthKit
 
 class TestAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
-        Configuration(standard: ExampleStandard()) {
+        Configuration(standard: HealthKitTestAppStandard()) {
             HealthKit {
                 CollectSample(
                     HKQuantityType.electrocardiogramType(),
@@ -33,10 +33,6 @@ class TestAppDelegate: SpeziAppDelegate {
                 CollectSample(
                     HKQuantityType(.restingHeartRate),
                     deliverySetting: .manual()
-                )
-                CollectSample(
-                    HKQuantityType(.vo2Max),
-                    deliverySetting: .background(.automatic)
                 )
             }
         }

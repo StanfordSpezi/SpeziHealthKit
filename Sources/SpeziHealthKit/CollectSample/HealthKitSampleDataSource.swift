@@ -114,22 +114,28 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
                 try await anchoredContinuousObjectQuery()
             case .background:
                 active = true
-                for try await sampleUpdate in try await healthStore.startBackgroundDelivery(for: [sampleType]) {
-                    guard sampleUpdate.sampleTypes.contains(sampleType) else {
-                        Logger.healthKit.warning("Recieved Observation query types (\(sampleUpdate.sampleTypes)) are not corresponding to the CollectSample type \(self.sampleType)")
-                        sampleUpdate.observerQueryCompletionHandler()
-                        continue
+                try await healthStore.startBackgroundDelivery(for: [sampleType]) { result in
+                    Task {
+                        guard case let .success((sampleTypes, completionHandler)) = result else {
+                            return
+                        }
+                        
+                        guard sampleTypes.contains(self.sampleType) else {
+                            Logger.healthKit.warning("Recieved Observation query types (\(sampleTypes)) are not corresponding to the CollectSample type \(self.sampleType)")
+                            completionHandler()
+                            return
+                        }
+                        
+                        do {
+                            try await self.anchoredSingleObjectQuery()
+                            Logger.healthKit.debug("Successfully processed background update for \(self.sampleType)")
+                        } catch {
+                            Logger.healthKit.error("Could not query samples in a background update for \(self.sampleType): \(error)")
+                        }
+                        
+                        // Provide feedback to HealthKit that the data has been processed: https://developer.apple.com/documentation/healthkit/hkobserverquerycompletionhandler
+                        completionHandler()
                     }
-                    
-                    do {
-                        try await anchoredSingleObjectQuery()
-                        Logger.healthKit.debug("Successfully processed background update for \(self.sampleType)")
-                    } catch {
-                        Logger.healthKit.error("Could not query samples in a background update for \(self.sampleType): \(error)")
-                    }
-                    
-                    // Provide feedback to HealthKit that the data has been processed: https://developer.apple.com/documentation/healthkit/hkobserverquerycompletionhandler
-                    sampleUpdate.observerQueryCompletionHandler()
                 }
             }
         } catch {

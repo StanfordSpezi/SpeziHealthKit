@@ -18,37 +18,30 @@ extension HKHealthStore {
     
     func startBackgroundDelivery(
         for sampleTypes: Set<HKSampleType>,
-        withPredicate predicate: NSPredicate? = nil
-    ) async throws -> AsyncThrowingStream<(sampleTypes: Set<HKSampleType>, observerQueryCompletionHandler: HKObserverQueryCompletionHandler), Error> {
-        try await enableBackgroundDelivery(for: sampleTypes)
-        
-        return AsyncThrowingStream { continuation in
-            var queryDescriptors: [HKQueryDescriptor] = []
-            for sampleType in sampleTypes {
-                queryDescriptors.append(
-                    HKQueryDescriptor(sampleType: sampleType, predicate: predicate)
-                )
-            }
-            
-            let observerQuery = HKObserverQuery(queryDescriptors: queryDescriptors) { query, samples, completionHandler, error in
-                guard error == nil,
-                      let samples else {
-                    Logger.healthKit.error("Failed HealthKit background delivery for observer query \(query) with error: \(error)")
-                    continuation.finish(throwing: error)
-                    completionHandler()
-                    return
-                }
-                
-                continuation.yield((samples, completionHandler))
-            }
-            
-            self.execute(observerQuery)
-            
-            continuation.onTermination = { @Sendable _ in
-                self.stop(observerQuery)
-                self.disableBackgroundDelivery(for: sampleTypes)
-            }
+        withPredicate predicate: NSPredicate? = nil,
+        observerQuery: @escaping (Result<(sampleTypes: Set<HKSampleType>, completionHandler: HKObserverQueryCompletionHandler), Error>) -> Void
+    ) async throws {
+        var queryDescriptors: [HKQueryDescriptor] = []
+        for sampleType in sampleTypes {
+            queryDescriptors.append(
+                HKQueryDescriptor(sampleType: sampleType, predicate: predicate)
+            )
         }
+        
+        let observerQuery = HKObserverQuery(queryDescriptors: queryDescriptors) { query, samples, completionHandler, error in
+            guard error == nil,
+                  let samples else {
+                Logger.healthKit.error("Failed HealthKit background delivery for observer query \(query) with error: \(error)")
+                observerQuery(.failure(error ?? NSError(domain: "Spezi HealthKit", code: -1)))
+                completionHandler()
+                return
+            }
+            
+            observerQuery(.success((samples, completionHandler)))
+        }
+        
+        self.execute(observerQuery)
+        try await enableBackgroundDelivery(for: sampleTypes)
     }
     
     
