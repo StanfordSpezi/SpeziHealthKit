@@ -69,7 +69,6 @@ import SwiftUI
 @Observable
 public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializable {
     @ObservationIgnored @StandardActor private var standard: any HealthKitConstraint
-    private var configured = false
     private let healthStore: HKHealthStore
     private var healthKitDataSourceDescriptions: [HealthKitDataSourceDescription] = []
     @ObservationIgnored private var healthKitComponents: [any HealthKitDataSource] = []
@@ -111,7 +110,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     ) {
         self.init()
         
-        self.execute(healthKitDataSourceDescriptions)
+        self.healthKitDataSourceDescriptions = healthKitDataSourceDescriptions()
     }
     
     public init() {
@@ -132,12 +131,8 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     
     
     public func configure() {
-        configured = true
-        
-        Task {
-            for healthKitComponent in healthKitComponents {
-                await healthKitComponent.startAutomaticDataCollection()
-            }
+        for healthKitDataSourceDescription in healthKitDataSourceDescriptions {
+            execute(healthKitDataSourceDescription)
         }
     }
     
@@ -164,10 +159,8 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
         
         for dataSource in dataSources {
             healthKitComponents.append(dataSource)
-            if configured {
-                Task {
-                    await dataSource.startAutomaticDataCollection()
-                }
+            Task {
+                await dataSource.startAutomaticDataCollection()
             }
         }
     }
