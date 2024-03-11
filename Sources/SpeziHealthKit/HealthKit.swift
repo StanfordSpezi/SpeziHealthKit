@@ -76,7 +76,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     
     
     private var healthKitSampleTypes: Set<HKSampleType> {
-        healthKitDataSourceDescriptions.reduce(into: Set()) {
+        (initialHealthKitDataSourceDescriptions + healthKitDataSourceDescriptions).reduce(into: Set()) {
             $0 = $0.union($1.sampleTypes)
         }
     }
