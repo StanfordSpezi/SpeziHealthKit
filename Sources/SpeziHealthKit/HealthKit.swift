@@ -70,6 +70,7 @@ import SwiftUI
 public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializable {
     @ObservationIgnored @StandardActor private var standard: any HealthKitConstraint
     private let healthStore: HKHealthStore
+    private var initialHealthKitDataSourceDescriptions: [HealthKitDataSourceDescription] = []
     private var healthKitDataSourceDescriptions: [HealthKitDataSourceDescription] = []
     @ObservationIgnored private var healthKitComponents: [any HealthKitDataSource] = []
     
@@ -109,8 +110,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
         @HealthKitDataSourceDescriptionBuilder _ healthKitDataSourceDescriptions: () -> [HealthKitDataSourceDescription]
     ) {
         self.init()
-        
-        self.healthKitDataSourceDescriptions = healthKitDataSourceDescriptions()
+        self.initialHealthKitDataSourceDescriptions = healthKitDataSourceDescriptions()
     }
     
     public init() {
@@ -131,7 +131,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     
     
     public func configure() {
-        for healthKitDataSourceDescription in healthKitDataSourceDescriptions {
+        for healthKitDataSourceDescription in initialHealthKitDataSourceDescriptions {
             execute(healthKitDataSourceDescription)
         }
     }
