@@ -74,17 +74,15 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
     }
     
     
-    func askedForAuthorization() {
+    func askedForAuthorization() async {
         guard askedForAuthorization(for: sampleType) && !deliverySetting.isManual && !active else {
             return
         }
         
-        Task {
-            await triggerManualDataSourceCollection()
-        }
+        await triggerManualDataSourceCollection()
     }
     
-    func startAutomaticDataCollection() {
+    func startAutomaticDataCollection() async {
         guard askedForAuthorization(for: sampleType) else {
             return
         }
@@ -92,9 +90,7 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
         switch deliverySetting {
         case let .anchorQuery(startSetting, _) where startSetting == .automatic,
             let .background(startSetting, _) where startSetting == .automatic:
-            Task {
-                await triggerManualDataSourceCollection()
-            }
+            await triggerManualDataSourceCollection()
         default:
             break
         }

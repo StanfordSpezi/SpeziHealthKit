@@ -70,14 +70,13 @@ import SwiftUI
 public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializable {
     @ObservationIgnored @StandardActor private var standard: any HealthKitConstraint
     private let healthStore: HKHealthStore
+    private var initialHealthKitDataSourceDescriptions: [HealthKitDataSourceDescription] = []
     private var healthKitDataSourceDescriptions: [HealthKitDataSourceDescription] = []
-    @ObservationIgnored private lazy var healthKitComponents: [any HealthKitDataSource] = {
-        healthKitDataSourceDescriptions
-            .flatMap { $0.dataSources(healthStore: healthStore, standard: standard) }
-    }()
+    @ObservationIgnored private var healthKitComponents: [any HealthKitDataSource] = []
+    
     
     private var healthKitSampleTypes: Set<HKSampleType> {
-        healthKitDataSourceDescriptions.reduce(into: Set()) {
+        (initialHealthKitDataSourceDescriptions + healthKitDataSourceDescriptions).reduce(into: Set()) {
             $0 = $0.union($1.sampleTypes)
         }
     }
@@ -111,8 +110,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
         @HealthKitDataSourceDescriptionBuilder _ healthKitDataSourceDescriptions: () -> [HealthKitDataSourceDescription]
     ) {
         self.init()
-        
-        self.healthKitDataSourceDescriptions = healthKitDataSourceDescriptions()
+        self.initialHealthKitDataSourceDescriptions = healthKitDataSourceDescriptions()
     }
     
     public init() {
@@ -133,8 +131,8 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     
     
     public func configure() {
-        for healthKitComponent in healthKitComponents {
-            healthKitComponent.startAutomaticDataCollection()
+        for healthKitDataSourceDescription in initialHealthKitDataSourceDescriptions {
+            execute(healthKitDataSourceDescription)
         }
     }
     
@@ -151,16 +149,19 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
         alreadyRequestedSampleTypes = healthKitSampleTypesIdentifiers
         
         for healthKitComponent in healthKitComponents {
-            // reads the above userDefault!
-            healthKitComponent.askedForAuthorization()
+            await healthKitComponent.askedForAuthorization()
         }
     }
     
     public func execute(_ healthKitDataSourceDescription: HealthKitDataSourceDescription) {
         healthKitDataSourceDescriptions.append(healthKitDataSourceDescription)
         let dataSources = healthKitDataSourceDescription.dataSources(healthStore: healthStore, standard: standard)
+        
         for dataSource in dataSources {
-            dataSource.startAutomaticDataCollection()
+            healthKitComponents.append(dataSource)
+            Task {
+                await dataSource.startAutomaticDataCollection()
+            }
         }
     }
     

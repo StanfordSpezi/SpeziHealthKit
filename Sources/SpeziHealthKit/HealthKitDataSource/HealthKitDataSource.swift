@@ -14,11 +14,11 @@ import SwiftUI
 /// Requirement for every HealthKit Data Source.
 public protocol HealthKitDataSource {
     /// Called after the used was asked for authorization.
-    func askedForAuthorization()
+    func askedForAuthorization() async
     /// Called to trigger the manual data collection.
     func triggerManualDataSourceCollection() async
     /// Called to start the automatic data collection.
-    func startAutomaticDataCollection()
+    func startAutomaticDataCollection() async
 }
 
 
