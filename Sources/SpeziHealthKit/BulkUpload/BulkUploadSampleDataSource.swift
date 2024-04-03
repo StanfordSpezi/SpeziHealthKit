@@ -127,7 +127,7 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
         try await healthStore.requestAuthorization(toShare: [], read: [sampleType])
         
         // create an anchor descriptor that reads a data batch of the defined bulkSize
-        let anchorDescriptor = HKAnchoredObjectQueryDescriptor(
+        var anchorDescriptor = HKAnchoredObjectQueryDescriptor(
             predicates: [
                 .sample(type: sampleType, predicate: predicate)
             ],
@@ -135,11 +135,11 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
             limit: bulkSize
         )
         
-        let result = try await anchorDescriptor.result(for: healthStore)
+        // run query at least once
+        var result = try await anchorDescriptor.result(for: healthStore)
         
-        // continues reading bulkSize batches of data until theres no new data
-        
-        // to do: parallelize this? 
+        // continue reading bulkSize batches of data until theres no new data
+        // to do: parallelize this
         repeat {
             for deletedObject in result.deletedObjects {
                 await standard.remove(sample: deletedObject)
@@ -152,6 +152,16 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
             // advance the anchor
             let newAnchor = result.newAnchor
             anchor = newAnchor
+            
+            anchorDescriptor = HKAnchoredObjectQueryDescriptor(
+                predicates: [
+                    .sample(type: sampleType, predicate: predicate)
+                ],
+                anchor: anchor,
+                limit: bulkSize
+            )
+            result = try await anchorDescriptor.result(for: healthStore)
+            
         } while (result.addedSamples != []) && (result.deletedObjects != [])
     }
     
