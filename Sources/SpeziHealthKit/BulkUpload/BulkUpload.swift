@@ -34,6 +34,15 @@ public struct BulkUpload: HealthKitDataSourceDescription {
     }
     
     public func dataSources(healthStore: HKHealthStore, standard: any HealthKitConstraint) -> [any HealthKitDataSource] {
-        <#code#>
+        sampleTypes.map { sampleType in
+            BulkUploadSampleDataSource(
+                healthStore: healthStore,
+                standard: standard,
+                sampleType: sampleType,
+                predicate: predicate,
+                deliverySetting: deliverySetting,
+                bulkSize: bulkSize
+            )
+        }
     }
 }
