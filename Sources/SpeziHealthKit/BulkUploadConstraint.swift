@@ -26,7 +26,7 @@ import Spezi
 /// }
 /// ```
 ///
-public protocol BulkUploadConstraint: Standard {
+public protocol BulkUploadConstraint: HealthKitConstraint, Standard {
     /// Notifies the `Standard` about the addition of a batch of HealthKit ``HKSample`` samples instance.
     /// - Parameter samplesAdded: The batch of `HKSample`s that should be added.
     /// - Parameter objectsDeleted: The batch of `HKSample`s that were deleted from the HealthStore. Included if needed to account for rate limiting

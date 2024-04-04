@@ -35,11 +35,16 @@ public struct BulkUpload: HealthKitDataSourceDescription {
         self.deliverySetting = HealthKitDeliverySetting.anchorQuery(deliveryStartSetting, saveAnchor: true)
     }
     
-    public func dataSources(healthStore: HKHealthStore, standard: any BulkUploadConstraint) -> [any HealthKitDataSource] {
-        sampleTypes.map { sampleType in
+    public func dataSources(healthStore: HKHealthStore, standard: any HealthKitConstraint) -> [any HealthKitDataSource] {
+        // Ensure the 'standard' actually conforms to 'BulkUploadConstraint' to use specific add_bulk function.
+        guard let bulkStandard = standard as? any BulkUploadConstraint else {
+            fatalError("Standard must conform to BulkUploadConstraint for BulkUpload data sources.")
+        }
+        
+        return sampleTypes.map { sampleType in
             BulkUploadSampleDataSource(
                 healthStore: healthStore,
-                standard: standard,
+                standard: bulkStandard,
                 sampleType: sampleType,
                 predicate: predicate,
                 deliverySetting: deliverySetting,
