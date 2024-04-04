@@ -15,7 +15,7 @@ import SwiftUI
 
 final class BulkUploadSampleDataSource: HealthKitDataSource {
     let healthStore: HKHealthStore
-    let standard: any HealthKitConstraint
+    let standard: any BulkUploadConstraint
     
     let sampleType: HKSampleType
     let predicate: NSPredicate?
@@ -132,13 +132,7 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
         
         // continue reading bulkSize batches of data until theres no new data
         repeat {
-            for deletedObject in result.deletedObjects {
-                await standard.remove(sample: deletedObject)
-            }
-            
-            for addedSample in result.addedSamples {
-                await standard.add(sample: addedSample)
-            }
+            await standard.add_bulk(samplesAdded: result.addedSamples, samplesDeleted: result.deletedObjects)
             
             // advance the anchor
             anchor = result.newAnchor
