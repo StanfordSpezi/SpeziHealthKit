@@ -13,7 +13,7 @@ import Spezi
 /// Collects batches of `HKSampleType`s  in the ``HealthKit`` module for upload.
 public struct BulkUpload: HealthKitDataSourceDescription {
     public let sampleTypes: Set<HKSampleType>
-    let predicate: NSPredicate?
+    let predicate: NSPredicate
     let deliverySetting: HealthKitDeliverySetting
     let bulkSize: Int
     
@@ -25,7 +25,7 @@ public struct BulkUpload: HealthKitDataSourceDescription {
     ///   - deliverySetting: The ``HealthKitDeliverySetting`` that should be used to collect the sample type. `.manual` is the default argument used.
     public init(
         _ sampleTypes: Set<HKSampleType>,
-        predicate: NSPredicate? = nil,
+        predicate: NSPredicate,
         bulkSize: Int = 100,
         deliveryStartSetting: HealthKitDeliveryStartSetting = .manual
     ) {
@@ -35,7 +35,7 @@ public struct BulkUpload: HealthKitDataSourceDescription {
         self.deliverySetting = HealthKitDeliverySetting.anchorQuery(deliveryStartSetting, saveAnchor: true)
     }
     
-    public func dataSources(healthStore: HKHealthStore, standard: any HealthKitConstraint) -> [any HealthKitDataSource] {
+    public func dataSources(healthStore: HKHealthStore, standard: any BulkUploadConstraint) -> [any HealthKitDataSource] {
         sampleTypes.map { sampleType in
             BulkUploadSampleDataSource(
                 healthStore: healthStore,

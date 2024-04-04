@@ -16,7 +16,7 @@ import Spezi
 ///
 /// Make sure that your standard in your Spezi Application conforms to the ``BulkUploadConstraint``
 /// protocol to upload HealthKit data in configurable bulk sizes.
-/// The ``HealthKitConstraint/add_bulk(sample:)`` function is triggered once for every collected batch of HealthKit samples returned by the anchor query.
+/// The ``BulkUploadConstraint/add_bulk(sample:)`` function is triggered once for every collected batch of HealthKit samples returned by the anchor query.
 /// ```swift
 /// actor ExampleStandard: Standard, BulkUploadConstraint {
 ///    // Add the collected batch of HKSamples to your application, as well as any backoff mechanisms (e.g. wait a specific amount after each upload).

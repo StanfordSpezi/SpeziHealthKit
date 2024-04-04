@@ -37,9 +37,9 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
     // swiftlint:disable function_default_parameter_at_end
     required init(
         healthStore: HKHealthStore,
-        standard: any HealthKitConstraint,
+        standard: any BulkUploadConstraint,
         sampleType: HKSampleType,
-        predicate: NSPredicate? = nil,
+        predicate: NSPredicate,
         deliverySetting: HealthKitDeliverySetting,
         bulkSize: Int
     ) {
@@ -48,16 +48,7 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
         self.sampleType = sampleType
         self.deliverySetting = deliverySetting
         self.bulkSize = bulkSize
-        
-        if predicate == nil {
-            self.predicate = HKQuery.predicateForSamples(
-                withStart: BulkUploadSampleDataSource.loadDefaultQueryDate(for: sampleType),
-                end: nil,
-                options: .strictEndDate
-            )
-        } else {
-            self.predicate = predicate
-        }
+        self.predicate = predicate
     }
     // swiftlint:enable function_default_parameter_at_end
     
