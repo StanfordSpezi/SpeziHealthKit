@@ -5,10 +5,12 @@
 //
 // SPDX-License-Identifier: MIT
 //
+// Created by Matthew Joerke and Bryant Jimenez
 
 import HealthKit
 import Spezi
 
+/// Collects batches of `HKSampleType`s  in the ``HealthKit`` module for upload.
 public struct BulkUpload: HealthKitDataSourceDescription {
     public let sampleTypes: Set<HKSampleType>
     let predicate: NSPredicate?
@@ -24,13 +26,13 @@ public struct BulkUpload: HealthKitDataSourceDescription {
     public init(
         _ sampleTypes: Set<HKSampleType>,
         predicate: NSPredicate? = nil,
-        deliveryStartSetting: HealthKitDeliveryStartSetting = .manual,
-        bulkSize: Int
+        bulkSize: Int = 100,
+        deliveryStartSetting: HealthKitDeliveryStartSetting = .manual
     ) {
         self.sampleTypes = sampleTypes
         self.predicate = predicate
-        self.deliverySetting = HealthKitDeliverySetting.anchorQuery(deliveryStartSetting, saveAnchor: true)
         self.bulkSize = bulkSize
+        self.deliverySetting = HealthKitDeliverySetting.anchorQuery(deliveryStartSetting, saveAnchor: true)
     }
     
     public func dataSources(healthStore: HKHealthStore, standard: any HealthKitConstraint) -> [any HealthKitDataSource] {

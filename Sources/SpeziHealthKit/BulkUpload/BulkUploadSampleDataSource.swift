@@ -5,6 +5,7 @@
 //
 // SPDX-License-Identifier: MIT
 //
+// Created by Bryant Jimenez and Matthew Joerke
 
 import HealthKit
 import OSLog
@@ -23,7 +24,7 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
     var active = false
     
     
-    private lazy var anchorUserDefaultsKey = UserDefaults.Keys.healthKitAnchorPrefix.appending(sampleType.identifier)
+    private lazy var anchorUserDefaultsKey = UserDefaults.Keys.bulkUploadAnchorPrefix.appending(sampleType.identifier)
     private lazy var anchor: HKQueryAnchor? = loadAnchor() {
         didSet {
             saveAnchor()
@@ -40,7 +41,7 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
         sampleType: HKSampleType,
         predicate: NSPredicate? = nil,
         deliverySetting: HealthKitDeliverySetting,
-        bulkSize: Int = 100 // Default bulk size
+        bulkSize: Int
     ) {
         self.healthStore = healthStore
         self.standard = standard
@@ -62,7 +63,7 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
     
     
     private static func loadDefaultQueryDate(for sampleType: HKSampleType) -> Date {
-        let defaultPredicateDateUserDefaultsKey = UserDefaults.Keys.healthKitDefaultPredicateDatePrefix.appending(sampleType.identifier)
+        let defaultPredicateDateUserDefaultsKey = UserDefaults.Keys.bulkUploadDefaultPredicateDatePrefix.appending(sampleType.identifier)
         guard let date = UserDefaults.standard.object(forKey: defaultPredicateDateUserDefaultsKey) as? Date else {
             // We start date collection at the previous full minute mark to make the
             // data collection deterministic to manually entered data in HealthKit.
@@ -93,8 +94,7 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
         }
         
         switch deliverySetting {
-        case let .anchorQuery(startSetting, _) where startSetting == .automatic,
-            let .background(startSetting, _) where startSetting == .automatic:
+        case let .anchorQuery(startSetting, _) where startSetting == .automatic:
             await triggerManualDataSourceCollection()
         default:
             break
@@ -107,16 +107,8 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
         }
         
         do {
-            switch deliverySetting {
-            case .manual:
-                try await anchoredBulkUploadQuery()
-            case .anchorQuery:
-                active = true
-                try await anchoredContinuousObjectQuery()
-            case .background:
-                // not sure what to do here
-                print("")
-            }
+            active = true
+            try await anchoredBulkUploadQuery()
         } catch {
             Logger.healthKit.error("Could not Process HealthKit data collection: \(error.localizedDescription)")
         }
@@ -139,7 +131,6 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
         var result = try await anchorDescriptor.result(for: healthStore)
         
         // continue reading bulkSize batches of data until theres no new data
-        // to do: parallelize this
         repeat {
             for deletedObject in result.deletedObjects {
                 await standard.remove(sample: deletedObject)
@@ -150,8 +141,7 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
             }
             
             // advance the anchor
-            let newAnchor = result.newAnchor
-            anchor = newAnchor
+            anchor = result.newAnchor
             
             anchorDescriptor = HKAnchoredObjectQueryDescriptor(
                 predicates: [
@@ -161,12 +151,7 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
                 limit: bulkSize
             )
             result = try await anchorDescriptor.result(for: healthStore)
-            
-        } while (result.addedSamples != []) && (result.deletedObjects != [])
-    }
-    
-    // is this still needed ? since we will really only want to do bulkupload once
-    private func anchoredContinuousObjectQuery() async throws {
+        } while (!result.addedSamples.isEmpty) && (!result.deletedObjects.isEmpty)
     }
     
     private func saveAnchor() {
