@@ -26,10 +26,10 @@ import Spezi
 /// }
 /// ```
 ///
-public protocol BulkUploadConstraint: HealthKitConstraint, Standard {
+public protocol BulkUploadConstraint: Standard {
     /// Notifies the `Standard` about the addition of a batch of HealthKit ``HKSample`` samples instance.
     /// - Parameter samplesAdded: The batch of `HKSample`s that should be added.
     /// - Parameter objectsDeleted: The batch of `HKSample`s that were deleted from the HealthStore. Included if needed to account for rate limiting
     /// when uploading to a cloud provider.
-    func add_bulk(samplesAdded: [HKSample], samplesDeleted: [HKDeletedObject]) async
+    func processBulk(samplesAdded: [HKSample], samplesDeleted: [HKDeletedObject]) async
 }

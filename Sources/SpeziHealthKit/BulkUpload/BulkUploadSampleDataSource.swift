@@ -123,7 +123,7 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
         
         // continue reading bulkSize batches of data until theres no new data
         repeat {
-            await standard.add_bulk(samplesAdded: result.addedSamples, samplesDeleted: result.deletedObjects)
+            await standard.processBulk(samplesAdded: result.addedSamples, samplesDeleted: result.deletedObjects)
             
             // advance the anchor
             anchor = result.newAnchor
