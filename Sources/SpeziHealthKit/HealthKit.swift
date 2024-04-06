@@ -68,7 +68,7 @@ import SwiftUI
 /// ```
 @Observable
 public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializable {
-    @ObservationIgnored @StandardActor private var standard: any HealthKitConstraint
+    @ObservationIgnored @StandardActor private var standard: any Standard
     private let healthStore: HKHealthStore
     private var initialHealthKitDataSourceDescriptions: [HealthKitDataSourceDescription] = []
     private var healthKitDataSourceDescriptions: [HealthKitDataSourceDescription] = []

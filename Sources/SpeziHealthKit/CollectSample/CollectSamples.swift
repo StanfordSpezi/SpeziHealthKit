@@ -36,12 +36,37 @@ public struct CollectSamples: HealthKitDataSourceDescription {
     
     public func dataSources(
         healthStore: HKHealthStore,
-        standard: any HealthKitConstraint
+        standard: any Standard
     ) -> [any HealthKitDataSource] {
-        sampleTypes.map { sampleType in
+        guard let healthKitConstraint = standard as? any HealthKitConstraint else {
+            preconditionFailure(
+                """
+                The `Standard` defined in the `Configuration` does not conform to \(String(describing: (any HealthKitConstraint).self)).
+                
+                Ensure that you define an appropriate standard in your configuration in your `SpeziAppDelegate` subclass ...
+                ```
+                var configuration: Configuration {
+                    Configuration(standard: \(String(describing: standard))()) {
+                        // ...
+                    }
+                }
+                ```
+                
+                ... and that your standard conforms to \(String(describing: (any HealthKitConstraint).self)):
+                
+                ```swift
+                actor \(String(describing: standard)): Standard, \(String(describing: (any HealthKitConstraint).self)) {
+                    // ...
+                }
+                ```
+                """
+            )
+        }
+        
+        return sampleTypes.map { sampleType in
             HealthKitSampleDataSource(
                 healthStore: healthStore,
-                standard: standard,
+                standard: healthKitConstraint,
                 sampleType: sampleType,
                 predicate: predicate,
                 deliverySetting: deliverySetting
