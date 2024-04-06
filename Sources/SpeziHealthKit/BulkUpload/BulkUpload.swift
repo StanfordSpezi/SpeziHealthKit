@@ -35,16 +35,37 @@ public struct BulkUpload: HealthKitDataSourceDescription {
         self.deliverySetting = HealthKitDeliverySetting.anchorQuery(deliveryStartSetting, saveAnchor: true)
     }
     
-    public func dataSources(healthStore: HKHealthStore, standard: any HealthKitConstraint) -> [any HealthKitDataSource] {
+    public func dataSources(healthStore: HKHealthStore, standard: any Standard) -> [any HealthKitDataSource] {
         // Ensure the 'standard' actually conforms to 'BulkUploadConstraint' to use specific add_bulk function.
-        guard let bulkStandard = standard as? any BulkUploadConstraint else {
-            fatalError("Standard must conform to BulkUploadConstraint for BulkUpload data sources.")
+        guard let bulkUploadConstraint = standard as? any BulkUploadConstraint else {
+            preconditionFailure(
+                """
+                The `Standard` defined in the `Configuration` does not conform to \(String(describing: (any HealthKitConstraint).self)).
+                
+                Ensure that you define an appropriate standard in your configuration in your `SpeziAppDelegate` subclass ...
+                ```
+                var configuration: Configuration {
+                    Configuration(standard: \(String(describing: standard))()) {
+                        // ...
+                    }
+                }
+                ```
+                
+                ... and that your standard conforms to \(String(describing: (any HealthKitConstraint).self)):
+                
+                ```swift
+                actor \(String(describing: standard)): Standard, \(String(describing: (any HealthKitConstraint).self)) {
+                    // ...
+                }
+                ```
+                """
+            )
         }
         
         return sampleTypes.map { sampleType in
             BulkUploadSampleDataSource(
                 healthStore: healthStore,
-                standard: bulkStandard,
+                standard: bulkUploadConstraint,
                 sampleType: sampleType,
                 predicate: predicate,
                 deliverySetting: deliverySetting,
