@@ -31,5 +31,6 @@ public protocol BulkUploadConstraint: Standard {
     /// - Parameter samplesAdded: The batch of `HKSample`s that should be added.
     /// - Parameter objectsDeleted: The batch of `HKSample`s that were deleted from the HealthStore. Included if needed to account for rate limiting
     /// when uploading to a cloud provider.
-    func processBulk(samplesAdded: [HKSample], samplesDeleted: [HKDeletedObject]) async
+    /// - Parameter bulkSize: The specified size of each batch of samples to be fetched.
+    func processBulk(samplesAdded: [HKSample], samplesDeleted: [HKDeletedObject], bulkSize: Int) async
 }

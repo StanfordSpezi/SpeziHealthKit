@@ -123,7 +123,7 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
         
         // continue reading bulkSize batches of data until theres no new data
         repeat {
-            await standard.processBulk(samplesAdded: result.addedSamples, samplesDeleted: result.deletedObjects)
+            await standard.processBulk(samplesAdded: result.addedSamples, samplesDeleted: result.deletedObjects, bulkSize: bulkSize)
             
             // advance the anchor
             anchor = result.newAnchor
@@ -136,7 +136,7 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
                 limit: bulkSize
             )
             result = try await anchorDescriptor.result(for: healthStore)
-        } while (!result.addedSamples.isEmpty) && (!result.deletedObjects.isEmpty)
+        } while (!result.addedSamples.isEmpty) || (!result.deletedObjects.isEmpty)
     }
     
     private func saveAnchor() {

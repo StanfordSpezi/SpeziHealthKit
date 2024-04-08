@@ -81,4 +81,9 @@ class HealthKitStore: Module, DefaultInitializable, EnvironmentAccessible {
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
         try? await UNUserNotificationCenter.current().add(request)
     }
+    
+    @MainActor
+    func processBulk(samplesAdded: [HKSample], samplesDeleted: [HKDeletedObject], bulkSize: Int) async {
+        samples.append(contentsOf: samplesAdded)
+    }
 }

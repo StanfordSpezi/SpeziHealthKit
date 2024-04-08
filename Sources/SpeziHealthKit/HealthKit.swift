@@ -143,8 +143,11 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
         guard !authorized else {
             return
         }
-        
-        try await healthStore.requestAuthorization(toShare: [], read: healthKitSampleTypes)
+        let toShareSampleTypes: Set<HKSampleType> = [
+            HKObjectType.quantityType(forIdentifier: .stepCount)!,
+            HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!
+        ]
+        try await healthStore.requestAuthorization(toShare: toShareSampleTypes, read: healthKitSampleTypes)
 
         alreadyRequestedSampleTypes = healthKitSampleTypesIdentifiers
         
