@@ -30,7 +30,7 @@ class TestAppDelegate: SpeziAppDelegate {
                     Set([HKQuantityType(.stepCount)]),
                     predicate: HKQuery.predicateForSamples(
                         withStart: Calendar.current.date(byAdding: .month, value: -6, to: .now),
-                        end: nil,
+                        end: Date(),
                         options: .strictEndDate
                     ),
                     bulkSize: 100,
@@ -40,7 +40,7 @@ class TestAppDelegate: SpeziAppDelegate {
                     Set([HKQuantityType(.activeEnergyBurned)]),
                     predicate: HKQuery.predicateForSamples(
                         withStart: Calendar.current.date(byAdding: .month, value: -6, to: .now),
-                        end: nil,
+                        end: Date(),
                         options: .strictEndDate
                     ),
                     bulkSize: 2,

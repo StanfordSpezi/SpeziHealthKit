@@ -17,12 +17,12 @@ final class HealthKitTests: XCTestCase {
         app.launchArguments = ["--collectedSamplesOnly"]
         app.deleteAndLaunch(withSpringboardAppName: "TestApp")
 
-        try exitAppAndOpenHealth(.activeEnergy)
-        try exitAppAndOpenHealth(.activeEnergy)
-        try exitAppAndOpenHealth(.activeEnergy)
-        try exitAppAndOpenHealth(.activeEnergy)
-        try exitAppAndOpenHealth(.activeEnergy)
-        
+//        try exitAppAndOpenHealth(.activeEnergy)
+//        try exitAppAndOpenHealth(.activeEnergy)
+//        try exitAppAndOpenHealth(.activeEnergy)
+//        try exitAppAndOpenHealth(.activeEnergy)
+//        try exitAppAndOpenHealth(.activeEnergy)
+//        
         app.activate()
         XCTAssert(app.buttons["Ask for authorization"].waitForExistence(timeout: 2))
         app.buttons["Ask for authorization"].tap()

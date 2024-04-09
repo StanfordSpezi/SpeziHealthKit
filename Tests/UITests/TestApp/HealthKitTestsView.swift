@@ -14,6 +14,17 @@ import SwiftUI
 struct HealthKitTestsView: View {
     @Environment(HealthKit.self) var healthKitModule
     @Environment(HealthKitStore.self) var healthKitStore
+    var toShareSampleTypes: Set<HKSampleType> = [
+        HKObjectType.quantityType(forIdentifier: .stepCount)!
+    ]
+    var toReadSampleTypes: Set<HKSampleType> = [
+        HKObjectType.quantityType(forIdentifier: .stepCount)!,
+        HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!,
+        HKObjectType.electrocardiogramType(),
+        HKObjectType.quantityType(forIdentifier: .restingHeartRate)!,
+        HKObjectType.quantityType(forIdentifier: .pushCount)!
+    ]
+    let HKStore = HKHealthStore()
     
     var body: some View {
         List {
@@ -46,14 +57,27 @@ struct HealthKitTestsView: View {
     }
     
     func injectStepCountData() async {
+        try? await HKStore.requestAuthorization(toShare: toShareSampleTypes, read: [])
+        
         // Generate sample data
         guard let quantityType = HKQuantityType.quantityType(forIdentifier: .stepCount) else {
             print("Step count quantity type not available.")
             return
         }
-        let HKStore = HKHealthStore()
-        let startDate = Date()
-        let endDate = Calendar.current.date(byAdding: .minute, value: 5, to: startDate)!
+//        let HKStore = HKHealthStore()
+//        
+//        try? await HKStore.requestAuthorization(toShare: toShareSampleTypes, read: [])
+        
+        // Subtract 5 minutes from the current date
+        guard let startDate = Calendar.current.date(byAdding: .minute, value: -5, to: Date()) else {
+            fatalError("Error: Could not calculate start date")
+        }
+
+        // Add 2 minutes to the start date
+        guard let endDate = Calendar.current.date(byAdding: .minute, value: 2, to: startDate) else {
+            fatalError("Error: Could not calculate end date")
+        }
+        
         for num in 1...500 {
             let quantity = HKQuantity(unit: .count(), doubleValue: Double(num)) // Simulated step count
             let sample = HKQuantitySample(type: quantityType, quantity: quantity, start: startDate, end: endDate)
