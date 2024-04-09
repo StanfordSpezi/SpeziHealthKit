@@ -52,25 +52,6 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
     }
     // swiftlint:enable function_default_parameter_at_end
     
-    
-    private static func loadDefaultQueryDate(for sampleType: HKSampleType) -> Date {
-        let defaultPredicateDateUserDefaultsKey = UserDefaults.Keys.bulkUploadDefaultPredicateDatePrefix.appending(sampleType.identifier)
-        guard let date = UserDefaults.standard.object(forKey: defaultPredicateDateUserDefaultsKey) as? Date else {
-            // We start date collection at the previous full minute mark to make the
-            // data collection deterministic to manually entered data in HealthKit.
-            var components = Calendar.current.dateComponents(in: .current, from: .now)
-            components.setValue(0, for: .second)
-            components.setValue(0, for: .nanosecond)
-            let defaultQueryDate = components.date ?? .now
-            
-            UserDefaults.standard.set(defaultQueryDate, forKey: defaultPredicateDateUserDefaultsKey)
-            
-            return defaultQueryDate
-        }
-        return date
-    }
-    
-    
     func askedForAuthorization() async {
         guard askedForAuthorization(for: sampleType) && !deliverySetting.isManual && !active else {
             return
@@ -123,7 +104,7 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
         
         // continue reading bulkSize batches of data until theres no new data
         repeat {
-            await standard.processBulk(samplesAdded: result.addedSamples, samplesDeleted: result.deletedObjects, bulkSize: bulkSize)
+            await standard.processBulk(samplesAdded: result.addedSamples, samplesDeleted: result.deletedObjects)
             
             // advance the anchor
             anchor = result.newAnchor

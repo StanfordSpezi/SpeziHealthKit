@@ -15,8 +15,8 @@ import SpeziHealthKit
 actor HealthKitTestAppStandard: Standard, HealthKitConstraint, BulkUploadConstraint {
     @Dependency private var healthKitStore: HealthKitStore
     
-    func processBulk(samplesAdded: [HKSample], samplesDeleted: [HKDeletedObject], bulkSize: Int) async {
-        await healthKitStore.processBulk(samplesAdded: samplesAdded, samplesDeleted: samplesDeleted, bulkSize: bulkSize)
+    func processBulk(samplesAdded: [HKSample], samplesDeleted: [HKDeletedObject]) async {
+        await healthKitStore.processBulk(samplesAdded: samplesAdded, samplesDeleted: samplesDeleted)
     }
     
     func add(sample: HKSample) async {
