@@ -36,7 +36,7 @@ public struct BulkUpload: HealthKitDataSourceDescription {
     }
     
     public func dataSources(healthStore: HKHealthStore, standard: any Standard) -> [any HealthKitDataSource] {
-        // Ensure the 'standard' actually conforms to 'BulkUploadConstraint' to use specific add_bulk function.
+        // Ensure the 'standard' actually conforms to 'BulkUploadConstraint' to use specific processBulk function.
         guard let bulkUploadConstraint = standard as? any BulkUploadConstraint else {
             preconditionFailure(
                 """

@@ -52,25 +52,6 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
     }
     // swiftlint:enable function_default_parameter_at_end
     
-    
-    private static func loadDefaultQueryDate(for sampleType: HKSampleType) -> Date {
-        let defaultPredicateDateUserDefaultsKey = UserDefaults.Keys.bulkUploadDefaultPredicateDatePrefix.appending(sampleType.identifier)
-        guard let date = UserDefaults.standard.object(forKey: defaultPredicateDateUserDefaultsKey) as? Date else {
-            // We start date collection at the previous full minute mark to make the
-            // data collection deterministic to manually entered data in HealthKit.
-            var components = Calendar.current.dateComponents(in: .current, from: .now)
-            components.setValue(0, for: .second)
-            components.setValue(0, for: .nanosecond)
-            let defaultQueryDate = components.date ?? .now
-            
-            UserDefaults.standard.set(defaultQueryDate, forKey: defaultPredicateDateUserDefaultsKey)
-            
-            return defaultQueryDate
-        }
-        return date
-    }
-    
-    
     func askedForAuthorization() async {
         guard askedForAuthorization(for: sampleType) && !deliverySetting.isManual && !active else {
             return
@@ -108,6 +89,23 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
     
     private func anchoredBulkUploadQuery() async throws {
         try await healthStore.requestAuthorization(toShare: [], read: [sampleType])
+        var totalSamples: Int = 0
+
+        // Initial query to fetch the total count of samples
+        let countQuery = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: HKObjectQueryNoLimit,
+                                       sortDescriptors: nil) { (query, results, error) in
+            guard let samples = results else {
+                print("Could not retrieve samples of current sample type")
+                print(self.sampleType)
+                return
+            }
+            // Here you can store the total count
+            totalSamples = samples.count
+            print("inside countQuery")
+            print(totalSamples)
+        }
+        healthStore.execute(countQuery)
+        
         
         // create an anchor descriptor that reads a data batch of the defined bulkSize
         var anchorDescriptor = HKAnchoredObjectQueryDescriptor(
@@ -136,7 +134,7 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
                 limit: bulkSize
             )
             result = try await anchorDescriptor.result(for: healthStore)
-        } while (!result.addedSamples.isEmpty) && (!result.deletedObjects.isEmpty)
+        } while (!result.addedSamples.isEmpty) || (!result.deletedObjects.isEmpty)
     }
     
     private func saveAnchor() {
