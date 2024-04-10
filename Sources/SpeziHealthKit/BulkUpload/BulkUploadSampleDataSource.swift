@@ -73,7 +73,9 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
             return
         }
         
-        await triggerManualDataSourceCollection()
+        Task.detached {
+            await self.triggerManualDataSourceCollection()
+        }
     }
     
     func startAutomaticDataCollection() async {
