@@ -12,7 +12,7 @@ import OSLog
 import Spezi
 import SwiftUI
 
-
+@Observable
 final class BulkUploadSampleDataSource: HealthKitDataSource {
     let healthStore: HKHealthStore
     let standard: any BulkUploadConstraint
@@ -22,15 +22,28 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
     let deliverySetting: HealthKitDeliverySetting
     let bulkSize: Int
     var active = false
+    var totalSamples: Int = 0
+    var processedSamples: Int = 0 {
+        didSet {
+            saveProcessedSamples()
+        }
+    }
     
-    
-    private lazy var anchorUserDefaultsKey = UserDefaults.Keys.bulkUploadAnchorPrefix.appending(sampleType.identifier)
-    private lazy var anchor: HKQueryAnchor? = loadAnchor() {
+    // lazy variables cannot be observable
+    @ObservationIgnored private lazy var anchorUserDefaultsKey = UserDefaults.Keys.bulkUploadAnchorPrefix.appending(sampleType.identifier)
+    @ObservationIgnored private lazy var totalSamplesKey = UserDefaults.Keys.bulkUploadTotalSamplesPrefix.appending(sampleType.identifier)
+    @ObservationIgnored private lazy var processedSamplesKey = UserDefaults.Keys.bulkUploadProcessedSamplesPrefix.appending(sampleType.identifier)
+    @ObservationIgnored private lazy var anchor: HKQueryAnchor? = loadAnchor() {
         didSet {
             saveAnchor()
         }
     }
     
+    var progress: Progress {
+        let progress = Progress(totalUnitCount: Int64(totalSamples))
+        progress.completedUnitCount = Int64(processedSamples)
+        return progress
+    }
     
     // We disable the SwiftLint as we order the parameters in a logical order and
     // therefore don't put the predicate at the end here.
@@ -49,6 +62,9 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
         self.deliverySetting = deliverySetting
         self.bulkSize = bulkSize
         self.predicate = predicate
+        
+        loadTotalSamplesOnce()
+        self.processedSamples = loadProcessedSamples()
     }
     // swiftlint:enable function_default_parameter_at_end
     
@@ -89,23 +105,6 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
     
     private func anchoredBulkUploadQuery() async throws {
         try await healthStore.requestAuthorization(toShare: [], read: [sampleType])
-        var totalSamples: Int = 0
-
-        // Initial query to fetch the total count of samples
-        let countQuery = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: HKObjectQueryNoLimit,
-                                       sortDescriptors: nil) { (query, results, error) in
-            guard let samples = results else {
-                print("Could not retrieve samples of current sample type")
-                print(self.sampleType)
-                return
-            }
-            // Here you can store the total count
-            totalSamples = samples.count
-            print("inside countQuery")
-            print(totalSamples)
-        }
-        healthStore.execute(countQuery)
-        
         
         // create an anchor descriptor that reads a data batch of the defined bulkSize
         var anchorDescriptor = HKAnchoredObjectQueryDescriptor(
@@ -122,6 +121,7 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
         // continue reading bulkSize batches of data until theres no new data
         repeat {
             await standard.processBulk(samplesAdded: result.addedSamples, samplesDeleted: result.deletedObjects)
+            self.processedSamples += result.addedSamples.count + result.deletedObjects.count
             
             // advance the anchor
             anchor = result.newAnchor
@@ -156,5 +156,31 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
         }
         
         return loadedAnchor
+    }
+    
+    private func loadTotalSamplesOnce() {
+        let cachedTotal = UserDefaults.standard.integer(forKey: totalSamplesKey)
+        if cachedTotal != 0 { // user defaults to 0 if key is missing
+            self.totalSamples = cachedTotal
+        } else {
+            // Initial query to fetch the total count of samples
+            _ = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: HKObjectQueryNoLimit,
+                                           sortDescriptors: nil) { (query, results, error) in
+                guard let samples = results else {
+                    print("Error computing total size of bulk upload: could not retrieve samples of current sample type")
+                    return
+                }
+                UserDefaults.standard.set(samples.count, forKey: self.totalSamplesKey)
+                self.totalSamples = samples.count
+            }
+        }
+    }
+    
+    private func saveProcessedSamples() {
+        UserDefaults.standard.set(processedSamples, forKey: processedSamplesKey)
+    }
+    
+    private func loadProcessedSamples() -> Int {
+        return UserDefaults.standard.integer(forKey: processedSamplesKey)
     }
 }
