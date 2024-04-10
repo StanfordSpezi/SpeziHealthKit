@@ -39,7 +39,7 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
         }
     }
     
-    var progress: Progress {
+    public var progress: Progress {
         let progress = Progress(totalUnitCount: Int64(totalSamples))
         progress.completedUnitCount = Int64(processedSamples)
         return progress
