@@ -8,9 +8,8 @@
 // Created by Bryant Jimenez and Matthew Joerke
 
 import HealthKit
-import OSLog
 import Spezi
-import SwiftUI
+import OSLog
 
 @Observable
 final class BulkUploadSampleDataSource: HealthKitDataSource {
@@ -62,13 +61,11 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
         self.deliverySetting = deliverySetting
         self.bulkSize = bulkSize
         self.predicate = predicate
-        
-        loadTotalSamplesOnce()
-        self.processedSamples = loadProcessedSamples()
     }
     // swiftlint:enable function_default_parameter_at_end
     
     func askedForAuthorization() async {
+        Logger.healthKit.debug("BulkUpload(\(self.sampleType)): askedForAuthorization()")
         guard askedForAuthorization(for: sampleType) && !deliverySetting.isManual && !active else {
             return
         }
@@ -79,19 +76,21 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
     }
     
     func startAutomaticDataCollection() async {
+        Logger.healthKit.debug("BulkUpload(\(self.sampleType)): startAutomaticDataCollection()")
         guard askedForAuthorization(for: sampleType) else {
             return
         }
         
         switch deliverySetting {
         case let .anchorQuery(startSetting, _) where startSetting == .automatic:
-            await triggerManualDataSourceCollection()
+            await self.triggerManualDataSourceCollection()
         default:
             break
         }
     }
     
     func triggerManualDataSourceCollection() async {
+        Logger.healthKit.debug("BulkUpload(\(self.sampleType)): triggerManualDataSourceCollection()")
         guard !active else {
             return
         }
@@ -107,6 +106,10 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
     
     private func anchoredBulkUploadQuery() async throws {
         try await healthStore.requestAuthorization(toShare: [], read: [sampleType])
+        
+        await loadTotalSamplesOnce()
+        self.processedSamples = loadProcessedSamples()
+        Logger.healthKit.debug("BulkUpload(\(self.sampleType)): beginning/resuming anchoredBulkUploadQuery with progress: \(self.processedSamples)/\(self.totalSamples)")
         
         // create an anchor descriptor that reads a data batch of the defined bulkSize
         var anchorDescriptor = HKAnchoredObjectQueryDescriptor(
@@ -124,6 +127,7 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
         repeat {
             await standard.processBulk(samplesAdded: result.addedSamples, samplesDeleted: result.deletedObjects)
             self.processedSamples += result.addedSamples.count + result.deletedObjects.count
+            Logger.healthKit.debug("BulkUpload(\(self.sampleType)): processed \(self.processedSamples)/\(self.totalSamples)")
             
             // advance the anchor
             anchor = result.newAnchor
@@ -140,40 +144,51 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
     }
     
     private func saveAnchor() {
+        Logger.healthKit.debug("BulkUpload(\(self.sampleType)): saving anchor...")
         if deliverySetting.saveAnchor {
             guard let anchor,
                   let data = try? NSKeyedArchiver.archivedData(withRootObject: anchor, requiringSecureCoding: true) else {
+                Logger.healthKit.warning("Failed to save anchor")
                 return
             }
             
             UserDefaults.standard.set(data, forKey: anchorUserDefaultsKey)
         }
+        Logger.healthKit.debug("BulkUpload(\(self.sampleType): saved anchor")
     }
     
     private func loadAnchor() -> HKQueryAnchor? {
+        Logger.healthKit.debug("BulkUpload(\(self.sampleType)): loading anchor...")
         guard deliverySetting.saveAnchor,
               let userDefaultsData = UserDefaults.standard.data(forKey: anchorUserDefaultsKey),
               let loadedAnchor = try? NSKeyedUnarchiver.unarchivedObject(ofClass: HKQueryAnchor.self, from: userDefaultsData) else {
+            Logger.healthKit.warning("Failed to load anchor")
             return nil
         }
-        
+        Logger.healthKit.debug("BulkUpload(\(self.sampleType)): loaded anchor")
         return loadedAnchor
     }
     
-    private func loadTotalSamplesOnce() {
+    private func loadTotalSamplesOnce() async {
         let cachedTotal = UserDefaults.standard.integer(forKey: totalSamplesKey)
         if cachedTotal != 0 { // user defaults to 0 if key is missing
             self.totalSamples = cachedTotal
         } else {
-            // Initial query to fetch the total count of samples
-            _ = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: HKObjectQueryNoLimit,
-                                           sortDescriptors: nil) { (query, results, error) in
-                guard let samples = results else {
-                    print("Error computing total size of bulk upload: could not retrieve samples of current sample type")
-                    return
-                }
-                UserDefaults.standard.set(samples.count, forKey: self.totalSamplesKey)
-                self.totalSamples = samples.count
+            Logger.healthKit.debug("Executing HKQuery for \(self.sampleType) to compute initial bulk upload count...")
+            do {
+                let descriptor = HKSampleQueryDescriptor(
+                    predicates: [
+                        .sample(type: sampleType, predicate: predicate)
+                    ],
+                    sortDescriptors: []
+                )
+                let results = try await descriptor.result(for: healthStore)
+                let count = results.count
+                UserDefaults.standard.set(count, forKey: totalSamplesKey)
+                self.totalSamples = count
+                Logger.healthKit.debug("Fetched total count for \(self.sampleType): \(self.totalSamples)")
+            } catch {
+                Logger.healthKit.error("Error computing total size of bulk upload: could not retrieve samples of current sample type: \(error.localizedDescription)")
             }
         }
     }

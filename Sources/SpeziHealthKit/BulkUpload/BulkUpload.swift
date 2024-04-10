@@ -9,6 +9,7 @@
 
 import HealthKit
 import Spezi
+import OSLog
 
 /// Collects batches of `HKSampleType`s  in the ``HealthKit`` module for upload.
 public struct BulkUpload: HealthKitDataSourceDescription {
@@ -33,6 +34,7 @@ public struct BulkUpload: HealthKitDataSourceDescription {
         self.predicate = predicate
         self.bulkSize = bulkSize
         self.deliverySetting = HealthKitDeliverySetting.anchorQuery(deliveryStartSetting, saveAnchor: true)
+        Logger.healthKit.info("Initialized BulkUpload data source")
     }
     
     public func dataSources(healthStore: HKHealthStore, standard: any Standard) -> [any HealthKitDataSource] {
