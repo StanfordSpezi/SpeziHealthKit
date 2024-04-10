@@ -84,6 +84,8 @@ class HealthKitStore: Module, DefaultInitializable, EnvironmentAccessible {
     
     @MainActor
     func processBulk(samplesAdded: [HKSample], samplesDeleted: [HKDeletedObject]) async {
+        print("inside processBulk")
+        print(samplesAdded.count)
         samples.append(contentsOf: samplesAdded)
     }
 }

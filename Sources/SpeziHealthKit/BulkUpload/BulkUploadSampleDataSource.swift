@@ -89,6 +89,23 @@ final class BulkUploadSampleDataSource: HealthKitDataSource {
     
     private func anchoredBulkUploadQuery() async throws {
         try await healthStore.requestAuthorization(toShare: [], read: [sampleType])
+        var totalSamples: Int = 0
+        
+        // Initial query to fetch the total count of samples
+            let countQuery = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: HKObjectQueryNoLimit, 
+                                           sortDescriptors: nil) { (query, results, error) in
+                guard let samples = results else {
+                    print("Could not retrieve samples of current sample type")
+                    print(self.sampleType)
+                    return
+                }
+                // Here you can store the total count
+                totalSamples = samples.count
+                print("inside countQuery")
+                print(totalSamples)
+            }
+        healthStore.execute(countQuery)
+        
         
         // create an anchor descriptor that reads a data batch of the defined bulkSize
         var anchorDescriptor = HKAnchoredObjectQueryDescriptor(
