@@ -74,6 +74,21 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     private var healthKitDataSourceDescriptions: [HealthKitDataSourceDescription] = []
     @ObservationIgnored private var healthKitComponents: [any HealthKitDataSource] = []
     
+    public var progress: Progress {
+        var totalUnitCount: Int64 = 0
+        var completedUnitCount: Int64 = 0
+        for dataSource in healthKitComponents {
+            if let bulkDataSource = dataSource as? BulkUploadSampleDataSource {
+                let individualProgress = bulkDataSource.progress
+                totalUnitCount += individualProgress.totalUnitCount
+                completedUnitCount += individualProgress.completedUnitCount
+            }
+        }
+        let macroProgress = Progress(totalUnitCount: totalUnitCount)
+        macroProgress.completedUnitCount = completedUnitCount
+        return macroProgress
+    }
+    
     
     private var healthKitSampleTypes: Set<HKSampleType> {
         (initialHealthKitDataSourceDescriptions + healthKitDataSourceDescriptions).reduce(into: Set()) {
