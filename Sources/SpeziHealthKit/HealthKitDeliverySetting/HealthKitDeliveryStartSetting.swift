@@ -8,7 +8,7 @@
 
 
 /// Determines when the HealthKit data collection is started.
-public enum HealthKitDeliveryStartSetting: Equatable {
+public enum HealthKitDeliveryStartSetting {
     /// The delivery is started the first time the ``HealthKit/triggerDataSourceCollection()`` function is called.
     case manual
     /// The delivery is started automatically after the user provided authorization and the application has launched.
@@ -19,6 +19,7 @@ public enum HealthKitDeliveryStartSetting: Equatable {
     @available(
         *,
         deprecated,
+        renamed: "automatic",
         message:
         """
         Please use `.automatic`.
@@ -27,3 +28,6 @@ public enum HealthKitDeliveryStartSetting: Equatable {
     public static let afterAuthorizationAndApplicationWillLaunch: HealthKitDeliveryStartSetting = .automatic // swiftlint:disable:this identifier_name
     // We use a name longer than 40 characters to indicate the full depth of this setting.
 }
+
+
+extension HealthKitDeliveryStartSetting: Sendable, Hashable {}

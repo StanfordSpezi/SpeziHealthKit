@@ -6,11 +6,19 @@
 // SPDX-License-Identifier: MIT
 //
 
-import HealthKit
+@preconcurrency import HealthKit
 import Spezi
 
 
-extension HKSample: Identifiable {
+#if compiler(<6)
+extension HealthKit.HKSample: Swift.Identifiable {}
+#else
+extension HKSample: @retroactive Identifiable {}
+#endif
+
+
+extension HKSample {
+    /// The `uuid` identifier.
     public var id: UUID {
         uuid
     }
@@ -20,6 +28,7 @@ extension HKHealthStore {
     // We disable the SwiftLint as we order the parameters in a logical order and
     // therefore don't put the predicate at the end here.
     // swiftlint:disable function_default_parameter_at_end
+    @MainActor
     func anchoredSingleObjectQuery(
         for sampleType: HKSampleType,
         using anchor: HKQueryAnchor? = nil,

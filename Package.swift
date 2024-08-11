@@ -8,7 +8,15 @@
 // SPDX-License-Identifier: MIT
 //
 
+import class Foundation.ProcessInfo
 import PackageDescription
+
+
+#if swift(<6)
+let swiftConcurrency: SwiftSetting = .enableExperimentalFeature("StrictConcurrency")
+#else
+let swiftConcurrency: SwiftSetting = .enableUpcomingFeature("StrictConcurrency")
+#endif
 
 
 let package = Package(
@@ -21,21 +29,47 @@ let package = Package(
         .library(name: "SpeziHealthKit", targets: ["SpeziHealthKit"])
     ],
     dependencies: [
-        .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.2.0")
-    ],
+        .package(url: "https://github.com/StanfordSpezi/Spezi", branch: "feature/dependency-restructure")
+    ] + swiftLintPackage(),
     targets: [
         .target(
             name: "SpeziHealthKit",
             dependencies: [
                 .product(name: "Spezi", package: "Spezi")
-            ]
+            ],
+            swiftSettings: [
+                swiftConcurrency
+            ],
+            plugins: [] + swiftLintPlugin()
         ),
         .testTarget(
             name: "SpeziHealthKitTests",
             dependencies: [
                 .product(name: "XCTSpezi", package: "Spezi"),
                 .target(name: "SpeziHealthKit")
-            ]
+            ],
+            swiftSettings: [
+                swiftConcurrency
+            ],
+            plugins: [] + swiftLintPlugin()
         )
     ]
 )
+
+
+func swiftLintPlugin() -> [Target.PluginUsage] {
+    // Fully quit Xcode and open again with `open --env SPEZI_DEVELOPMENT_SWIFTLINT /Applications/Xcode.app`
+    if ProcessInfo.processInfo.environment["SPEZI_DEVELOPMENT_SWIFTLINT"] != nil {
+        [.plugin(name: "SwiftLintBuildToolPlugin", package: "SwiftLint")]
+    } else {
+        []
+    }
+}
+
+func swiftLintPackage() -> [PackageDescription.Package.Dependency] {
+    if ProcessInfo.processInfo.environment["SPEZI_DEVELOPMENT_SWIFTLINT"] != nil {
+        [.package(url: "https://github.com/realm/SwiftLint.git", .upToNextMinor(from: "0.55.1"))]
+    } else {
+        []
+    }
+}

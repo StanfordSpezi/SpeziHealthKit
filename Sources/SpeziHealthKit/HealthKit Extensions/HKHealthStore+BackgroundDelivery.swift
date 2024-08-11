@@ -12,14 +12,17 @@ import Spezi
 
 
 extension HKHealthStore {
-    private static var activeObservations: [HKObjectType: Int] = [:]
+    private static nonisolated(unsafe) var activeObservations: [HKObjectType: Int] = [:]
     private static let activeObservationsLock = NSLock()
     
-    
+
+    @MainActor
     func startBackgroundDelivery(
         for sampleTypes: Set<HKSampleType>,
         withPredicate predicate: NSPredicate? = nil,
-        observerQuery: @escaping (Result<(sampleTypes: Set<HKSampleType>, completionHandler: HKObserverQueryCompletionHandler), Error>) -> Void
+        observerQuery: @escaping @Sendable @MainActor (
+            Result<(sampleTypes: Set<HKSampleType>, completionHandler: HKObserverQueryCompletionHandler), Error>
+        ) async -> Void
     ) async throws {
         var queryDescriptors: [HKQueryDescriptor] = []
         for sampleType in sampleTypes {
@@ -29,15 +32,24 @@ extension HKHealthStore {
         }
         
         let observerQuery = HKObserverQuery(queryDescriptors: queryDescriptors) { query, samples, completionHandler, error in
+            // From https://developer.apple.com/documentation/healthkit/hkobserverquery/executing_observer_queries:
+            // "Whenever a matching sample is added to or deleted from the HealthKit store,
+            // the system calls the query’s update handler on the same background queue (but not necessarily the same thread)."
+            // So, the observerQuery has to be @Sendable!
+
             guard error == nil,
                   let samples else {
                 Logger.healthKit.error("Failed HealthKit background delivery for observer query \(query) with error: \(error)")
-                observerQuery(.failure(error ?? NSError(domain: "Spezi HealthKit", code: -1)))
-                completionHandler()
+                Task { @MainActor in
+                    await observerQuery(.failure(error ?? NSError(domain: "Spezi HealthKit", code: -1)))
+                    completionHandler()
+                }
                 return
             }
             
-            observerQuery(.success((samples, completionHandler)))
+            Task { @MainActor in
+                await observerQuery(.success((samples, completionHandler)))
+            }
         }
         
         self.execute(observerQuery)

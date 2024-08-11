@@ -10,11 +10,6 @@
 import OSLog
 
 extension Logger {
-    // swiftlint:disable force_unwrapping
-    /// Using the bundle identifier to ensure a unique identifier.
-    private static var subsystem = Bundle.main.bundleIdentifier!
-    // swiftlint:enable force_unwrapping
-
     /// Logs the view cycles like a view that appeared.
-    static let healthKit = Logger(subsystem: subsystem, category: "healthkit")
+    static let healthKit = Logger(subsystem: "edu.stanford.spezi", category: "HealthKit")
 }

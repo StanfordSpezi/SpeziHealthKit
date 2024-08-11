@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
-import HealthKit
+@preconcurrency import HealthKit
 import OSLog
 import Spezi
 import SwiftUI
@@ -19,10 +19,10 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
     let sampleType: HKSampleType
     let predicate: NSPredicate?
     let deliverySetting: HealthKitDeliverySetting
-    var active = false
-    
-    private lazy var anchorUserDefaultsKey = UserDefaults.Keys.healthKitAnchorPrefix.appending(sampleType.identifier)
-    private lazy var anchor: HKQueryAnchor? = loadAnchor() {
+    @MainActor var active = false
+
+    @MainActor private lazy var anchorUserDefaultsKey = UserDefaults.Keys.healthKitAnchorPrefix.appending(sampleType.identifier)
+    @MainActor private lazy var anchor: HKQueryAnchor? = loadAnchor() {
         didSet {
             saveAnchor()
         }
@@ -73,7 +73,8 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
         return date
     }
     
-    
+
+    @MainActor
     func askedForAuthorization() async {
         guard askedForAuthorization(for: sampleType) && !deliverySetting.isManual && !active else {
             return
@@ -86,7 +87,7 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
         guard askedForAuthorization(for: sampleType) else {
             return
         }
-        
+
         switch deliverySetting {
         case let .anchorQuery(startSetting, _) where startSetting == .automatic,
             let .background(startSetting, _) where startSetting == .automatic:
@@ -95,7 +96,8 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
             break
         }
     }
-    
+
+    @MainActor
     func triggerManualDataSourceCollection() async {
         guard !active else {
             return
@@ -111,58 +113,54 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
             case .background:
                 active = true
                 try await healthStore.startBackgroundDelivery(for: [sampleType]) { result in
-                    Task {
-                        guard case let .success((sampleTypes, completionHandler)) = result else {
-                            return
-                        }
-                        
-                        guard sampleTypes.contains(self.sampleType) else {
-                            Logger.healthKit.warning("Recieved Observation query types (\(sampleTypes)) are not corresponding to the CollectSample type \(self.sampleType)")
-                            completionHandler()
-                            return
-                        }
-                        
-                        do {
-                            try await self.anchoredSingleObjectQuery()
-                            Logger.healthKit.debug("Successfully processed background update for \(self.sampleType)")
-                        } catch {
-                            Logger.healthKit.error("Could not query samples in a background update for \(self.sampleType): \(error)")
-                        }
-                        
-                        // Provide feedback to HealthKit that the data has been processed: https://developer.apple.com/documentation/healthkit/hkobserverquerycompletionhandler
-                        completionHandler()
+                    guard case let .success((sampleTypes, completionHandler)) = result else {
+                        return
                     }
+
+                    guard sampleTypes.contains(self.sampleType) else {
+                        Logger.healthKit.warning("Received Observation query types (\(sampleTypes)) are not corresponding to the CollectSample type \(self.sampleType)")
+                        completionHandler()
+                        return
+                    }
+
+                    do {
+                        try await self.anchoredSingleObjectQuery()
+                        Logger.healthKit.debug("Successfully processed background update for \(self.sampleType)")
+                    } catch {
+                        Logger.healthKit.error("Could not query samples in a background update for \(self.sampleType): \(error)")
+                    }
+
+                    // Provide feedback to HealthKit that the data has been processed: https://developer.apple.com/documentation/healthkit/hkobserverquerycompletionhandler
+                    completionHandler()
                 }
             }
         } catch {
             Logger.healthKit.error("Could not Process HealthKit data collection: \(error.localizedDescription)")
         }
     }
-    
-    
+
+
+    @MainActor
     private func anchoredSingleObjectQuery() async throws {
         let resultsAnchor = try await healthStore.anchoredSingleObjectQuery(
-            for: self.sampleType,
+            for: self.sampleType, // TODO: method with speciic typ?
             using: self.anchor,
             withPredicate: predicate,
             standard: self.standard
         )
         self.anchor = resultsAnchor
     }
-    
+
+    @MainActor
     private func anchoredContinuousObjectQuery() async throws {
         try await healthStore.requestAuthorization(toShare: [], read: [sampleType])
         
         let anchorDescriptor = healthStore.anchorDescriptor(sampleType: sampleType, predicate: predicate, anchor: anchor)
         
         let updateQueue = anchorDescriptor.results(for: healthStore)
-        
+
         Task {
             for try await results in updateQueue {
-                if Task.isCancelled {
-                    return
-                }
-                
                 for deletedObject in results.deletedObjects {
                     await standard.remove(sample: deletedObject)
                 }
@@ -174,7 +172,8 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
             }
         }
     }
-    
+
+    @MainActor
     private func saveAnchor() {
         if deliverySetting.saveAnchor {
             guard let anchor,
@@ -185,7 +184,8 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
             UserDefaults.standard.set(data, forKey: anchorUserDefaultsKey)
         }
     }
-    
+
+    @MainActor
     private func loadAnchor() -> HKQueryAnchor? {
         guard deliverySetting.saveAnchor,
               let userDefaultsData = UserDefaults.standard.data(forKey: anchorUserDefaultsKey),
