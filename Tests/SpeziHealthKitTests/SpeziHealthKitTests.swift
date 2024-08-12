@@ -17,7 +17,7 @@ final class SpeziHealthKitTests: XCTestCase {
         HKQuantityType(.distanceWalkingRunning)
     ]
     
-    let healthKitModule = HealthKit {
+    @MainActor let healthKitModule = HealthKit {
         CollectSamples(
             collectedSamples,
             deliverySetting: .anchorQuery(.automatic)
@@ -30,11 +30,13 @@ final class SpeziHealthKitTests: XCTestCase {
     }
     
     /// No authorizations for HealthKit data are given in the ``UserDefaults``
+    @MainActor
     func testSpeziHealthKitCollectionNotAuthorized1() {
         XCTAssert(!healthKitModule.authorized)
     }
     
     /// Not enough authorizations for HealthKit data given in the ``UserDefaults``
+    @MainActor
     func testSpeziHealthKitCollectionNotAuthorized2() {
         // Set up UserDefaults
         UserDefaults.standard.set(
@@ -46,6 +48,7 @@ final class SpeziHealthKitTests: XCTestCase {
     }
     
     /// Authorization for HealthKit data are given in the ``UserDefaults``
+    @MainActor
     func testSpeziHealthKitCollectionAlreadyAuthorized() {
         // Set up UserDefaults
         UserDefaults.standard.set(
