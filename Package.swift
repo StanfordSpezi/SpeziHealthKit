@@ -38,7 +38,8 @@ let package = Package(
                 .product(name: "Spezi", package: "Spezi")
             ],
             swiftSettings: [
-                swiftConcurrency
+                swiftConcurrency,
+                .enableUpcomingFeature("InferSendableFromCaptures")
             ],
             plugins: [] + swiftLintPlugin()
         ),
