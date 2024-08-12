@@ -88,11 +88,11 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     private var alreadyRequestedSampleTypes: Set<String> {
         get {
             access(keyPath: \.alreadyRequestedSampleTypes)
-            return Set(UserDefaults.standard.stringArray(forKey: UserDefaults.Keys.healthKitRequestedSampleTypes) ?? [])
+            return UserDefaults.standard.alreadyRequestedSampleTypes
         }
         set {
             withMutation(keyPath: \.alreadyRequestedSampleTypes) {
-                UserDefaults.standard.set(Array(newValue), forKey: UserDefaults.Keys.healthKitRequestedSampleTypes)
+                UserDefaults.standard.alreadyRequestedSampleTypes = newValue
             }
         }
     }
@@ -130,13 +130,19 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
         self.healthStore = HKHealthStore()
     }
 
+    static func didAskForAuthorization(for sampleType: HKSampleType) -> Bool {
+        // `alreadyRequestedSampleTypes` is always just written using `healthKitSampleTypesIdentifiers`, so this can stay
+        // non-isolated as UserDefaults is generally thread-safe.
+        UserDefaults.standard.alreadyRequestedSampleTypes.contains(sampleType.identifier)
+    }
 
     public func configure() {
         for healthKitDataSourceDescription in initialHealthKitDataSourceDescriptions {
             execute(healthKitDataSourceDescription)
         }
     }
-    
+
+
     /// Displays the user interface to ask for authorization for all HealthKit data defined by the ``HealthKitDataSourceDescription``s.
     ///
     /// Call this function when you want to start HealthKit data collection.
@@ -176,7 +182,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     }
     
     /// Triggers any ``HealthKitDeliverySetting/manual(safeAnchor:)`` collections and starts the collection for all ``HealthKitDeliveryStartSetting/manual`` HealthKit data collections.
-    @MainActor // TODO: main actor?
+    @MainActor
     public func triggerDataSourceCollection() async {
         await withTaskGroup(of: Void.self) { group in
             for healthKitComponent in healthKitComponents {

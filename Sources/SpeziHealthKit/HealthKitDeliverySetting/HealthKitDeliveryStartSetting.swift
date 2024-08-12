@@ -15,7 +15,8 @@ public enum HealthKitDeliveryStartSetting {
     /// You can request authorization using the ``HealthKit/askForAuthorization()`` function.
     case automatic
     
-    
+
+    /// Legacy delivery setting, start after initialization
     @available(
         *,
         deprecated,
@@ -25,7 +26,9 @@ public enum HealthKitDeliveryStartSetting {
         Please use `.automatic`.
         """
     )
-    public static let afterAuthorizationAndApplicationWillLaunch: HealthKitDeliveryStartSetting = .automatic // swiftlint:disable:this identifier_name
+    @_documentation(visibility: internal)
+    public static let afterAuthorizationAndApplicationWillLaunch: HealthKitDeliveryStartSetting = .automatic
+    // swiftlint:disable:previous identifier_name
     // We use a name longer than 40 characters to indicate the full depth of this setting.
 }
 

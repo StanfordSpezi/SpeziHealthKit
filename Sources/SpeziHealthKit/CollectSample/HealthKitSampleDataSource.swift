@@ -27,11 +27,8 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
             saveAnchor()
         }
     }
-    
-    // We disable the SwiftLint as we order the parameters in a logical order and
-    // therefore don't put the predicate at the end here.
-    // swiftlint:disable function_default_parameter_at_end
-    required init(
+
+    required init( // swiftlint:disable:this function_default_parameter_at_end
         healthStore: HKHealthStore,
         standard: any HealthKitConstraint,
         sampleType: HKSampleType,
@@ -42,18 +39,17 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
         self.standard = standard
         self.sampleType = sampleType
         self.deliverySetting = deliverySetting
-        
-        if predicate == nil {
+
+        if let predicate {
+            self.predicate = predicate
+        } else {
             self.predicate = HKQuery.predicateForSamples(
                 withStart: HealthKitSampleDataSource.loadDefaultQueryDate(for: sampleType),
                 end: nil,
                 options: .strictEndDate
             )
-        } else {
-            self.predicate = predicate
         }
     }
-    // swiftlint:enable function_default_parameter_at_end
     
     
     private static func loadDefaultQueryDate(for sampleType: HKSampleType) -> Date {
@@ -74,7 +70,6 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
     }
     
 
-    @MainActor
     func askedForAuthorization() async {
         guard askedForAuthorization(for: sampleType) && !deliverySetting.isManual && !active else {
             return
@@ -82,7 +77,7 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
         
         await triggerManualDataSourceCollection()
     }
-    
+
     func startAutomaticDataCollection() async {
         guard askedForAuthorization(for: sampleType) else {
             return
@@ -97,7 +92,6 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
         }
     }
 
-    @MainActor
     func triggerManualDataSourceCollection() async {
         guard !active else {
             return
@@ -143,7 +137,7 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
     @MainActor
     private func anchoredSingleObjectQuery() async throws {
         let resultsAnchor = try await healthStore.anchoredSingleObjectQuery(
-            for: self.sampleType, // TODO: method with speciic typ?
+            for: self.sampleType,
             using: self.anchor,
             withPredicate: predicate,
             standard: self.standard

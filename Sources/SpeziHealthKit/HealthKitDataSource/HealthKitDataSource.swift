@@ -27,8 +27,18 @@ public protocol HealthKitDataSource {
 
 extension HealthKitDataSource {
     func askedForAuthorization(for sampleType: HKSampleType) -> Bool {
-        // TODO: synchronization?
-        let requestedSampleTypes = Set(UserDefaults.standard.stringArray(forKey: UserDefaults.Keys.healthKitRequestedSampleTypes) ?? [])
-        return requestedSampleTypes.contains(sampleType.identifier)
+        HealthKit.didAskForAuthorization(for: sampleType)
+    }
+}
+
+
+extension UserDefaults {
+    var alreadyRequestedSampleTypes: Set<String> {
+        get {
+            Set(stringArray(forKey: UserDefaults.Keys.healthKitRequestedSampleTypes) ?? [])
+        }
+        set {
+            set(Array(newValue), forKey: UserDefaults.Keys.healthKitRequestedSampleTypes)
+        }
     }
 }

@@ -11,7 +11,7 @@ import Spezi
 
 
 #if compiler(<6)
-extension HealthKit.HKSample: Swift.Identifiable {}
+extension HKSample: Swift.Identifiable {}
 #else
 extension HKSample: @retroactive Identifiable {}
 #endif
