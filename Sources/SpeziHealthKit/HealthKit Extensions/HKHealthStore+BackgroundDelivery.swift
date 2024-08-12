@@ -12,8 +12,8 @@ import Spezi
 
 
 extension HKHealthStore {
-    private static nonisolated(unsafe) var activeObservations: [HKObjectType: Int] = [:]
     private static let activeObservationsLock = NSLock()
+    private static nonisolated(unsafe) var activeObservations: [HKObjectType: Int] = [:]
     
 
     @MainActor
