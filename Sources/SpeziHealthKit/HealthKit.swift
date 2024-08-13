@@ -70,35 +70,35 @@ import SwiftUI
 public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializable {
     @ObservationIgnored @StandardActor private var standard: any HealthKitConstraint
     private let healthStore: HKHealthStore
-    private var initialHealthKitDataSourceDescriptions: [HealthKitDataSourceDescription] = []
-    private var healthKitDataSourceDescriptions: [HealthKitDataSourceDescription] = []
+    @MainActor private var initialHealthKitDataSourceDescriptions: [HealthKitDataSourceDescription] = []
+    @MainActor private var healthKitDataSourceDescriptions: [HealthKitDataSourceDescription] = []
     @ObservationIgnored private var healthKitComponents: [any HealthKitDataSource] = []
     
     
-    private var healthKitSampleTypes: Set<HKSampleType> {
+    @MainActor private var healthKitSampleTypes: Set<HKSampleType> {
         (initialHealthKitDataSourceDescriptions + healthKitDataSourceDescriptions).reduce(into: Set()) {
             $0 = $0.union($1.sampleTypes)
         }
     }
     
-    private var healthKitSampleTypesIdentifiers: Set<String> {
+    @MainActor private var healthKitSampleTypesIdentifiers: Set<String> {
         Set(healthKitSampleTypes.map(\.identifier))
     }
 
     private var alreadyRequestedSampleTypes: Set<String> {
         get {
             access(keyPath: \.alreadyRequestedSampleTypes)
-            return Set(UserDefaults.standard.stringArray(forKey: UserDefaults.Keys.healthKitRequestedSampleTypes) ?? [])
+            return UserDefaults.standard.alreadyRequestedSampleTypes
         }
         set {
             withMutation(keyPath: \.alreadyRequestedSampleTypes) {
-                UserDefaults.standard.set(Array(newValue), forKey: UserDefaults.Keys.healthKitRequestedSampleTypes)
+                UserDefaults.standard.alreadyRequestedSampleTypes = newValue
             }
         }
     }
     
     /// Indicates whether the necessary authorizations to collect all HealthKit data defined by the ``HealthKitDataSourceDescription``s are already granted.
-    public var authorized: Bool {
+    @MainActor public var authorized: Bool {
         healthKitSampleTypesIdentifiers.isSubset(of: alreadyRequestedSampleTypes)
     }
 
@@ -106,6 +106,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     /// Creates a new instance of the ``HealthKit`` module.
     /// - Parameters:
     ///   - healthKitDataSourceDescriptions: The ``HealthKitDataSourceDescription``s define what data is collected by the ``HealthKit`` module. You can, e.g., use ``CollectSample`` to collect a wide variety of `HKSampleTypes`.
+    @MainActor
     public convenience init(
         @HealthKitDataSourceDescriptionBuilder _ healthKitDataSourceDescriptions: () -> [HealthKitDataSourceDescription]
     ) {
@@ -125,20 +126,27 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
             }
             """
         )
-        
+
         self.healthStore = HKHealthStore()
     }
-    
-    
+
+    static func didAskForAuthorization(for sampleType: HKSampleType) -> Bool {
+        // `alreadyRequestedSampleTypes` is always just written using `healthKitSampleTypesIdentifiers`, so this can stay
+        // non-isolated as UserDefaults is generally thread-safe.
+        UserDefaults.standard.alreadyRequestedSampleTypes.contains(sampleType.identifier)
+    }
+
     public func configure() {
         for healthKitDataSourceDescription in initialHealthKitDataSourceDescriptions {
             execute(healthKitDataSourceDescription)
         }
     }
-    
+
+
     /// Displays the user interface to ask for authorization for all HealthKit data defined by the ``HealthKitDataSourceDescription``s.
     ///
     /// Call this function when you want to start HealthKit data collection.
+    @MainActor
     public func askForAuthorization() async throws {
         guard !authorized else {
             return
@@ -152,7 +160,8 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
             await healthKitComponent.askedForAuthorization()
         }
     }
-    
+
+    @MainActor
     public func execute(_ healthKitDataSourceDescription: HealthKitDataSourceDescription) {
         healthKitDataSourceDescriptions.append(healthKitDataSourceDescription)
         let dataSources = healthKitDataSourceDescription.dataSources(healthStore: healthStore, standard: standard)
@@ -164,7 +173,8 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
             }
         }
     }
-    
+
+    @MainActor
     public func execute(@HealthKitDataSourceDescriptionBuilder _ healthKitDataSourceDescriptions: () -> [HealthKitDataSourceDescription]) {
         for healthKitDataSourceDescription in healthKitDataSourceDescriptions() {
             execute(healthKitDataSourceDescription)
@@ -172,10 +182,11 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     }
     
     /// Triggers any ``HealthKitDeliverySetting/manual(safeAnchor:)`` collections and starts the collection for all ``HealthKitDeliveryStartSetting/manual`` HealthKit data collections.
+    @MainActor
     public func triggerDataSourceCollection() async {
         await withTaskGroup(of: Void.self) { group in
             for healthKitComponent in healthKitComponents {
-                group.addTask {
+                group.addTask { @MainActor in
                     await healthKitComponent.triggerManualDataSourceCollection()
                 }
             }

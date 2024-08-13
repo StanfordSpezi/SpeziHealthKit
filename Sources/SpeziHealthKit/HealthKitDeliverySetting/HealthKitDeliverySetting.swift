@@ -39,3 +39,6 @@ public enum HealthKitDeliverySetting: Equatable {
         }
     }
 }
+
+
+extension HealthKitDeliverySetting: Sendable, Hashable {}
