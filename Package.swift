@@ -29,7 +29,7 @@ let package = Package(
         .library(name: "SpeziHealthKit", targets: ["SpeziHealthKit"])
     ],
     dependencies: [
-        .package(url: "https://github.com/StanfordSpezi/Spezi", branch: "feature/dependency-restructure")
+        .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.7.0")
     ] + swiftLintPackage(),
     targets: [
         .target(
