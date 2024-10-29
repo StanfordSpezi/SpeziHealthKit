@@ -26,7 +26,7 @@ let package = Package(
         .iOS(.v17)
     ],
     products: [
-        .library(name: "SpeziHealthKit", targets: ["SpeziHealthKit"])
+        .library(name: "SpeziHealthKit", targets: ["SpeziHealthKit", "SpeziHealthCharts"])
     ],
     dependencies: [
         .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.7.0")
@@ -34,6 +34,17 @@ let package = Package(
     targets: [
         .target(
             name: "SpeziHealthKit",
+            dependencies: [
+                .product(name: "Spezi", package: "Spezi")
+            ],
+            swiftSettings: [
+                swiftConcurrency,
+                .enableUpcomingFeature("InferSendableFromCaptures")
+            ],
+            plugins: [] + swiftLintPlugin()
+        ),
+        .target(
+            name: "SpeziHealthCharts",
             dependencies: [
                 .product(name: "Spezi", package: "Spezi")
             ],

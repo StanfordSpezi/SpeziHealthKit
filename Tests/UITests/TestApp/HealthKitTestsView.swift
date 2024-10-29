@@ -7,6 +7,7 @@
 //
 
 import SpeziHealthKit
+import SpeziHealthCharts
 import SpeziViews
 import SwiftUI
 
@@ -41,4 +42,12 @@ struct HealthKitTestsView: View {
             }
         }
     }
+}
+
+
+#Preview {
+    HealthKitTestsView()
+        .previewWith(standard: HealthKitTestAppStandard()) {
+            HealthKit()
+        }
 }

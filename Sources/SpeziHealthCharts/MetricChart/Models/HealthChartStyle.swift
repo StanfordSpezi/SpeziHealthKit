@@ -9,9 +9,7 @@
 import Foundation
 
 
-protocol QueryBuilder {
-    associatedtype QueryType
-    
-    func build(from predicates: [QueryPredicate]) -> QueryType
+public struct HealthChartStyle {
+    public let frameSize: CGFloat = 200.0
 }
 

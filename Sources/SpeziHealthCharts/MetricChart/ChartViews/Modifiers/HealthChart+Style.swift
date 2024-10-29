@@ -7,14 +7,8 @@
 //
 
 
-import SwiftUI
-
-
-public struct MetricChart: View {
-    public init() {}
-    
-    
-    public var body: some View {
-        Text("here is the metric chart.")
+extension HealthChart {
+    public func style(_ chartStyle: HealthChartStyle) {
+        self.chartStyle = chartStyle
     }
 }

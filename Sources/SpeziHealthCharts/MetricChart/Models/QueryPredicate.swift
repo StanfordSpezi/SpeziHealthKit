@@ -18,4 +18,3 @@ import Foundation
 public enum QueryPredicate {
     case dateRange(start: Date, end: Date)
 }
-

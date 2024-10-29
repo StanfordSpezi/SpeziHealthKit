@@ -15,8 +15,6 @@
 ///
 /// To add a new `MeasurementType`, add a case to the enum and include the type in your implementation
 /// of a `DataProvider`.
-public enum MeasurementType {
-    case heartRate
-    case bodyMass
-    case bloodPressure
+public enum MeasurementType: Sendable {
+    case heartRate, bodyMass, bloodPressure
 }

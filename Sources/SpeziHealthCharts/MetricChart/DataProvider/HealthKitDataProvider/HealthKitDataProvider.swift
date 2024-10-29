@@ -12,27 +12,31 @@ import HealthKit
 
 // MARK: - HKQueryBuilder
 
+struct EmptyQuery {
+    let id: String
+}
 
-class HKQueryBuilder: QueryBuilder {
-    typealias QueryType = HKQuery
+public class HKQueryBuilder: QueryBuilder {
+    typealias QueryType = EmptyQuery
     
     
     func build(from predicates: [QueryPredicate]) -> QueryType {
-        <#code#>
+        EmptyQuery(id: "Null")
     }
 }
-
 
 
 // MARK: - HealthKitDataProvider
 
 
-public class HealthKitDataProvider: DataProvider {
-    typealias QueryBuilder = HKQueryBuilder
+public final class HealthKitDataProvider: DataProvider {
+    public typealias QueryBuilder = HKQueryBuilder
     
     
-    public func fetchData(for measurementType: MeasurementType, matching predicates: [QueryPredicate]) async throws -> [DataPoint] {
+    public func fetchData(for measurementType: MeasurementType, in interval: DateInterval) async throws -> [DataPoint] {
         []
     }
+    
+    
+    public init() {}
 }
-
