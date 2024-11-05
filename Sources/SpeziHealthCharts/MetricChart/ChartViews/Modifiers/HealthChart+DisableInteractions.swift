@@ -9,8 +9,14 @@
 import SwiftUI
 
 
+extension EnvironmentValues {
+    @Entry var disabledChartInteractions: HealthChartInteractions = []
+}
+
+
 extension HealthChart {
-    public func disable(interactions: HealthChartInteractions) {
-        self.disabledInteractions = interactions
+    public func disable(interactions newValue: HealthChartInteractions) -> some View {
+        // TODO: Handle reduction - get current value from environment, combine with new value, and inject back into environment.
+        environment(\.disabledChartInteractions, newValue)
     }
 }

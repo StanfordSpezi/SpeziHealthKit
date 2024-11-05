@@ -9,7 +9,10 @@
 import Foundation
 
 
-public struct HealthChartStyle {
+public struct HealthChartStyle: Sendable {
     public let frameSize: CGFloat = 200.0
+    
+    
+    public static let `default` = HealthChartStyle()
 }
 

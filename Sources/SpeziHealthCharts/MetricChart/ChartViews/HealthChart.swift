@@ -8,7 +8,12 @@
 
 
 import SwiftUI
+import HealthKit
 
+// TODO: Next steps:
+// Verify data flow / implement data input infrastructure.
+// Mock text in `HealthChart` just shows the current values of all inputs.
+// See how they change with picker, modifiers, etc.
 
 public struct HealthChart: View {
     @State private var viewModel: ViewModel
@@ -23,10 +28,19 @@ public struct HealthChart: View {
     
     
     public init(
-        _ type: MeasurementType,
-        in range: DateRange = .month(start: .now),
+        _ type: HKQuantityType,
+        in initialRange: ChartRange = .month,
         provider: any DataProvider = HealthKitDataProvider()
     ) {
-        self.viewModel = ViewModel(type: type, range: range, provider: provider)
+        self.viewModel = ViewModel(type: type, range: initialRange, provider: provider)
     }
+    
+    // TODO: With a binding to range.
+//    public init(
+//        _ type: HKQuantityType,
+//        range: Binding<ChartRange>,
+//        provider: any DataProvider = HealthKitDataProvider()
+//    ) {
+//        
+//    }
 }

@@ -10,30 +10,8 @@ import Foundation
 import HealthKit
 
 
-// MARK: - HKQueryBuilder
-
-struct EmptyQuery {
-    let id: String
-}
-
-public class HKQueryBuilder: QueryBuilder {
-    typealias QueryType = EmptyQuery
-    
-    
-    func build(from predicates: [QueryPredicate]) -> QueryType {
-        EmptyQuery(id: "Null")
-    }
-}
-
-
-// MARK: - HealthKitDataProvider
-
-
 public final class HealthKitDataProvider: DataProvider {
-    public typealias QueryBuilder = HKQueryBuilder
-    
-    
-    public func fetchData(for measurementType: MeasurementType, in interval: DateInterval) async throws -> [DataPoint] {
+    public func fetchData(for measurementType: HKQuantityType, in interval: ChartRange) async throws -> [HKQuantitySample] {
         []
     }
     

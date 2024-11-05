@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
+import HealthKit
 import SwiftUI
 import SpeziViews
 
@@ -22,75 +23,40 @@ extension HealthChart {
     @Observable
     @MainActor
     class ViewModel {
-        private let type: MeasurementType
+        private let type: HKQuantityType
         private let provider: any DataProvider
         
-        private var _range: DateRange
-        var range: DateRange {
+        private var _range: ChartRange
+        var range: ChartRange {
             get {
                 return _range
             }
             set {
                 self._range = newValue
-                self.refresh(using: self.provider, range: newValue)
+                self.refreshMeasurements()
             }
         }
         
-        private let measurementCache = MeasurementCache()
+        private(set) var measurements: [HKQuantitySample] = []
         
-        @ObservationIgnored
-        private var fetchTask: Task<Void, Never>?
         
-        private(set) var measurements: AsyncState<[DataPoint]> = .idle
+        /// Queries the stored `DataProvider` to store all the data points that lie in the given `ChartRange` in the `.measurements` property.
+        ///
+        /// Internally, the `DataProvider` should only query the data store once (for all the measurements of that type), then cache the results. This
+        /// call will then return the measurements in the cached array that lie in the new date range.
+        private func refreshMeasurements() {
+            
+        }
         
         
         init(
-            type: MeasurementType,
-            range: DateRange,
+            type: HKQuantityType,
+            range: ChartRange,
             provider: any DataProvider
         ) {
             self.type = type
             self.provider = provider
             self._range = range
-        }
-        
-        
-        /// Replaces `ViewModel.measurements` with new data points provided by `provider`.
-        ///
-        /// Passes currently stored `ViewModel.dateRange` and `ViewModel.type` options to the `DataProvider.fetchData` method.
-        private func refresh(using provider: any DataProvider, range dateRange: DateRange) {
-            self.fetchTask?.cancel()
-            
-            self.fetchTask = Task { @MainActor in
-                self.measurements = .processing
-                
-                do {
-                    // First, try to fetch measurements from the cache.
-                    if let cachedData = try? await self.measurementCache.fetch(for: self.type, range: dateRange.interval) {
-                        self.measurements = .success(cachedData)
-                        return
-                    }
-                    
-                    // If nothing is found in the cache, query the data provider.
-                    let newMeasurements = try await provider.fetchData(for: self.type, in: dateRange.interval)
-                    
-                    // Only set the changes if the task wasn't cancelled.
-                    guard !Task.isCancelled else {
-                        return
-                    }
-                    
-                    self.measurements = .success(newMeasurements)
-                    await self.measurementCache.store(newMeasurements, for: self.type, range: dateRange)
-                    
-                } catch {
-                    self.measurements = .failure(
-                        AnyLocalizedError(
-                            error: error,
-                            defaultErrorDescription: "Failed to fetch new measurements."
-                        )
-                    )
-                }
-            }
         }
     }
 }

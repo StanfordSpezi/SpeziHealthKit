@@ -7,11 +7,18 @@
 //
 
 import Foundation
+import HealthKit
 
 
-/// A class conforming to `DataProvider` fetches the data from a data store in the form of `DataPoint`s.
+/// A class conforming to `DataProvider` multiplexes to fetch the data from a specific data store in the form of `HKQuantitySample`s.
+///
+/// Implementation of `.fetchData()` should query all data of that type once, cache the data, and aggregate it according to the provided granularity.
+/// The aggregation is preferrably done by the data store (i.e. `HealthStore`), with only the final data array being stored on device.
+///
+/// Then, only data points within the `ChartRange` will be shown in the `HealthChart`.
+///
+/// Default implementation fetches `HealthKitDataProvider` fetches data from a HealthKit `HealthStore`.
 public protocol DataProvider: Sendable {
-    associatedtype QueryBuilder
-    
-    func fetchData(for measurementType: MeasurementType, in interval: DateInterval) async throws -> [DataPoint]
+    // TODO: Pass `ChartRange` instead of interval, query all health data at once aggregated by `DateRange` granularity.
+    func fetchData(for measurementType: HKQuantityType, in interval: ChartRange) async throws -> [HKQuantitySample]
 }

@@ -6,9 +6,17 @@
 // SPDX-License-Identifier: MIT
 //
 
+import SwiftUI
 
-extension HealthChart {
-    public func style(_ chartStyle: HealthChartStyle) {
-        self.chartStyle = chartStyle
+
+extension EnvironmentValues {
+    @Entry var healthChartStyle: HealthChartStyle = .default
+}
+
+
+extension View {
+    // TODO: Add argument here to control how we combine styles (e.g. .override, .combine, etc.)
+    public func style(_ newValue: HealthChartStyle) -> some View {
+        environment(\.healthChartStyle, newValue)
     }
 }

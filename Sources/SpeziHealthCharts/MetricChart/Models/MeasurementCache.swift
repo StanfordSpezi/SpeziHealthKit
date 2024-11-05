@@ -7,8 +7,10 @@
 //
 
 import Foundation
+import HealthKit
 
 
+/// This functionality will be moved to the `HealthKitDataProvider` implementation.
 actor MeasurementCache {
     enum CacheError: LocalizedError {
         case entryNotFound
@@ -25,12 +27,12 @@ actor MeasurementCache {
     }
     
     struct CacheKey: Hashable {
-        let type: MeasurementType
+        let type: HKQuantityType
         let range: DateInterval
     }
     
     struct CacheValue {
-        let measurements: [DataPoint]
+        let measurements: [HKQuantitySample]
         let timestamp: Date
     }
     
@@ -40,7 +42,7 @@ actor MeasurementCache {
     private let ageLimit: TimeInterval = 24 * 60 * 60  // Time limit is one day.
     
     
-    func store(_ measurements: [DataPoint], for type: MeasurementType, range dateRange: DateRange) {
+    func store(_ measurements: [HKQuantitySample], for type: HKQuantityType, range dateRange: ChartRange) {
         let key = CacheKey(type: type, range: dateRange.interval)
         self.cache[key] = CacheValue(measurements: measurements, timestamp: Date())
         
@@ -50,7 +52,7 @@ actor MeasurementCache {
     }
     
     
-    func fetch(for type: MeasurementType, range: DateInterval) throws -> [DataPoint] {
+    func fetch(for type: HKQuantityType, range: DateInterval) throws -> [HKQuantitySample] {
         let key = CacheKey(type: type, range: range)
         
         guard let entry = self.cache[key] else {
