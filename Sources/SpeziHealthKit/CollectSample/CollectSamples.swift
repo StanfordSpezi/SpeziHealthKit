@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
+import Foundation
 import HealthKit
 import Spezi
 
@@ -32,8 +33,7 @@ public struct CollectSamples: HealthKitDataSourceDescription {
         self.predicate = predicate
         self.deliverySetting = deliverySetting
     }
-    
-    
+
     public func dataSources(
         healthStore: HKHealthStore,
         standard: any Standard
@@ -74,3 +74,5 @@ public struct CollectSamples: HealthKitDataSourceDescription {
         }
     }
 }
+
+extension CollectSamples: Hashable {}
