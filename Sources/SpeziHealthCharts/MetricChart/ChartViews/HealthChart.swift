@@ -16,14 +16,21 @@ import HealthKit
 // See how they change with picker, modifiers, etc.
 
 public struct HealthChart: View {
-    @State private var viewModel: ViewModel
+    @State private var range: ChartRange
+    @State private var rangeBinding: Binding<ChartRange>?
+    @State private var measurements: [HKQuantitySample] = []
     
-    @State var disabledInteractions: HealthChartInteractions = []
-    @State var chartStyle: HealthChartStyle = HealthChartStyle()
+    private let quantityType: HKQuantityType
+    private let dataProvider: any DataProvider
     
     
     public var body: some View {
         Text("here is the metric chart.")
+            .onChange(of: range) { _, newRange in
+                Task { @MainActor in
+                    measurements = try await dataProvider.fetchData(for: quantityType, in: newRange)
+                }
+            }
     }
     
     
@@ -32,15 +39,19 @@ public struct HealthChart: View {
         in initialRange: ChartRange = .month,
         provider: any DataProvider = HealthKitDataProvider()
     ) {
-        self.viewModel = ViewModel(type: type, range: initialRange, provider: provider)
+        self.quantityType = type
+        self.range = initialRange
+        self.dataProvider = provider
     }
     
-    // TODO: With a binding to range.
-//    public init(
-//        _ type: HKQuantityType,
-//        range: Binding<ChartRange>,
-//        provider: any DataProvider = HealthKitDataProvider()
-//    ) {
-//        
-//    }
+    public init(
+        _ type: HKQuantityType,
+        range: Binding<ChartRange>,
+        provider: any DataProvider = HealthKitDataProvider()
+    ) {
+        self.range = range.wrappedValue
+        self.rangeBinding = range
+        self.quantityType = type
+        self.dataProvider = provider
+    }
 }

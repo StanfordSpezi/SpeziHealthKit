@@ -10,7 +10,7 @@ import Foundation
 
 
 /// A `ChartRange` is the date domain of the x-axis of a `HealthChart`.
-public struct ChartRange: Sendable {
+public struct ChartRange: Sendable, Equatable {
     var start: Date
     var end: Date
     var granularity: Calendar.Component

@@ -27,9 +27,11 @@ extension HealthChart {
         private let provider: any DataProvider
         
         private var _range: ChartRange
+        private var _rangeBinding: Binding<ChartRange>?
+        
         var range: ChartRange {
             get {
-                return _range
+                return _rangeBinding?.wrappedValue ?? _range
             }
             set {
                 self._range = newValue
@@ -57,6 +59,14 @@ extension HealthChart {
             self.type = type
             self.provider = provider
             self._range = range
+        }
+        
+        init(
+            type: HKQuantityType,
+            range: Binding<ChartRange>,
+            provider: any DataProvider
+        ) {
+            
         }
     }
 }
