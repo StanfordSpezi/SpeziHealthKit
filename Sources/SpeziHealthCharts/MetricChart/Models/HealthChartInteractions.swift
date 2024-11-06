@@ -16,8 +16,8 @@ public struct HealthChartInteractions: OptionSet, Sendable {
     }
     
     
-    static let swipe: HealthChartInteractions = HealthChartInteractions(rawValue: 1 << 0)
-    static let tap: HealthChartInteractions = HealthChartInteractions(rawValue: 1 << 1)
+    public static let swipe: HealthChartInteractions = HealthChartInteractions(rawValue: 1 << 0)
+    public static let tap: HealthChartInteractions = HealthChartInteractions(rawValue: 1 << 1)
     
-    static let all: HealthChartInteractions = [.tap, .swipe]
+    public static let all: HealthChartInteractions = [.tap, .swipe]
 }

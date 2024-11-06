@@ -16,6 +16,11 @@ struct HealthKitTestsView: View {
     @Environment(HealthKit.self) var healthKitModule
     @Environment(HealthKitStore.self) var healthKitStore
 
+    @State private var showHealthChartBinding = false
+    @State private var showHealthChart = false
+    
+    @State private var chartRange: ChartRange = .month
+    
     
     var body: some View {
         List {
@@ -40,7 +45,27 @@ struct HealthKitTestsView: View {
                     }
                 }
             }
+            Button("Show HealthChart with binding") { showHealthChartBinding.toggle() }
+            Button("Show HealthChart without binding") { showHealthChart.toggle() }
         }
+            .sheet(isPresented: $showHealthChartBinding) {
+                VStack {
+                    Picker("Chart Range", selection: $chartRange) {
+                        Text("Daily").tag(ChartRange.day)
+                        Text("Weekly").tag(ChartRange.week)
+                        Text("Monthly").tag(ChartRange.month)
+                        Text("Six Months").tag(ChartRange.sixMonths)
+                        Text("Yearly").tag(ChartRange.year)
+                    }
+                    Text("Parent's Range: \(chartRange.interval.description)")
+                    HealthChart(HKQuantityType(.bodyMass), range: $chartRange)
+                        .style(HealthChartStyle(idealHeight: 150))
+                }
+            }
+            .sheet(isPresented: $showHealthChart) {
+                HealthChart(HKQuantityType(.bodyMass))
+                    .disable(interactions: .swipe)
+            }
     }
 }
 

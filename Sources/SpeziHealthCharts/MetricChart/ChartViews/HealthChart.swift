@@ -6,31 +6,34 @@
 // SPDX-License-Identifier: MIT
 //
 
-
 import SwiftUI
 import HealthKit
 
-// TODO: Next steps:
-// Verify data flow / implement data input infrastructure.
-// Mock text in `HealthChart` just shows the current values of all inputs.
-// See how they change with picker, modifiers, etc.
 
 public struct HealthChart: View {
-    @State private var range: ChartRange
-    @State private var rangeBinding: Binding<ChartRange>?
-    @State private var measurements: [HKQuantitySample] = []
+    @State private var privateRange: ChartRange
+    private var privateRangeBinding: Binding<ChartRange>?
+    
+    var range: Binding<ChartRange> {
+        Binding(
+            get: {
+                privateRangeBinding?.wrappedValue ?? privateRange
+            }, set: { newValue in
+                if let privateRangeBinding {
+                    privateRangeBinding.wrappedValue = newValue
+                } else {
+                    privateRange = newValue
+                }
+            }
+        )
+    }
     
     private let quantityType: HKQuantityType
     private let dataProvider: any DataProvider
     
     
     public var body: some View {
-        Text("here is the metric chart.")
-            .onChange(of: range) { _, newRange in
-                Task { @MainActor in
-                    measurements = try await dataProvider.fetchData(for: quantityType, in: newRange)
-                }
-            }
+        InternalHealthChart(quantityType, range: range, provider: dataProvider)
     }
     
     
@@ -40,7 +43,7 @@ public struct HealthChart: View {
         provider: any DataProvider = HealthKitDataProvider()
     ) {
         self.quantityType = type
-        self.range = initialRange
+        self.privateRange = initialRange
         self.dataProvider = provider
     }
     
@@ -49,8 +52,8 @@ public struct HealthChart: View {
         range: Binding<ChartRange>,
         provider: any DataProvider = HealthKitDataProvider()
     ) {
-        self.range = range.wrappedValue
-        self.rangeBinding = range
+        self.privateRange = range.wrappedValue
+        self.privateRangeBinding = range
         self.quantityType = type
         self.dataProvider = provider
     }
