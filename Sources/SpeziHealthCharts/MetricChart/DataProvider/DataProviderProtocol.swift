@@ -20,5 +20,5 @@ import HealthKit
 /// Default implementation fetches `HealthKitDataProvider` fetches data from a HealthKit `HealthStore`.
 public protocol DataProvider: Sendable {
     // TODO: Pass `ChartRange` instead of interval, query all health data at once aggregated by `DateRange` granularity.
-    func fetchData(for measurementType: HKQuantityType, in interval: ChartRange) async throws -> [HKQuantitySample]
+    func fetchData(for measurementType: HKQuantityType, in chartRange: ChartRange) async throws -> [HKQuantitySample]
 }
