@@ -28,7 +28,7 @@ actor MeasurementCache {
     
     struct CacheKey: Hashable {
         let type: HKQuantityType
-        let range: DateInterval
+        let range: ClosedRange<Date>
     }
     
     struct CacheValue {
@@ -43,7 +43,7 @@ actor MeasurementCache {
     
     
     func store(_ measurements: [HKQuantitySample], for type: HKQuantityType, range dateRange: ChartRange) {
-        let key = CacheKey(type: type, range: dateRange.interval)
+        let key = CacheKey(type: type, range: dateRange.domain)
         self.cache[key] = CacheValue(measurements: measurements, timestamp: Date())
         
         if self.cache.count > self.maxEntries {
@@ -52,7 +52,7 @@ actor MeasurementCache {
     }
     
     
-    func fetch(for type: HKQuantityType, range: DateInterval) throws -> [HKQuantitySample] {
+    func fetch(for type: HKQuantityType, range: ClosedRange<Date>) throws -> [HKQuantitySample] {
         let key = CacheKey(type: type, range: range)
         
         guard let entry = self.cache[key] else {

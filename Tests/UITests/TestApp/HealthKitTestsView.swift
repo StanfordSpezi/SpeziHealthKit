@@ -57,14 +57,15 @@ struct HealthKitTestsView: View {
                         Text("Six Months").tag(ChartRange.sixMonths)
                         Text("Yearly").tag(ChartRange.year)
                     }
-                    Text("Parent's Range: \(chartRange.interval.description)")
+                    Text("\(chartRange.domain.lowerBound.formatted()) - \(chartRange.domain.upperBound.formatted())")
                     HealthChart(HKQuantityType(.bodyMass), range: $chartRange)
                         .style(HealthChartStyle(idealHeight: 150))
                 }
             }
+            
             .sheet(isPresented: $showHealthChart) {
                 HealthChart(HKQuantityType(.bodyMass))
-                    .disable(interactions: .swipe)
+                    .healthChartInteractions(disabled: .swipe)
             }
     }
 }

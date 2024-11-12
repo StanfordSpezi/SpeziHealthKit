@@ -11,50 +11,98 @@ import Foundation
 
 /// A `ChartRange` is the date domain of the x-axis of a `HealthChart`.
 public struct ChartRange: Sendable, Equatable, Hashable {
-    public var start: Date
-    public var end: Date
-    public var granularity: Calendar.Component
-    
-    
-    public var interval: DateInterval {
-        DateInterval(start: start, end: end)
-    }
+    public var domain: ClosedRange<Date>
+    public var granularity: Calendar.Component  // Granularity ranges from `.hour` to `.month`
     
     
     public init(start: Date, end: Date, granularity: Calendar.Component) {
-        self.start = start
-        self.end = end
+        self.domain = start...end
+        self.granularity = granularity
+    }
+    
+    public init(_ domain: ClosedRange<Date>, granularity: Calendar.Component) {
+        self.domain = domain
         self.granularity = granularity
     }
     
     
     /// The last 24 hours relative to the current time, with a granularity of `.hour`.
     public static let day: ChartRange = {
-        let now = Date()
-        return ChartRange(start: now.addingTimeInterval(-60 * 60 * 24), end: now, granularity: .hour)
+        let end = Date()
+        let start = Calendar.current.date(byAdding: .day, value: -1, to: end) ?? end
+        
+        return ChartRange(start: start, end: end, granularity: .hour).rounded()
     }()
     
     /// The last 7 days relative to the current time, with a granularity of `.day`.
     public static let week: ChartRange = {
-        let now = Date()
-        return ChartRange(start: now.addingTimeInterval(-60 * 60 * 24 * 7), end: now, granularity: .day)
+        let end = Date()
+        let start = Calendar.current.date(byAdding: .day, value: -7, to: end) ?? end
+        
+        return ChartRange(start: start, end: end, granularity: .day).rounded()
     }()
     
-    /// The last 30 days relative to the current time, with a granularity of `.day`.
+    /// The last month relative to the current time, with a granularity of `.day`.
     public static let month: ChartRange = {
-        let now = Date()
-        return ChartRange(start: now.addingTimeInterval(-60 * 60 * 24 * 30), end: now, granularity: .day)
+        let end = Date()
+        let start = Calendar.current.date(byAdding: .month, value: -1, to: end) ?? end
+        
+        return ChartRange(start: start, end: end, granularity: .day).rounded()
     }()
     
-    /// The last 180 days (approximately six months) relative to the current time, with a granularity of `.weekOfYear`.
+    /// The last six months relative to the current time, with a granularity of `.weekOfYear`.
     public static let sixMonths: ChartRange = {
-        let now = Date()
-        return ChartRange(start: now.addingTimeInterval(-60 * 60 * 24 * 180), end: now, granularity: .weekOfYear)
+        let end = Date()
+        let start = Calendar.current.date(byAdding: .month, value: -6, to: end) ?? end
+        
+        return ChartRange(start: start, end: end, granularity: .weekOfYear).rounded()
     }()
     
-    /// The last 365 days relative to the current time, with a granularity of `.month`.
+    /// The last year relative to the current time, with a granularity of `.month`.
     public static let year: ChartRange = {
-        let now = Date()
-        return ChartRange(start: now.addingTimeInterval(-60 * 60 * 24 * 365), end: now, granularity: .month)
+        let end = Date()
+        let start = Calendar.current.date(byAdding: .year, value: -1, to: end) ?? end
+        
+        return ChartRange(start: start, end: end, granularity: .month).rounded()
     }()
+}
+
+
+extension ChartRange {
+    /// Rounds the domain boundaries to complete units of the specified granularity.
+    /// For example, if granularity is `.hour`, the domain will be extended to the nearest hour.
+    private func roundedDomain(calendar: Calendar) -> ClosedRange<Date> {
+        let components: Set<Calendar.Component> = {
+            switch self.granularity {
+            case .hour:
+                return [.year, .month, .day, .hour]
+            case .day:
+                return [.year, .month, .day]
+            case .weekOfYear, .weekOfMonth:
+                return [.yearForWeekOfYear, .weekOfYear]
+            case .month:
+                return [.year, .month]
+            case .year:
+                return [.year]
+            default:
+                return []
+            }
+        }()
+        
+        let startComponents = calendar.dateComponents(components, from: self.domain.lowerBound)
+        let endComponents = calendar.dateComponents(components, from: self.domain.upperBound)
+        
+        let roundedStart = calendar.date(from: startComponents) ?? self.domain.lowerBound
+        
+        // For the upper bound, we want to go to the end of the component.
+        let endComponentStart = calendar.date(from: endComponents) ?? self.domain.upperBound
+        let roundedEnd = calendar.date(byAdding: self.granularity, value: 1, to: endComponentStart) ?? self.domain.upperBound
+        
+        return roundedStart...roundedEnd
+    }
+    
+    /// Creates a new `ChartRange` with domain boundaries rounded to complete granularity units.
+    public func rounded(using calendar: Calendar = .current) -> ChartRange {
+        ChartRange(self.roundedDomain(calendar: calendar), granularity: self.granularity)
+    }
 }

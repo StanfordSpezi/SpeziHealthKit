@@ -25,6 +25,13 @@ struct InternalHealthChart: View {
     
     var body: some View {
         List {
+            Picker("Internal Chart Range", selection: $range) {
+                Text("Daily").tag(ChartRange.day)
+                Text("Weekly").tag(ChartRange.week)
+                Text("Monthly").tag(ChartRange.month)
+                Text("Six Months").tag(ChartRange.sixMonths)
+                Text("Yearly").tag(ChartRange.year)
+            }
             HStack {
                 Text("Quantity Type:")
                     .bold()
@@ -35,7 +42,7 @@ struct InternalHealthChart: View {
                 Text("Chart Range (Binding):")
                     .bold()
                 Spacer(minLength: 5)
-                Text(range.interval.description)
+                Text("\(range.domain.lowerBound.formatted()) - \(range.domain.upperBound.formatted())")
             }
             HStack {
                 Text("Chart Style (Modifier):")

@@ -14,9 +14,10 @@ extension EnvironmentValues {
 }
 
 
-extension HealthChart {
-    public func disable(interactions newValue: HealthChartInteractions) -> some View {
+extension View {
+    /// 
+    public func healthChartInteractions(disabled disabledValues: HealthChartInteractions) -> some View {
         // TODO: Handle reduction - get current value from environment, combine with new value, and inject back into environment.
-        environment(\.disabledChartInteractions, newValue)
+        environment(\.disabledChartInteractions, disabledValues)
     }
 }
