@@ -34,7 +34,10 @@ public final class HealthKitDataProvider: DataProvider {
         if let samples = cache.object(forKey: key) as? [HKQuantitySample] {
             // The cache contains samples, so we should return the samples in the domain of the given `ChartRange`.
             return samples.filter {
-                chartRange.domain.contains($0.startDate) // TODO: Use a different timestamp than startDate?
+                // TODO: Think about what date to use.
+                // $0.startDate = start of interval that $0 is the average of.
+                // $0.endDate = end of interval that $0 is the average of.
+                chartRange.domain.contains($0.startDate)
             }
         }
         
