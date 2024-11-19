@@ -68,6 +68,7 @@ public struct ChartRange: Sendable, Equatable, Hashable {
 }
 
 
+// TODO: Look at this and match the functionality to what we see in the Health App.
 extension ChartRange {
     /// Rounds the domain boundaries to complete units of the specified granularity.
     /// For example, if granularity is `.hour`, the domain will be extended to the nearest hour.

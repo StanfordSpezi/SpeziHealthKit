@@ -16,9 +16,7 @@ struct HealthKitTestsView: View {
     @Environment(HealthKit.self) var healthKitModule
     @Environment(HealthKitStore.self) var healthKitStore
 
-    @State private var showHealthChartBinding = false
     @State private var showHealthChart = false
-    
     @State private var chartRange: ChartRange = .month
     
     
@@ -45,27 +43,12 @@ struct HealthKitTestsView: View {
                     }
                 }
             }
-            Button("Show HealthChart with binding") { showHealthChartBinding.toggle() }
-            Button("Show HealthChart without binding") { showHealthChart.toggle() }
+            Button("Show HealthChart") { showHealthChart.toggle() }
         }
-            .sheet(isPresented: $showHealthChartBinding) {
-                VStack {
-                    Picker("Chart Range", selection: $chartRange) {
-                        Text("Daily").tag(ChartRange.day)
-                        Text("Weekly").tag(ChartRange.week)
-                        Text("Monthly").tag(ChartRange.month)
-                        Text("Six Months").tag(ChartRange.sixMonths)
-                        Text("Yearly").tag(ChartRange.year)
-                    }
-                    Text("\(chartRange.domain.lowerBound.formatted()) - \(chartRange.domain.upperBound.formatted())")
-                    HealthChart(HKQuantityType(.bodyMass), range: $chartRange)
-                        .style(HealthChartStyle(idealHeight: 150))
-                }
-            }
-            
             .sheet(isPresented: $showHealthChart) {
-                HealthChart(HKQuantityType(.bodyMass))
+                HealthChart(HKQuantityType(.bodyMass), unit: .pound(), provider: FixedSamplesDataProvider.testProvider)
                     .healthChartInteractions(disabled: .swipe)
+                    .padding()
             }
     }
 }

@@ -1,4 +1,5 @@
 // swift-tools-version:5.9
+// TODO: Integrate Andreas' feedback to bump this up to 6.0
 
 //
 // This source file is part of the Stanford Spezi open-source project

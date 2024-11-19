@@ -6,13 +6,17 @@
 // SPDX-License-Identifier: MIT
 //
 
+import Charts
 import HealthKit
+import SpeziViews
 import SwiftUI
 
 
 struct InternalHealthChart: View {
     @Binding private var range: ChartRange
-    @State private var measurements: [Int] = [1]
+    @State private var samples: [HKQuantitySample] = []
+    
+    @State private var viewState: ViewState = .idle
     
     
     @Environment(\.disabledChartInteractions) private var disabledInteractions
@@ -21,60 +25,60 @@ struct InternalHealthChart: View {
     
     private let quantityType: HKQuantityType
     private let dataProvider: any DataProvider
+    private let unit: HKUnit
     
     
     var body: some View {
-        List {
-            Picker("Internal Chart Range", selection: $range) {
-                Text("Daily").tag(ChartRange.day)
-                Text("Weekly").tag(ChartRange.week)
-                Text("Monthly").tag(ChartRange.month)
-                Text("Six Months").tag(ChartRange.sixMonths)
-                Text("Yearly").tag(ChartRange.year)
-            }
-            HStack {
-                Text("Quantity Type:")
-                    .bold()
-                Spacer(minLength: 5)
-                Text(quantityType.identifier)
-            }
-            HStack {
-                Text("Chart Range (Binding):")
-                    .bold()
-                Spacer(minLength: 5)
-                Text("\(range.domain.lowerBound.formatted()) - \(range.domain.upperBound.formatted())")
-            }
-            HStack {
-                Text("Chart Style (Modifier):")
-                    .bold()
-                Spacer(minLength: 5)
-                Text("\(chartStyle.frameSize)")
-            }
-            HStack {
-                Text("Disabled Interactions (Modifier):")
-                    .bold()
-                Spacer(minLength: 5)
-                Text(String(disabledInteractions.rawValue, radix: 2))
-            }
-            Section("Measurements") {
-                ForEach(measurements, id: \.self) { measurement in
-                    Text("\(measurement)")
+        Group {
+            if viewState == .idle {
+                VStack {
+                    ChartHeader(range: $range)
+                    ChartPlot(samples: samples, range: range, unit: unit)
                 }
+            } else {
+                ProgressView("Fetching Data...")
             }
         }
-            .onChange(of: range) { _, _ in
-                measurements.append(measurements.reduce(0, +))
+            .applyHealthChartStyle(chartStyle)
+            .onChange(of: range) { _, newRange in
+                Task { @MainActor in
+                    do {
+                        self.samples = try await self.dataProvider.fetchData(for: quantityType, in: newRange)
+                    } catch {
+                        self.viewState = .error(
+                            AnyLocalizedError(
+                                error: error,
+                                defaultErrorDescription: "Failed to fetch samples."
+                            )
+                        )
+                    }
+                }
             }
+            .task {
+                do {
+                    self.samples = try await self.dataProvider.fetchData(for: quantityType, in: range)
+                } catch {
+                    self.viewState = .error(
+                        AnyLocalizedError(
+                            error: error,
+                            defaultErrorDescription: "Failed to fetch samples."
+                        )
+                    )
+                }
+            }
+            .viewStateAlert(state: $viewState)
     }
     
     
     init(
         _ type: HKQuantityType,
         range: Binding<ChartRange>,
+        unit: HKUnit,
         provider: any DataProvider = HealthKitDataProvider()
     ) {
         self._range = range
         self.quantityType = type
         self.dataProvider = provider
+        self.unit = unit
     }
 }
