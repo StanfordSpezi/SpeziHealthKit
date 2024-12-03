@@ -37,7 +37,7 @@ extension HKHealthStore {
             // the system calls the query’s update handler on the same background queue (but not necessarily the same thread)."
             // So, the observerQuery has to be @Sendable!
             
-            // Sadly necessary to enable capture of the `completionHandler` within the `Task`s (isolation error)
+            // Sadly necessary to enable capture of the `completionHandler` within the `Task`s below (isolation error)
             nonisolated(unsafe) let completionHandler = completionHandler
             
             guard error == nil,
