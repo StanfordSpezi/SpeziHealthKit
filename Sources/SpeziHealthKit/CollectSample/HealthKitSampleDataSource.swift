@@ -28,11 +28,11 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
         }
     }
 
-    required init( // swiftlint:disable:this function_default_parameter_at_end
+    required init(
         healthStore: HKHealthStore,
         standard: any HealthKitConstraint,
         sampleType: HKSampleType,
-        predicate: NSPredicate? = nil,
+        predicate: NSPredicate? = nil,  // swiftlint:disable:this function_default_parameter_at_end
         deliverySetting: HealthKitDeliverySetting
     ) {
         self.healthStore = healthStore
