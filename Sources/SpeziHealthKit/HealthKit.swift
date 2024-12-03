@@ -186,7 +186,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     public func triggerDataSourceCollection() async {
         await withTaskGroup(of: Void.self) { group in
             for healthKitComponent in healthKitComponents {
-                group.addTask { @MainActor in
+                group.addTask { @MainActor @Sendable in
                     await healthKitComponent.triggerManualDataSourceCollection()
                 }
             }

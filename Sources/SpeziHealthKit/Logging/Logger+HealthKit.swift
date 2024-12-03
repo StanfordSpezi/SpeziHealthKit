@@ -6,8 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
-
 import OSLog
+
 
 extension Logger {
     /// Logs the view cycles like a view that appeared.
