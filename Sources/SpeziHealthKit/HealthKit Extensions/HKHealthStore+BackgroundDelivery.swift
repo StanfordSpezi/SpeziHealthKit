@@ -36,7 +36,10 @@ extension HKHealthStore {
             // "Whenever a matching sample is added to or deleted from the HealthKit store,
             // the system calls the query’s update handler on the same background queue (but not necessarily the same thread)."
             // So, the observerQuery has to be @Sendable!
-
+            
+            // Sadly necessary to enable capture of the `completionHandler` within the `Task`s below (isolation error)
+            nonisolated(unsafe) let completionHandler = completionHandler
+            
             guard error == nil,
                   let samples else {
                 Logger.healthKit.error("Failed HealthKit background delivery for observer query \(query) with error: \(error)")

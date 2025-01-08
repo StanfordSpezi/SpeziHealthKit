@@ -1,4 +1,4 @@
-// swift-tools-version:5.9
+// swift-tools-version:6.0
 
 //
 // This source file is part of the Stanford Spezi open-source project
@@ -12,13 +12,6 @@ import class Foundation.ProcessInfo
 import PackageDescription
 
 
-#if swift(<6)
-let swiftConcurrency: SwiftSetting = .enableExperimentalFeature("StrictConcurrency")
-#else
-let swiftConcurrency: SwiftSetting = .enableUpcomingFeature("StrictConcurrency")
-#endif
-
-
 let package = Package(
     name: "SpeziHealthKit",
     defaultLocalization: "en",
@@ -29,17 +22,13 @@ let package = Package(
         .library(name: "SpeziHealthKit", targets: ["SpeziHealthKit"])
     ],
     dependencies: [
-        .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.7.0")
+        .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.8.0")
     ] + swiftLintPackage(),
     targets: [
         .target(
             name: "SpeziHealthKit",
             dependencies: [
                 .product(name: "Spezi", package: "Spezi")
-            ],
-            swiftSettings: [
-                swiftConcurrency,
-                .enableUpcomingFeature("InferSendableFromCaptures")
             ],
             plugins: [] + swiftLintPlugin()
         ),
@@ -48,9 +37,6 @@ let package = Package(
             dependencies: [
                 .product(name: "XCTSpezi", package: "Spezi"),
                 .target(name: "SpeziHealthKit")
-            ],
-            swiftSettings: [
-                swiftConcurrency
             ],
             plugins: [] + swiftLintPlugin()
         )
