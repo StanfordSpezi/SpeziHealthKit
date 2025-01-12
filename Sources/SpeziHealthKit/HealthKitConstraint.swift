@@ -18,15 +18,15 @@ import Spezi
 /// The ``HealthKitConstraint/add(sample:)`` function is triggered once for every newly collected HealthKit sample, and the ``HealthKitConstraint/remove(sample:)`` function is triggered once for every deleted HealthKit sample.
 /// ```swift
 /// actor ExampleStandard: Standard, HealthKitConstraint {
-///    // Add the newly collected HKSample to your application.
-///    func add(sample: HKSample) async {
-///        ...
-///    }
-///  
-///    // Remove the deleted HKSample from your application.
-///    func remove(sample: HKDeletedObject) {
-///        ...
-///    }
+///     // Add the newly collected HKSample to your application.
+///     func add(sample: HKSample) async {
+///         ...
+///     }
+///
+///     // Remove the deleted HKSample from your application.
+///     func remove(sample: HKDeletedObject) {
+///         ...
+///     }
 /// }
 /// ```
 ///

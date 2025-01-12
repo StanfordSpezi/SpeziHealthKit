@@ -13,29 +13,32 @@ import SwiftUI
 
 
 final class HealthKitSampleDataSource: HealthKitDataSource {
-    let healthStore: HKHealthStore
-    let standard: any HealthKitConstraint
+    private unowned let healthKit: HealthKit
+    private let standard: any HealthKitConstraint
     
-    let sampleType: HKSampleType
-    let predicate: NSPredicate?
-    let deliverySetting: HealthKitDeliverySetting
-    @MainActor var active = false
-
+    private let sampleType: HKSampleType
+    private let predicate: NSPredicate?
+    private let deliverySetting: HealthKitDeliverySetting
+    @MainActor private var active = false
+    
     @MainActor private lazy var anchorUserDefaultsKey = UserDefaults.Keys.healthKitAnchorPrefix.appending(sampleType.identifier)
     @MainActor private lazy var anchor: HKQueryAnchor? = loadAnchor() {
         didSet {
             saveAnchor()
         }
     }
+    
+    private var healthStore: HKHealthStore { healthKit.healthStore }
+    
 
     required init(
-        healthStore: HKHealthStore,
+        healthKit: HealthKit,
         standard: any HealthKitConstraint,
         sampleType: HKSampleType,
         predicate: NSPredicate? = nil,  // swiftlint:disable:this function_default_parameter_at_end
         deliverySetting: HealthKitDeliverySetting
     ) {
-        self.healthStore = healthStore
+        self.healthKit = healthKit
         self.standard = standard
         self.sampleType = sampleType
         self.deliverySetting = deliverySetting
@@ -71,21 +74,19 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
     
 
     func askedForAuthorization() async {
-        guard askedForAuthorization(for: sampleType) && !deliverySetting.isManual && !active else {
+        guard healthKit.askedForAuthorization(for: sampleType) && !deliverySetting.isManual && !active else {
             return
         }
-        
         await triggerManualDataSourceCollection()
     }
 
+    
     func startAutomaticDataCollection() async {
-        guard askedForAuthorization(for: sampleType) else {
+        guard healthKit.askedForAuthorization(for: sampleType) else {
             return
         }
-
         switch deliverySetting {
-        case let .anchorQuery(startSetting, _) where startSetting == .automatic,
-            let .background(startSetting, _) where startSetting == .automatic:
+        case .anchorQuery(.automatic, _), .background(.automatic, _):
             await triggerManualDataSourceCollection()
         default:
             break
@@ -96,7 +97,6 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
         guard !active else {
             return
         }
-        
         do {
             switch deliverySetting {
             case .manual:
@@ -110,13 +110,11 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
                     guard case let .success((sampleTypes, completionHandler)) = result else {
                         return
                     }
-
                     guard sampleTypes.contains(self.sampleType) else {
                         Logger.healthKit.warning("Received Observation query types (\(sampleTypes)) are not corresponding to the CollectSample type \(self.sampleType)")
                         completionHandler()
                         return
                     }
-
                     do {
                         try await self.anchoredSingleObjectQuery()
                         Logger.healthKit.debug("Successfully processed background update for \(self.sampleType)")
@@ -145,14 +143,12 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
         self.anchor = resultsAnchor
     }
 
+    
     @MainActor
     private func anchoredContinuousObjectQuery() async throws {
         try await healthStore.requestAuthorization(toShare: [], read: [sampleType])
-        
         let anchorDescriptor = healthStore.anchorDescriptor(sampleType: sampleType, predicate: predicate, anchor: anchor)
-        
         let updateQueue = anchorDescriptor.results(for: healthStore)
-
         Task {
             for try await results in updateQueue {
                 for deletedObject in results.deletedObjects {
@@ -167,6 +163,7 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
         }
     }
 
+    
     @MainActor
     private func saveAnchor() {
         if deliverySetting.saveAnchor {
@@ -174,11 +171,11 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
                   let data = try? NSKeyedArchiver.archivedData(withRootObject: anchor, requiringSecureCoding: true) else {
                 return
             }
-            
             UserDefaults.standard.set(data, forKey: anchorUserDefaultsKey)
         }
     }
 
+    
     @MainActor
     private func loadAnchor() -> HKQueryAnchor? {
         guard deliverySetting.saveAnchor,

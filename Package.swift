@@ -19,16 +19,28 @@ let package = Package(
         .iOS(.v17)
     ],
     products: [
-        .library(name: "SpeziHealthKit", targets: ["SpeziHealthKit"])
+        .library(name: "SpeziHealthKit", targets: ["SpeziHealthKit"]),
+        .library(name: "SpeziHealthKitUI", targets: ["SpeziHealthKitUI"])
     ],
     dependencies: [
-        .package(url: "https://github.com/StanfordSpezi/Spezi", from: "1.8.0")
+        .package(path: "../Spezi"),
+        .package(path: "../SpeziFoundation")
     ] + swiftLintPackage(),
     targets: [
         .target(
             name: "SpeziHealthKit",
             dependencies: [
-                .product(name: "Spezi", package: "Spezi")
+                .product(name: "Spezi", package: "Spezi"),
+                .product(name: "SpeziFoundation", package: "SpeziFoundation")
+            ],
+            plugins: [] + swiftLintPlugin()
+        ),
+        .target(
+            name: "SpeziHealthKitUI",
+            dependencies: [
+                .target(name: "SpeziHealthKit"),
+                .product(name: "Spezi", package: "Spezi"),
+                .product(name: "SpeziFoundation", package: "SpeziFoundation")
             ],
             plugins: [] + swiftLintPlugin()
         ),

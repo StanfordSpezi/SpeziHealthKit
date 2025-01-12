@@ -12,10 +12,12 @@ import Spezi
 
 
 /// Collects `HKSampleType`s  in the ``HealthKit`` module.
-public struct CollectSamples: HealthKitDataSourceDescription {
-    public let sampleTypes: Set<HKSampleType>
+public struct CollectSamples: HealthKitSampleCollectionDescriptor {
+    let sampleTypes: Set<HKSampleType>
     let predicate: NSPredicate?
     let deliverySetting: HealthKitDeliverySetting
+    
+    public var accessedObjectTypes: Set<HKObjectType> { sampleTypes }
     
     
     /// - Parameters:
@@ -25,22 +27,22 @@ public struct CollectSamples: HealthKitDataSourceDescription {
     ///                provided the application authorization to collect the samples.
     ///   - deliverySetting: The ``HealthKitDeliverySetting`` that should be used to collect the sample type. `.manual` is the default argument used.
     public init(
-        _ sampleTypes: Set<HKSampleType>,
+        _ sampleTypes: some Collection<HKSampleType>,
         predicate: NSPredicate? = nil,
         deliverySetting: HealthKitDeliverySetting = .manual()
     ) {
-        self.sampleTypes = sampleTypes
+        self.sampleTypes = Set(sampleTypes)
         self.predicate = predicate
         self.deliverySetting = deliverySetting
     }
 
     public func dataSources(
-        healthStore: HKHealthStore,
+        healthKit: HealthKit,
         standard: any HealthKitConstraint
     ) -> [any HealthKitDataSource] {
         sampleTypes.map { sampleType in
             HealthKitSampleDataSource(
-                healthStore: healthStore,
+                healthKit: healthKit,
                 standard: standard,
                 sampleType: sampleType,
                 predicate: predicate,

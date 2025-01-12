@@ -26,9 +26,9 @@ public protocol HealthKitDataSource {
 
 
 extension HealthKitDataSource {
-    func askedForAuthorization(for sampleType: HKSampleType) -> Bool {
-        HealthKit.didAskForAuthorization(for: sampleType)
-    }
+//    func askedForAuthorization(for sampleType: HKSampleType) -> Bool {
+//        HealthKit.didAskForAuthorization(for: sampleType)
+//    }
 }
 
 

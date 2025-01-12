@@ -43,12 +43,12 @@ import Spezi
 ///     deliverySetting: .background(.automatic)
 /// )
 /// ```
-public struct CollectSample: HealthKitDataSourceDescription {
+public struct CollectSample: HealthKitSampleCollectionDescriptor {
     private let collectSamples: CollectSamples
     
     
-    public var sampleTypes: Set<HKSampleType> {
-        collectSamples.sampleTypes
+    public var accessedObjectTypes: Set<HKObjectType> {
+        collectSamples.accessedObjectTypes
     }
     
     
@@ -58,8 +58,8 @@ public struct CollectSample: HealthKitDataSourceDescription {
     ///                The default predicate collects all samples that have been collected from the first time that the user
     ///                provided the application authorization to collect the samples.
     ///   - deliverySetting: The ``HealthKitDeliverySetting`` that should be used to collect the sample type. `.manual` is the default argument used.
-    public init<S: HKSampleType>(
-        _ sampleType: S,
+    public init(
+        _ sampleType: HKSampleType,
         predicate: NSPredicate? = nil,
         deliverySetting: HealthKitDeliverySetting = .manual()
     ) {
@@ -68,9 +68,9 @@ public struct CollectSample: HealthKitDataSourceDescription {
     
     
     public func dataSources(
-        healthStore: HKHealthStore,
+        healthKit: HealthKit,
         standard: any HealthKitConstraint
     ) -> [any HealthKitDataSource] {
-        collectSamples.dataSources(healthStore: healthStore, standard: standard)
+        collectSamples.dataSources(healthKit: healthKit, standard: standard)
     }
 }
