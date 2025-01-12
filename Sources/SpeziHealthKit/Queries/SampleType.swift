@@ -10,30 +10,6 @@ import Foundation
 import HealthKit
 
 
-public enum ValueAdjustment { // TODO (way!!!) better name!
-    /// no adjustment needs to be made
-    case identity
-    /// The value should be scaled (i.e., multiplied) by the specified factor
-    case scale(factor: Double)
-    /// The value should be converted to a different unit
-    case convert(from: HKUnit, to: HKUnit)
-    case custom((Double) -> Double)
-    
-    func apply(to value: Double) -> Double {
-        switch self {
-        case .identity:
-            value
-        case .scale(let factor):
-            value * factor
-        case .convert(let srcUnit, let dstUnit):
-            HKQuantity(unit: srcUnit, doubleValue: value).doubleValue(for: dstUnit)
-        case .custom(let fn):
-            fn(value)
-        }
-    }
-}
-
-
 
 /// Associates a `HKSampleType` subclass with a `HKSample` subclass.
 public protocol __HKSampleTypeProviding: HKSample {
@@ -63,7 +39,7 @@ public struct HealthKitSampleType<T: HKSample & __HKSampleTypeProviding>: Hashab
     public let displayUnit: HKUnit
     /// The expected range of values we expect to see for this sample type, if applicable.
     /// The main purpose of this is to be able to e.g. adjust chart value ranges based on the specific sample types being visualised.
-    public let expectedValuesRange: ClosedRange<Double>?
+    public let expectedValuesRange: ClosedRange<Double>? // TODO remove this?!
     
     public var id: String {
         hkSampleType.identifier

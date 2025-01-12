@@ -33,8 +33,6 @@ extension HKCategoryTypeIdentifier {
         }
         if #available(iOS 18.0, *) {
             Self.bleedingDuringPregnancy
-        } else {
-            // Fallback on earlier versions
         }
         Self.cervicalMucusQuality
         Self.contraceptive

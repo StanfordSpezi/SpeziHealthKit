@@ -35,11 +35,3 @@ public protocol HealthKitQueryResults<Sample, Element>: Observable, RandomAccess
     /// - Note: This property being non-nil typically implies that the query results themselves are empty.
     var queryError: (any Error)? { get }
 }
-
-
-
-
-
-//extension HealthKitQueryResults where Element == HKQuantitySample {
-//    public func
-//}

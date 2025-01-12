@@ -63,7 +63,8 @@ extension HealthKitCharacteristic {
 
 @propertyWrapper
 public struct HealthKitCharacteristicQuery<Value>: DynamicProperty {
-    private let healthStore = HKHealthStore()
+    @Environment(HealthKit.self) private var healthKit
+    
     private let characteristic: HealthKitCharacteristic<Value>
     
     public init(_ characteristic: HealthKitCharacteristic<Value>) {
@@ -71,11 +72,7 @@ public struct HealthKitCharacteristicQuery<Value>: DynamicProperty {
     }
     
     public var wrappedValue: Value? {
-        do {
-            return try characteristic.accessor(healthStore)
-        } catch {
-            return nil
-        }
+        try? characteristic.accessor(healthKit.healthStore)
     }
 }
 

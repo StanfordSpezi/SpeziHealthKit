@@ -340,55 +340,12 @@ extension StatisticsQueryResults: HealthKitQueryResults {
 }
 
 
-//extension StatisticsQueryResults: PlottableHealthKitQueryResults {
-//    func yAxisValue(of dataPoint: HKStatistics, options: YAxisValueOptions) -> Double {
-//        switch options.preferredAccumulationQuantity {
-//        case nil:
-//            fatalError("preferredAccumulationQuantity required for statistics queries!")
-//        case .sum:
-//            return yAxisValue(of: dataPoint.sumQuantity()!)
-//        case .avg:
-//            return yAxisValue(of: dataPoint.averageQuantity()!)
-//        case .min:
-//            return yAxisValue(of: dataPoint.minimumQuantity()!)
-//        case .max:
-//            return yAxisValue(of: dataPoint.maximumQuantity()!)
-//        case .mostRecent:
-//            return yAxisValue(of: dataPoint.mostRecentQuantity()!)
-//        }
-//    }
-//}
-
-
-
 
 extension HKStatistics: @retroactive Identifiable {}
 
 
-
-
-
-
-
-extension HKStatisticsOptions: @retroactive Hashable {} // it's an OptionSet, the Hashable implementation is trivial, we should be fine here...
-
-
-//extension HKStatisticsOptions {
-//    init(_ option: HealthKitStatisticsQuery.Option) {
-//        switch option {
-//        case .cumulativeSum:
-//            self = .cumulativeSum
-//        case .discreteAverage:
-//            self = .discreteAverage
-//        case .discreteMin:
-//            self = .discreteMin
-//        case .discreteMax:
-//            self = .discreteMax
-//        case .mostRecent:
-//            self = .mostRecent
-//        }
-//    }
-//}
+// it's an OptionSet, the Hashable implementation is trivial, we should be fine here...
+extension HKStatisticsOptions: @retroactive Hashable {}
 
 
 

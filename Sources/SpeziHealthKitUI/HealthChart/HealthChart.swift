@@ -123,141 +123,14 @@ public struct HealthKitQueryDataPoint/*<ID: Hashable>*/: Hashable, Identifiable 
 
 
 
-
-
-// TODO why is it that, if this is a class, the chart will be able to auto-update when the contained `results` property (which is @Observable) changes,
-// (even though this class itself isn't), but if we instead turn the entry into a struct, it does not work???
-// TODO Rename HealthChartDateSet? (Entry kinda sounds like it's referring to a single data point. But then again, it could very well also be the case that we want to split eg "step count" up into separate data sets, to make it look nicer?
-public final class HealthChartEntry<Results: HealthKitQueryResults>: Sendable {
-    public typealias HealthKitQueryDataPoint = SpeziHealthKitUI.HealthKitQueryDataPoint//<Results.Element.ID>
-    public typealias MakeDataPointImp = @Sendable (Results.Element, Results) -> HealthKitQueryDataPoint?
-    
-    fileprivate let results: Results
-    fileprivate let drawingConfig: HealthChartDrawingConfig
-    fileprivate let makeDataPointImp: MakeDataPointImp
-    
-    public init(
-        _ results: Results,
-        drawingConfig: HealthChartDrawingConfig, // TODO drawingOptions?
-        makeDataPoint: @escaping MakeDataPointImp
-    ) {
-        self.results = results
-        self.drawingConfig = drawingConfig
-        self.makeDataPointImp = makeDataPoint
-    }
-    
-    public convenience init(
-        _ results: Results,
-        drawingConfig: HealthChartDrawingConfig
-    ) where Results.Element == HKQuantitySample {
-        self.init(results, drawingConfig: drawingConfig) { sample, results in
-            HealthKitQueryDataPoint(sample: sample, unit: results.sampleType.displayUnit)
-        }
-    }
-    
-    public convenience init(
-        _ results: Results,
-        aggregationOption: StatisticsAggregationOption, // TODO custom/better type here?!
-        drawingConfig: HealthChartDrawingConfig
-    ) where Results.Element == HKStatistics {
-        self.init(results, drawingConfig: drawingConfig) { statistics, results in
-            HealthKitQueryDataPoint(
-                statistics: statistics,
-                aggregationOption: aggregationOption,
-                unit: results.sampleType.displayUnit
-            )
-        }
-    }
-    
-    
-    
-    
-    
-    fileprivate func makeDataPoint(for element: Results.Element) -> HealthKitQueryDataPoint? {
-        makeDataPointImp(element, results)
-    }
-    
-    
-    fileprivate func withTimeRange(_ timeRange: HealthKitQueryTimeRange) async -> Self {
-        await Self.init(
-            results.withTimeRange(timeRange),
-            drawingConfig: drawingConfig,
-            makeDataPoint: makeDataPointImp
-        )
-    }
-}
-
-
-
-
-
-func tupleLength<each T>(_ element: (repeat each T)) -> Int {
-    var length = 0
-    for _ in repeat each element {
-        length += 1
-    }
-    return length
-}
-
-
-
-
-/// The ``HealthChartContentBuilder`` builds up the content (which is a tuple of ``HealthChartEntry`` objects) of the chart.
-@resultBuilder
-public enum HealthChartContentBuilder {
-    /// Intermediate representation of a variadic-length tuple of ``HealthChartEntry`` objects, used for building up the tuple.
-    /// This exists to work around https://github.com/swiftlang/swift/issues/78392.
-    public struct _Tuple<each Results: HealthKitQueryResults> {
-        let entry: (repeat HealthChartEntry<each Results>)
-        
-        init(_ entry: (repeat HealthChartEntry<each Results>)) {
-            self.entry = (repeat each entry)
-        }
-    }
-    
-    public static func buildExpression<Results>(_ entry: HealthChartEntry<Results>) -> _Tuple<Results> {
-        .init((entry))
-    }
-    
-    public static func buildExpression<each Results>(_ entry: (repeat HealthChartEntry<each Results>)) -> _Tuple<repeat each Results> {
-        .init((repeat each entry))
-    }
-    
-    public static func buildEither<each Results>(
-        first tuple: _Tuple<repeat each Results>
-    ) -> _Tuple<repeat each Results> {
-        tuple
-    }
-    
-    public static func buildEither<each Results>(
-        second tuple: _Tuple<repeat each Results>
-    ) -> _Tuple<repeat each Results> {
-        tuple
-    }
-    
-    public static func buildPartialBlock<each Results>(
-        first tuple: _Tuple<repeat each Results>
-    ) -> _Tuple<repeat each Results> {
-        tuple
-    }
-    
-    public static func buildPartialBlock<each Results, each NextResults>(
-        accumulated: (_Tuple<repeat each Results>),
-        next: _Tuple<repeat each NextResults>
-    ) -> (_Tuple<repeat each Results, repeat each NextResults>) {
-        .init((repeat each accumulated.entry, repeat each next.entry))
-    }
-    
-    public static func buildBlock() -> _Tuple<> {
-        .init(())
-    }
-    
-    public static func buildFinalResult<each Results>(
-        _ tuple: (_Tuple<repeat each Results>)
-    ) -> (repeat HealthChartEntry<each Results>) {
-        tuple.entry
-    }
-}
+//
+//func tupleLength<each T>(_ element: (repeat each T)) -> Int {
+//    var length = 0
+//    for _ in repeat each element {
+//        length += 1
+//    }
+//    return length
+//}
 
 
 
@@ -285,10 +158,6 @@ public enum HealthChartTimeIntervalInput {
     
     /// The chart's visible x axis time range should equal a year
     public static var year: Self { .custom(TimeConstants.year) }
-    
-//    public static func range(_ range: Range<Date>) -> Self {
-//        .custom(range.lowerBound.distance(to: range.upperBound))
-//    }
     
     public static func range(_ range: ClosedRange<Date>) -> Self {
         .custom(range.lowerBound.distance(to: range.upperBound))
@@ -362,6 +231,9 @@ public struct HealthChart<each Results: HealthKitQueryResults>: View {
             self.timeInterval = { () -> TimeInterval in
                 var retval: TimeInterval = 0
                 for entry in repeat each entry {
+                    guard !entry.isEmpty else {
+                        continue
+                    }
                     let entryInterval = entry.results.timeRange.range.upperBound.distance(to: entry.results.timeRange.range.lowerBound)
                     retval = max(retval, entryInterval)
                 }
@@ -374,9 +246,19 @@ public struct HealthChart<each Results: HealthKitQueryResults>: View {
     }
     
     
+    private var hasEntries: Bool {
+        for entry in repeat each entry {
+            if !entry.isEmpty {
+                return true
+            }
+        }
+        return false
+    }
+    
+    
     public var body: some View {
 //        let _ = Self._printChanges()
-        if tupleLength((repeat each entry)) == 0 {
+        if !hasEntries {
             Text("No Data")
         } else {
             VStack(spacing: 0) {
@@ -428,6 +310,9 @@ public struct HealthChart<each Results: HealthKitQueryResults>: View {
                         }
                         var highlightEntries: [CurrentHighlightConfig.HighlightEntry] = []
                         for entry in repeat each entry {
+                            guard !entry.isEmpty else {
+                                continue
+                            }
                             ////                        entry.results.lk_binarySearchFirstIndex { element -> BinarySearchComparisonResult in
                             ////                            guard let dataPoint = entry.makeDataPoint(for: element) else {
                             ////                                return
@@ -572,6 +457,9 @@ public struct HealthChart<each Results: HealthKitQueryResults>: View {
         // So, what we do instead is that we essentially unroll the for loop into manual, explicit calls of the result builder functions.
         var blocks: [AnyChartContent] = []
         for entry in repeat each entry {
+            guard !entry.isEmpty else {
+                continue
+            }
             guard entry.results.queryError == nil else {
                 continue
             }
@@ -778,6 +666,9 @@ struct InteractiveHealthChart<each Results: HealthKitQueryResults>: View {
             LabeledContent("#DataPoints", value: { () -> String in
                 var counts: [Int] = []
                 for entry in repeat each entry {
+                    guard !entry.isEmpty else {
+                        continue
+                    }
                     counts.append(entry.results.count)
                 }
                 return "\(counts.map(String.init).joined(separator: " + ")) = \(counts.reduce(0, +))"

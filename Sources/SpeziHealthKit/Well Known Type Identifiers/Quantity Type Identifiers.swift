@@ -34,8 +34,6 @@ extension HKQuantityTypeIdentifier {
         Self.basalEnergyBurned
         if #available(iOS 18.0, *) {
             Self.crossCountrySkiingSpeed
-        } else {
-            // Fallback on earlier versions
         }
         Self.cyclingCadence
         Self.cyclingFunctionalThresholdPower
@@ -43,47 +41,33 @@ extension HKQuantityTypeIdentifier {
         Self.cyclingSpeed
         if #available(iOS 18.0, *) {
             Self.distanceCrossCountrySkiing
-        } else {
-            // Fallback on earlier versions
         }
         Self.distanceCycling
         Self.distanceDownhillSnowSports
         if #available(iOS 18.0, *) {
             Self.distancePaddleSports
-        } else {
-            // Fallback on earlier versions
         }
         if #available(iOS 18.0, *) {
             Self.distanceRowing
-        } else {
-            // Fallback on earlier versions
         }
         if #available(iOS 18.0, *) {
             Self.distanceSkatingSports
-        } else {
-            // Fallback on earlier versions
         }
         Self.distanceSwimming
         Self.distanceWalkingRunning
         Self.distanceWheelchair
         if #available(iOS 18.0, *) {
             Self.estimatedWorkoutEffortScore
-        } else {
-            // Fallback on earlier versions
         }
         Self.flightsClimbed
         Self.nikeFuel
         if #available(iOS 18.0, *) {
             Self.paddleSportsSpeed
-        } else {
-            // Fallback on earlier versions
         }
         Self.physicalEffort
         Self.pushCount
         if #available(iOS 18.0, *) {
             Self.rowingSpeed
-        } else {
-            // Fallback on earlier versions
         }
         Self.runningPower
         Self.runningSpeed
@@ -92,8 +76,6 @@ extension HKQuantityTypeIdentifier {
         Self.underwaterDepth
         if #available(iOS 18.0, *) {
             Self.workoutEffortScore
-        } else {
-            // Fallback on earlier versions
         }
         Self.environmentalAudioExposure
         Self.environmentalSoundReduction
@@ -168,8 +150,6 @@ extension HKQuantityTypeIdentifier {
         Self.basalBodyTemperature
         if #available(iOS 18.0, *) {
             Self.appleSleepingBreathingDisturbances
-        } else {
-            // Fallback on earlier versions
         }
         Self.forcedExpiratoryVolume1
         Self.forcedVitalCapacity
