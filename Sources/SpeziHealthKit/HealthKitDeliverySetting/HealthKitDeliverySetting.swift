@@ -38,10 +38,10 @@ public enum HealthKitDeliverySetting: Equatable {
     
     var isManual: Bool {
         switch self {
-        case .manual:
-            return true
-        case let .anchorQuery(healthKitDeliveryStartSetting, _), let .background(healthKitDeliveryStartSetting, _):
-            return healthKitDeliveryStartSetting == .manual
+        case .manual, .anchorQuery(.manual, _), .background(.manual, _):
+            true
+        case .anchorQuery(.automatic, _), .background(.automatic, _):
+            false
         }
     }
 }

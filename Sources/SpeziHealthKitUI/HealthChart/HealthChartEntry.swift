@@ -79,7 +79,7 @@ public final class HealthChartEntry<Results: HealthKitQueryResults>: Sendable {
     public convenience init(
         _ results: Results,
         drawingConfig: HealthChartDrawingConfig
-    ) where Results.Element == HKQuantitySample {
+    ) where Results.Sample == HKQuantitySample, Results.Element == HKQuantitySample {
         self.init(results, drawingConfig: drawingConfig) { sample, results in
             HealthKitQueryDataPoint(sample: sample, unit: results.sampleType.displayUnit)
         }
@@ -89,7 +89,7 @@ public final class HealthChartEntry<Results: HealthKitQueryResults>: Sendable {
         _ results: Results,
         aggregationOption: StatisticsAggregationOption, // TODO custom/better type here?!
         drawingConfig: HealthChartDrawingConfig
-    ) where Results.Element == HKStatistics {
+    ) where Results.Sample == HKQuantitySample, Results.Element == HKStatistics {
         self.init(results, drawingConfig: drawingConfig) { statistics, results in
             HealthKitQueryDataPoint(
                 statistics: statistics,

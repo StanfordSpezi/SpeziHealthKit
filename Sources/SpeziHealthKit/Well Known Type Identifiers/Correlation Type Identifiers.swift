@@ -25,8 +25,8 @@ extension HKCorrelationTypeIdentifier {
     /// This exists because, for e.g. blood pressure, you cannot request read access authorization to
     /// `HKCorrelationType(.bloodPressure)`, but instead need to request separate access to
     /// `HKQuantityType(.bloodPressureSystolic)` and `HKQuantityType(.bloodPressureDiastolic)`.
-    @SetBuilder<HKObjectType>
-    var knownAssociatedObjectTypes: Set<HKObjectType> {
+    @SetBuilder<HKSampleType>
+    var knownAssociatedSampleTypes: Set<HKSampleType> {
         switch self {
         case .bloodPressure:
             HKQuantityType(.bloodPressureSystolic)

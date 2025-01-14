@@ -10,7 +10,6 @@ import Foundation
 import HealthKit
 
 
-
 extension HKObjectType {
     public static let allKnownObjectTypes: Set<HKObjectType> = Set(HKCategoryType.allKnownCategories).union(HKCorrelationType.allKnownCorrelations).union(HKCharacteristicType.allKnownCharacteristics).union(HKQuantityType.allKnownQuantities)
 }

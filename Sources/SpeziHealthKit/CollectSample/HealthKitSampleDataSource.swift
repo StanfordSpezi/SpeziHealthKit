@@ -13,6 +13,7 @@ import SwiftUI
 
 
 final class HealthKitSampleDataSource: HealthKitDataSource {
+    // This needs to be unowned since the HealthKit module will establish a strong reference to the data source.
     private unowned let healthKit: HealthKit
     private let standard: any HealthKitConstraint
     
@@ -35,7 +36,7 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
         healthKit: HealthKit,
         standard: any HealthKitConstraint,
         sampleType: HKSampleType,
-        predicate: NSPredicate? = nil,  // swiftlint:disable:this function_default_parameter_at_end
+        predicate: NSPredicate? = nil, // swiftlint:disable:this function_default_parameter_at_end
         deliverySetting: HealthKitDeliverySetting
     ) {
         self.healthKit = healthKit
@@ -64,9 +65,7 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
             components.setValue(0, for: .second)
             components.setValue(0, for: .nanosecond)
             let defaultQueryDate = components.date ?? .now
-            
             UserDefaults.standard.set(defaultQueryDate, forKey: defaultPredicateDateUserDefaultsKey)
-            
             return defaultQueryDate
         }
         return date
@@ -74,15 +73,15 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
     
 
     func askedForAuthorization() async {
-        guard healthKit.askedForAuthorization(for: sampleType) && !deliverySetting.isManual && !active else {
+        guard healthKit.askedForAuthorization(forReading: sampleType) && !deliverySetting.isManual && !active else {
             return
         }
         await triggerManualDataSourceCollection()
     }
-
+    
     
     func startAutomaticDataCollection() async {
-        guard healthKit.askedForAuthorization(for: sampleType) else {
+        guard healthKit.askedForAuthorization(forReading: sampleType) else {
             return
         }
         switch deliverySetting {
@@ -183,7 +182,6 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
               let loadedAnchor = try? NSKeyedUnarchiver.unarchivedObject(ofClass: HKQueryAnchor.self, from: userDefaultsData) else {
             return nil
         }
-        
         return loadedAnchor
     }
 }

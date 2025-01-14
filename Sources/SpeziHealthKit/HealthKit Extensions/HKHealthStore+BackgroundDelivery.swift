@@ -15,46 +15,42 @@ extension HKHealthStore {
     private static let activeObservationsLock = NSLock()
     private static nonisolated(unsafe) var activeObservations: [HKObjectType: Int] = [:]
     
-
     @MainActor
     func startBackgroundDelivery(
         for sampleTypes: Set<HKSampleType>,
         withPredicate predicate: NSPredicate? = nil,
-        observerQuery: @escaping @Sendable @MainActor (
-            Result<(sampleTypes: Set<HKSampleType>, completionHandler: HKObserverQueryCompletionHandler), Error>
+        updateHandler: @escaping @MainActor @Sendable (
+            Result<(sampleTypes: Set<HKSampleType>, completionHandler: HKObserverQueryCompletionHandler), any Error>
         ) async -> Void
     ) async throws {
-        var queryDescriptors: [HKQueryDescriptor] = []
-        for sampleType in sampleTypes {
-            queryDescriptors.append(
-                HKQueryDescriptor(sampleType: sampleType, predicate: predicate)
-            )
+        let queryDescriptors: [HKQueryDescriptor] = sampleTypes.map {
+            HKQueryDescriptor(sampleType: $0, predicate: predicate)
         }
-        
-        let observerQuery = HKObserverQuery(queryDescriptors: queryDescriptors) { query, samples, completionHandler, error in
-            // From https://developer.apple.com/documentation/healthkit/hkobserverquery/executing_observer_queries:
+        let observerQuery = HKObserverQuery(queryDescriptors: queryDescriptors) { query, sampleTypes, completionHandler, error in
+            // From https://developer.apple.com/documentation/healthkit/hkobserverquery/executing_observer_queries
             // "Whenever a matching sample is added to or deleted from the HealthKit store,
             // the system calls the query’s update handler on the same background queue (but not necessarily the same thread)."
             // So, the observerQuery has to be @Sendable!
             
             // Sadly necessary to enable capture of the `completionHandler` within the `Task`s below (isolation error)
             nonisolated(unsafe) let completionHandler = completionHandler
-            
-            guard error == nil,
-                  let samples else {
+            if let error {
                 Logger.healthKit.error("Failed HealthKit background delivery for observer query \(query) with error: \(error)")
                 Task { @MainActor in
-                    await observerQuery(.failure(error ?? NSError(domain: "Spezi HealthKit", code: -1)))
+                    await updateHandler(.failure(error))
                     completionHandler()
                 }
                 return
             }
-            
+            guard let sampleTypes else {
+                // invalid observer query update (both error and sampleTypes were nil).
+                // There's nothing we can do here, so we just ignore it.
+                return
+            }
             Task { @MainActor in
-                await observerQuery(.success((samples, completionHandler)))
+                await updateHandler(.success((sampleTypes, completionHandler)))
             }
         }
-        
         self.execute(observerQuery)
         try await enableBackgroundDelivery(for: sampleTypes)
     }

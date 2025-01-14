@@ -10,11 +10,14 @@ import HealthKit
 import Spezi
 
 
-/// Collects a specified `HKSampleType`  in the ``HealthKit`` module.
+/// Collects a specified ``HealthKitSampleType``  via the ``HealthKit`` module.
 ///
-/// This structure define what and how the ``HealthKit`` samples are collected. By default, all samples of the provided `HKSampleType` will be collected. The collection starts on calling ``HealthKit/triggerDataSourceCollection()`` if you configure the `deliverySetting` as    ``HealthKitDeliverySetting/manual(safeAnchor:)`` or automatic once the application is launched when you configure anything else than manual, i.e.  ``HealthKitDeliverySetting/anchorQuery(_:saveAnchor:)`` or ``HealthKitDeliverySetting/background(_:saveAnchor:)``.
+/// This structure define what and how the ``HealthKit`` samples are collected. By default, all samples of the provided ``HealthKitSampleType`` will be collected.
+/// The collection starts on calling ``HealthKit/triggerDataSourceCollection()`` if you configure the `deliverySetting` as    ``HealthKitDeliverySetting/manual(saveAnchor:)`` or automatic once the application is launched when you configure anything else than manual, i.e.  ``HealthKitDeliverySetting/anchorQuery(_:saveAnchor:)`` or ``HealthKitDeliverySetting/background(_:saveAnchor:)``.
 ///
-/// Your can filter the HealthKit samples to collect by specifying the `predicate`. For example, you can define an  `NSPredicate` to only collect the data collected at a time within the given start and end date. Below is an example to create a `NSPredicate` restricting the data collected in the previous month.
+/// Your can filter the HealthKit samples to collect via an `NSPredicate`.
+/// For example, you can define a predicate to only collect the data collected at a time within the given start and end date.
+/// Below is an example to create a `NSPredicate` restricting the data collected in the previous month.
 /// ```swift
 /// private var predicateOneMonth: NSPredicate {
 ///     // Define the start and end time for the predicate. In this example,
@@ -38,39 +41,55 @@ import Spezi
 ///
 /// ```swift
 /// CollectSample(
-///     HKQuantityType(.stepCount),
+///     .stepCount,
 ///     predicate: predicateOneMonth,
 ///     deliverySetting: .background(.automatic)
 /// )
 /// ```
-public struct CollectSample: HealthKitSampleCollectionDescriptor {
-    private let collectSamples: CollectSamples
+public struct CollectSample: HealthKitConfigurationComponent {
+    private let sampleType: HKSampleType
+    private let predicate: NSPredicate?
+    private let deliverySetting: HealthKitDeliverySetting
     
-    
-    public var accessedObjectTypes: Set<HKObjectType> {
-        collectSamples.accessedObjectTypes
+    public var dataAccessRequirements: HealthKitDataAccessRequirements {
+        .init(read: [sampleType])
     }
     
     
     /// - Parameters:
-    ///   - sampleType: The `HKSampleType` that should be collected
+    ///   - sampleType: The ``HealthKitSampleType`` that should be collected
     ///   - predicate: A custom predicate that should be passed to the HealthKit query.
     ///                The default predicate collects all samples that have been collected from the first time that the user
     ///                provided the application authorization to collect the samples.
     ///   - deliverySetting: The ``HealthKitDeliverySetting`` that should be used to collect the sample type. `.manual` is the default argument used.
     public init(
-        _ sampleType: HKSampleType,
+        _ sampleType: HealthKitSampleType<some Any>,
+        predicate: NSPredicate? = nil,
+        delivery: HealthKitDeliverySetting = .manual()
+    ) {
+        self.sampleType = sampleType.hkSampleType
+        self.predicate = predicate
+        self.deliverySetting = delivery
+    }
+    
+    @available(*, deprecated, renamed: "init(_:predicate:delivery:)")
+    public init(
+        _ sampleType: HealthKitSampleType<some Any>,
         predicate: NSPredicate? = nil,
         deliverySetting: HealthKitDeliverySetting = .manual()
     ) {
-        self.collectSamples = CollectSamples([sampleType], predicate: predicate, deliverySetting: deliverySetting)
+        self.init(sampleType, predicate: predicate, delivery: deliverySetting)
     }
     
     
-    public func dataSources(
-        healthKit: HealthKit,
-        standard: any HealthKitConstraint
-    ) -> [any HealthKitDataSource] {
-        collectSamples.dataSources(healthKit: healthKit, standard: standard)
+    public func configure(for healthKit: HealthKit, on standard: any HealthKitConstraint) {
+        let dataSource = HealthKitSampleDataSource(
+            healthKit: healthKit,
+            standard: standard,
+            sampleType: sampleType,
+            predicate: predicate,
+            deliverySetting: deliverySetting
+        )
+        healthKit.addBackgroundHealthDataSource(dataSource)
     }
 }

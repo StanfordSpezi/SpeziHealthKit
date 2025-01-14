@@ -6,47 +6,49 @@
 // SPDX-License-Identifier: MIT
 //
 
-
-import Foundation
 import HealthKit
+import Spezi
 
 
-
-
-
-public protocol HealthKitConfigurationComponent { // TODO better name?
-    /// The object types this component needs read-access to.
-    var accessedObjectTypes: Set<HKObjectType> { get }
+/// A component in the configuration of the ``HealthKit-swift.class`` module.
+///
+/// Each configuration component defines the `HKObjectType`s it needs read-access to,
+/// and, as part of the ``HealthKit-swift.class`` module's initialization, is given the opportunity
+/// to perform custom configuration actions.
+public protocol HealthKitConfigurationComponent {
+    /// The HealthKit data types this component needs read and/or write access to.
+    var dataAccessRequirements: HealthKitDataAccessRequirements { get }
     
+    /// Called when the component is addedd to the ``HealthKit-swift.class`` module.
+    /// Components can use this function to register their respective custom functionalities with the module.
     @MainActor
-    func configure(for healthKit: HealthKit)
+    func configure(for healthKit: HealthKit, on standard: any HealthKitConstraint)
 }
 
 
 
-
-
-public struct RequestReadAccess: HealthKitConfigurationComponent {
-    public let accessedObjectTypes: Set<HKObjectType>
+/// Defines the object and sample types the ``HealthKit-swift.class`` module requires read and/or write access to.
+public struct HealthKitDataAccessRequirements {
+    /// The object types a component needs read access to.
+    /// The ``HealthKit-swift.class`` module will include these object types in the
+    /// request when the app calls ``HealthKit-swift.class/askForAuthorization()``
+    public let read: Set<HKObjectType>
+    /// The object types a component needs write access to.
+    /// The ``HealthKit-swift.class`` module will include these object types in the
+    /// request when the app calls ``HealthKit-swift.class/askForAuthorization()``
+    public let write: Set<HKSampleType>
     
-    public init(_ objectTypes: some Collection<HKObjectType>) {
-        accessedObjectTypes = Set(objectTypes)
+    /// Creates a new instance, with the specified read and write sample types.
+    public init(read: some Sequence<HKObjectType> = [], write: some Sequence<HKSampleType> = []) {
+        self.read = Set(read)
+        self.write = Set(write)
     }
     
-    public init(
-        quantity: Set<HKQuantityTypeIdentifier> = [],
-        category: Set<HKCategoryTypeIdentifier> = [],
-        correlation: Set<HKCorrelationTypeIdentifier> = [],
-        characteristic: Set<HKCharacteristicTypeIdentifier> = []
-    ) {
-        accessedObjectTypes = Set(quantity.map(HKQuantityType.init))
-            .union(category.map(HKCategoryType.init))
-            .union(correlation.flatMap(\.knownAssociatedObjectTypes))
-            .union(characteristic.map(HKCharacteristicType.init))
-    }
-    
-    public func configure(for healthKit: HealthKit) {
-        // This type only provides objectTypes to the HealthKit module;
-        // and consequently doesn't need to do anything in here.
+    /// Creates a new instance, containing union of the read and write requirements of `self` and `other`.
+    public func merging(with other: Self) -> Self {
+        Self(
+            read: read.union(other.read),
+            write: write.union(other.write)
+        )
     }
 }

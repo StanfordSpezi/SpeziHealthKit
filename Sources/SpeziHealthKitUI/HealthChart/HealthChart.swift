@@ -404,7 +404,7 @@ public struct HealthChart<each Results: HealthKitQueryResults>: View {
             let valuesRange = { () -> ClosedRange<Double>? in
                 var range: ClosedRange<Double>?
                 func imp(_ entry: HealthChartEntry<some Any>) {
-                    guard let expectedRange = entry.results.sampleType.expectedValuesRange else {
+                    guard let expectedRange = (entry.results.sampleType as? HealthKitSampleType<HKQuantitySample>)?.expectedValuesRange else {
                         return
                     }
                     if let _range = range {

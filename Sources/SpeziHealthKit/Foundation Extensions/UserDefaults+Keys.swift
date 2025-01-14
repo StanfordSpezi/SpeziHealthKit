@@ -11,7 +11,6 @@ import Foundation
 
 extension UserDefaults {
     enum Keys {
-        static let healthKitRequestedSampleTypes = "Spezi.HealthKit.RequestedSampleTypes"
         static let healthKitAnchorPrefix = "Spezi.HealthKit.Anchors."
         static let healthKitDefaultPredicateDatePrefix = "Spezi.HealthKit.DefaultPredicateDate."
     }
