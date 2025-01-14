@@ -11,7 +11,7 @@ import HealthKit
 
 
 
-/// The ``HealthKitQueryResults`` protocol is an auto-updating, observable collection of results to a HealthKit query.
+/// The ``HealthKitQueryResults`` protocol models an auto-updating, observable collection of results to a HealthKit query.
 public protocol HealthKitQueryResults<Sample, Element>: Observable, RandomAccessCollection, Sendable where Element: Identifiable {
     /// The `HKSample` subclass of the queried sample type.
     /// - Note: this is not necessarily the same as the type of the elements in the query results: for e.g. statistical queries,

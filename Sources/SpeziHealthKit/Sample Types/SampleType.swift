@@ -12,7 +12,7 @@ import HealthKit
 
 
 /// Associates a `HKSampleType` subclass with a `HKSample` subclass.
-public protocol __HKSampleTypeProviding: HKSample {
+public protocol __HKSampleTypeProviding: HKSample { // TODO _HKSampleWithType?
     associatedtype _SampleType: HKSampleType
 }
 

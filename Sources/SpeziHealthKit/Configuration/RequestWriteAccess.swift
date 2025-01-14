@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+import HealthKit
+
 
 /// A ``HealthKit`` configuration component that requests write acess to HealthKit sample types.
 public struct RequestWriteAccess: HealthKitConfigurationComponent {

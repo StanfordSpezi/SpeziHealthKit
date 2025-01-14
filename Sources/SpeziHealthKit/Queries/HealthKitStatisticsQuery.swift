@@ -15,6 +15,28 @@ import SpeziFoundation
 
 
 
+/// The ``HealthKitStatisticsQuery`` property wrappers enables access to HealthKit samples within SwiftUI views.
+///
+/// Example: the following view uses the ``HealthKitStatisticsQuery`` property wrapper to query
+/// all heart rate measurements recorded today.
+///
+/// ```swift
+/// struct MyView: View {
+///     @HealthKitQuery(.heartRate, timeRange: .today)
+///     var heartRateSamples
+///
+///     var body: some View {
+///         ForEach(heartRateSamples) { sample in
+///             // ...
+///         }
+///     }
+/// }
+/// ```
+///
+/// - Note: This property wrapper is intended for situations where you are interested in pre-computed sumamary values
+///     for a certain sample type over a certain time range.
+///     If you are interested in simply querying all individual samples for a certain sample type over a certain time range,
+///     consider using ``HealthKitQuery`` instead.
 @propertyWrapper @MainActor
 public struct HealthKitStatisticsQuery: DynamicProperty {
     public enum CumulativeAggregationOption: Hashable {

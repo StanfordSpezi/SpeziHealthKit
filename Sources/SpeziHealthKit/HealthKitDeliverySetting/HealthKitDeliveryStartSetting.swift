@@ -14,7 +14,6 @@ public enum HealthKitDeliveryStartSetting {
     /// The delivery is started automatically after the user provided authorization and the application has launched.
     /// You can request authorization using the ``HealthKit/askForAuthorization()`` function.
     case automatic
-    
 
     /// Legacy delivery setting, start after initialization
     @available(

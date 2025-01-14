@@ -99,16 +99,15 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     public init(
         @ArrayBuilder<any HealthKitConfigurationComponent> _ config: () -> [any HealthKitConfigurationComponent]
     ) {
-        healthStore = HKHealthStore()
-        pendingConfiguration = config()
-        healthKitDataAccessRequirements = pendingConfiguration.reduce(.init()) { dataReqs, component in
-            dataReqs.merging(with: component.dataAccessRequirements)
-        }
-        
         if !HKHealthStore.isHealthDataAvailable() {
             // If HealthKit is not available, we still initialise the module and the health store as normal.
             // Queries and sample collection, in this case, will simply not return any results.
             logger.error("HealthKit is not available. SpeziHealthKit and its module will still exist in the application, but all HealthKit-related functionality will be disabled.")
+        }
+        healthStore = HKHealthStore()
+        pendingConfiguration = config()
+        healthKitDataAccessRequirements = pendingConfiguration.reduce(.init()) { dataReqs, component in
+            dataReqs.merging(with: component.dataAccessRequirements)
         }
     }
     
@@ -138,9 +137,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
             toShare: healthKitDataAccessRequirements.write,
             read: healthKitDataAccessRequirements.read
         )
-        
         didRequestAuthorization = true
-        
         for dataSource in registeredDataSources {
             // TODO should this only call -askedForAuthorization on those data sources where the data source's accessed object types is a subset of what we've just asked for?
             await dataSource.askedForAuthorization()
@@ -191,6 +188,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
 
 
 extension HKHealthStore {
+    // TODO remove?!
     func spezi_requestPerObjectReadAuthorization(for type: HKObjectType, predicate: NSPredicate?) async throws -> Bool {
         try await withCheckedThrowingContinuation { continuation in
             self.requestPerObjectReadAuthorization(for: type, predicate: predicate) { success, error in

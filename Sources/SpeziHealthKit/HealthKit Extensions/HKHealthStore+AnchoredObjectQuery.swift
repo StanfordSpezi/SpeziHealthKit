@@ -41,7 +41,7 @@ extension HKHealthStore {
         for addedSample in result.addedSamples {
             await standard.add(sample: addedSample)
         }
-        return (result.newAnchor)
+        return result.newAnchor
     }
     
     

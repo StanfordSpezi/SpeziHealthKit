@@ -10,7 +10,7 @@ import Foundation
 import SwiftUI
 import HealthKit
 import SpeziFoundation
-import SpeziHealthKit
+import Spezi
 import os
 
 
@@ -22,6 +22,7 @@ let queryLifetimeLogger = os.Logger(subsystem: "edu.stanford.spezi.SpeziHealthKi
 
 
 
+/// The time range for which data should be fetched from the health store.
 public enum HealthKitQueryTimeRange: Hashable, Sendable {
     /// The time range containing the last hour.
     case hour
@@ -59,13 +60,56 @@ public enum HealthKitQueryTimeRange: Hashable, Sendable {
 }
 
 
+struct MyView: View {
+    @HealthKitQuery(.heartRate, timeRange: .today)
+    private var heartRateSamples
+    
+    @HealthKitQuery(.bloodPressure, timeRange: .week)
+    private var bloodPressureSamples
+    
+    var body: some View {
+        ForEach(heartRateSamples) { sample in
+            // ...
+        }
+    }
+}
 
 
-
-
-
-
-@propertyWrapper @MainActor // TODO maybe call it HealthSamplesQuery instead?
+/// The ``HealthKitQuery`` property wrappers enables access to HealthKit samples within SwiftUI views.
+///
+/// Queries are performed in the context of the ``HealthKit-swift.class`` module, which must be enabled via an app's
+/// ``SpeziAppDelegate`` for the query to work.
+///
+/// A query exposes, via its wrapped value, the samples it received from the HealthKit database.
+/// The actual type of the samples returned is dependent on the specific sample type being queried for.
+///
+/// Queries are auto-updating for the lifetime of the view they are attached to, and will automatically trigger view updates when used in the view's body.
+///
+/// Example: the following view uses the ``HealthKitQuery`` property wrapper to query
+/// all heart rate measurements recorded today.
+///
+/// ```swift
+/// struct MyView: View {
+///     @HealthKitQuery(.heartRate, timeRange: .today)
+///     private var heartRateSamples
+///
+///     @HealthKitQuery(.bloodPressure, timeRange: .week)
+///     private var bloodPressureSamples
+///
+///     var body: some View {
+///         ForEach(heartRateSamples) { sample in
+///             // ...
+///         }
+///     }
+/// }
+/// ```
+///
+/// - Note: Explain that the user should/must request access to these sample types via the ``HealthKit`` configurstion!
+///
+/// - Note: This property wrapper is intended for situations where you are interested in all individual samples.
+///     If you are interested in pre-computed sumamary values for a certain sample type over a certain time range,
+///     consider using ``HealthKitStatisticsQuery`` instead.
+@propertyWrapper @MainActor
 public struct HealthKitQuery<Sample: HKSample & __HKSampleTypeProviding>: DynamicProperty {
     private let input: SamplesQueryResults<Sample>.Input
     
@@ -75,10 +119,15 @@ public struct HealthKitQuery<Sample: HKSample & __HKSampleTypeProviding>: Dynami
     @State
     private var results: SamplesQueryResults<Sample> = .uninitializedForSwiftUIStateObject()
     
-    
+    /// Creates a new query.
+    /// - parameter sampleType: The sample type to query for
+    /// - parameter timeRange: The interval for which the query should fetch samples.
+    ///     Any new samples added to or removed from the health store that fall into this time range will be considered by the query.
+    /// - parameter filterPredicate: An optional refining predicate for filtering the queried-for samples.
+    ///     This predicate should be created using the utility methods on the `HKQuery` type: https://developer.apple.com/documentation/healthkit/hkquery#1664362
     public init(
         _ sampleType: HealthKitSampleType<Sample>,
-        timeRange: HealthKitQueryTimeRange /*= .currentWeek???*/,
+        timeRange: HealthKitQueryTimeRange,
         filter filterPredicate: NSPredicate? = nil
     ) {
         input = .init(
@@ -109,7 +158,7 @@ public struct HealthKitQuery<Sample: HKSample & __HKSampleTypeProviding>: Dynami
     }
     
     /// A ``HealthKitQuery``'s projected value provides access to the query's underlying auto-updating results object.
-    /// This can be used e.g. to provide data to a ``HealthChart``.
+    /// This can be used e.g. to provide data to a ``SpeziHealthKit/SpeziHealthKitUI/HealthChart``.
     public var projectedValue: SamplesQueryResults<Sample> { // TODO why not `some HealthKitQueryResults<...>`?
         results
     }
@@ -123,7 +172,7 @@ import Atomics
 private nonisolated(unsafe) var numSamplesQueryResultsObjects = ManagedAtomic<UInt64>(0)
 
 
-/// An auto-updating HealthKit query over samples in the HealthKit database. // TODO actually make it auto-updating!!!
+/// An auto-updating HealthKit query over samples in the HealthKit database.
 ///
 /// This type is primarily intended to be used by the ``HealthKitStatisticsQuery`` property wrapper, but is also made available as part of the public API.
 @Observable
