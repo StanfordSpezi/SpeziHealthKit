@@ -22,7 +22,7 @@ public protocol HealthKitConfigurationComponent {
     /// Called when the component is addedd to the ``HealthKit-swift.class`` module.
     /// Components can use this function to register their respective custom functionalities with the module.
     @MainActor
-    func configure(for healthKit: HealthKit, on standard: any HealthKitConstraint)
+    func configure(for healthKit: HealthKit, on standard: any HealthKitConstraint) async
 }
 
 
@@ -44,11 +44,16 @@ public struct HealthKitDataAccessRequirements {
         self.write = Set(write)
     }
     
-    /// Creates a new instance, containing union of the read and write requirements of `self` and `other`.
+    /// Creates a new instance, containing the union of the read and write requirements of `self` and `other`.
     public func merging(with other: Self) -> Self {
         Self(
             read: read.union(other.read),
             write: write.union(other.write)
         )
+    }
+    
+    /// Merges another set of data access requirements into the current one.
+    public mutating func merge(with other: Self) {
+        self = self.merging(with: other)
     }
 }

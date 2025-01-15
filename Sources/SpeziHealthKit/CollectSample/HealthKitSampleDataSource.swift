@@ -73,7 +73,7 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
     
 
     func askedForAuthorization() async {
-        guard healthKit.askedForAuthorization(forReading: sampleType) && !deliverySetting.isManual && !isActive else {
+        guard await healthKit.askedForAuthorization(forReading: sampleType) && !deliverySetting.isManual && !isActive else {
             return
         }
         await triggerManualDataSourceCollection()
@@ -81,7 +81,7 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
     
     
     func startAutomaticDataCollection() async {
-        guard healthKit.askedForAuthorization(forReading: sampleType) else {
+        guard await healthKit.askedForAuthorization(forReading: sampleType) else {
             return
         }
         switch deliverySetting {
@@ -145,6 +145,7 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
     
     @MainActor
     private func anchoredContinuousObjectQuery() async throws {
+        print("ANCHOR", anchor)
         let anchorDescriptor = healthStore.anchorDescriptor(sampleType: sampleType, predicate: predicate, anchor: anchor)
         let updateQueue = anchorDescriptor.results(for: healthStore)
         Task {
@@ -156,6 +157,7 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
                 for addedSample in results.addedSamples {
                     await standard.add(sample: addedSample)
                 }
+                print("NEW ANCHOR", results.newAnchor)
                 self.anchor = results.newAnchor
             }
         }

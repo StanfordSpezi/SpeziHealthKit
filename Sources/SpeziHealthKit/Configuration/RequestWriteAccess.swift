@@ -10,6 +10,9 @@ import HealthKit
 
 
 /// A ``HealthKit`` configuration component that requests write acess to HealthKit sample types.
+///
+/// - Warning: Only request write access to HealthKit data if your app's `Info.plist` file
+///     contains an entry for the `NSHealthUpdateUsageDescription` key.
 public struct RequestWriteAccess: HealthKitConfigurationComponent {
     public let dataAccessRequirements: HealthKitDataAccessRequirements
     

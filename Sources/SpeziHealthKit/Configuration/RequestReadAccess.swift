@@ -18,7 +18,8 @@ public struct RequestReadAccess: HealthKitConfigurationComponent {
         dataAccessRequirements = .init(read: Set(objectTypes))
     }
     
-    /// Creates a HealthKit configuration component that requests read access to the specified type identifiers.
+    // TODO this (and its RequestWriteAccess sibling) somehow needs to be able to allow requesting access to eg the electrocardiogram type (which isn't an identifier in the enum, and works differently!)
+    /// Creates a HealthKit configuration component that requests read access to the specified sample types.
     public init(
         quantity: Set<HKQuantityTypeIdentifier> = [],
         category: Set<HKCategoryTypeIdentifier> = [],

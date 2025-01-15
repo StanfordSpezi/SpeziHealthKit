@@ -65,7 +65,7 @@ public struct CollectSample: HealthKitConfigurationComponent {
     public init(
         _ sampleType: HealthKitSampleType<some Any>,
         predicate: NSPredicate? = nil,
-        delivery: HealthKitDeliverySetting = .manual()
+        delivery: HealthKitDeliverySetting = .manual() // TODO Question @Paul : why does it default to manual?
     ) {
         self.sampleType = sampleType.hkSampleType
         self.predicate = predicate
@@ -82,7 +82,7 @@ public struct CollectSample: HealthKitConfigurationComponent {
     }
     
     
-    public func configure(for healthKit: HealthKit, on standard: any HealthKitConstraint) {
+    public func configure(for healthKit: HealthKit, on standard: any HealthKitConstraint) async {
         let dataSource = HealthKitSampleDataSource(
             healthKit: healthKit,
             standard: standard,
@@ -90,6 +90,6 @@ public struct CollectSample: HealthKitConfigurationComponent {
             predicate: predicate,
             deliverySetting: deliverySetting
         )
-        healthKit.addBackgroundHealthDataSource(dataSource)
+        await healthKit.addBackgroundHealthDataSource(dataSource)
     }
 }

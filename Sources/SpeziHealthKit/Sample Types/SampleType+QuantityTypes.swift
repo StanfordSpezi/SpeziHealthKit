@@ -50,4 +50,17 @@ extension HealthKitSampleType where Sample == HKQuantitySample {
         displayTitle: "Active Energy Burned",
         displayUnit: .largeCalorie()
     ) }
+    
+    public static var height: Self { .quantity(
+        .height,
+        displayTitle: "Height",
+        displayUnit: { () -> HKUnit in
+            switch Locale.current.measurementSystem {
+            case .us:
+                HKUnit.foot()
+            default:
+                HKUnit.meterUnit(with: .centi)
+            }
+        }()
+    ) }
 }
