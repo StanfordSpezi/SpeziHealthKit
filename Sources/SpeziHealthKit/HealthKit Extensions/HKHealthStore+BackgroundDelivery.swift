@@ -35,7 +35,7 @@ extension HKHealthStore {
             // Sadly necessary to enable capture of the `completionHandler` within the `Task`s below (isolation error)
             nonisolated(unsafe) let completionHandler = completionHandler
             if let error {
-                Logger.healthKit.error("Failed HealthKit background delivery for observer query \(query) with error: \(error)")
+                Logger.healthKit.error("Failed HealthKit background delivery for observer query \(query) on sample types \(String(describing: sampleTypes)) with error: \(error)")
                 Task { @MainActor in
                     await updateHandler(.failure(error))
                     completionHandler()
@@ -60,8 +60,6 @@ extension HKHealthStore {
         for objectTypes: Set<HKObjectType>,
         frequency: HKUpdateFrequency = .immediate
     ) async throws {
-        try await self.requestAuthorization(toShare: [], read: objectTypes as Set<HKObjectType>)
-        
         var enabledObjectTypes: Set<HKObjectType> = []
         do {
             for objectType in objectTypes {

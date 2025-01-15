@@ -84,8 +84,8 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     /// - Note: This property is intended only to store the configuration until `configure()` has been called. It is not used afterwards.
     @ObservationIgnored private var pendingConfiguration: [any HealthKitConfigurationComponent]
     
-    /// All 
-    @ObservationIgnored private var registeredDataSources: [any HealthKitDataSource] = [] // TODO different name! (property&protocol!)
+    /// All background-data-collecting data sources registered with the HealthKit module.
+    @ObservationIgnored private var registeredDataSources: [any HealthKitDataSource] = [] // TODO different name? (property&protocol!)
     
     /// Indicates whether the necessary authorizations to access HealthKit data defined by the ``HealthKitConfigurationComponent``s were requested from the user.
     /// - Note: The fact that authorizations were requested does **not** imply that the user also granted them.
@@ -99,15 +99,15 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     public init(
         @ArrayBuilder<any HealthKitConfigurationComponent> _ config: () -> [any HealthKitConfigurationComponent]
     ) {
-        if !HKHealthStore.isHealthDataAvailable() {
-            // If HealthKit is not available, we still initialise the module and the health store as normal.
-            // Queries and sample collection, in this case, will simply not return any results.
-            logger.error("HealthKit is not available. SpeziHealthKit and its module will still exist in the application, but all HealthKit-related functionality will be disabled.")
-        }
         healthStore = HKHealthStore()
         pendingConfiguration = config()
         healthKitDataAccessRequirements = pendingConfiguration.reduce(.init()) { dataReqs, component in
             dataReqs.merging(with: component.dataAccessRequirements)
+        }
+        if !HKHealthStore.isHealthDataAvailable() {
+            // If HealthKit is not available, we still initialise the module and the health store as normal.
+            // Queries and sample collection, in this case, will simply not return any results.
+            logger.error("HealthKit is not available. SpeziHealthKit and its module will still exist in the application, but all HealthKit-related functionality will be disabled.")
         }
     }
     
@@ -138,8 +138,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
             read: healthKitDataAccessRequirements.read
         )
         didRequestAuthorization = true
-        for dataSource in registeredDataSources {
-            // TODO should this only call -askedForAuthorization on those data sources where the data source's accessed object types is a subset of what we've just asked for?
+        for dataSource in registeredDataSources where !dataSource.isActive && healthKitDataAccessRequirements.read.contains(dataSource.sampleType) {
             await dataSource.askedForAuthorization()
         }
     }
@@ -147,8 +146,9 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     
     /// Returns whether the user was already asked for authorization to access the specified object type.
     /// - Note: A `true` return value does **not** imply that the user actually granted access; it just means that the user was asked.
+    @MainActor
     public func askedForAuthorization(forReading objectType: HKObjectType) -> Bool {
-        healthKitDataAccessRequirements.read.contains(objectType)
+        didRequestAuthorization && healthKitDataAccessRequirements.read.contains(objectType)
     }
     
     /// Returns whether the user was already asked for authorization to access the specified object type.
@@ -164,8 +164,10 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     @MainActor
     func addBackgroundHealthDataSource(_ dataSource: some HealthKitDataSource) {
         registeredDataSources.append(dataSource)
-        Task {
-            await dataSource.startAutomaticDataCollection()
+        if askedForAuthorization(forReading: dataSource.sampleType) {
+            Task {
+                await dataSource.startAutomaticDataCollection()
+            }
         }
     }
     

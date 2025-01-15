@@ -36,6 +36,8 @@ extension HKElectrocardiogram {
     public func symptoms(from healthStore: HKHealthStore) async throws -> Symptoms {
         switch symptomsStatus {
         case .present:
+            // TODO ideally, the auth reques should be moved out of here!!!
+            // instead, have it run as part of the HealthKit config step?!
             try await healthStore.requestAuthorization(toShare: [], read: Set(HKElectrocardiogram.correlatedSymptomTypes))
             let predicate = HKQuery.predicateForObjectsAssociated(electrocardiogram: self)
             return try await HKElectrocardiogram.correlatedSymptomTypes.reduce(into: Symptoms()) { symptoms, categoryType in

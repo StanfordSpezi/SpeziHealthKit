@@ -17,10 +17,10 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
     private unowned let healthKit: HealthKit
     private let standard: any HealthKitConstraint
     
-    private let sampleType: HKSampleType
+    let sampleType: HKSampleType
     private let predicate: NSPredicate?
     private let deliverySetting: HealthKitDeliverySetting
-    @MainActor private var active = false
+    @MainActor private(set) var isActive = false
     
     @MainActor private lazy var anchorUserDefaultsKey = UserDefaults.Keys.healthKitAnchorPrefix.appending(sampleType.identifier)
     @MainActor private lazy var anchor: HKQueryAnchor? = loadAnchor() {
@@ -73,7 +73,7 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
     
 
     func askedForAuthorization() async {
-        guard healthKit.askedForAuthorization(forReading: sampleType) && !deliverySetting.isManual && !active else {
+        guard healthKit.askedForAuthorization(forReading: sampleType) && !deliverySetting.isManual && !isActive else {
             return
         }
         await triggerManualDataSourceCollection()
@@ -93,7 +93,7 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
     }
 
     func triggerManualDataSourceCollection() async {
-        guard !active else {
+        guard !isActive else {
             return
         }
         do {
@@ -101,10 +101,10 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
             case .manual:
                 try await anchoredSingleObjectQuery()
             case .anchorQuery:
-                active = true
+                isActive = true
                 try await anchoredContinuousObjectQuery()
             case .background:
-                active = true
+                isActive = true
                 try await healthStore.startBackgroundDelivery(for: [sampleType]) { result in
                     guard case let .success((sampleTypes, completionHandler)) = result else {
                         return
@@ -145,7 +145,6 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
     
     @MainActor
     private func anchoredContinuousObjectQuery() async throws {
-        try await healthStore.requestAuthorization(toShare: [], read: [sampleType])
         let anchorDescriptor = healthStore.anchorDescriptor(sampleType: sampleType, predicate: predicate, anchor: anchor)
         let updateQueue = anchorDescriptor.results(for: healthStore)
         Task {

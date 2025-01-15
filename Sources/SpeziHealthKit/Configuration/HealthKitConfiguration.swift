@@ -12,7 +12,7 @@ import Spezi
 
 /// A component in the configuration of the ``HealthKit-swift.class`` module.
 ///
-/// Each configuration component defines the `HKObjectType`s it needs read-access to,
+/// Each configuration component defines the `HKObjectType`s it needs read and/or write access to,
 /// and, as part of the ``HealthKit-swift.class`` module's initialization, is given the opportunity
 /// to perform custom configuration actions.
 public protocol HealthKitConfigurationComponent {

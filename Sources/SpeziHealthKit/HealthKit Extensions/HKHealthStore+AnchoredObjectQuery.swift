@@ -10,14 +10,7 @@
 import Spezi
 
 
-#if compiler(<6)
-extension HKSample: Swift.Identifiable {}
-#else
-extension HKSample: @retroactive Identifiable {}
-#endif
-
-
-extension HKSample {
+extension HKSample: @retroactive Identifiable {
     /// The `uuid` identifier.
     public var id: UUID {
         uuid
@@ -32,7 +25,6 @@ extension HKHealthStore {
         withPredicate predicate: NSPredicate? = nil, // swiftlint:disable:this function_default_parameter_at_end
         standard: any HealthKitConstraint
     ) async throws -> HKQueryAnchor {
-        try await self.requestAuthorization(toShare: [], read: [sampleType])
         let anchorDescriptor = anchorDescriptor(sampleType: sampleType, predicate: predicate, anchor: anchor)
         let result = try await anchorDescriptor.result(for: self)
         for deletedObject in result.deletedObjects {
