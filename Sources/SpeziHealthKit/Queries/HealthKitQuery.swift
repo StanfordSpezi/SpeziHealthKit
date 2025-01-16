@@ -110,7 +110,7 @@ struct MyView: View {
 ///     If you are interested in pre-computed sumamary values for a certain sample type over a certain time range,
 ///     consider using ``HealthKitStatisticsQuery`` instead.
 @propertyWrapper @MainActor
-public struct HealthKitQuery<Sample: HKSample & __HKSampleTypeProviding>: DynamicProperty {
+public struct HealthKitQuery<Sample: _HKSampleWithSampleType>: DynamicProperty {
     private let input: SamplesQueryResults<Sample>.Input
     
     @Environment(HealthKit.self)
@@ -176,7 +176,7 @@ private nonisolated(unsafe) var numSamplesQueryResultsObjects = ManagedAtomic<UI
 ///
 /// This type is primarily intended to be used by the ``HealthKitStatisticsQuery`` property wrapper, but is also made available as part of the public API.
 @Observable
-public final class SamplesQueryResults<Sample: HKSample & __HKSampleTypeProviding>: @unchecked Sendable {
+public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchecked Sendable {
     /// The query input, defining what should be fetched from the HealthKit database.
     struct Input: Hashable, @unchecked Sendable {
         let sampleType: HealthKitSampleType<Sample>

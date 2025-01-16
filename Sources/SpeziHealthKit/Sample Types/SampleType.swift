@@ -12,28 +12,28 @@ import HealthKit
 
 
 /// Associates a `HKSampleType` subclass with a `HKSample` subclass.
-public protocol __HKSampleTypeProviding: HKSample { // TODO _HKSampleWithType?
+public protocol _HKSampleWithSampleType: HKSample {
     associatedtype _SampleType: HKSampleType
 }
 
 
-extension HKQuantitySample: __HKSampleTypeProviding {
+extension HKQuantitySample: _HKSampleWithSampleType {
     public typealias _SampleType = HKQuantityType
 }
 
-extension HKCorrelation: __HKSampleTypeProviding {
+extension HKCorrelation: _HKSampleWithSampleType {
     public typealias _SampleType = HKCorrelationType
 }
 
-extension HKCategorySample: __HKSampleTypeProviding {
+extension HKCategorySample: _HKSampleWithSampleType {
     public typealias _SampleType = HKCategoryType
 }
 
-extension HKElectrocardiogram: __HKSampleTypeProviding {
+extension HKElectrocardiogram: _HKSampleWithSampleType {
     public typealias _SampleType = HKElectrocardiogramType
 }
 
-extension HKAudiogramSample: __HKSampleTypeProviding {
+extension HKAudiogramSample: _HKSampleWithSampleType {
     public typealias _SampleType = HKAudiogramSampleType
 }
 
@@ -41,7 +41,7 @@ extension HKAudiogramSample: __HKSampleTypeProviding {
 
 // TODO is this actually needed?
 public protocol AnyHealthKitSampleType {
-    associatedtype Sample: __HKSampleTypeProviding
+    associatedtype Sample: _HKSampleWithSampleType
     var hkSampleType: Sample._SampleType { get }
 }
 
@@ -51,7 +51,7 @@ public protocol AnyHealthKitSampleType {
 ///
 /// This struct is a strongly-typed wrapper around `HKSampleType` that associates a sample type with its corresponding `HKSample` subclass.
 /// Additionally, it also provides some useful information for working with a sample type, such as e.g. the sample type's recommended display title
-public struct HealthKitSampleType<Sample: HKSample & __HKSampleTypeProviding>: AnyHealthKitSampleType, Hashable, Identifiable, Sendable {
+public struct HealthKitSampleType<Sample: _HKSampleWithSampleType>: AnyHealthKitSampleType, Hashable, Identifiable, Sendable {
     private enum Variant: Sendable {
         /// - parameter displayUnit: The unit that should be used when displaying a sample of this type to the user
         /// - parameter expectedValuesRange: The expected range of values we expect to see for this sample type, if applicable.

@@ -16,7 +16,7 @@ public protocol HealthKitQueryResults<Sample, Element>: Observable, RandomAccess
     /// The `HKSample` subclass of the queried sample type.
     /// - Note: this is not necessarily the same as the type of the elements in the query results: for e.g. statistical queries,
     ///     the query will typically return summarising objects rather than discrete samples.
-    associatedtype Sample: HKSample & __HKSampleTypeProviding
+    associatedtype Sample: _HKSampleWithSampleType
     /// The type of the individual objects returned from the query.
     /// - Note: `Element` is not necesarily the same as `Sample`; this is depending on the type of query:
     ///     for "normal" `@HealthKitQuery`s, it is, but for `@HealthKitStatisticsQuery`s, the query returns `HKStatistics` objects instead.
