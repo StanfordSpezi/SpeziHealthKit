@@ -19,12 +19,12 @@ let package = Package(
         .iOS(.v17)
     ],
     products: [
-        .library(name: "SpeziHealthKit", targets: ["SpeziHealthKit"]),
-        .library(name: "SpeziHealthKitUI", targets: ["SpeziHealthKitUI"])
+        .library(name: "SpeziHealthKit", targets: ["SpeziHealthKit"])
     ],
     dependencies: [
         .package(path: "../Spezi"),
-        .package(path: "../SpeziFoundation")
+        .package(path: "../SpeziFoundation"),
+        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.17.7")
     ] + swiftLintPackage(),
     targets: [
         .target(
@@ -35,20 +35,12 @@ let package = Package(
             ],
             plugins: [] + swiftLintPlugin()
         ),
-        .target(
-            name: "SpeziHealthKitUI",
-            dependencies: [
-                .target(name: "SpeziHealthKit"),
-                .product(name: "Spezi", package: "Spezi"),
-                .product(name: "SpeziFoundation", package: "SpeziFoundation")
-            ],
-            plugins: [] + swiftLintPlugin()
-        ),
         .testTarget(
             name: "SpeziHealthKitTests",
             dependencies: [
                 .product(name: "XCTSpezi", package: "Spezi"),
-                .target(name: "SpeziHealthKit")
+                .target(name: "SpeziHealthKit"),
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing")
             ],
             plugins: [] + swiftLintPlugin()
         )
