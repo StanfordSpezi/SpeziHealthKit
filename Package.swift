@@ -33,6 +33,7 @@ let package = Package(
                 .product(name: "Spezi", package: "Spezi"),
                 .product(name: "SpeziFoundation", package: "SpeziFoundation")
             ],
+            swiftSettings: [.enableUpcomingFeature("ExistentialAny")],
             plugins: [] + swiftLintPlugin()
         ),
         .testTarget(
@@ -42,6 +43,7 @@ let package = Package(
                 .target(name: "SpeziHealthKit"),
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing")
             ],
+            swiftSettings: [.enableUpcomingFeature("ExistentialAny")],
             plugins: [] + swiftLintPlugin()
         )
     ]
