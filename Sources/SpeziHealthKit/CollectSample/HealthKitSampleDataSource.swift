@@ -73,7 +73,7 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
     
 
     func askedForAuthorization() async {
-        guard await healthKit.askedForAuthorization(forReading: sampleType) && !deliverySetting.isManual && !isActive else {
+        guard await healthKit.askedForAuthorization(toRead: sampleType) && !deliverySetting.isManual && !isActive else {
             return
         }
         await triggerManualDataSourceCollection()
@@ -81,7 +81,7 @@ final class HealthKitSampleDataSource: HealthKitDataSource {
     
     
     func startAutomaticDataCollection() async {
-        guard await healthKit.askedForAuthorization(forReading: sampleType) else {
+        guard await healthKit.askedForAuthorization(toRead: sampleType) else {
             return
         }
         switch deliverySetting {

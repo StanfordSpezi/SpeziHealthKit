@@ -22,12 +22,12 @@ import SwiftUI
 /// actor ExampleStandard: Standard, HealthKitConstraint {
 ///     // Add the newly collected HKSample to your application.
 ///     func add(sample: HKSample) async {
-///         ...
+///         // ...
 ///     }
 ///
 ///     // Remove the deleted HKSample from your application.
 ///     func remove(sample: HKDeletedObject) {
-///         ...
+///         // ...
 ///     }
 /// }
 /// ```
@@ -69,13 +69,19 @@ import SwiftUI
 /// ```
 @Observable
 public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializable {
-    @ObservationIgnored @StandardActor private var standard: any HealthKitConstraint
+    @ObservationIgnored @StandardActor
+    private var standard: any HealthKitConstraint
     
-    @ObservationIgnored @Application(\.logger) private var logger
+    @ObservationIgnored @Application(\.logger)
+    private var logger
     
     /// The HealthKit module's underlying `HKHealthStore`.
     /// Users can access this in a `View` via the `@Environment(HealthKit.self)` property wrapper.
     public let healthStore: HKHealthStore
+    
+    // TODO why doesn't importing SpeziHealthKit as @testable work in the TestApp????(!)
+    /// (for testing purposes only) The data access requirements that resulted form the initial configuration passed to the ``HealthKit-swift.class`` module.
+    public let _initialConfigHealthKitDataAccessRequirements: HealthKitDataAccessRequirements
     
     /// Which HealthKit data we need to be able to access, for read and/or write operations.
     private var healthKitDataAccessRequirements: HealthKitDataAccessRequirements
@@ -97,9 +103,10 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     ) {
         healthStore = HKHealthStore()
         pendingConfiguration = config()
-        healthKitDataAccessRequirements = pendingConfiguration.reduce(.init()) { dataReqs, component in
+        _initialConfigHealthKitDataAccessRequirements = pendingConfiguration.reduce(.init()) { dataReqs, component in
             dataReqs.merging(with: component.dataAccessRequirements)
         }
+        healthKitDataAccessRequirements = _initialConfigHealthKitDataAccessRequirements
         if !HKHealthStore.isHealthDataAvailable() {
             // If HealthKit is not available, we still initialise the module and the health store as normal.
             // Queries and sample collection, in this case, will simply not return any results.
@@ -172,7 +179,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     /// Returns whether the user was already asked for authorization to access the specified object type.
     /// - Note: A `true` return value does **not** imply that the user actually granted access; it just means that the user was asked.
     @MainActor
-    public func askedForAuthorization(forReading objectType: HKObjectType) async -> Bool {
+    public func askedForAuthorization(toRead objectType: HKObjectType) async -> Bool {
         do {
             // status: whether the user would be presented with an authorization request sheet, were we to request access
             let status = try await healthStore.statusForAuthorizationRequest(toShare: [], read: [objectType])
@@ -200,12 +207,27 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     
     /// Returns whether the user was already asked for authorization to  the specified object type.
     /// - Note: A `true` return value does **not** imply that the user actually granted access; it just means that the user was asked.
-    public func askedForAuthorization(forWriting objectType: HKObjectType) -> Bool {
+    ///     Use ``HealthKit-swift.class/isAuthorized(toWrite:)`` to check the current authorization status.
+    public func askedForAuthorization(toWrite objectType: HKObjectType) -> Bool {
         switch healthStore.authorizationStatus(for: objectType) {
         case .notDetermined:
             false
         case .sharingAuthorized, .sharingDenied:
             true
+        @unknown default:
+            false // fallback. better be safe than sorry.
+        }
+    }
+    
+    /// Returns whether the application is currently authorized to write data of the specified object type into the health store..
+    /// - Note: A `false` return value does **not** imply that the user actually denied access; it could also mean that the user hasn't yet been asked.
+    ///     Use ``HealthKit-swift.class/askedForAuthorization(toWrite:)`` to determine that.
+    public func isAuthorized(toWrite objectType: HKObjectType) -> Bool {
+        switch healthStore.authorizationStatus(for: objectType) {
+        case .sharingAuthorized:
+            true
+        case .notDetermined, .sharingDenied:
+            false
         @unknown default:
             false // fallback. better be safe than sorry.
         }
@@ -218,7 +240,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     @MainActor
     func addBackgroundHealthDataSource(_ dataSource: some HealthKitDataSource) async {
         registeredDataSources.append(dataSource)
-        if await askedForAuthorization(forReading: dataSource.sampleType) {
+        if await askedForAuthorization(toRead: dataSource.sampleType) {
             // If we already asked for authentication to this specific sample type, we can directly start it.
             // Otherwise, the next call to askForAuthorization will trigger the start of the data collection.
             Task {
