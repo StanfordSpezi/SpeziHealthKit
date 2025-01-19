@@ -11,5 +11,7 @@ import HealthKit
 
 extension SampleType {
     /// The sample type representing blood pressure correlation samples
-    public static var bloodPressure: SampleType<HKCorrelation> { .correlation(.bloodPressure, displayTitle: "Blood Pressure", displayUnit: .millimeterOfMercury()) }
+    @inlinable public static var bloodPressure: SampleType<HKCorrelation> {
+        .correlation(.bloodPressure, displayTitle: "Blood Pressure", displayUnit: .millimeterOfMercury())
+    }
 }

@@ -12,40 +12,40 @@ import HealthKit
 /// ## Quantity Sample Types
 extension SampleType {
     /// The sample type representing step count quantity samples
-    public static var stepCount: SampleType<HKQuantitySample> {
+    @inlinable public static var stepCount: SampleType<HKQuantitySample> {
         .quantity(.stepCount, displayTitle: "Step Count", displayUnit: .count())
     }
     
     /// The sample type representing blood oxygen saturation quantity samples
-    public static var bloodOxygen: SampleType<HKQuantitySample> {
+    @inlinable public static var bloodOxygen: SampleType<HKQuantitySample> {
         .quantity(.oxygenSaturation, displayTitle: "Blood Oxygen", displayUnit: .percent())
     }
     
     /// The sample type representing heart rate quantity samples
-    public static var heartRate: SampleType<HKQuantitySample> {
+    @inlinable public static var heartRate: SampleType<HKQuantitySample> {
         .quantity(.heartRate, displayTitle: "Heart Rate", displayUnit: .count() / .minute(), expectedValuesRange: 60...150)
     }
     
     /// The sample type representing resting heart rate quantity samples
-    public static var restingHeartRate: SampleType<HKQuantitySample> {
+    @inlinable public static var restingHeartRate: SampleType<HKQuantitySample> {
         .quantity(.restingHeartRate, displayTitle: "Resting Heart Rate", displayUnit: .count() / .minute())
     }
     
     /// The sample type representing heart rate variability
-    public static var heartRateVariability: SampleType<HKQuantitySample> {
+    @inlinable public static var heartRateVariability: SampleType<HKQuantitySample> {
         .quantity(.heartRateVariabilitySDNN, displayTitle: "Heart Rate Variability", displayUnit: .secondUnit(with: .milli))
     }
     
     /// The wheelchair push count sample type
-    public static var pushCount: SampleType<HKQuantitySample> {
+    @inlinable public static var pushCount: SampleType<HKQuantitySample> {
         .quantity(.pushCount, displayTitle: "Wheelchair Push Count", displayUnit: .count())
     }
     
-    public static var activeEnergyBurned: SampleType<HKQuantitySample> {
+    @inlinable public static var activeEnergyBurned: SampleType<HKQuantitySample> {
         .quantity(.activeEnergyBurned, displayTitle: "Active Energy Burned", displayUnit: .largeCalorie())
     }
     
-    public static var height: SampleType<HKQuantitySample> {
+    @inlinable public static var height: SampleType<HKQuantitySample> {
         .quantity(
             .height,
             displayTitle: "Height",

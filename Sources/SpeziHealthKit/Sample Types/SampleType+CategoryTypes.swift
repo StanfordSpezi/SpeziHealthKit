@@ -11,5 +11,7 @@ import HealthKit
 
 extension SampleType {
     /// The sample type representing sleep analysis category samples
-    public static var sleepAnalysis: SampleType<HKCategorySample> { .category(.sleepAnalysis, displayTitle: "Sleep Analysis") }
+    @inlinable public static var sleepAnalysis: SampleType<HKCategorySample> {
+        .category(.sleepAnalysis, displayTitle: "Sleep Analysis")
+    }
 }

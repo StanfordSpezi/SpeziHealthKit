@@ -43,7 +43,8 @@ extension HKAudiogramSample: _HKSampleWithSampleType {
 /// This struct is a strongly-typed wrapper around `HKSampleType` that associates a sample type with its corresponding `HKSample` subclass.
 /// Additionally, it also provides some useful information for working with a sample type, such as e.g. the sample type's recommended display title
 public struct SampleType<Sample: _HKSampleWithSampleType>: Hashable, Identifiable, Sendable {
-    private enum Variant: Sendable {
+    @usableFromInline
+    enum Variant: Sendable {
         /// - parameter displayUnit: The unit that should be used when displaying a sample of this type to the user
         /// - parameter expectedValuesRange: The expected range of values we expect to see for this sample type, if applicable.
         ///     The main purpose of this is to be able to e.g. adjust chart value ranges based on the specific sample types being visualised.
@@ -69,7 +70,7 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: Hashable, Identifiabl
     
     /// Creates a new ``SampleType``.
     /// - Note: Don't use this initializer directly. Instead, use one of the static factory methods: `SampleType.quantity`, `.correlation`, and `.category`.
-    private init(_ hkSampleType: Sample._SampleType, displayTitle: String, variant: Variant) {
+    @usableFromInline init(_ hkSampleType: Sample._SampleType, displayTitle: String, variant: Variant) {
         self.hkSampleType = hkSampleType
         self.displayTitle = displayTitle
         self.variant = variant
@@ -139,7 +140,7 @@ extension SampleType {
     /// Creates a new quantity sample type.
     /// - Note: This function is not intended to be used outside of defining new quantity sample types in a ``SampleType`` extension.
     ///     If you want to get some specific sample type, refer to it via its accessor (e.g. `SampleType.heartRate`).
-    static func quantity(
+    @usableFromInline static func quantity(
         _ identifier: HKQuantityTypeIdentifier,
         displayTitle: String,
         displayUnit: HKUnit,
@@ -155,7 +156,7 @@ extension SampleType {
     /// Creates a new correlation sample type.
     /// - Note: This function is not intended to be used outside of defining new correlation sample types in a ``SampleType`` extension.
     ///     If you want to get some specific sample type, refer to it via its accessor (e.g. `SampleType.bloodPressure`).
-    static func correlation(
+    @usableFromInline static func correlation(
         _ identifier: HKCorrelationTypeIdentifier,
         displayTitle: String,
         displayUnit: HKUnit?
@@ -166,7 +167,7 @@ extension SampleType {
     /// Creates a new category sample type.
     /// - Note: This function is not intended to be used outside of defining new quantity sample types in a ``SampleType`` extension.
     ///     If you want to get some specific sample type, refer to it via its accessor (e.g. `SampleType.heartRate`).
-    static func category(
+    @usableFromInline static func category(
         _ identifier: HKCategoryTypeIdentifier,
         displayTitle: String
     ) -> SampleType<HKCategorySample> {
@@ -179,7 +180,7 @@ extension SampleType {
 
 extension SampleType {
     /// The electrocardiogram sample type
-    public static var electrocardiogram: SampleType<HKElectrocardiogram> {
+    @inlinable public static var electrocardiogram: SampleType<HKElectrocardiogram> {
         .init(HKSampleType.electrocardiogramType(), displayTitle: "ECG", variant: .electrocardiogram)
     }
 }
@@ -187,7 +188,7 @@ extension SampleType {
 
 extension SampleType {
     /// The audiogram sample type
-    public static var audiogram: SampleType<HKAudiogramSample> {
+    @inlinable public static var audiogram: SampleType<HKAudiogramSample> {
         .init(HKSampleType.audiogramSampleType(), displayTitle: "Audiogram", variant: .audiogram)
     }
 }
