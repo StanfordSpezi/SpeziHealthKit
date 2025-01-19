@@ -498,7 +498,7 @@ public struct HealthChart<each Results: HealthKitQueryResults>: View {
                 .annotation { // TODO?
 //                    let date = dataPoint.date.ISO8601Format(Date.ISO8601FormatStyle())
 //                    Text("\(dataPoint.stringValue)\n\(date)")
-                    Text("\(dataPoint.stringValue)")
+                    Text(dataPoint.stringValue)
                         .font(.caption)
                 }
             }

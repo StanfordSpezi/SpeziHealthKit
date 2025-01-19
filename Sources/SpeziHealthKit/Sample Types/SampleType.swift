@@ -62,29 +62,29 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: Hashable, Identifiabl
     /// The recommended user-displayable name of this sample type.
     public let displayTitle: String
     /// Variant-specific additional information.
-    private let variant: Variant
+    @usableFromInline let variant: Variant
     
-    public var id: String {
+    @inlinable public var id: String {
         hkSampleType.identifier
     }
     
     /// Creates a new ``SampleType``.
     /// - Note: Don't use this initializer directly. Instead, use one of the static factory methods: `SampleType.quantity`, `.correlation`, and `.category`.
-    @usableFromInline init(_ hkSampleType: Sample._SampleType, displayTitle: String, variant: Variant) {
+    @usableFromInline init(_ hkSampleType: Sample._SampleType, displayTitle: LocalizedStringResource, variant: Variant) {
         self.hkSampleType = hkSampleType
-        self.displayTitle = displayTitle
+        self.displayTitle = String(localized: displayTitle)
         self.variant = variant
     }
     
-    public func hash(into hasher: inout Hasher) {
+    @inlinable public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
     
-    public static func == (lhs: Self, rhs: Self) -> Bool {
+    @inlinable public static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.id == rhs.id
     }
     
-    public static func == (lhs: Self, rhs: SampleType<some Any>) -> Bool {
+    @inlinable public static func == (lhs: Self, rhs: SampleType<some Any>) -> Bool {
         lhs.id == rhs.id
     }
 }
@@ -92,7 +92,7 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: Hashable, Identifiabl
 
 extension SampleType where Sample == HKQuantitySample {
     /// The recommended unit that should be used when displaying values of this sample type to a user.
-    public var displayUnit: HKUnit {
+    @inlinable public var displayUnit: HKUnit {
         switch variant {
         case .quantity(let displayUnit, _):
             return displayUnit
@@ -104,7 +104,7 @@ extension SampleType where Sample == HKQuantitySample {
         }
     }
     
-    public var expectedValuesRange: ClosedRange<Double>? {
+    @inlinable public var expectedValuesRange: ClosedRange<Double>? {
         switch variant {
         case .quantity(displayUnit: _, let expectedValuesRange):
             return expectedValuesRange
@@ -120,7 +120,7 @@ extension SampleType where Sample == HKQuantitySample {
 
 extension SampleType where Sample == HKCorrelation {
     /// The recommended unit that should be used when displaying values of this sample type to a user.
-    public var displayUnit: HKUnit? {
+    @inlinable public var displayUnit: HKUnit? {
         switch variant {
         case .correlation(let displayUnit):
             return displayUnit
@@ -142,7 +142,7 @@ extension SampleType {
     ///     If you want to get some specific sample type, refer to it via its accessor (e.g. `SampleType.heartRate`).
     @usableFromInline static func quantity(
         _ identifier: HKQuantityTypeIdentifier,
-        displayTitle: String,
+        displayTitle: LocalizedStringResource,
         displayUnit: HKUnit,
         expectedValuesRange: ClosedRange<Double>? = nil
     ) -> SampleType<HKQuantitySample> {
@@ -158,7 +158,7 @@ extension SampleType {
     ///     If you want to get some specific sample type, refer to it via its accessor (e.g. `SampleType.bloodPressure`).
     @usableFromInline static func correlation(
         _ identifier: HKCorrelationTypeIdentifier,
-        displayTitle: String,
+        displayTitle: LocalizedStringResource,
         displayUnit: HKUnit?
     ) -> SampleType<HKCorrelation> {
         .init(HKCorrelationType(identifier), displayTitle: displayTitle, variant: .correlation(displayUnit: displayUnit))
@@ -169,7 +169,7 @@ extension SampleType {
     ///     If you want to get some specific sample type, refer to it via its accessor (e.g. `SampleType.heartRate`).
     @usableFromInline static func category(
         _ identifier: HKCategoryTypeIdentifier,
-        displayTitle: String
+        displayTitle: LocalizedStringResource
     ) -> SampleType<HKCategorySample> {
         .init(HKCategoryType(identifier), displayTitle: displayTitle, variant: .category)
     }
