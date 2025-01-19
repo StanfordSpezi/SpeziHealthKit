@@ -14,7 +14,7 @@ import HealthKit
 /// - Warning: Only request write access to HealthKit data if your app's `Info.plist` file
 ///     contains an entry for the `NSHealthUpdateUsageDescription` key.
 public struct RequestWriteAccess: HealthKitConfigurationComponent {
-    public let dataAccessRequirements: HealthKitDataAccessRequirements
+    public let dataAccessRequirements: HealthKit.DataAccessRequirements
     
     /// Creates a HealthKit configuration component that requests write access to the specified `HKObjectType`s.
     public init(_ objectTypes: some Sequence<HKSampleType>) {

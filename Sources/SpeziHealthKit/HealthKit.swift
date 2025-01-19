@@ -81,10 +81,10 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     
     // TODO why doesn't importing SpeziHealthKit as @testable work in the TestApp????(!)
     /// (for testing purposes only) The data access requirements that resulted form the initial configuration passed to the ``HealthKit-swift.class`` module.
-    public let _initialConfigHealthKitDataAccessRequirements: HealthKitDataAccessRequirements
+    public let _initialConfigDataAccessRequirements: DataAccessRequirements
     
     /// Which HealthKit data we need to be able to access, for read and/or write operations.
-    private var healthKitDataAccessRequirements: HealthKitDataAccessRequirements
+    private var dataAccessRequirements: DataAccessRequirements
     
     /// Configurations which were supplied to the initializer, but have not yet been applied.
     /// - Note: This property is intended only to store the configuration until `configure()` has been called. It is not used afterwards.
@@ -103,10 +103,10 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     ) {
         healthStore = HKHealthStore()
         pendingConfiguration = config()
-        _initialConfigHealthKitDataAccessRequirements = pendingConfiguration.reduce(.init()) { dataReqs, component in
+        _initialConfigDataAccessRequirements = pendingConfiguration.reduce(.init()) { dataReqs, component in
             dataReqs.merging(with: component.dataAccessRequirements)
         }
-        healthKitDataAccessRequirements = _initialConfigHealthKitDataAccessRequirements
+        dataAccessRequirements = _initialConfigDataAccessRequirements
         if !HKHealthStore.isHealthDataAvailable() {
             // If HealthKit is not available, we still initialise the module and the health store as normal.
             // Queries and sample collection, in this case, will simply not return any results.
@@ -147,7 +147,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     /// - Important: You need to call this function at some point during your app's lifecycle, ideally soon after the app was launched.
     @MainActor
     public func askForAuthorization() async throws {
-        try await askForAuthorization(for: healthKitDataAccessRequirements)
+        try await askForAuthorization(for: dataAccessRequirements)
     }
     
     
@@ -164,8 +164,8 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     /// - Warning: Only request write access to HealthKit data if your app's `Info.plist` file
     ///     contains an entry for the `NSHealthUpdateUsageDescription` key.
     @MainActor
-    public func askForAuthorization(for accessRequirements: HealthKitDataAccessRequirements) async throws {
-        self.healthKitDataAccessRequirements.merge(with: accessRequirements)
+    public func askForAuthorization(for accessRequirements: DataAccessRequirements) async throws {
+        self.dataAccessRequirements.merge(with: accessRequirements)
         try await healthStore.requestAuthorization(
             toShare: accessRequirements.write,
             read: accessRequirements.read

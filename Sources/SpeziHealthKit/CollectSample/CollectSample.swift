@@ -51,7 +51,7 @@ public struct CollectSample: HealthKitConfigurationComponent {
     private let predicate: NSPredicate?
     private let deliverySetting: HealthKitDeliverySetting
     
-    public var dataAccessRequirements: HealthKitDataAccessRequirements {
+    public var dataAccessRequirements: HealthKit.DataAccessRequirements {
         .init(read: [sampleType])
     }
     

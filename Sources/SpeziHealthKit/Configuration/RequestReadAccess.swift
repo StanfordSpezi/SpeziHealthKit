@@ -11,7 +11,7 @@ import HealthKit
 
 /// A ``HealthKit`` configuration component that requests read acess to HealthKit sample types.
 public struct RequestReadAccess: HealthKitConfigurationComponent {
-    public let dataAccessRequirements: HealthKitDataAccessRequirements
+    public let dataAccessRequirements: HealthKit.DataAccessRequirements
     
     /// Creates a HealthKit configuration component that requests read access to the specified `HKObjectType`s.
     public init(_ objectTypes: some Sequence<HKObjectType>) {
