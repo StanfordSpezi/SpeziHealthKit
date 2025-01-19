@@ -34,7 +34,7 @@ import SwiftUI
 /// 
 /// Then, you can configure the ``HealthKit`` module in the configuration section of your `SpeziAppDelegate`.
 /// Provide ``HealthKitDataSourceDescription`` to define the data collection.
-/// You can, e.g., use ``CollectSample`` to collect a wide variety of ``HealthKitSampleType``s:
+/// You can, e.g., use ``CollectSample`` to collect a wide variety of ``SampleType``s:
 /// ```swift
 /// class ExampleAppDelegate: SpeziAppDelegate {
 ///     override var configuration: Configuration {

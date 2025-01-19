@@ -89,7 +89,7 @@ public struct HealthKitStatisticsQuery: DynamicProperty {
     private let input: StatisticsQueryResults.Input
     
     public init(
-        _ sampleType: HealthKitSampleType<HKQuantitySample>,
+        _ sampleType: SampleType<HKQuantitySample>,
         aggregatedBy options: Set<CumulativeAggregationOption>,
         over aggInterval: AggregationInterval,
         timeRange: HealthKitQueryTimeRange,
@@ -105,7 +105,7 @@ public struct HealthKitStatisticsQuery: DynamicProperty {
     }
     
     public init(
-        _ sampleType: HealthKitSampleType<HKQuantitySample>,
+        _ sampleType: SampleType<HKQuantitySample>,
         aggregatedBy options: Set<DiscreteAggregationOption>,
         over aggInterval: AggregationInterval,
         timeRange: HealthKitQueryTimeRange,
@@ -121,7 +121,7 @@ public struct HealthKitStatisticsQuery: DynamicProperty {
     }
     
     private init(
-        _ sampleType: HealthKitSampleType<HKQuantitySample>,
+        _ sampleType: SampleType<HKQuantitySample>,
         rawOptions options: HKStatisticsOptions,
         aggInterval: AggregationInterval,
         timeRange: HealthKitQueryTimeRange,
@@ -173,7 +173,7 @@ public final class StatisticsQueryResults: @unchecked Sendable {
     }
     
     struct Input: Hashable {
-        let sampleType: HealthKitSampleType<HKQuantitySample>
+        let sampleType: SampleType<HKQuantitySample>
         let options: HKStatisticsOptions
         let aggInterval: HealthKitStatisticsQuery.AggregationInterval
         let timeRange: HealthKitQueryTimeRange
@@ -215,7 +215,7 @@ public final class StatisticsQueryResults: @unchecked Sendable {
     // TODO Do we really still want this? (No.)
     public init(
         healthStore: HKHealthStore,
-        sampleType: HealthKitSampleType<HKQuantitySample>,
+        sampleType: SampleType<HKQuantitySample>,
         options: HKStatisticsOptions,
         aggregationInterval: HealthKitStatisticsQuery.AggregationInterval,
         timeRange: HealthKitQueryTimeRange,
@@ -320,7 +320,7 @@ extension StatisticsQueryResults: HealthKitQueryResults {
     }
     
     
-    public var sampleType: HealthKitSampleType<HKQuantitySample> {
+    public var sampleType: SampleType<HKQuantitySample> {
         input!.sampleType
     }
     

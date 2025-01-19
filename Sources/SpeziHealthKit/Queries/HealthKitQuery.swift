@@ -98,7 +98,7 @@ public struct HealthKitQuery<Sample: _HKSampleWithSampleType>: DynamicProperty {
     /// - parameter filterPredicate: An optional refining predicate for filtering the queried-for samples.
     ///     This predicate should be created using the utility methods on the `HKQuery` type: https://developer.apple.com/documentation/healthkit/hkquery#1664362
     public init(
-        _ sampleType: HealthKitSampleType<Sample>,
+        _ sampleType: SampleType<Sample>,
         timeRange: HealthKitQueryTimeRange,
         filter filterPredicate: NSPredicate? = nil
     ) {
@@ -145,7 +145,7 @@ public struct HealthKitQuery<Sample: _HKSampleWithSampleType>: DynamicProperty {
 public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchecked Sendable {
     /// The query input, defining what should be fetched from the HealthKit database.
     struct Input: Hashable, @unchecked Sendable {
-        let sampleType: HealthKitSampleType<Sample>
+        let sampleType: SampleType<Sample>
         let timeRange: HealthKitQueryTimeRange
         let filterPredicate: NSPredicate?
     }
@@ -221,7 +221,7 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
     ///     It will **not** initiate the auto-updating of the query results; you can start this via the ``startObservingChanges`` function.
     public convenience init(
         healthStore: HKHealthStore,
-        sampleType: HealthKitSampleType<Sample>,
+        sampleType: SampleType<Sample>,
         timeRange: HealthKitQueryTimeRange,
         filter predicate: NSPredicate? = nil
     ) async {
@@ -379,7 +379,7 @@ extension SamplesQueryResults: HealthKitQueryResults {
         input!.timeRange
     }
     
-    public var sampleType: HealthKitSampleType<Sample> {
+    public var sampleType: SampleType<Sample> {
         input!.sampleType
     }
     

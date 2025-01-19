@@ -23,7 +23,7 @@ public protocol HealthKitQueryResults<Sample, Element>: Observable, RandomAccess
     associatedtype Element
     
     /// The queried sample type.
-    var sampleType: HealthKitSampleType<Sample> { get }
+    var sampleType: SampleType<Sample> { get }
     /// The queried time range.
     var timeRange: HealthKitQueryTimeRange { get }
     

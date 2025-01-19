@@ -10,9 +10,9 @@ import HealthKit
 import Spezi
 
 
-/// Collects a specified ``HealthKitSampleType``  via the ``HealthKit`` module.
+/// Collects a specified ``SampleType``  via the ``HealthKit`` module.
 ///
-/// This structure define what and how the ``HealthKit`` samples are collected. By default, all samples of the provided ``HealthKitSampleType`` will be collected.
+/// This structure define what and how the ``HealthKit`` samples are collected. By default, all samples of the provided ``SampleType`` will be collected.
 /// The collection starts on calling ``HealthKit/triggerDataSourceCollection()`` if you configure the `deliverySetting` as    ``HealthKitDeliverySetting/manual(saveAnchor:)`` or automatic once the application is launched when you configure anything else than manual, i.e.  ``HealthKitDeliverySetting/anchorQuery(_:saveAnchor:)`` or ``HealthKitDeliverySetting/background(_:saveAnchor:)``.
 ///
 /// Your can filter the HealthKit samples to collect via an `NSPredicate`.
@@ -57,13 +57,13 @@ public struct CollectSample: HealthKitConfigurationComponent {
     
     
     /// - Parameters:
-    ///   - sampleType: The ``HealthKitSampleType`` that should be collected
+    ///   - sampleType: The ``SampleType`` that should be collected
     ///   - predicate: A custom predicate that should be passed to the HealthKit query.
     ///                The default predicate collects all samples that have been collected from the first time that the user
     ///                provided the application authorization to collect the samples.
     ///   - deliverySetting: The ``HealthKitDeliverySetting`` that should be used to collect the sample type. `.manual` is the default argument used.
     public init(
-        _ sampleType: HealthKitSampleType<some Any>,
+        _ sampleType: SampleType<some Any>,
         predicate: NSPredicate? = nil,
         delivery: HealthKitDeliverySetting = .manual() // TODO Question @Paul : why does it default to manual?
     ) {
@@ -74,7 +74,7 @@ public struct CollectSample: HealthKitConfigurationComponent {
     
     @available(*, deprecated, renamed: "init(_:predicate:delivery:)")
     public init(
-        _ sampleType: HealthKitSampleType<some Any>,
+        _ sampleType: SampleType<some Any>,
         predicate: NSPredicate? = nil,
         deliverySetting: HealthKitDeliverySetting = .manual()
     ) {

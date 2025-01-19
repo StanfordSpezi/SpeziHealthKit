@@ -9,7 +9,7 @@
 import HealthKit
 
 
-extension HealthKitSampleType where Sample == HKCorrelation {
+extension SampleType {
     /// The sample type representing blood pressure correlation samples
-    public static var bloodPressure: Self { .correlation(.bloodPressure, displayTitle: "Blood Pressure", displayUnit: .millimeterOfMercury()) }
+    public static var bloodPressure: SampleType<HKCorrelation> { .correlation(.bloodPressure, displayTitle: "Blood Pressure", displayUnit: .millimeterOfMercury()) }
 }
