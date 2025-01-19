@@ -15,25 +15,28 @@ class TestAppDelegate: SpeziAppDelegate {
         Configuration(standard: HealthKitTestAppStandard()) {
             HealthKit {
                 CollectSample( //
-                    HKQuantityType.electrocardiogramType(),
-                    deliverySetting: .background(.manual)
+                    .electrocardiogram,
+                    delivery: .background(.manual)
                 )
                 CollectSample( //
-                    HKQuantityType(.stepCount),
-                    deliverySetting: .background(.automatic)
+                    .stepCount,
+                    delivery: .background(.automatic)
                 )
                 CollectSample(
-                    HKQuantityType(.pushCount),
-                    deliverySetting: .anchorQuery(.manual)
+                    .pushCount,
+                    delivery: .anchorQuery(.manual)
                 )
                 CollectSample( //
-                    HKQuantityType(.activeEnergyBurned),
-                    deliverySetting: .anchorQuery(.automatic)
+                    .activeEnergyBurned,
+                    delivery: .anchorQuery(.automatic)
                 )
                 CollectSample( //
-                    HKQuantityType(.restingHeartRate),
-                    deliverySetting: .manual()
+                    .restingHeartRate,
+                    delivery: .manual()
                 )
+                
+//                CollectSample(.bloodOxygen, delivery: .anchorQuery(.automatic))
+//                RequestWriteAccess(quantity: [.oxygenSaturation])
             }
         }
     }

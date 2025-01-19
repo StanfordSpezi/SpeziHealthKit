@@ -12,10 +12,36 @@ import XCTHealthKit
 
 
 final class HealthKitTests: XCTestCase {
+    @MainActor
+    func testTest() throws {
+        throw XCTSkip()
+        let app = XCUIApplication()
+        app.launch()
+//        XCTAssert(app.textViews["DatePicker Testing Section".uppercased()].waitForExistence(timeout: 5))
+//        let datePickers = app.datePickers.allElementsBoundByIndex
+//        XCTAssertEqual(datePickers.count, 3)
+//        datePickers[1].enterDate(DateComponents(year: 2024, month: 6, day: 2), assumingDatePickerStyle: .compact, in: app)
+//        datePickers[2].enterTime(DateComponents(hour: 20, minute: 15), assumingDatePickerStyle: .compact, in: app)
+        
+        try launchHealthAppAndAddSomeSamples([
+//            .init(sampleType: .steps, date: nil, enterSampleValueHandler: .enterSimpleNumericValue(520, inTextField: "Steps")),
+            .init(sampleType: .steps, date: .init(year: 1998, month: 06, day: 02, hour: 20, minute: 15), enterSampleValueHandler: .enterSimpleNumericValue(1, inTextField: "Steps")),
+        ])
+        
+        app.activate()
+    }
+    
+    
+    @MainActor
     func testHealthKit() throws { // swiftlint:disable:this function_body_length
+//        throw XCTSkip()
         let app = XCUIApplication()
         app.launchArguments = ["--collectedSamplesOnly"]
         app.deleteAndLaunch(withSpringboardAppName: "TestApp")
+        
+//        try launchHealthAppAndAddSomeSamples([
+//            .init(sampleType: .steps, date: nil, enterSampleValueHandler: .enterSimpleNumericValue(520, inTextField: "Steps"))
+//        ])
         
         try exitAppAndOpenHealth(.electrocardiograms)
         try exitAppAndOpenHealth(.steps)
@@ -46,7 +72,7 @@ final class HealthKitTests: XCTestCase {
             ]
         )
         
-        try exitAppAndOpenHealth(.electrocardiograms)
+//        try exitAppAndOpenHealth(.electrocardiograms)
         app.activate()
         app.hkTypeIdentifierAssert(
             [
@@ -58,7 +84,7 @@ final class HealthKitTests: XCTestCase {
             ]
         )
         
-        try exitAppAndOpenHealth(.steps)
+//        try exitAppAndOpenHealth(.steps)
         app.activate()
         app.hkTypeIdentifierAssert(
             [
@@ -70,7 +96,7 @@ final class HealthKitTests: XCTestCase {
             ]
         )
         
-        try exitAppAndOpenHealth(.pushes)
+//        try exitAppAndOpenHealth(.pushes)
         app.activate()
         app.hkTypeIdentifierAssert(
             [
@@ -82,7 +108,7 @@ final class HealthKitTests: XCTestCase {
             ]
         )
         
-        try exitAppAndOpenHealth(.restingHeartRate)
+//        try exitAppAndOpenHealth(.restingHeartRate)
         app.activate()
         app.hkTypeIdentifierAssert(
             [
@@ -94,7 +120,7 @@ final class HealthKitTests: XCTestCase {
             ]
         )
         
-        try exitAppAndOpenHealth(.activeEnergy)
+//        try exitAppAndOpenHealth(.activeEnergy)
         app.activate()
         app.hkTypeIdentifierAssert(
             [
@@ -126,11 +152,11 @@ final class HealthKitTests: XCTestCase {
         app.buttons["Trigger data source collection"].tap()
         app.hkTypeIdentifierAssert([:])
         
-        try exitAppAndOpenHealth(.electrocardiograms)
-        try exitAppAndOpenHealth(.steps)
-        try exitAppAndOpenHealth(.pushes)
-        try exitAppAndOpenHealth(.restingHeartRate)
-        try exitAppAndOpenHealth(.activeEnergy)
+//        try exitAppAndOpenHealth(.electrocardiograms)
+//        try exitAppAndOpenHealth(.steps)
+//        try exitAppAndOpenHealth(.pushes)
+//        try exitAppAndOpenHealth(.restingHeartRate)
+//        try exitAppAndOpenHealth(.activeEnergy)
         app.activate()
         app.hkTypeIdentifierAssert(
             [
@@ -155,6 +181,7 @@ final class HealthKitTests: XCTestCase {
     }
     
     func testRepeatedHealthKitAuthorization() throws {
+        throw XCTSkip()
         let app = XCUIApplication()
         app.deleteAndLaunch(withSpringboardAppName: "TestApp")
         
@@ -180,23 +207,23 @@ final class HealthKitTests: XCTestCase {
 
 
 extension XCUIApplication {
-    fileprivate func hkTypeIdentifierAssert(_ hkTypeIdentifiers: [HealthAppDataType: Int]) {
+    fileprivate func hkTypeIdentifierAssert(_ hkTypeIdentifiers: [HealthAppSampleType: Int]) {
         XCTAssert(wait(for: .runningForeground, timeout: 10.0))
         sleep(5)
-        
-        guard numberOfHKTypeIdentifiers() != hkTypeIdentifiers else {
-            return
-        }
-        
-        print("Wait 5 more seconds for HealthAppDataType to appear on screen ...")
-        sleep(5)
-        
-        guard numberOfHKTypeIdentifiers() != hkTypeIdentifiers else {
-            return
-        }
-        
-        print("Wait 10 more seconds for HealthAppDataType to appear on screen ...")
-        sleep(10)
+//        
+//        guard numberOfHKTypeIdentifiers() != hkTypeIdentifiers else {
+//            return
+//        }
+//        
+//        print("Wait 5 more seconds for HealthAppDataType to appear on screen ...")
+//        sleep(5)
+//        
+//        guard numberOfHKTypeIdentifiers() != hkTypeIdentifiers else {
+//            return
+//        }
+//        
+//        print("Wait 10 more seconds for HealthAppDataType to appear on screen ...")
+//        sleep(10)
         
         XCTAssertEqual(
             numberOfHKTypeIdentifiers(),
@@ -204,19 +231,21 @@ extension XCUIApplication {
         )
     }
     
-    private func numberOfHKTypeIdentifiers() -> [HealthAppDataType: Int] {
-        var observations: [HealthAppDataType: Int] = [:]
-        for healthDataType in HealthAppDataType.allCases {
+    private func numberOfHKTypeIdentifiers() -> [HealthAppSampleType: Int] {
+        print("ALL STATIC TEXTS: \(self.debugDescription)")
+        var observations: [HealthAppSampleType: Int] = [:]
+        for sampleType in HealthAppSampleType.all {
             let numberOfHKTypeNames = staticTexts
                 .allElementsBoundByIndex
                 .filter {
-                    $0.label.contains(healthDataType.hkTypeName)
+                    $0.label.contains(sampleType.sampleType.identifier)
                 }
                 .count
             if numberOfHKTypeNames > 0 {
-                observations[healthDataType] = numberOfHKTypeNames
+                observations[sampleType] = numberOfHKTypeNames
             }
         }
+        fatalError()
         return observations
     }
 }

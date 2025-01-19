@@ -13,8 +13,7 @@ import SpeziHealthKit
 
 /// An example Standard used for the configuration.
 actor HealthKitTestAppStandard: Standard, HealthKitConstraint {
-    @Dependency private var healthKitStore: HealthKitStore
-    
+    @Dependency(HealthKitStore.self) private var healthKitStore
     
     func add(sample: HKSample) async {
         await healthKitStore.add(sample: sample)

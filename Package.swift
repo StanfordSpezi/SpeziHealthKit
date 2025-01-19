@@ -22,9 +22,9 @@ let package = Package(
         .library(name: "SpeziHealthKit", targets: ["SpeziHealthKit"])
     ],
     dependencies: [
-        .package(path: "../Spezi"),
-        .package(path: "../SpeziFoundation"),
-        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.17.7")
+        .package(url: "https://github.com/StanfordSpezi/Spezi.git", from: "1.8.0"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziFoundation.git", from: "2.1.0"),
+        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.17.7")
     ] + swiftLintPackage(),
     targets: [
         .target(
