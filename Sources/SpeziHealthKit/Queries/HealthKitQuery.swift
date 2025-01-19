@@ -19,7 +19,7 @@ public enum HealthKitQueryTimeRange: Hashable, Sendable {
     case hour
     /// The time range containing all of today.
     case today
-    /// The time range encompassing the ast 7 days, including today.
+    /// The time range encompassing the last 7 days, including today.
     case week
     /// The time range encompassing the last 31 days, including today.
     case month
@@ -44,10 +44,6 @@ public enum HealthKitQueryTimeRange: Hashable, Sendable {
     case lastNYears(Int)
     /// A time range over the specified closed range.
     case custom(ClosedRange<Date>)
-    
-    /// A time range large enough that it will include all samples.
-    /// TODO instead of this, simply have a none case, or make the time range optional in some places?
-    public static var all: Self { .custom(Date.distantPast...Date.distantFuture) }
 }
 
 
