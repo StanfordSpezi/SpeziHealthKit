@@ -10,9 +10,7 @@ import Foundation
 import HealthKit
 import SwiftUI
 import Spezi
-import SpeziHealthKit
 import SpeziFoundation
-
 
 
 /// The ``HealthKitStatisticsQuery`` property wrappers enables access to HealthKit samples within SwiftUI views.
@@ -21,12 +19,14 @@ import SpeziFoundation
 /// all heart rate measurements recorded today.
 ///
 /// ```swift
-/// struct MyView: View {
-///     @HealthKitQuery(.heartRate, timeRange: .today)
-///     var heartRateSamples
+/// struct ExampleView: View {
+///     // Fetch the sum of daily steps, for the last week
+///     @HealthKitStatisticsQuery(.stepCount, aggregatedBy: [.sum], over: .day, timeRange: .week)
+///     private var dailyStepCounts
 ///
 ///     var body: some View {
-///         ForEach(heartRateSamples) { sample in
+///         ForEach(dailyStepCounts) { stepCountStats in
+///             let numSteps = stepCountStats.sumQuantity()!.doubleValue(for: .count())
 ///             // ...
 ///         }
 ///     }
@@ -160,17 +160,6 @@ public struct HealthKitStatisticsQuery: DynamicProperty {
 }
 
 
-
-
-
-
-import Atomics
-
-
-private nonisolated(unsafe) var numSamplesQueryResultsObjects = ManagedAtomic<UInt64>(0)
-
-
-
 /// An auto-updating HealthKit query over statistical computations.
 ///
 /// This type is primarily intended to be used by the ``HealthKitStatisticsQuery`` property wrapper, but is also made available as part of the public API.
@@ -221,8 +210,6 @@ public final class StatisticsQueryResults: @unchecked Sendable {
     
     /// We need the ability to initialise a e
     fileprivate init() {
-        numSamplesQueryResultsObjects.wrappingIncrement(ordering: .acquiringAndReleasing)
-        queryLifetimeLogger.notice("-[\(Self.self) \(#function)] (#=\(numSamplesQueryResultsObjects.load(ordering: .acquiring)))")
     }
     
     // TODO Do we really still want this? (No.)
@@ -234,8 +221,6 @@ public final class StatisticsQueryResults: @unchecked Sendable {
         timeRange: HealthKitQueryTimeRange,
         filter predicate: Predicate<HKStatistics>? = nil
     ) throws(QueryError) {
-        numSamplesQueryResultsObjects.wrappingIncrement(ordering: .acquiringAndReleasing)
-        queryLifetimeLogger.notice("-[\(Self.self) \(#function)] (#=\(numSamplesQueryResultsObjects.load(ordering: .acquiring)))")
         self.healthStore = healthStore
         let filterPredicate: NSPredicate?
         if let predicate {
@@ -258,8 +243,8 @@ public final class StatisticsQueryResults: @unchecked Sendable {
     
     
     deinit {
-        numSamplesQueryResultsObjects.wrappingDecrement(ordering: .acquiringAndReleasing)
-        queryLifetimeLogger.notice("-[\(Self.self) \(#function)] (#=\(numSamplesQueryResultsObjects.load(ordering: .acquiring)))")
+        task?.cancel()
+        task = nil
     }
     
     

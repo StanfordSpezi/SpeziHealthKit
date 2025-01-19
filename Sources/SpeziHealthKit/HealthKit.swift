@@ -262,22 +262,3 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
         }
     }
 }
-
-
-
-
-
-extension HKHealthStore {
-    // TODO remove?!
-    func spezi_requestPerObjectReadAuthorization(for type: HKObjectType, predicate: NSPredicate?) async throws -> Bool {
-        try await withCheckedThrowingContinuation { continuation in
-            self.requestPerObjectReadAuthorization(for: type, predicate: predicate) { success, error in
-                if let error {
-                    continuation.resume(throwing: error)
-                } else {
-                    continuation.resume(returning: success)
-                }
-            }
-        }
-    }
-}

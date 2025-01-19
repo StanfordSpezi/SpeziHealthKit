@@ -11,15 +11,6 @@ import SwiftUI
 import HealthKit
 import SpeziFoundation
 import Spezi
-import os
-
-
-
-
-let queryLifetimeLogger = os.Logger(subsystem: "edu.stanford.spezi.SpeziHealthKit.queryLifetime", category: "")
-
-
-
 
 
 /// The time range for which data should be fetched from the health store.
@@ -60,21 +51,6 @@ public enum HealthKitQueryTimeRange: Hashable, Sendable {
 }
 
 
-struct MyView: View {
-    @HealthKitQuery(.heartRate, timeRange: .today)
-    private var heartRateSamples
-    
-    @HealthKitQuery(.bloodPressure, timeRange: .week)
-    private var bloodPressureSamples
-    
-    var body: some View {
-        ForEach(heartRateSamples) { sample in
-            // ...
-        }
-    }
-}
-
-
 /// The ``HealthKitQuery`` property wrappers enables access to HealthKit samples within SwiftUI views.
 ///
 /// Queries are performed in the context of the ``HealthKit-swift.class`` module, which must be enabled via an app's
@@ -89,7 +65,7 @@ struct MyView: View {
 /// all heart rate measurements recorded today.
 ///
 /// ```swift
-/// struct MyView: View {
+/// struct ExampleView: View {
 ///     @HealthKitQuery(.heartRate, timeRange: .today)
 ///     private var heartRateSamples
 ///
@@ -158,18 +134,12 @@ public struct HealthKitQuery<Sample: _HKSampleWithSampleType>: DynamicProperty {
     }
     
     /// A ``HealthKitQuery``'s projected value provides access to the query's underlying auto-updating results object.
-    /// This can be used e.g. to provide data to a ``SpeziHealthKit/SpeziHealthKitUI/HealthChart``.
+    /// This can be used e.g. to provide data to a ``HealthChart``.
     public var projectedValue: SamplesQueryResults<Sample> { // TODO why not `some HealthKitQueryResults<...>`?
         results
     }
 }
 
-
-
-import Atomics
-
-
-private nonisolated(unsafe) var numSamplesQueryResultsObjects = ManagedAtomic<UInt64>(0)
 
 
 /// An auto-updating HealthKit query over samples in the HealthKit database.
@@ -225,12 +195,10 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
     private(set) public var queryError: (any Error)?
     
     @ObservationIgnored
-    private var handleQueryTask: Task<Void, Never>?
+    private var queryTask: Task<Void, Never>?
     
     
     private init(variant: Variant) {
-        numSamplesQueryResultsObjects.wrappingIncrement(ordering: .acquiringAndReleasing)
-        queryLifetimeLogger.notice("-[\(Self.self) \(#function)] (#=\(numSamplesQueryResultsObjects.load(ordering: .acquiring)))")
         self.variant = variant
     }
     
@@ -243,10 +211,8 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
     /// - Note: This initializer will perform an initial fetch of the queried-for samples, and return only once that fetch has completed.
     ///     It will **not** initiate the auto-updating of the query results; you can start this via the ``startObservingChanges`` function.
     init(healthStore: HKHealthStore, input: Input) async {
-        numSamplesQueryResultsObjects.wrappingIncrement(ordering: .acquiringAndReleasing)
-        queryLifetimeLogger.notice("-[\(Self.self) \(#function)] (#=\(numSamplesQueryResultsObjects.load(ordering: .acquiring)))")
         self.variant = .standalone(healthStore)
-        self.input = input // TODO does this trigger the didSet? (w/out the nil assign above)
+        self.input = input
         await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
             self.startQuery {
                 continuation.resume()
@@ -286,9 +252,8 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
     
     
     deinit {
-        numSamplesQueryResultsObjects.wrappingDecrement(ordering: .acquiringAndReleasing)
-        queryLifetimeLogger.notice("-[\(Self.self) \(#function)] (#=\(numSamplesQueryResultsObjects.load(ordering: .acquiring)))")
-        handleQueryTask?.cancel()
+        queryTask?.cancel()
+        queryTask = nil
     }
     
     fileprivate func initializeSwiftUIManagedQuery(healthStore: HKHealthStore, input: Input) {
@@ -307,7 +272,6 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
         guard let input else {
             return
         }
-        
         
 //        Task {
 //            let initialFetch = HKSampleQueryDescriptor(
@@ -347,10 +311,10 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
             limit: nil
         )
         
-        handleQueryTask?.cancel()
-        
         let healthStore = self.healthStore
-        handleQueryTask = Task.detached { [weak self] in
+        
+        queryTask?.cancel()
+        queryTask = Task.detached { [weak self] in
             do {
                 var isFirstUpdate = true
                 let startTS = CACurrentMediaTime()

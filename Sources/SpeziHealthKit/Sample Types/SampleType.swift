@@ -38,20 +38,11 @@ extension HKAudiogramSample: _HKSampleWithSampleType {
 }
 
 
-
-// TODO is this actually needed?
-public protocol AnyHealthKitSampleType {
-    associatedtype Sample: _HKSampleWithSampleType
-    var hkSampleType: Sample._SampleType { get }
-}
-
-
-
 /// A sample type that can be used to query data from HealthKit.
 ///
 /// This struct is a strongly-typed wrapper around `HKSampleType` that associates a sample type with its corresponding `HKSample` subclass.
 /// Additionally, it also provides some useful information for working with a sample type, such as e.g. the sample type's recommended display title
-public struct HealthKitSampleType<Sample: _HKSampleWithSampleType>: AnyHealthKitSampleType, Hashable, Identifiable, Sendable {
+public struct HealthKitSampleType<Sample: _HKSampleWithSampleType>: Hashable, Identifiable, Sendable {
     private enum Variant: Sendable {
         /// - parameter displayUnit: The unit that should be used when displaying a sample of this type to the user
         /// - parameter expectedValuesRange: The expected range of values we expect to see for this sample type, if applicable.
