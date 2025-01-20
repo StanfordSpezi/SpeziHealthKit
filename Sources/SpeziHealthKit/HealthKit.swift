@@ -92,7 +92,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     @ObservationIgnored private var pendingConfiguration: [any HealthKitConfigurationComponent]
     
     /// All background-data-collecting data sources registered with the HealthKit module.
-    @ObservationIgnored private var registeredDataSources: [any HealthKitDataSource] = [] // TODO different name? (property&protocol!)
+    @ObservationIgnored private var registeredDataCollectors: [any HealthDataCollector] = []
     
     
     /// Creates a new instance of the ``HealthKit`` module.
@@ -162,8 +162,8 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     ///
     /// - Note: There is no need for an app itself to keep track of whether it already requested health data access; the ``HealthKit-swift.class`` takes care of this.
     ///
-    /// - Warning: Only request write access to HealthKit data if your app's `Info.plist` file
-    ///     contains an entry for the `NSHealthUpdateUsageDescription` key.
+    /// - Warning: Only request read or write access to HealthKit data if your app's `Info.plist` file
+    ///     contains an entry for `NSHealthShareUsageDescription` and `NSHealthUpdateUsageDescription` respectively.
     @MainActor
     public func askForAuthorization(for accessRequirements: DataAccessRequirements) async throws {
         guard HKHealthStore.isHealthDataAvailable() else {
@@ -174,8 +174,8 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
             toShare: accessRequirements.write,
             read: accessRequirements.read
         )
-        for dataSource in registeredDataSources where !dataSource.isActive && accessRequirements.read.contains(dataSource.sampleType) {
-            await dataSource.askedForAuthorization()
+        for collector in registeredDataCollectors {
+            await startAutomaticDataCollectionIfPossible(collector)
         }
     }
     
@@ -241,25 +241,35 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     // MARK: HealthKit data collection
     
     /// Adds a new data source for collecting health data in the background.
+    ///
+    /// If the user was already asked for access to this collector's sample type, the collector will immediately be informed to
+    /// start its automatic data collection.
     @MainActor
-    func addBackgroundHealthDataSource(_ dataSource: some HealthKitDataSource) async {
-        registeredDataSources.append(dataSource)
-        if await askedForAuthorization(toRead: dataSource.sampleType) {
-            // If we already asked for authentication to this specific sample type, we can directly start it.
-            // Otherwise, the next call to askForAuthorization will trigger the start of the data collection.
-            Task {
-                await dataSource.startAutomaticDataCollection()
-            }
+    public func addHealthDataCollector(_ collector: some HealthDataCollector) async {
+        registeredDataCollectors.append(collector)
+        await startAutomaticDataCollectionIfPossible(collector)
+    }
+    
+    
+    /// Tells the collector to start its automatic data collection, if applicable and possible.
+    @MainActor
+    private func startAutomaticDataCollectionIfPossible(_ collector: some HealthDataCollector) async{
+        if !collector.isActive,
+           collector.delivery.isAutomatic,
+           await askedForAuthorization(toRead: collector.sampleType) {
+            logger.notice("Telling health data collector \(String(describing: collector)) to start its data collection")
+            await collector.startDataCollection()
         }
     }
     
-    /// Triggers any ``HealthKitDeliverySetting/manual(saveAnchor:)`` collections and starts the collection for all ``HealthKitDeliveryStartSetting/manual`` HealthKit data collections.
+    /// Triggers data collection for any currently registered ``HealthDataCollector``s that have a manual delivery setting.
     @MainActor
     public func triggerDataSourceCollection() async {
         await withTaskGroup(of: Void.self) { group in
-            for dataSource in registeredDataSources {
+            for collector in registeredDataCollectors where collector.delivery.isManual {
                 group.addTask { @MainActor @Sendable in
-                    await dataSource.triggerManualDataSourceCollection()
+                    self.logger.notice("Telling health data collector \(String(describing: collector)) to start its data collection")
+                    await collector.startDataCollection()
                 }
             }
             await group.waitForAll()

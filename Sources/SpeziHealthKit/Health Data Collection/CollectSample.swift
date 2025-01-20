@@ -49,7 +49,7 @@ import Spezi
 public struct CollectSample: HealthKitConfigurationComponent {
     private let sampleType: HKSampleType
     private let predicate: NSPredicate?
-    private let deliverySetting: HealthKitDeliverySetting
+    private let deliverySetting: HealthDataCollectorDeliverySetting
     
     public var dataAccessRequirements: HealthKit.DataAccessRequirements {
         .init(read: [sampleType])
@@ -65,7 +65,7 @@ public struct CollectSample: HealthKitConfigurationComponent {
     public init(
         _ sampleType: SampleType<some Any>,
         predicate: NSPredicate? = nil,
-        delivery: HealthKitDeliverySetting = .manual() // TODO Question @Paul : why does it default to manual?
+        delivery: HealthDataCollectorDeliverySetting = .manual() // TODO Question @Paul : why does it default to manual?
     ) {
         self.sampleType = sampleType.hkSampleType
         self.predicate = predicate
@@ -76,20 +76,20 @@ public struct CollectSample: HealthKitConfigurationComponent {
     public init(
         _ sampleType: SampleType<some Any>,
         predicate: NSPredicate? = nil,
-        deliverySetting: HealthKitDeliverySetting = .manual()
+        deliverySetting: HealthDataCollectorDeliverySetting = .manual()
     ) {
         self.init(sampleType, predicate: predicate, delivery: deliverySetting)
     }
     
     
     public func configure(for healthKit: HealthKit, on standard: any HealthKitConstraint) async {
-        let dataSource = HealthKitSampleDataSource(
+        let collector = HealthKitSampleCollector(
             healthKit: healthKit,
             standard: standard,
             sampleType: sampleType,
             predicate: predicate,
-            deliverySetting: deliverySetting
+            delivery: deliverySetting
         )
-        await healthKit.addBackgroundHealthDataSource(dataSource)
+        await healthKit.addHealthDataCollector(collector)
     }
 }
