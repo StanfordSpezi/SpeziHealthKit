@@ -28,10 +28,10 @@ extension HKCategoryTypeIdentifier {
         Self.appleWalkingSteadinessEvent
         Self.handwashingEvent
         Self.toothbrushingEvent
-        if #available(iOS 18.0, *) {
+        if #available(iOS 18, macOS 15, *) {
             Self.bleedingAfterPregnancy
         }
-        if #available(iOS 18.0, *) {
+        if #available(iOS 18, macOS 15, *) {
             Self.bleedingDuringPregnancy
         }
         Self.cervicalMucusQuality
@@ -48,7 +48,7 @@ extension HKCategoryTypeIdentifier {
         Self.progesteroneTestResult
         Self.prolongedMenstrualPeriods
         Self.sexualActivity
-        if #available(iOS 18.0, *) {
+        if #available(iOS 18, macOS 15, *) {
             Self.sleepApneaEvent
         }
         Self.sleepAnalysis

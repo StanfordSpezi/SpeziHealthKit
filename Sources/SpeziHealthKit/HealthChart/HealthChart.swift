@@ -467,7 +467,7 @@ public struct HealthChart<each Results: HealthKitQueryResults>: View {
         }
         var content = AnyChartContent(erasing: ChartContentBuilder.buildBlock())
         for block in blocks {
-            if #available(iOS 18.0, *) {
+            if #available(iOS 18, macOS 15, *) {
                 content = AnyChartContent(erasing: ChartContentBuilder.buildBlock(content, block))
             } else {
                 content = AnyChartContent(erasing: ChartContentBuilder.buildPartialBlock(accumulated: content, next: block))

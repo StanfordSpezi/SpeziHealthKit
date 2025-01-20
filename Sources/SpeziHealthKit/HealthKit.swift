@@ -10,6 +10,7 @@ import HealthKit
 import Spezi
 import SpeziFoundation
 import SwiftUI
+import OSLog
 
 
 /// The `HealthKit` module enables the collection of HealthKit data.
@@ -73,7 +74,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     private var standard: any HealthKitConstraint
     
     @ObservationIgnored @Application(\.logger)
-    private var logger
+    var logger
     
     /// The HealthKit module's underlying `HKHealthStore`.
     /// Users can access this in a `View` via the `@Environment(HealthKit.self)` property wrapper.
@@ -110,7 +111,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
         if !HKHealthStore.isHealthDataAvailable() {
             // If HealthKit is not available, we still initialise the module and the health store as normal.
             // Queries and sample collection, in this case, will simply not return any results.
-            logger.error("HealthKit is not available. SpeziHealthKit and its module will still exist in the application, but all HealthKit-related functionality will be disabled.")
+            Logger.healthKit.error("HealthKit is not available. SpeziHealthKit and its module will still exist in the application, but all HealthKit-related functionality will be disabled.")
         }
     }
     
@@ -165,6 +166,9 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     ///     contains an entry for the `NSHealthUpdateUsageDescription` key.
     @MainActor
     public func askForAuthorization(for accessRequirements: DataAccessRequirements) async throws {
+        guard HKHealthStore.isHealthDataAvailable() else {
+            return
+        }
         self.dataAccessRequirements.merge(with: accessRequirements)
         try await healthStore.requestAuthorization(
             toShare: accessRequirements.write,

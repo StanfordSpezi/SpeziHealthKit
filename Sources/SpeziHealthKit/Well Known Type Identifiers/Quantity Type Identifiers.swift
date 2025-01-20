@@ -32,41 +32,41 @@ extension HKQuantityTypeIdentifier {
         Self.appleMoveTime
         Self.appleStandTime
         Self.basalEnergyBurned
-        if #available(iOS 18.0, *) {
+        if #available(iOS 18, macOS 15, *) {
             Self.crossCountrySkiingSpeed
         }
         Self.cyclingCadence
         Self.cyclingFunctionalThresholdPower
         Self.cyclingPower
         Self.cyclingSpeed
-        if #available(iOS 18.0, *) {
+        if #available(iOS 18, macOS 15, *) {
             Self.distanceCrossCountrySkiing
         }
         Self.distanceCycling
         Self.distanceDownhillSnowSports
-        if #available(iOS 18.0, *) {
+        if #available(iOS 18, macOS 15, *) {
             Self.distancePaddleSports
         }
-        if #available(iOS 18.0, *) {
+        if #available(iOS 18, macOS 15, *) {
             Self.distanceRowing
         }
-        if #available(iOS 18.0, *) {
+        if #available(iOS 18, macOS 15, *) {
             Self.distanceSkatingSports
         }
         Self.distanceSwimming
         Self.distanceWalkingRunning
         Self.distanceWheelchair
-        if #available(iOS 18.0, *) {
+        if #available(iOS 18, macOS 15, *) {
             Self.estimatedWorkoutEffortScore
         }
         Self.flightsClimbed
         Self.nikeFuel
-        if #available(iOS 18.0, *) {
+        if #available(iOS 18, macOS 15, *) {
             Self.paddleSportsSpeed
         }
         Self.physicalEffort
         Self.pushCount
-        if #available(iOS 18.0, *) {
+        if #available(iOS 18, macOS 15, *) {
             Self.rowingSpeed
         }
         Self.runningPower
@@ -74,7 +74,7 @@ extension HKQuantityTypeIdentifier {
         Self.stepCount
         Self.swimmingStrokeCount
         Self.underwaterDepth
-        if #available(iOS 18.0, *) {
+        if #available(iOS 18, macOS 15, *) {
             Self.workoutEffortScore
         }
         Self.environmentalAudioExposure
@@ -148,7 +148,7 @@ extension HKQuantityTypeIdentifier {
         Self.uvExposure
         Self.waterTemperature
         Self.basalBodyTemperature
-        if #available(iOS 18.0, *) {
+        if #available(iOS 18, macOS 15, *) {
             Self.appleSleepingBreathingDisturbances
         }
         Self.forcedExpiratoryVolume1
