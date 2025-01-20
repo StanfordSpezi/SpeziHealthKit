@@ -6,11 +6,12 @@
 // SPDX-License-Identifier: MIT
 //
 
-import SpeziHealthKit
-
 
 extension HealthKitQueryResults {
-    fileprivate static func _makeEmptyHealthChartEntry() -> HealthChartEntry<Self> {
+    /// Creates a ``HealthChartEntry`` with the empty state, that has its `Results` type bound to the receiver's type.
+    /// The reason this function exists, is so that we can map a variadic tuple of type `(repeat A<each T>)`
+    /// into one of type `(repeat HealthChartEntry<each T>)`.
+    @usableFromInline static func _makeEmptyHealthChartEntry() -> HealthChartEntry<Self> {
         HealthChartEntry.makeEmpty()
     }
 }
@@ -22,23 +23,25 @@ public enum HealthChartContentBuilder {
     /// Intermediate representation of a variadic-length tuple of ``HealthChartEntry`` objects, used for building up the tuple.
     /// This exists to work around https://github.com/swiftlang/swift/issues/78392.
     public struct _Tuple<each Results: HealthKitQueryResults> {
-        let entry: (repeat HealthChartEntry<each Results>)
+        @usableFromInline let entry: (repeat HealthChartEntry<each Results>)
         
+        @usableFromInline
         init(_ entry: (repeat HealthChartEntry<each Results>)) {
             self.entry = (repeat each entry)
         }
     }
     
-    
-    public static func buildExpression<Results>(_ entry: HealthChartEntry<Results>) -> _Tuple<Results> {
+    @inlinable public static func buildExpression<Results>(_ entry: HealthChartEntry<Results>) -> _Tuple<Results> {
         .init((entry))
     }
     
-    public static func buildExpression<each Results>(_ entry: (repeat HealthChartEntry<each Results>)) -> _Tuple<repeat each Results> {
+    @inlinable public static func buildExpression<each Results>(
+        _ entry: (repeat HealthChartEntry<each Results>)
+    ) -> _Tuple<repeat each Results> {
         .init((repeat each entry))
     }
     
-    public static func buildOptional<each Results>(
+    @inlinable public static func buildOptional<each Results>(
         _ tuple: HealthChartContentBuilder._Tuple<repeat each Results>?
     ) -> HealthChartContentBuilder._Tuple<repeat each Results> {
         if let tuple {
@@ -51,36 +54,36 @@ public enum HealthChartContentBuilder {
         }
     }
     
-    public static func buildEither<each Results>(
+    @inlinable public static func buildEither<each Results>(
         first tuple: _Tuple<repeat each Results>
     ) -> _Tuple<repeat each Results> {
         tuple
     }
     
-    public static func buildEither<each Results>(
+    @inlinable public static func buildEither<each Results>(
         second tuple: _Tuple<repeat each Results>
     ) -> _Tuple<repeat each Results> {
         tuple
     }
     
-    public static func buildPartialBlock<each Results>(
+    @inlinable public static func buildPartialBlock<each Results>(
         first tuple: _Tuple<repeat each Results>
     ) -> _Tuple<repeat each Results> {
         tuple
     }
     
-    public static func buildPartialBlock<each Results, each NextResults>(
+    @inlinable public static func buildPartialBlock<each Results, each NextResults>(
         accumulated: (_Tuple<repeat each Results>),
         next: _Tuple<repeat each NextResults>
     ) -> (_Tuple<repeat each Results, repeat each NextResults>) {
         .init((repeat each accumulated.entry, repeat each next.entry))
     }
     
-    public static func buildBlock() -> _Tuple<> {
+    @inlinable public static func buildBlock() -> _Tuple<> {
         .init(())
     }
     
-    public static func buildFinalResult<each Results>(
+    @inlinable public static func buildFinalResult<each Results>(
         _ tuple: (_Tuple<repeat each Results>)
     ) -> (repeat HealthChartEntry<each Results>) {
         tuple.entry

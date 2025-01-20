@@ -8,7 +8,6 @@
 
 
 import HealthKit
-import SpeziHealthKit
 
 
 // TODO why is it that, if this is a class, the chart will be able to auto-update when the contained `results` property (which is @Observable) changes,
@@ -16,8 +15,7 @@ import SpeziHealthKit
 // TODO Rename HealthChartDateSet? (Entry kinda sounds like it's referring to a single data point. But then again, it could very well also be the case that we want to split eg "step count" up into separate data sets, to make it look nicer?
 /// An entry in a ``HealthChart``
 public final class HealthChartEntry<Results: HealthKitQueryResults>: Sendable {
-//    public typealias HealthKitQueryDataPoint = SpeziHealthKit.HealthKitQueryDataPoint//<Results.Element.ID>
-    public typealias MakeDataPointImp = @Sendable (Results.Element, Results) -> HealthKitQueryDataPoint?
+    public typealias MakeDataPointImp = @Sendable (Results.Element, Results) -> HealthChartDataPoint?
     
     private enum Variant: Sendable {
         case regular(Results, HealthChartDrawingConfig, MakeDataPointImp)
@@ -81,7 +79,7 @@ public final class HealthChartEntry<Results: HealthKitQueryResults>: Sendable {
         drawingConfig: HealthChartDrawingConfig
     ) where Results.Sample == HKQuantitySample, Results.Element == HKQuantitySample {
         self.init(results, drawingConfig: drawingConfig) { sample, results in
-            HealthKitQueryDataPoint(sample: sample, unit: results.sampleType.displayUnit)
+            HealthChartDataPoint(sample: sample, unit: results.sampleType.displayUnit)
         }
     }
     
@@ -91,7 +89,7 @@ public final class HealthChartEntry<Results: HealthKitQueryResults>: Sendable {
         drawingConfig: HealthChartDrawingConfig
     ) where Results.Sample == HKQuantitySample, Results.Element == HKStatistics {
         self.init(results, drawingConfig: drawingConfig) { statistics, results in
-            HealthKitQueryDataPoint(
+            HealthChartDataPoint(
                 statistics: statistics,
                 aggregationOption: aggregationOption,
                 unit: results.sampleType.displayUnit
@@ -99,7 +97,7 @@ public final class HealthChartEntry<Results: HealthKitQueryResults>: Sendable {
         }
     }
     
-    func makeDataPoint(for element: Results.Element) -> HealthKitQueryDataPoint? {
+    func makeDataPoint(for element: Results.Element) -> HealthChartDataPoint? {
         makeDataPointImp(element, results)
     }
     
