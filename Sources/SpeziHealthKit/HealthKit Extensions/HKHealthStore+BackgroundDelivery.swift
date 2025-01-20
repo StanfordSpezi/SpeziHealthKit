@@ -56,14 +56,11 @@ extension HKHealthStore {
     }
     
     
-    private func enableBackgroundDelivery(
-        for objectTypes: Set<HKObjectType>,
-        frequency: HKUpdateFrequency = .immediate
-    ) async throws {
+    private func enableBackgroundDelivery(for objectTypes: Set<HKObjectType>) async throws {
         var enabledObjectTypes: Set<HKObjectType> = []
         do {
             for objectType in objectTypes {
-                try await self.enableBackgroundDelivery(for: objectType, frequency: frequency)
+                try await self.enableBackgroundDelivery(for: objectType, frequency: .immediate)
                 enabledObjectTypes.insert(objectType)
                 Self.activeObservationsLock.withLock {
                     HKHealthStore.activeObservations[objectType] = HKHealthStore.activeObservations[objectType, default: 0] + 1
