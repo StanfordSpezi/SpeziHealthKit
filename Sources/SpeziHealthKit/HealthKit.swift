@@ -13,61 +13,12 @@ import SwiftUI
 import OSLog
 
 
-/// The `HealthKit` module enables the collection of HealthKit data.
+/// Spezi Module for interacting with the HealthKit system.
 ///
-/// The `HealthKit` module simplifies access to HealthKit samples ranging from single, anchored, and background queries.
+/// See <doc:ModuleConfiguration> for a detailed introduction.
 ///
-/// Before you configure the ``HealthKit-class`` module, make sure your `Standard` in your Spezi Application conforms to the ``HealthKitConstraint`` protocol to receive HealthKit data.
-/// The ``HealthKitConstraint/add(sample:)`` function is triggered once for every newly collected HealthKit sample, and the ``HealthKitConstraint/remove(sample:)`` function is triggered once for every deleted HealthKit sample.
-/// ```swift
-/// actor ExampleStandard: Standard, HealthKitConstraint {
-///     // Add the newly collected HKSample to your application.
-///     func add(sample: HKSample) async {
-///         // ...
-///     }
-///
-///     // Remove the deleted HKSample from your application.
-///     func remove(sample: HKDeletedObject) {
-///         // ...
-///     }
-/// }
-/// ```
-/// 
-/// Then, you can configure the ``HealthKit-class`` module in the configuration section of your `SpeziAppDelegate`.
-/// Provide ``HealthKitDataSourceDescription`` to define the data collection.
-/// You can, e.g., use ``CollectSample`` to collect a wide variety of ``SampleType``s:
-/// ```swift
-/// class ExampleAppDelegate: SpeziAppDelegate {
-///     override var configuration: Configuration {
-///         Configuration(standard: ExampleStandard()) {
-///             if HKHealthStore.isHealthDataAvailable() {
-///                 HealthKit {
-///                     CollectSample(
-///                         .electrocardiogram,
-///                         delivery: .background(.manual)
-///                     )
-///                     CollectSample(
-///                         .stepCount,
-///                         delivery: .background(.automatic)
-///                     )
-///                     CollectSample(
-///                         .pushCount,
-///                         delivery: .anchorQuery(.manual)
-///                     )
-///                     CollectSample(
-///                         .activeEnergyBurned,
-///                         delivery: .anchorQuery(.automatic)
-///                     )
-///                     CollectSample(
-///                         .restingHeartRate,
-///                         delivery: .manual()
-///                     )
-///                 }
-///             }
-///         }
-///     }
-/// }
-/// ```
+/// ## See Also
+/// - <doc:ModuleConfiguration>
 @Observable
 public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializable {
     @ObservationIgnored @StandardActor
@@ -77,8 +28,9 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     var logger
     
     /// The HealthKit module's underlying `HKHealthStore`.
+    ///
     /// Users can access this in a `View` via the `@Environment(HealthKit.self)` property wrapper.
-    public let healthStore: HKHealthStore
+    internal let healthStore: HKHealthStore
     
     // TODO why doesn't importing SpeziHealthKit as @testable work in the TestApp????(!)
     /// (for testing purposes only) The data access requirements that resulted form the initial configuration passed to the ``HealthKit-swift.class`` module.
@@ -95,9 +47,9 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     @ObservationIgnored private var registeredDataCollectors: [any HealthDataCollector] = []
     
     
-    /// Creates a new instance of the ``HealthKit-class`` module.
+    /// Creates a new instance of the ``HealthKit-class`` module, with the specified configuration.
     /// - parameter config: The configuration defines the behaviour of the `HealthKit` module,
-    ///     specifying e.g. which samples the app wants to continuously collect (via ``CollectSample`` and ``CollectSamples``,
+    ///     specifying e.g. which samples the app wants to continuously collect (via ``CollectSample``),
     ///     and which sample and object types the user should be prompted to grant the app read access to (via ``RequestReadAccess``).
     public init(
         @ArrayBuilder<any HealthKitConfigurationComponent> _ config: () -> [any HealthKitConfigurationComponent]
@@ -123,6 +75,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
 
 
     /// Configures the HealthKit module.
+    @_documentation(visibility: internal)
     public func configure() {
         Task {
             for component in exchange(&pendingConfiguration, with: []) {

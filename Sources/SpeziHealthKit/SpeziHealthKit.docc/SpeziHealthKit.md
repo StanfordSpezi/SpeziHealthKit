@@ -82,8 +82,6 @@ class ExampleAppDelegate: SpeziAppDelegate {
 ## Topics
 
 ### Module
-- ``HealthKit-class``
-- ``HealthKitConstraint``
 - <doc:ModuleConfiguration>
 
 ### Health Data Collection

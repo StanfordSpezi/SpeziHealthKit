@@ -16,7 +16,9 @@ There are several built-in configuration components you can use in your app:
 In addition to these, you can use the ``HealthKitConfigurationComponent`` protocol to define your own components and integrate then with the `HealthKit` module.
 
 
-### Example: Collect step count samples, and request read access to some additional sample types
+### Example
+This example uses the ``HealthKit-swift.class`` module to collect step count samples, and request read access to some additional sample types.
+
 ```swift
 HealthKit {
     CollectSample(
@@ -35,10 +37,18 @@ The `HealthKit` module manages this for Spezi applications: the module builds up
 
 Your app should, at some point during its launch call ``HealthKit-swift.class/askForAuthorization()``.
 This will ask the user to grant the app access to all HealthKit data types requested by the configuration components.
-You can choose the timing of this call in a way that best suits your app: for example, you might want to integrate the Health permission request into a dedicated onboarding step.
+You can choose the timing of this call in a way that best suits your app: for example, during your app's first launch you might want to integrate the Health permission request into a dedicated onboarding step.
 
 
 ## Topics
+
+### HealthKit module
+- ``HealthKit-class``
+- ``HealthKitConstraint``
+
+### Module Configuration
+
 - ``HealthKitConfigurationComponent``
+- ``HealthKit-swift.class/DataAccessRequirements``
 - ``RequestReadAccess``
 - ``RequestWriteAccess``
