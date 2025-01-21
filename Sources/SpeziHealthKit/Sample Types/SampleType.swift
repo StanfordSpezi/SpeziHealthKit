@@ -107,6 +107,11 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType, Hashab
     @inlinable public static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.id == rhs.id
     }
+    
+    /// Compare two sample types, based on their identifiers
+    @inlinable public static func == (lhs: Self, rhs: SampleType<some Any>) -> Bool {
+        lhs.id == rhs.id
+    }
 }
 
 

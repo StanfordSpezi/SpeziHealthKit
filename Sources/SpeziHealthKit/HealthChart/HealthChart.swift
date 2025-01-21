@@ -148,258 +148,257 @@ public struct HealthChart<each Results: HealthKitQueryResults>: View {
     
     @_documentation(visibility: internal)
     public var body: some View {
-//        if !hasEntries {
-//            Text("No Data")
-//        } else {
-//            chart
-//                .overlay {
-//                    queryErrorsOverlay
-//                }
-//                .onChange(of: xSelection) { _, xSelection in
-//                    guard let xSelection else {
-//                        highlightConfig = nil
-//                        return
-//                    }
-//                    func highlightEntry(in entry: HealthChartEntry<some Any>) -> CurrentHighlightConfig.HighlightEntry? {
-//                        guard !entry.results.isEmpty else {
-//                            return nil
-//                        }
-//                        // TODO do a binary search instead? (somehow)
-//                        let closestEntry: HealthChartDataPoint? = entry.results
-//                            .lazy
-//                            .compactMap { entry.makeDataPoint(for: $0) }
-//                            .min { lhs, rhs -> Bool in
-//                                let lhsDist = abs(lhs.date.distance(to: xSelection))
-//                                let rhsDist = abs(rhs.date.distance(to: xSelection))
-//                                return lhsDist < rhsDist
-//                            }
-//                        guard let closestEntry, abs(closestEntry.date.distance(to: xSelection)) < 60*60 else {
-//                            return nil
-//                        }
-//                        return CurrentHighlightConfig.HighlightEntry(
-//                            dataPoint: closestEntry,
-//                            color: entry.drawingConfig.color,
-//                            seriesName: entry.results.sampleType.displayTitle
-//                        )
-//                    }
-//                    var highlightEntries: [CurrentHighlightConfig.HighlightEntry] = []
-//                    for entry in repeat each entry {
-//                        guard !entry.isEmpty else {
-//                            continue
-//                        }
-//                        if let highlightEntry = highlightEntry(in: entry) {
-//                            highlightEntries.append(highlightEntry)
-//                        }
-//                    }
-//                    guard !highlightEntries.isEmpty else {
-//                        highlightConfig = nil
-//                        return
-//                    }
-//                    highlightConfig = .init(date: highlightEntries.first!.dataPoint.date, entries: highlightEntries) // TODO do we want to require them all to have the same date?!
-//                }
-//                .onChange(of: xScrollPosition, initial: true) { old, new in
-//                    print("X SCROLL FROM \(old.primitivePlottable) ---> \(new.primitivePlottable)")
-//                }
-//        }
-        EmptyView()
+        if !hasEntries {
+            Text("No Data")
+        } else {
+            chart
+                .overlay {
+                    queryErrorsOverlay
+                }
+                .onChange(of: xSelection) { _, xSelection in
+                    guard let xSelection else {
+                        highlightConfig = nil
+                        return
+                    }
+                    func highlightEntry(in entry: HealthChartEntry<some Any>) -> CurrentHighlightConfig.HighlightEntry? {
+                        guard !entry.results.isEmpty else {
+                            return nil
+                        }
+                        // TODO do a binary search instead? (somehow)
+                        let closestEntry: HealthChartDataPoint? = entry.results
+                            .lazy
+                            .compactMap { entry.makeDataPoint(for: $0) }
+                            .min { lhs, rhs -> Bool in
+                                let lhsDist = abs(lhs.date.distance(to: xSelection))
+                                let rhsDist = abs(rhs.date.distance(to: xSelection))
+                                return lhsDist < rhsDist
+                            }
+                        guard let closestEntry, abs(closestEntry.date.distance(to: xSelection)) < 60*60 else {
+                            return nil
+                        }
+                        return CurrentHighlightConfig.HighlightEntry(
+                            dataPoint: closestEntry,
+                            color: entry.drawingConfig.color,
+                            seriesName: entry.results.sampleType.displayTitle
+                        )
+                    }
+                    var highlightEntries: [CurrentHighlightConfig.HighlightEntry] = []
+                    for entry in repeat each entry {
+                        guard !entry.isEmpty else {
+                            continue
+                        }
+                        if let highlightEntry = highlightEntry(in: entry) {
+                            highlightEntries.append(highlightEntry)
+                        }
+                    }
+                    guard !highlightEntries.isEmpty else {
+                        highlightConfig = nil
+                        return
+                    }
+                    highlightConfig = .init(date: highlightEntries.first!.dataPoint.date, entries: highlightEntries) // TODO do we want to require them all to have the same date?!
+                }
+                .onChange(of: xScrollPosition, initial: true) { old, new in
+                    print("X SCROLL FROM \(old.primitivePlottable) ---> \(new.primitivePlottable)")
+                }
+        }
     }
     
     
-//    @ViewBuilder
-//    private var chart: some View {
-//        Chart {
-//            chartContent
-//            chartSelectionHighlight
-//        }
-//        .transforming { view in
-//            switch interactivity {
-//            case .none:
-//                view
-////            case .scrolling:
-////                view.chartScrollableAxes(.horizontal)
-//            case .highlighting:
-//                view.chartXSelection(value: $xSelection)
-//            }
-//        }
-//        .transforming { view in
-//            if timeInterval > 0 {
-//                view.chartXVisibleDomain(length: timeInterval)
-//            } else {
-//                view
-//            }
-//        }
-//        .chartForegroundStyleScale({ () -> KeyValuePairs<String, Color> in
-//            var mapping: [(String, Color)] = []
-//            func imp(_ entry: HealthChartEntry<some Any>) {
-//                mapping.append((entry.results.sampleType.displayTitle, entry.drawingConfig.color))
-//            }
-//            repeat imp(each entry)
-//            return KeyValuePairs<String, Color>(mapping)
-//        }())
-//        .transforming { view in
-//            let valuesRange = { () -> ClosedRange<Double>? in
-//                var range: ClosedRange<Double>?
-//                func imp(_ entry: HealthChartEntry<some Any>) {
-//                    guard let expectedRange = (entry.results.sampleType as? SampleType<HKQuantitySample>)?.expectedValuesRange else {
-//                        return
-//                    }
-//                    if let _range = range {
-//                        range = min(_range.lowerBound, expectedRange.lowerBound)...max(_range.upperBound, expectedRange.upperBound)
-//                    } else {
-//                        range = expectedRange
-//                    }
-//                }
-//                repeat imp(each entry)
-//                return range
-//            }()
-//            if let valuesRange {
-//                view.chartYScale(domain: [valuesRange.lowerBound, valuesRange.upperBound])
-//            } else {
-//                view
-//            }
-//        }
-//    }
-//    
-//    
-//    private var chartContent: AnyChartContent {
-//        // In an ideal world, we would simply place the `for entry in repeat each entry` loop directly in the `Chart { }` call.
-//        // BUT, sadly, we do not live in this world. (The ChartContentBuilder doesn't support for loops,
-//        // and there is no ForEach-equivalent that would work with a variadic tuple.)
-//        // So, what we do instead is that we essentially unroll the for loop into manual, explicit calls of the result builder functions.
-//        var blocks: [AnyChartContent] = []
-//        for entry in repeat each entry {
-//            guard !entry.isEmpty, !entry.results.isEmpty else {
-//                continue
-//            }
-//            guard entry.results.queryError == nil else {
-//                continue
-//            }
-//            blocks.append(AnyChartContent(erasing: ChartContentBuilder.buildExpression(makeChartContent(for: entry))))
-//        }
-//        var content = AnyChartContent(erasing: ChartContentBuilder.buildBlock())
-//        for block in blocks {
-//            if #available(iOS 18, macOS 15, *) {
-//                content = AnyChartContent(erasing: ChartContentBuilder.buildBlock(content, block))
-//            } else {
-//                content = AnyChartContent(erasing: ChartContentBuilder.buildPartialBlock(accumulated: content, next: block))
-//            }
-//        }
-//        return content
-//    }
-//    
-//    
-//    @ChartContentBuilder
-//    private func makeChartContent<Results2: HealthKitQueryResults>(for entry: HealthChartEntry<Results2>) -> some ChartContent {
-//        let name = entry.results.sampleType.displayTitle
-//        ForEach(entry.results) { element in
-//            if let dataPoint = entry.makeDataPoint(for: element) {
-//                let x: PlottableValue = .value("Date", dataPoint.date)
-//                let y: PlottableValue = .value(name, dataPoint.value * (entry.results.sampleType == .bloodOxygen ? 100 : 1))
-//                let s: PlottableValue = .value("Series", name)
-//                SomeChartContent {
-//                    switch entry.drawingConfig.mode {
-//                    case .line:
-//                        LineMark(x: x, y: y)
-//                    case .bar:
-//                        BarMark(x: x, y: y)
-//                    case .point:
-//                        PointMark(x: x, y: y)
-//                    }
-//                }
-//                .annotation { // TODO?
-////                    let date = dataPoint.date.ISO8601Format(Date.ISO8601FormatStyle())
-////                    Text("\(dataPoint.stringValue)\n\(date)")
-//                    Text(dataPoint.stringValue)
-//                        .font(.caption)
-//                }
-//            }
-//        }
-//        .foregroundStyle(by: .value("Sample Type", entry.results.sampleType.displayTitle))
-//    }
-//    
-//    
-//    @ChartContentBuilder
-//    private var chartSelectionHighlight: some ChartContent {
-//        if let highlightConfig {
-//            RuleMark(x: .value("Selected", highlightConfig.date)) // TODO can we dynamically determine wjether this is day/hour/etc?
-//                .foregroundStyle(Color.gray.opacity(0.3))
-//                .offset(yStart: -10)
-//                .zIndex(-1)
-//                .annotation(
-//                    position: .top,
-//                    spacing: 0,
-//                    overflowResolution: .init(x: .fit(to: .chart), y: .disabled)
-//                ) {
-////                    Rectangle()
-////                        .fill(.red)
-////                        .frame(width: 1000, height: 1000)
-////                        .onAppear {
-////                            print("ANNOTATION ON APPEAR")
-////                        }
-////                    SelectionHighlightSummaryView(entries: highlightConfig.entries)
-//                }
-//        }
-//    }
-//    
-//    
-//    private struct SelectionHighlightSummaryView: View {
-//        let entries: [CurrentHighlightConfig.HighlightEntry]
-//        
-//        var body: some View {
-//            HStack {
-//                ForEach(0..<entries.endIndex, id: \.self) { entryIdx in
-//                    makeEntry(for: entries[entryIdx])
-//                    if entryIdx < entries.endIndex - 1 {
-//                        Divider()
-//                    }
-//                }
-//            }
-//            .padding(8)
-////            .background(.primary, in: RoundedRectangle(cornerRadius: 8))
-//            .background(.secondary, in: RoundedRectangle(cornerRadius: 8))
-////            .background(.tertiary, in: RoundedRectangle(cornerRadius: 8))
-////            .background(.quaternary, in: RoundedRectangle(cornerRadius: 8))
-//            //            .background(.thinMaterial)
-////            .background(.clear)
-//            //.clipShape(RoundedRectangle(cornerRadius: 8))
-//        }
-//        
-//        @ViewBuilder
-//        private func makeEntry(for entry: CurrentHighlightConfig.HighlightEntry) -> some View {
-//            VStack(alignment: .leading) {
-//                HStack(alignment: .bottom) {
-//                    Text(entry.dataPoint.stringValue)
-//                    Text(entry.dataPoint.unit.unitString)
-//                        .foregroundStyle(.secondary)
-//                        .font(.caption)
-//                }
-//                HStack {
-//                    Circle()
-//                        .fill(entry.color)
-//                        .frame(width: 7, height: 7)
-//                    Text(entry.seriesName)
-//                        .foregroundStyle(.secondary)
-//                        .font(.caption)
-//                }
-//            }
-//        }
-//    }
-//    
-//    
-//    // MARK: Error Overlay
-//    
-//    private var queryErrorsOverlay: some View {
-//        let errors: [any Error] = { () -> [any Error] in
-//            var retval: [any Error] = []
-//            for entry in repeat each entry {
-//                if let queryError = entry.results.queryError {
-//                    retval.append(queryError)
-//                }
-//            }
-//            return retval
-//        }()
-//        return ForEach(0..<errors.endIndex, id: \.self) { idx in
-//            Text("Error: \(errors[idx])")
-//        }
-//    }
+    @ViewBuilder
+    private var chart: some View {
+        Chart {
+            chartContent
+//            chartSelectionHighlight()
+        }
+        .transforming { view in
+            switch interactivity {
+            case .none:
+                view
+//            case .scrolling:
+//                view.chartScrollableAxes(.horizontal)
+            case .highlighting:
+                view.chartXSelection(value: $xSelection)
+            }
+        }
+        .transforming { view in
+            if timeInterval > 0 {
+                view.chartXVisibleDomain(length: timeInterval)
+            } else {
+                view
+            }
+        }
+        .chartForegroundStyleScale({ () -> KeyValuePairs<String, Color> in
+            var mapping: [(String, Color)] = []
+            func imp(_ entry: HealthChartEntry<some Any>) {
+                mapping.append((entry.results.sampleType.displayTitle, entry.drawingConfig.color))
+            }
+            repeat imp(each entry)
+            return KeyValuePairs<String, Color>(mapping)
+        }())
+        .transforming { view in
+            let valuesRange = { () -> ClosedRange<Double>? in
+                var range: ClosedRange<Double>?
+                func imp(_ entry: HealthChartEntry<some Any>) {
+                    guard let expectedRange = (entry.results.sampleType as? SampleType<HKQuantitySample>)?.expectedValuesRange else {
+                        return
+                    }
+                    if let _range = range {
+                        range = min(_range.lowerBound, expectedRange.lowerBound)...max(_range.upperBound, expectedRange.upperBound)
+                    } else {
+                        range = expectedRange
+                    }
+                }
+                repeat imp(each entry)
+                return range
+            }()
+            if let valuesRange {
+                view.chartYScale(domain: [valuesRange.lowerBound, valuesRange.upperBound])
+            } else {
+                view
+            }
+        }
+    }
+    
+    
+    private var chartContent: AnyChartContent {
+        // In an ideal world, we would simply place the `for entry in repeat each entry` loop directly in the `Chart { }` call.
+        // BUT, sadly, we do not live in this world. (The ChartContentBuilder doesn't support for loops,
+        // and there is no ForEach-equivalent that would work with a variadic tuple.)
+        // So, what we do instead is that we essentially unroll the for loop into manual, explicit calls of the result builder functions.
+        var blocks: [AnyChartContent] = []
+        for entry in repeat each entry {
+            guard !entry.isEmpty, !entry.results.isEmpty else {
+                continue
+            }
+            guard entry.results.queryError == nil else {
+                continue
+            }
+            blocks.append(AnyChartContent(erasing: ChartContentBuilder.buildExpression(makeChartContent(for: entry))))
+        }
+        var content = AnyChartContent(erasing: ChartContentBuilder.buildBlock())
+        for block in blocks {
+            if #available(iOS 18, macOS 15, *) {
+                content = AnyChartContent(erasing: ChartContentBuilder.buildBlock(content, block))
+            } else {
+                content = AnyChartContent(erasing: ChartContentBuilder.buildPartialBlock(accumulated: content, next: block))
+            }
+        }
+        return content
+    }
+    
+    
+    @ChartContentBuilder
+    private func makeChartContent<Results2: HealthKitQueryResults>(for entry: HealthChartEntry<Results2>) -> some ChartContent {
+        let name = entry.results.sampleType.displayTitle
+        ForEach(entry.results) { element in
+            if let dataPoint = entry.makeDataPoint(for: element) {
+                let x: PlottableValue = .value("Date", dataPoint.date)
+                let y: PlottableValue = .value(name, dataPoint.value * (entry.results.sampleType == .bloodOxygen ? 100 : 1))
+                let s: PlottableValue = .value("Series", name)
+                SomeChartContent {
+                    switch entry.drawingConfig.mode {
+                    case .line:
+                        LineMark(x: x, y: y)
+                    case .bar:
+                        BarMark(x: x, y: y)
+                    case .point:
+                        PointMark(x: x, y: y)
+                    }
+                }
+                .annotation { // TODO?
+//                    let date = dataPoint.date.ISO8601Format(Date.ISO8601FormatStyle())
+//                    Text("\(dataPoint.stringValue)\n\(date)")
+                    Text(dataPoint.stringValue)
+                        .font(.caption)
+                }
+            }
+        }
+        .foregroundStyle(by: .value("Sample Type", entry.results.sampleType.displayTitle))
+    }
+    
+    
+    @ChartContentBuilder
+    private var chartSelectionHighlight: some ChartContent {
+        if let highlightConfig {
+            RuleMark(x: .value("Selected", highlightConfig.date)) // TODO can we dynamically determine wjether this is day/hour/etc?
+                .foregroundStyle(Color.gray.opacity(0.3))
+                .offset(yStart: -10)
+                .zIndex(-1)
+                .annotation(
+                    position: .top,
+                    spacing: 0,
+                    overflowResolution: .init(x: .fit(to: .chart), y: .disabled)
+                ) {
+//                    Rectangle()
+//                        .fill(.red)
+//                        .frame(width: 1000, height: 1000)
+//                        .onAppear {
+//                            print("ANNOTATION ON APPEAR")
+//                        }
+//                    SelectionHighlightSummaryView(entries: highlightConfig.entries)
+                }
+        }
+    }
+    
+    
+    private struct SelectionHighlightSummaryView: View {
+        let entries: [CurrentHighlightConfig.HighlightEntry]
+        
+        var body: some View {
+            HStack {
+                ForEach(0..<entries.endIndex, id: \.self) { entryIdx in
+                    makeEntry(for: entries[entryIdx])
+                    if entryIdx < entries.endIndex - 1 {
+                        Divider()
+                    }
+                }
+            }
+            .padding(8)
+//            .background(.primary, in: RoundedRectangle(cornerRadius: 8))
+            .background(.secondary, in: RoundedRectangle(cornerRadius: 8))
+//            .background(.tertiary, in: RoundedRectangle(cornerRadius: 8))
+//            .background(.quaternary, in: RoundedRectangle(cornerRadius: 8))
+            //            .background(.thinMaterial)
+//            .background(.clear)
+            //.clipShape(RoundedRectangle(cornerRadius: 8))
+        }
+        
+        @ViewBuilder
+        private func makeEntry(for entry: CurrentHighlightConfig.HighlightEntry) -> some View {
+            VStack(alignment: .leading) {
+                HStack(alignment: .bottom) {
+                    Text(entry.dataPoint.stringValue)
+                    Text(entry.dataPoint.unit.unitString)
+                        .foregroundStyle(.secondary)
+                        .font(.caption)
+                }
+                HStack {
+                    Circle()
+                        .fill(entry.color)
+                        .frame(width: 7, height: 7)
+                    Text(entry.seriesName)
+                        .foregroundStyle(.secondary)
+                        .font(.caption)
+                }
+            }
+        }
+    }
+    
+    
+    // MARK: Error Overlay
+    
+    private var queryErrorsOverlay: some View {
+        let errors: [any Error] = { () -> [any Error] in
+            var retval: [any Error] = []
+            for entry in repeat each entry {
+                if let queryError = entry.results.queryError {
+                    retval.append(queryError)
+                }
+            }
+            return retval
+        }()
+        return ForEach(0..<errors.endIndex, id: \.self) { idx in
+            Text("Error: \(errors[idx])")
+        }
+    }
 }
