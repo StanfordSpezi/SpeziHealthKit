@@ -6,8 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
-import SwiftUI
 import SpeziHealthKit
+import SwiftUI
 
 
 struct SamplesQueriesView: View {

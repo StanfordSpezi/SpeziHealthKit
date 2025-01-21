@@ -14,39 +14,6 @@ import SnapshotTesting
 import SwiftUI
 
 
-private struct FakeSamplesProvider<Values: IteratorProtocol<Double>, Dates: IteratorProtocol<Date>> {
-    private let sampleType: SampleType<HKQuantitySample>
-    private var valueProvider: Values
-    private var dateProvider: Dates
-    
-    init(sampleType: SampleType<HKQuantitySample>, values: Values, dateProvider: Dates) {
-        self.sampleType = sampleType
-        self.valueProvider = values
-        self.dateProvider = dateProvider
-    }
-    
-    
-    mutating func skipValues(_ count: Int) {
-        valueProvider.consume(count)
-    }
-    
-    mutating func skipDates(_ count: Int) {
-        dateProvider.consume(count)
-    }
-    
-    mutating func makeSamples(_ count: Int) throws -> [HKQuantitySample] {
-        try (0..<count).map { _ in
-            HKQuantitySample(
-                type: sampleType,
-                quantity: .init(unit: sampleType.displayUnit, doubleValue: try XCTUnwrap(valueProvider.next())),
-                date: try XCTUnwrap(dateProvider.next())
-            )
-        }
-    }
-}
-
-
-
 final class SpeziHealthKitTests: XCTestCase {
     @MainActor
     func testSimpleHealthChartView() throws {
@@ -59,7 +26,10 @@ final class SpeziHealthKitTests: XCTestCase {
         let results = MockQueryResults(sampleType: .heartRate, timeRange: .currentWeek, samples: try heartRateSamplesProvider.makeSamples(12 * 7))
         let healthChart = HealthChart {
             HealthChartEntry(results, drawingConfig: .init(mode: .line, color: .red))
-        }.frame(width: 600, height: 500)
+        }
+            .frame(width: 600, height: 500)
+            .adjustToTestLocale()
+        
         assertSnapshot(of: healthChart, as: .image)
         
 //        bpmProvider.consume(6) // consume some elements to shift the cycle
@@ -102,7 +72,10 @@ final class SpeziHealthKitTests: XCTestCase {
         let healthChart = HealthChart {
             HealthChartEntry(heartRateResults, drawingConfig: .init(mode: .line, color: .red))
             HealthChartEntry(blooxOxygenResults, drawingConfig: .init(mode: .line, color: .blue))
-        }.frame(width: 600, height: 500)
+        }
+            .frame(width: 600, height: 500)
+            .adjustToTestLocale()
+        
         assertSnapshot(of: healthChart, as: .image)
         
 ////        bpmProvider.consume(6) // consume some elements to shift the cycle
@@ -120,7 +93,10 @@ final class SpeziHealthKitTests: XCTestCase {
     func testEmptyHealthChartNoEntries() {
         let healthChart = HealthChart {
             // nothing in here
-        }.frame(width: 600, height: 500)
+        }
+            .frame(width: 600, height: 500)
+            .adjustToTestLocale()
+        
         assertSnapshot(of: healthChart, as: .image)
     }
     
@@ -130,7 +106,10 @@ final class SpeziHealthKitTests: XCTestCase {
         let data = MockQueryResults(sampleType: .heartRate, timeRange: .currentWeek, samples: [])
         let healthChart = HealthChart {
             HealthChartEntry(data, drawingConfig: .init(mode: .bar, color: .red))
-        }.frame(width: 600, height: 500)
+        }
+            .frame(width: 600, height: 500)
+            .adjustToTestLocale()
+        
         assertSnapshot(of: healthChart, as: .image)
     }
     
@@ -168,7 +147,9 @@ final class SpeziHealthKitTests: XCTestCase {
                 } else {
                     HealthChartEntry(blooxOxygenResults, drawingConfig: .init(mode: .line, color: .blue))
                 }
-            }.frame(width: 600, height: 500)
+            }
+            .frame(width: 600, height: 500)
+            .adjustToTestLocale()
         }
         
         let healthChart1 = makeHealthChart(flag: true)
@@ -176,5 +157,13 @@ final class SpeziHealthKitTests: XCTestCase {
         
         let healthChart2 = makeHealthChart(flag: false)
         assertSnapshot(of: healthChart2, as: .image)
+    }
+}
+
+
+
+extension View {
+    func adjustToTestLocale() -> some View {
+        self.environment(\.locale, Locale(identifier: "en_US"))
     }
 }

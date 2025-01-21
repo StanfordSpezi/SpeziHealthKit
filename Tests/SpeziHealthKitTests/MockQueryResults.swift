@@ -44,8 +44,39 @@ final class MockQueryResults: HealthKitQueryResults, @unchecked Sendable { // it
 }
 
 
-// MARK: Utility things
+struct FakeSamplesProvider<Values: IteratorProtocol<Double>, Dates: IteratorProtocol<Date>> {
+    private let sampleType: SampleType<HKQuantitySample>
+    private var valueProvider: Values
+    private var dateProvider: Dates
+    
+    init(sampleType: SampleType<HKQuantitySample>, values: Values, dateProvider: Dates) {
+        self.sampleType = sampleType
+        self.valueProvider = values
+        self.dateProvider = dateProvider
+    }
+    
+    
+    mutating func skipValues(_ count: Int) {
+        valueProvider.consume(count)
+    }
+    
+    mutating func skipDates(_ count: Int) {
+        dateProvider.consume(count)
+    }
+    
+    mutating func makeSamples(_ count: Int) throws -> [HKQuantitySample] {
+        try (0..<count).map { _ in
+            HKQuantitySample(
+                type: sampleType,
+                quantity: .init(unit: sampleType.displayUnit, doubleValue: try XCTUnwrap(valueProvider.next())),
+                date: try XCTUnwrap(dateProvider.next())
+            )
+        }
+    }
+}
 
+
+// MARK: Utility things
 
 func makeDateProvider(
     interval: (component: Calendar.Component, multiple: Int),

@@ -148,26 +148,6 @@ struct HealthKitTestsView: View {
     }
     
     
-//    private struct TestDataDefinition {
-//        /// the time interval, how far the samples should be spaced apart.
-//        struct TimeDistribution {
-//            let component: Calendar.Component
-//            let multiple: Int
-//            init(_ component: Calendar.Component, multiple: Int = 1) {
-//                self.component = component
-//                self.multiple = multiple
-//            }
-//        }
-//        struct ValuesConfig {
-//            let range: ClosedRange<Double>
-//            let distribution: Double // TODO explain & better name!!!
-//        }
-//        let sampleType: HealthKitSampleType<HKQuantitySample>
-//        let timeDistribution: TimeDistribution
-//        let numSamples: Int
-//        let values: ValuesConfig
-//    }
-    
     private struct TestDataDefinition {
         struct Sample {
             let date: Date
@@ -265,7 +245,6 @@ private extension BackgroundDataCollectionLogEntry {
 }
 
 
-
 extension Calendar {
     func makeNoon(_ date: Date) -> Date {
         self.date(bySettingHour: 0, minute: 0, second: 0, of: date)!
@@ -275,7 +254,6 @@ extension Calendar {
         self.date(from: DateComponents(year: year, month: month, day: day, hour: hour, minute: minute))!
     }
 }
-
 
 
 extension Sequence {
