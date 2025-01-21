@@ -13,40 +13,6 @@ import SpeziFoundation
 import SwiftUI
 
 
-/// The time range for which data should be fetched from the health store.
-public enum HealthKitQueryTimeRange: Hashable, Sendable {
-    /// The time range containing the last hour.
-    case hour
-    /// The time range containing all of today.
-    case today
-    /// The time range encompassing the last 7 days, including today.
-    case week
-    /// The time range encompassing the last 31 days, including today.
-    case month
-    /// The time range encompassing the last 365 days, including today.
-    case year
-    /// The time range encompassing the entire current week.
-    case currentWeek
-    /// The time range encompassing the entire current month.
-    case currentMonth
-    /// The time range encompassing the entire current year.
-    case currentYear
-    /// The time range encompassing the last `N` hours, starting at the end of the current hour.
-    case lastNHours(Int)
-    /// The time range encompassing the last `N` days, starting at the end of the current day.
-    /// - Note: the resulting effective time range of `lastNDays(1)` is equivalent to the one of `today`.
-    case lastNDays(Int)
-    /// The time range encompassing the last `N` weeks, starting at the end of the current day.
-    case lastNWeeks(Int)
-    /// The time range encompassing the last `N` months, starting at the end of the current day.
-    case lastNMonths(Int)
-    /// The time range encompassing the last `N` years, starting at the end of the current day.
-    case lastNYears(Int)
-    /// A time range over the specified closed range.
-    case custom(ClosedRange<Date>)
-}
-
-
 /// Query the HealthKit database within SwiftUI views.
 ///
 /// Queries are performed in the context of the ``HealthKit-swift.class`` module, which must be enabled via an app's `SpeziAppDelegate`.
@@ -200,7 +166,7 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
             type: input.sampleType.hkSampleType,
             predicate: { () -> NSPredicate? in
                 let preds = [
-                    input.timeRange.queryPredicate,
+                    input.timeRange.predicate,
                     input.filterPredicate
                 ].compactMap { $0 }
                 return preds.isEmpty ? nil : NSCompoundPredicate(andPredicateWithSubpredicates: preds)
@@ -287,105 +253,5 @@ extension SamplesQueryResults: HealthKitQueryResults {
     
     public subscript(position: Index) -> Element {
         samples[position]
-    }
-}
-
-
-private func tryUnwrap<T>(_ value: T?, _ message: String) -> T {
-    if let value {
-        return value
-    } else {
-        preconditionFailure(message)
-    }
-}
-
-extension HealthKitQueryTimeRange {
-    /// The query time range's actual Date range.
-    public var range: ClosedRange<Date> {
-        let now = Date()
-        let cal = Calendar.current
-        let range: Range<Date>
-        switch self {
-        case .hour:
-            range = cal.rangeOfHour(for: now)
-        case .today:
-            range = cal.rangeOfDay(for: now)
-        case .week:
-            let end = cal.startOfNextDay(for: now)
-            range = cal.rangeOfWeek(for: now)
-            let start = tryUnwrap(
-                cal.date(byAdding: .weekOfYear, value: -1, to: end),
-                "Unable to determine date"
-            )
-            return start...end
-        case .month:
-            let end = cal.startOfNextDay(for: now)
-            let start = tryUnwrap(
-                cal.date(byAdding: .month, value: -1, to: end),
-                "Unable to determine date"
-            )
-            return start...end
-        case .year:
-            let end = cal.startOfNextDay(for: now)
-            let start = tryUnwrap(
-                cal.date(byAdding: .year, value: -1, to: end),
-                "Unable to determine date"
-            )
-            return start...end
-        case .currentWeek:
-            range = cal.rangeOfWeek(for: now)
-        case .currentMonth:
-            range = cal.rangeOfMonth(for: now)
-        case .currentYear:
-            range = cal.rangeOfYear(for: now)
-        case .lastNHours(let numHours):
-            let end = cal.startOfNextHour(for: now)
-            let start = tryUnwrap(
-                cal.date(byAdding: .hour, value: -numHours, to: end),
-                "Unable to determine date"
-            )
-            return start...end
-        case .lastNDays(let numDays):
-            let end = cal.startOfNextDay(for: now)
-            let start = tryUnwrap(
-                cal.date(byAdding: .day, value: -numDays, to: end),
-                "Unable to determine date"
-            )
-            return start...end
-        case .lastNWeeks(let numWeeks):
-            let end = cal.startOfNextDay(for: now)
-            let start = tryUnwrap(
-                cal.date(byAdding: .weekOfYear, value: -numWeeks, to: end),
-                "Unable to determine date"
-            )
-            return start...end
-        case .lastNMonths(let numMonths):
-            let end = cal.startOfNextDay(for: now)
-            let start = tryUnwrap(
-                cal.date(byAdding: .month, value: -numMonths, to: end),
-                "Unable to determine date"
-            )
-            return start...end
-        case .lastNYears(let numYears):
-            let end = cal.startOfNextDay(for: now)
-            let start = tryUnwrap(
-                cal.date(byAdding: .year, value: -numYears, to: end),
-                "Unable to determine date"
-            )
-            return start...end
-        case .custom(let range):
-            return range
-        }
-        return range.lowerBound...range.upperBound.advanced(by: -1)
-    }
-    
-    
-    var queryPredicate: NSPredicate {
-        let range = self.range
-        return HKQuery.predicateForSamples(
-            withStart: range.lowerBound,
-            end: range.upperBound,
-            options: [.strictStartDate, .strictEndDate]
-        )
     }
 }

@@ -56,7 +56,7 @@ final class SpeziHealthKitTests: XCTestCase {
             dateProvider: try makeDateProvider(interval: (.hour, 2), starting: .init(year: 2024, month: 12, day: 17))
         )
         
-        let results = MockQueryResults(sampleType: .heartRate, timeRange: .week, samples: try heartRateSamplesProvider.makeSamples(12 * 7))
+        let results = MockQueryResults(sampleType: .heartRate, timeRange: .currentWeek, samples: try heartRateSamplesProvider.makeSamples(12 * 7))
         let healthChart = HealthChart {
             HealthChartEntry(results, drawingConfig: .init(mode: .line, color: .red))
         }.frame(width: 600, height: 500)
@@ -90,12 +90,12 @@ final class SpeziHealthKitTests: XCTestCase {
         
         let heartRateResults = MockQueryResults(
             sampleType: .heartRate,
-            timeRange: .week,
+            timeRange: .currentWeek,
             samples: try heartRateSamplesProvider.makeSamples(12 * 7)
         )
         let blooxOxygenResults = MockQueryResults(
             sampleType: .bloodOxygen,
-            timeRange: .week,
+            timeRange: .currentWeek,
             samples: try bloodOxygenSamplesProvider.makeSamples(24 * 7)
         )
         
@@ -117,9 +117,18 @@ final class SpeziHealthKitTests: XCTestCase {
     
     
     @MainActor
-    func testEmptyHealthChart() {
+    func testEmptyHealthChartNoEntries() {
         let healthChart = HealthChart {
             // nothing in here
+        }.frame(width: 600, height: 500)
+        assertSnapshot(of: healthChart, as: .image)
+    }
+    
+    @MainActor
+    func testEmptyHealthChartEntriesButNoData() {
+        let data = MockQueryResults(sampleType: .heartRate, timeRange: .currentWeek, samples: [])
+        let healthChart = HealthChart {
+            HealthChartEntry(data, drawingConfig: .init(mode: .bar, color: .red))
         }.frame(width: 600, height: 500)
         assertSnapshot(of: healthChart, as: .image)
     }
@@ -142,12 +151,12 @@ final class SpeziHealthKitTests: XCTestCase {
         
         let heartRateResults = MockQueryResults(
             sampleType: .heartRate,
-            timeRange: .week,
+            timeRange: .currentWeek,
             samples: try heartRateSamplesProvider.makeSamples(12 * 7)
         )
         let blooxOxygenResults = MockQueryResults(
             sampleType: .bloodOxygen,
-            timeRange: .week,
+            timeRange: .currentWeek,
             samples: try bloodOxygenSamplesProvider.makeSamples(24 * 7)
         )
         
@@ -189,11 +198,6 @@ private final class MockQueryResults: HealthKitQueryResults, @unchecked Sendable
         self.timeRange = timeRange
     }
     
-    func withTimeRange(_ timeRange: SpeziHealthKit.HealthKitQueryTimeRange) async -> Self {
-        fatalError("Not supported in the MockQueryResults!")
-    }
-    
-    
     var startIndex: Index {
         samples.startIndex
     }
@@ -208,9 +212,7 @@ private final class MockQueryResults: HealthKitQueryResults, @unchecked Sendable
 }
 
 
-
 // MARK: Utility things
-
 
 
 private func makeDateProvider(

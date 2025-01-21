@@ -28,9 +28,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     var logger
     
     /// The HealthKit module's underlying `HKHealthStore`.
-    ///
-    /// Users can access this in a `View` via the `@Environment(HealthKit.self)` property wrapper.
-    internal let healthStore: HKHealthStore
+    public let healthStore: HKHealthStore
     
     /// (for testing purposes only) The data access requirements that resulted form the initial configuration passed to the ``HealthKit-swift.class`` module.
     public let _initialConfigDataAccessRequirements: DataAccessRequirements // swiftlint:disable:this identifier_name

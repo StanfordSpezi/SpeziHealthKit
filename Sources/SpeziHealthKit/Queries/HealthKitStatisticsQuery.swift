@@ -228,7 +228,7 @@ public final class StatisticsQueryResults: @unchecked Sendable {
         }
         print("[\(self.self) -update]")
         let sampleType = input.sampleType.hkSampleType
-        var predicate = input.timeRange.queryPredicate
+        var predicate = input.timeRange.predicate
         if let filterPredicate = input.filterPredicate {
             predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, filterPredicate])
         }

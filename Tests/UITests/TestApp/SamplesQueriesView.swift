@@ -13,7 +13,7 @@ import SpeziHealthKit
 struct SamplesQueriesView: View {
     @Environment(HealthKit.self) private var healthKit
     
-    @HealthKitQuery(.stepCount, timeRange: .week)
+    @HealthKitQuery(.stepCount, timeRange: .currentWeek)
     private var stepSamples
     
     var body: some View {
