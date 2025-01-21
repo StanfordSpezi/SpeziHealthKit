@@ -31,9 +31,6 @@ var body: some View {
 ### Creating a HealthChart
 - ``HealthChart/init(interactivity:timeInterval:_:)``
 
-### Interactivity
-- ``HealthChart/makeInteractive(selection:enabledGranularities:)``
-
 ### Supporting Types
 - ``HealthChartEntry``
 - ``HealthChartContentBuilder``
@@ -42,5 +39,4 @@ var body: some View {
 - ``HealthChartTimeIntervalInput``
 - ``StatisticsAggregationOption``
 - ``HealthChartDrawingConfig``
-- ``HealthChartGranularity``
 
