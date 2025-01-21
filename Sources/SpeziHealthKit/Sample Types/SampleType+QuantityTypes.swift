@@ -18,7 +18,12 @@ extension SampleType {
     
     /// The sample type representing blood oxygen saturation quantity samples
     @inlinable public static var bloodOxygen: SampleType<HKQuantitySample> {
-        .quantity(.oxygenSaturation, displayTitle: "Blood Oxygen", displayUnit: .percent())
+        .quantity(
+            .oxygenSaturation,
+            displayTitle: "Blood Oxygen",
+            displayUnit: .percent(),
+            expectedValuesRange: 80...105
+        )
     }
     
     /// The sample type representing heart rate quantity samples
