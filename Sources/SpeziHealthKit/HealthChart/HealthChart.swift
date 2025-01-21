@@ -152,9 +152,6 @@ public struct HealthChart<each Results: HealthKitQueryResults>: View {
             Text("No Data")
         } else {
             chart
-                .overlay {
-                    queryErrorsOverlay
-                }
                 .onChange(of: xSelection) { _, xSelection in
                     guard let xSelection else {
                         highlightConfig = nil
@@ -381,24 +378,6 @@ public struct HealthChart<each Results: HealthKitQueryResults>: View {
                         .font(.caption)
                 }
             }
-        }
-    }
-    
-    
-    // MARK: Error Overlay
-    
-    private var queryErrorsOverlay: some View {
-        let errors: [any Error] = { () -> [any Error] in
-            var retval: [any Error] = []
-            for entry in repeat each entry {
-                if let queryError = entry.results.queryError {
-                    retval.append(queryError)
-                }
-            }
-            return retval
-        }()
-        return ForEach(0..<errors.endIndex, id: \.self) { idx in
-            Text("Error: \(errors[idx])")
         }
     }
 }
