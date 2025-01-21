@@ -122,12 +122,4 @@ public final class HealthChartEntry<Results: HealthKitQueryResults>: Sendable {
     func makeDataPoint(for element: Results.Element) -> HealthChartDataPoint? {
         makeDataPointImp(element, results)
     }
-    
-    func withTimeRange(_ timeRange: HealthKitQueryTimeRange) async -> Self {
-        await Self.init(
-            results.withTimeRange(timeRange),
-            drawingConfig: drawingConfig,
-            makeDataPoint: makeDataPointImp
-        )
-    }
 }

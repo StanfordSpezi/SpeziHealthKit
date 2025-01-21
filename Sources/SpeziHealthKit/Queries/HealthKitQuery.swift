@@ -380,23 +380,6 @@ extension SamplesQueryResults: HealthKitQueryResults {
     public var sampleType: SampleType<Sample> {
         input!.sampleType
     }
-    
-    public func withTimeRange(_ timeRange: HealthKitQueryTimeRange) async -> Self {
-        let input = self.input!
-        let newInput = Input(
-            sampleType: input.sampleType,
-            timeRange: timeRange,
-            filterPredicate: input.filterPredicate
-        )
-        switch variant {
-        case .swiftUI(let healthStore):
-            let results = Self.uninitializedForSwiftUIStateObject()
-            results.initializeSwiftUIManagedQuery(healthStore: healthStore!, input: newInput)
-            return results
-        case .standalone(let healthStore):
-            return await Self.init(healthStore: healthStore, input: newInput)
-        }
-    }
 }
 
 

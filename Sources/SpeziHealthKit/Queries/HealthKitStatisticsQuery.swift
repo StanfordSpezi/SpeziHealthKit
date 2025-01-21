@@ -328,23 +328,6 @@ extension StatisticsQueryResults: HealthKitQueryResults {
     public var timeRange: HealthKitQueryTimeRange {
         input!.timeRange
     }
-    
-    
-    public func withTimeRange(_ timeRange: HealthKitQueryTimeRange) -> Self {
-        let input = self.input!
-        let results = Self.init()
-        results.healthStore = healthStore
-        results.input = .init(
-            sampleType: input.sampleType,
-            options: input.options,
-            // TODO QUESTION: keep the initial interval (no) or specify a new one, based on the timeRange? (yes)
-            //aggInterval: input.aggInterval,
-            aggInterval: .init(timeRange),
-            timeRange: timeRange,
-            filterPredicate: input.filterPredicate
-        )
-        return results
-    }
 }
 
 

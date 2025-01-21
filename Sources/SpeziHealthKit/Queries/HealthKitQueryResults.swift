@@ -25,9 +25,6 @@ import HealthKit
 /// - ``sampleType``
 /// - ``timeRange``
 /// - ``queryError``
-///
-/// ### Instance Methods
-/// - ``withTimeRange(_:)``
 public protocol HealthKitQueryResults<Sample, Element>: Observable, RandomAccessCollection, Sendable where Element: Identifiable {
     /// The `HKSample` subclass of the queried sample type.
     /// - Note: this is not necessarily the same as the type of the elements in the query results: for e.g. statistical queries,
@@ -42,9 +39,6 @@ public protocol HealthKitQueryResults<Sample, Element>: Observable, RandomAccess
     var sampleType: SampleType<Sample> { get }
     /// The queried time range.
     var timeRange: HealthKitQueryTimeRange { get }
-    
-    /// Creates and returns a **new** query results object, with the specified time range.
-    func withTimeRange(_ timeRange: HealthKitQueryTimeRange) async -> Self
     
     /// If the query raised an error (which can happen in some cases e.g. as a result of invalid input combinations),
     /// this property makes this error available.
