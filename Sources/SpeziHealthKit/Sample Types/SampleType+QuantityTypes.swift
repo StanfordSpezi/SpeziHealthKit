@@ -41,10 +41,12 @@ extension SampleType {
         .quantity(.pushCount, displayTitle: "Wheelchair Push Count", displayUnit: .count())
     }
     
+    /// The active energy burned sample type
     @inlinable public static var activeEnergyBurned: SampleType<HKQuantitySample> {
         .quantity(.activeEnergyBurned, displayTitle: "Active Energy Burned", displayUnit: .largeCalorie())
     }
     
+    /// The height sample type
     @inlinable public static var height: SampleType<HKQuantitySample> {
         .quantity(
             .height,

@@ -10,8 +10,24 @@ import Foundation
 import HealthKit
 
 
-
-/// The ``HealthKitQueryResults`` protocol models an auto-updating, observable collection of results to a HealthKit query.
+/// An auto-updating, observable collection of results to a HealthKit query.
+///
+/// The ``SamplesQueryResults`` and ``StatisticsQueryResults`` types conform to this protocol.
+/// Users should not declare new conformances to this procotol in their apps.
+///
+/// ## Topics
+///
+/// ### Associated Types
+/// - ``Sample``
+/// - ``Element``
+///
+/// ### Instance Properties
+/// - ``sampleType``
+/// - ``timeRange``
+/// - ``queryError``
+///
+/// ### Instance Methods
+/// - ``withTimeRange(_:)``
 public protocol HealthKitQueryResults<Sample, Element>: Observable, RandomAccessCollection, Sendable where Element: Identifiable {
     /// The `HKSample` subclass of the queried sample type.
     /// - Note: this is not necessarily the same as the type of the elements in the query results: for e.g. statistical queries,

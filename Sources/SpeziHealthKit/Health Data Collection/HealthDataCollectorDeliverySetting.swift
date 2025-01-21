@@ -7,7 +7,7 @@
 //
 
 
-/// Determines the data delivery settings for any ``HealthKitDataSource`` used in the HealthKit module.
+/// Determines the data delivery settings for any ``HealthDataCollector`` used in the HealthKit module.
 public enum HealthDataCollectorDeliverySetting: Hashable, Sendable {
     /// The HealthKit data is manually collected when the ``HealthKit/triggerDataSourceCollection()`` function is called.
     case manual(saveAnchor: Bool = true)

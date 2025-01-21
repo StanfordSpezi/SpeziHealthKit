@@ -10,12 +10,19 @@ import HealthKit
 import Spezi
 
 
-/// Collects a specified ``SampleType``  via the ``HealthKit`` module.
+/// Collects a specified ``SampleType``  via the ``HealthKit-class`` module.
 ///
-/// This structure define what and how the ``HealthKit`` samples are collected. By default, all samples of the provided ``SampleType`` will be collected.
-/// The collection starts on calling ``HealthKit/triggerDataSourceCollection()`` if you configure the `deliverySetting` as    ``HealthKitDeliverySetting/manual(saveAnchor:)`` or automatic once the application is launched when you configure anything else than manual, i.e.  ``HealthKitDeliverySetting/anchorQuery(_:saveAnchor:)`` or ``HealthKitDeliverySetting/background(_:saveAnchor:)``.
+/// This structure define what and how the ``HealthKit-class`` samples are collected.
+/// By default, all samples of the provided ``SampleType`` will be collected; you an optionally provide a filter predicate.
 ///
-/// Your can filter the HealthKit samples to collect via an `NSPredicate`.
+/// Data collection is started by the `HealthKit` module, depending on the delivery setting and delivert start setting you specify:
+/// | Delivery Setting | Delivery Start Setting | When does data collection take place |
+/// |:-----:|:-----:|:---|
+/// | `.manual` | n/a | Every call to ``HealthKit-swift.class/triggerDataSourceCollection()`` |
+/// | `.continuous` or `.background` | `.automatic` |  the `HealthKit` module will start the collection as soon as possible, i.e. either directly when the app is launched (if the user has already been prompted to grant access to the collected sample type), or as soon as ``HealthKit-swift.class/askForAuthorization()`` was called by the app and the user dismissed the request authorization sheet. |
+/// |^ | `.manual` | the first call to ``HealthKit-swift.class/triggerDataSourceCollection()`` will start the data collection |
+///
+/// Your specify an `NSPredicate` to filter which samples should be collected.
 /// For example, you can define a predicate to only collect the data collected at a time within the given start and end date.
 /// Below is an example to create a `NSPredicate` restricting the data collected in the previous month.
 /// ```swift
@@ -42,14 +49,14 @@ import Spezi
 /// ```swift
 /// CollectSample(
 ///     .stepCount,
-///     predicate: predicateOneMonth,
-///     deliverySetting: .background(.automatic)
+///     deliverySetting: .background(.automatic),
+///     predicate: predicateOneMonth
 /// )
 /// ```
 public struct CollectSample: HealthKitConfigurationComponent {
     private let sampleType: HKSampleType
-    private let predicate: NSPredicate?
     private let deliverySetting: HealthDataCollectorDeliverySetting
+    private let predicate: NSPredicate?
     
     public var dataAccessRequirements: HealthKit.DataAccessRequirements {
         .init(read: [sampleType])
@@ -61,24 +68,15 @@ public struct CollectSample: HealthKitConfigurationComponent {
     ///   - predicate: A custom predicate that should be passed to the HealthKit query.
     ///                The default predicate collects all samples that have been collected from the first time that the user
     ///                provided the application authorization to collect the samples.
-    ///   - deliverySetting: The ``HealthKitDeliverySetting`` that should be used to collect the sample type. `.manual` is the default argument used.
+    ///   - delivery: The ``HealthKitDeliverySetting`` that should be used to collect the sample type. `.manual` is the default argument used.
     public init(
         _ sampleType: SampleType<some Any>,
-        predicate: NSPredicate? = nil,
-        delivery: HealthDataCollectorDeliverySetting = .manual() // TODO Question @Paul : why does it default to manual?
+        delivery: HealthDataCollectorDeliverySetting = .manual(), // TODO Question @Paul : why does it default to manual?
+        predicate: NSPredicate? = nil
     ) {
         self.sampleType = sampleType.hkSampleType
-        self.predicate = predicate
         self.deliverySetting = delivery
-    }
-    
-    @available(*, deprecated, renamed: "init(_:predicate:delivery:)")
-    public init(
-        _ sampleType: SampleType<some Any>,
-        predicate: NSPredicate? = nil,
-        deliverySetting: HealthDataCollectorDeliverySetting = .manual()
-    ) {
-        self.init(sampleType, predicate: predicate, delivery: deliverySetting)
+        self.predicate = predicate
     }
     
     

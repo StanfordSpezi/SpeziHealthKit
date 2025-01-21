@@ -12,6 +12,7 @@ import Spezi
 
 
 extension HKHealthStore {
+    // TODO can we remove the lock here, and simply mark the dictionary as MainActor-consrained? (it only gets accessed from the main actor already...)
     private static let activeObservationsLock = NSLock()
     private static nonisolated(unsafe) var activeObservations: [HKObjectType: Int] = [:]
     
@@ -63,7 +64,7 @@ extension HKHealthStore {
                 try await self.enableBackgroundDelivery(for: objectType, frequency: .immediate)
                 enabledObjectTypes.insert(objectType)
                 Self.activeObservationsLock.withLock {
-                    HKHealthStore.activeObservations[objectType] = HKHealthStore.activeObservations[objectType, default: 0] + 1
+                    Self.activeObservations[objectType, default: 0] += 1
                 }
             }
         } catch {
@@ -77,17 +78,17 @@ extension HKHealthStore {
     private func disableBackgroundDelivery(
         for objectTypes: Set<HKObjectType>
     ) {
-        for objectType in objectTypes {
-            Self.activeObservationsLock.withLock {
+        Self.activeObservationsLock.withLock {
+            for objectType in objectTypes {
                 if let activeObservation = HKHealthStore.activeObservations[objectType] {
                     let newActiveObservation = activeObservation - 1
                     if newActiveObservation <= 0 {
-                        HKHealthStore.activeObservations[objectType] = nil
+                        Self.activeObservations[objectType] = nil
                         Task { @MainActor in
                             try await self.disableBackgroundDelivery(for: objectType)
                         }
                     } else {
-                        HKHealthStore.activeObservations[objectType] = newActiveObservation
+                        Self.activeObservations[objectType] = newActiveObservation
                     }
                 }
             }

@@ -38,11 +38,30 @@ extension HKAudiogramSample: _HKSampleWithSampleType {
 }
 
 
-/// A sample type that can be used to query data from HealthKit.
-///
-/// This struct is a strongly-typed wrapper around `HKSampleType` that associates a sample type with its corresponding `HKSample` subclass.
-/// Additionally, it also provides some useful information for working with a sample type, such as e.g. the sample type's recommended display title
-public struct SampleType<Sample: _HKSampleWithSampleType>: Hashable, Identifiable, Sendable {
+
+/// Type-erased version of a ``SampleType``
+public protocol AnySampleType: Hashable, Identifiable, Sendable where ID == String {
+    /// The type of the sample type's underlying samples.
+    ///
+    /// E.g., for a sample type representing quantity samples, this would be `HKQuantitySample`.
+    associatedtype Sample: _HKSampleWithSampleType
+    
+    /// The underlying `HKSampleType`
+    var hkSampleType: Sample._SampleType { get }
+    
+    /// The recommended user-displayable name of this sample type.
+    var displayTitle: String { get }
+}
+
+extension AnySampleType {
+    /// Compare two type-erased ``SampleType``s, based on their identifier.
+    @inlinable public static func == (lhs: any AnySampleType, rhs: any AnySampleType) -> Bool {
+        lhs.id == rhs.id
+    }
+}
+
+
+public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType, Hashable, Identifiable, Sendable {
     @usableFromInline
     enum Variant: Sendable {
         /// - parameter displayUnit: The unit that should be used when displaying a sample of this type to the user
@@ -57,10 +76,10 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: Hashable, Identifiabl
         case audiogram
     }
     
-    /// The underlying `HKSampleType`
     public let hkSampleType: Sample._SampleType
-    /// The recommended user-displayable name of this sample type.
+    
     public let displayTitle: String
+    
     /// Variant-specific additional information.
     @usableFromInline let variant: Variant
     
@@ -69,22 +88,23 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: Hashable, Identifiabl
     }
     
     /// Creates a new ``SampleType``.
-    /// - Note: Don't use this initializer directly. Instead, use one of the static factory methods: `SampleType.quantity`, `.correlation`, and `.category`.
+    /// Use this initializer only if the sample type you want to work with isn't already defined by SpeziHealthKit, and only if none of the static factory methods are suitable.
+    /// - parameter hkSampleType: The sample type's underlying `HKSampleType`
+    /// - parameter displayTitle: The localized string which should be used when displaying this sample type's title in a user-visible context.
+    /// - parameter variant: The internal variant that should be used for storing any additional data associated with the sample type's specific underlying HealthKit sample type.
     @usableFromInline init(_ hkSampleType: Sample._SampleType, displayTitle: LocalizedStringResource, variant: Variant) {
         self.hkSampleType = hkSampleType
         self.displayTitle = String(localized: displayTitle)
         self.variant = variant
     }
     
+    /// Hash the sample type, based on its identifier
     @inlinable public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
     
+    /// Compare two sample types, based on their identifiers
     @inlinable public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.id == rhs.id
-    }
-    
-    @inlinable public static func == (lhs: Self, rhs: SampleType<some Any>) -> Bool {
         lhs.id == rhs.id
     }
 }
@@ -138,9 +158,13 @@ extension SampleType where Sample == HKCorrelation {
 
 extension SampleType {
     /// Creates a new quantity sample type.
-    /// - Note: This function is not intended to be used outside of defining new quantity sample types in a ``SampleType`` extension.
-    ///     If you want to get some specific sample type, refer to it via its accessor (e.g. `SampleType.heartRate`).
-    @usableFromInline static func quantity(
+    /// Use this initializer only if the sample type you want to work with isn't already defined by SpeziHealthKit.
+    /// - parameter identifier: The sample type's underlying `HKQuantityTypeIdentifier`
+    /// - parameter displayTitle: The localized string which should be used when displaying this sample type's title in a user-visible context.
+    /// - parameter displayUnit: The unit which should be used when displaying values of this quantity type to the user.
+    /// - parameter expectedValuesRange: If applicable, the expected range the individual sample values will most likely fall into.
+    ///     Providing this information allows some components to optimize how they display data belonging to this sample type.
+    @inlinable public static func quantity(
         _ identifier: HKQuantityTypeIdentifier,
         displayTitle: LocalizedStringResource,
         displayUnit: HKUnit,
@@ -154,9 +178,11 @@ extension SampleType {
     }
     
     /// Creates a new correlation sample type.
-    /// - Note: This function is not intended to be used outside of defining new correlation sample types in a ``SampleType`` extension.
-    ///     If you want to get some specific sample type, refer to it via its accessor (e.g. `SampleType.bloodPressure`).
-    @usableFromInline static func correlation(
+    /// Use this initializer only if the sample type you want to work with isn't already defined by SpeziHealthKit.
+    /// - parameter identifier: The sample type's underlying `HKCorrelationTypeIdentifier`
+    /// - parameter displayTitle: The localized string which should be used when displaying this sample type's title in a user-visible context.
+    /// - parameter displayUnit: The unit which should be used when displaying values of this correlation type to the user, if applicable.
+    @inlinable public static func correlation(
         _ identifier: HKCorrelationTypeIdentifier,
         displayTitle: LocalizedStringResource,
         displayUnit: HKUnit?
@@ -165,9 +191,10 @@ extension SampleType {
     }
     
     /// Creates a new category sample type.
-    /// - Note: This function is not intended to be used outside of defining new quantity sample types in a ``SampleType`` extension.
-    ///     If you want to get some specific sample type, refer to it via its accessor (e.g. `SampleType.heartRate`).
-    @usableFromInline static func category(
+    /// Use this initializer only if the sample type you want to work with isn't already defined by SpeziHealthKit.
+    /// - parameter identifier: The sample type's underlying `HKCategoryTypeIdentifier`
+    /// - parameter displayTitle: The localized string which should be used when displaying this sample type's title in a user-visible context.
+    @inlinable public static func category(
         _ identifier: HKCategoryTypeIdentifier,
         displayTitle: LocalizedStringResource
     ) -> SampleType<HKCategorySample> {

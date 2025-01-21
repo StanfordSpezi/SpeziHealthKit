@@ -8,6 +8,28 @@
 
 
 import HealthKit
+import struct SwiftUI.Color
+
+
+public struct HealthChartDrawingConfig: Sendable {
+    public enum Mode: Sendable {
+        /// The entry is drawn as a line chart, i.e. a line that moves from data point to data point
+        case line
+        /// bar chart
+        case bar
+        /// each data point is its own point in the chart, not connected to anything else
+        case point
+    }
+    
+    let mode: Mode
+    let color: Color
+    
+    public init(mode: Mode, color: Color) {
+        self.mode = mode
+        self.color = color
+    }
+}
+
 
 
 // TODO why is it that, if this is a class, the chart will be able to auto-update when the contained `results` property (which is @Observable) changes,

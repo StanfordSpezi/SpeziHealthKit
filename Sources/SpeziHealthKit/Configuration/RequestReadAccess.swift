@@ -9,7 +9,7 @@
 import HealthKit
 
 
-/// A ``HealthKit`` configuration component that requests read acess to HealthKit sample types.
+/// A ``HealthKit-class`` configuration component that requests read acess to HealthKit sample types.
 public struct RequestReadAccess: HealthKitConfigurationComponent {
     public let dataAccessRequirements: HealthKit.DataAccessRequirements
     

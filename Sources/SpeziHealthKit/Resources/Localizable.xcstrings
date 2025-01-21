@@ -45,6 +45,7 @@
       }
     },
     "Date" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -95,6 +96,7 @@
       }
     },
     "No Data" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -113,15 +115,6 @@
           }
         }
       }
-    },
-    "Sample Type" : {
-
-    },
-    "Selected" : {
-
-    },
-    "Series" : {
-
     },
     "Sleep Analysis" : {
       "localizations" : {

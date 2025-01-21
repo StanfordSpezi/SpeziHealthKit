@@ -13,7 +13,7 @@ import Spezi
 import SpeziFoundation
 
 
-/// The ``HealthKitStatisticsQuery`` property wrappers enables access to HealthKit samples within SwiftUI views.
+/// Perform statistical queries on the HealthKit database, within SwiftUI views.
 ///
 /// Example: the following view uses the ``HealthKitStatisticsQuery`` property wrapper to query
 /// all heart rate measurements recorded today.
@@ -136,6 +136,7 @@ public struct HealthKitStatisticsQuery: DynamicProperty {
         )
     }
     
+    @_documentation(visibility: internal)
     public nonisolated func update() {
         runOrScheduleOnMainActor {
             results.healthStore = healthKit.healthStore
@@ -144,7 +145,7 @@ public struct HealthKitStatisticsQuery: DynamicProperty {
         }
     }
     
-    /// A ``HealthKitStatisticsQuery``'s wrapped value returns the individual query results, as a collection.
+    /// The query's resulting `HKStatistics` objects.
     public var wrappedValue: [HKStatistics] {
         // Note that we're intentionally not returning `results` directly here (even though it also is a RandomAccessCollection),
         // the reason being that it would be auto-updating, which might be unexpected since it's not communicated via the return
@@ -152,7 +153,7 @@ public struct HealthKitStatisticsQuery: DynamicProperty {
         results.statistics
     }
     
-    /// A ``HealthKitStatisticsQuery``'s projected value provides access to the query's underlying auto-updating results object.
+    /// The query's underlying auto-updating results object.
     /// This can be used e.g. to provide data to a ``HealthChart``.
     public var projectedValue: StatisticsQueryResults {
         results

@@ -17,7 +17,7 @@ import OSLog
 ///
 /// The `HealthKit` module simplifies access to HealthKit samples ranging from single, anchored, and background queries.
 ///
-/// Before you configure the ``HealthKit`` module, make sure your `Standard` in your Spezi Application conforms to the ``HealthKitConstraint`` protocol to receive HealthKit data.
+/// Before you configure the ``HealthKit-class`` module, make sure your `Standard` in your Spezi Application conforms to the ``HealthKitConstraint`` protocol to receive HealthKit data.
 /// The ``HealthKitConstraint/add(sample:)`` function is triggered once for every newly collected HealthKit sample, and the ``HealthKitConstraint/remove(sample:)`` function is triggered once for every deleted HealthKit sample.
 /// ```swift
 /// actor ExampleStandard: Standard, HealthKitConstraint {
@@ -33,7 +33,7 @@ import OSLog
 /// }
 /// ```
 /// 
-/// Then, you can configure the ``HealthKit`` module in the configuration section of your `SpeziAppDelegate`.
+/// Then, you can configure the ``HealthKit-class`` module in the configuration section of your `SpeziAppDelegate`.
 /// Provide ``HealthKitDataSourceDescription`` to define the data collection.
 /// You can, e.g., use ``CollectSample`` to collect a wide variety of ``SampleType``s:
 /// ```swift
@@ -95,7 +95,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     @ObservationIgnored private var registeredDataCollectors: [any HealthDataCollector] = []
     
     
-    /// Creates a new instance of the ``HealthKit`` module.
+    /// Creates a new instance of the ``HealthKit-class`` module.
     /// - parameter config: The configuration defines the behaviour of the `HealthKit` module,
     ///     specifying e.g. which samples the app wants to continuously collect (via ``CollectSample`` and ``CollectSamples``,
     ///     and which sample and object types the user should be prompted to grant the app read access to (via ``RequestReadAccess``).
@@ -116,7 +116,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     }
     
     
-    /// Creates a new instance of the ``HealthKit`` module, with an empty configuration.
+    /// Creates a new instance of the ``HealthKit-class`` module, with an empty configuration.
     public convenience init() {
         self.init { /* intentionally empty config */ }
     }
@@ -274,5 +274,19 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
             }
             await group.waitForAll()
         }
+    }
+}
+
+
+
+extension HKUnit {
+    /// Creates a unit as the composition of dividing a unit by another unit.
+    public static func / (lhs: HKUnit, rhs: HKUnit) -> HKUnit {
+        lhs.unitDivided(by: rhs)
+    }
+    
+    /// Creates a unit as the composition of multiplying a unit with another unit.
+    public static func * (lhs: HKUnit, rhs: HKUnit) -> HKUnit {
+        lhs.unitMultiplied(by: rhs)
     }
 }

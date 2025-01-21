@@ -47,10 +47,9 @@ public enum HealthKitQueryTimeRange: Hashable, Sendable {
 }
 
 
-/// The ``HealthKitQuery`` property wrappers enables access to HealthKit samples within SwiftUI views.
+/// Query the HealthKit database within SwiftUI views.
 ///
-/// Queries are performed in the context of the ``HealthKit-swift.class`` module, which must be enabled via an app's
-/// ``SpeziAppDelegate`` for the query to work.
+/// Queries are performed in the context of the ``HealthKit-swift.class`` module, which must be enabled via an app's `SpeziAppDelegate`.
 ///
 /// A query exposes, via its wrapped value, the samples it received from the HealthKit database.
 /// The actual type of the samples returned is dependent on the specific sample type being queried for.
@@ -75,8 +74,6 @@ public enum HealthKitQueryTimeRange: Hashable, Sendable {
 ///     }
 /// }
 /// ```
-///
-/// - Note: Explain that the user should/must request access to these sample types via the ``HealthKit`` configurstion!
 ///
 /// - Note: This property wrapper is intended for situations where you are interested in all individual samples.
 ///     If you are interested in pre-computed sumamary values for a certain sample type over a certain time range,
@@ -110,6 +107,7 @@ public struct HealthKitQuery<Sample: _HKSampleWithSampleType>: DynamicProperty {
     }
     
     
+    @_documentation(visibility: internal)
     public nonisolated func update() {
         runOrScheduleOnMainActor {
             results.initializeSwiftUIManagedQuery(
@@ -120,7 +118,7 @@ public struct HealthKitQuery<Sample: _HKSampleWithSampleType>: DynamicProperty {
     }
     
     
-    /// A ``HealthKitQuery``'s wrapped value returns the individual query results, as a collection.
+    /// The individual query results.
     /// TODO fix this causing crashes in release builds! (see https://github.com/swiftlang/swift/issues/78405)
     public var wrappedValue: some RandomAccessCollection<Sample> {
         // Note that we're intentionally not returning `results` directly here (even though it also is a RandomAccessCollection),
@@ -129,7 +127,7 @@ public struct HealthKitQuery<Sample: _HKSampleWithSampleType>: DynamicProperty {
         results.samples
     }
     
-    /// A ``HealthKitQuery``'s projected value provides access to the query's underlying auto-updating results object.
+    /// The query's underlying auto-updating results object.
     /// This can be used e.g. to provide data to a ``HealthChart``.
     public var projectedValue: SamplesQueryResults<Sample> { // TODO why not `some HealthKitQueryResults<...>`?
         results
@@ -469,21 +467,6 @@ extension HealthKitQueryTimeRange {
         )
     }
 }
-
-
-
-
-// MARK: HealthKit Utils
-
-
-public func / (lhs: HKUnit, rhs: HKUnit) -> HKUnit {
-    lhs.unitDivided(by: rhs)
-}
-
-public func * (lhs: HKUnit, rhs: HKUnit) -> HKUnit {
-    lhs.unitMultiplied(by: rhs)
-}
-
 
 
 
