@@ -75,8 +75,25 @@ extension HealthKitCharacteristic { // swiftlint:disable:this file_types_order
 
 
 /// Fetches a `HKCharacteristicType` from the HealthKit data store, in a type-safe manner.
+///
 /// - Note: This property wrapper is not auto-updating; if the characteristic's value is changed while a view using this property wrapper is active,
 ///     it will continue displaying the old value until the view gets updated for some other reason.
+///
+/// Example:
+/// ```swift
+/// struct ExampleView: View {
+///     @HealthKitCharacteristicQuery(.wheelchairUse)
+///     private var wheelchairUse
+///
+///     var body: some View {
+///         if wheelchairUse == .yes {
+///             // use dedicated wheelchair-use-related UI
+///         } else {
+///             // use normal non-wheelchair-use UI
+///         }
+///     }
+/// }
+/// ```
 @propertyWrapper
 public struct HealthKitCharacteristicQuery<Value>: DynamicProperty {
     @Environment(HealthKit.self) private var healthKit
