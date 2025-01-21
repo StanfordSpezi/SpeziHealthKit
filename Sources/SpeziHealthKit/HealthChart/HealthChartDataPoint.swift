@@ -16,7 +16,7 @@ import SwiftUI
 /// a value as part of e.g. a Chart or some other user-facing UI component.
 ///
 /// This type is primarily intended to be used in the context of the ``HealthChart``, but it can also be used outside of that.
-public struct HealthChartDataPoint/*<ID: Hashable>*/: Hashable, Identifiable {
+public struct HealthChartDataPoint/*<ID: Hashable>*/: Hashable, Identifiable { // swiftlint:disable:this file_types_order
     public let id: AnyHashable
     public let date: Date
     public let value: Double
@@ -59,16 +59,19 @@ public struct HealthChartDataPoint/*<ID: Hashable>*/: Hashable, Identifiable {
         self.value = value
         self.unit = unit
     }
-    
+}
+
+
+extension HealthChartDataPoint { // swiftlint:disable:this file_types_order
     /// The DataPoint's value (excluding its unit), formatted based on the unit.
     public var stringValue: String {
         let fmt = NumberFormatter()
         fmt.usesGroupingSeparator = true
         switch unit {
-        case .percent():
+        case .percent(): // swiftlint:disable:this empty_enum_arguments
+            // ^^^ it's not an enum case we're matching against here, but SwiftLint doesn't know about this...
             fmt.numberStyle = .percent
-//            fmt.maximumFractionDigits = 1 // TODO make this dependent on the sample type?!
-        case .count() / .minute(): // TODO can we match against all `.count / X` units?
+        case .count() / .minute():
             fmt.numberStyle = .decimal
         default:
             break
@@ -91,15 +94,16 @@ public enum StatisticsAggregationOption: Sendable {
     
     /// Creates a `StatisticsAggregationOption` based on a quantity sample's suggested aggregation style.
     public init(_ sampleType: SampleType<HKQuantitySample>) {
-        switch sampleType.hkSampleType.aggregationStyle {
+        let suggestedAggStyle = sampleType.hkSampleType.aggregationStyle
+        switch suggestedAggStyle {
         case .cumulative:
             self = .sum
         case .discreteArithmetic, .discreteTemporallyWeighted:
             self = .avg
         case .discreteEquivalentContinuousLevel:
-            fatalError()
+            preconditionFailure("Unsupported aggregation style: 'discreteEquivalentContinuousLevel'")
         @unknown default:
-            fatalError()
+            preconditionFailure("Unsupported aggregation style: '\(suggestedAggStyle.rawValue)'")
         }
     }
 }

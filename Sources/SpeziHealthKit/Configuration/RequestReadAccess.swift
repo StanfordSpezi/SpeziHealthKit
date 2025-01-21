@@ -18,7 +18,6 @@ public struct RequestReadAccess: HealthKitConfigurationComponent {
         dataAccessRequirements = .init(read: Set(objectTypes))
     }
     
-    // TODO this (and its RequestWriteAccess sibling) somehow needs to be able to allow requesting access to eg the electrocardiogram type (which isn't an identifier in the enum, and works differently!)
     /// Creates a HealthKit configuration component that requests read access to the specified sample types.
     public init(
         quantity: Set<HKQuantityTypeIdentifier> = [],
@@ -26,11 +25,11 @@ public struct RequestReadAccess: HealthKitConfigurationComponent {
         correlation: Set<HKCorrelationTypeIdentifier> = [],
         characteristic: Set<HKCharacteristicTypeIdentifier> = []
     ) {
-        self.init(Set(quantity.map(HKQuantityType.init))
+        let types = Set<HKObjectType>(quantity.map(HKQuantityType.init))
             .union(category.map(HKCategoryType.init))
             .union(correlation.flatMap(\.knownAssociatedSampleTypes))
             .union(characteristic.map(HKCharacteristicType.init))
-        )
+        self.init(types)
     }
     
     public func configure(for healthKit: HealthKit, on standard: any HealthKitConstraint) {

@@ -11,5 +11,10 @@ import HealthKit
 
 
 extension HKObjectType {
-    public static let allKnownObjectTypes: Set<HKObjectType> = Set(HKCategoryType.allKnownCategories).union(HKCorrelationType.allKnownCorrelations).union(HKCharacteristicType.allKnownCharacteristics).union(HKQuantityType.allKnownQuantities)
+    /// All well-known `HKObjectType`s
+    public static let allKnownObjectTypes: Set<HKObjectType> =
+        Set(HKCategoryType.allKnownCategories)
+            .union(HKCorrelationType.allKnownCorrelations)
+            .union(HKCharacteristicType.allKnownCharacteristics)
+            .union(HKQuantityType.allKnownQuantities)
 }

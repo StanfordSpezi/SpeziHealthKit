@@ -7,10 +7,10 @@
 //
 
 import HealthKit
+import OSLog
 import Spezi
 import SpeziFoundation
 import SwiftUI
-import OSLog
 
 
 /// Spezi Module for interacting with the HealthKit system.
@@ -32,9 +32,8 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     /// Users can access this in a `View` via the `@Environment(HealthKit.self)` property wrapper.
     internal let healthStore: HKHealthStore
     
-    // TODO why doesn't importing SpeziHealthKit as @testable work in the TestApp????(!)
     /// (for testing purposes only) The data access requirements that resulted form the initial configuration passed to the ``HealthKit-swift.class`` module.
-    public let _initialConfigDataAccessRequirements: DataAccessRequirements
+    public let _initialConfigDataAccessRequirements: DataAccessRequirements // swiftlint:disable:this identifier_name
     
     /// Which HealthKit data we need to be able to access, for read and/or write operations.
     private var dataAccessRequirements: DataAccessRequirements
@@ -63,7 +62,12 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
         if !HKHealthStore.isHealthDataAvailable() {
             // If HealthKit is not available, we still initialise the module and the health store as normal.
             // Queries and sample collection, in this case, will simply not return any results.
-            Logger.healthKit.error("HealthKit is not available. SpeziHealthKit and its module will still exist in the application, but all HealthKit-related functionality will be disabled.")
+            Logger.healthKit.error(
+                """
+                HealthKit is not available.
+                SpeziHealthKit and its module will still exist in the application, but all HealthKit-related functionality will be disabled.
+                """
+            )
         }
     }
     
@@ -131,7 +135,6 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
             await startAutomaticDataCollectionIfPossible(collector)
         }
     }
-    
     
     /// Returns whether the user was already asked for authorization to access the specified object type.
     /// - Note: A `true` return value does **not** imply that the user actually granted access; it just means that the user was asked.
@@ -206,7 +209,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     
     /// Tells the collector to start its automatic data collection, if applicable and possible.
     @MainActor
-    private func startAutomaticDataCollectionIfPossible(_ collector: some HealthDataCollector) async{
+    private func startAutomaticDataCollectionIfPossible(_ collector: some HealthDataCollector) async {
         if !collector.isActive,
            collector.delivery.isAutomatic,
            await askedForAuthorization(toRead: collector.sampleType) {
@@ -229,7 +232,6 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
         }
     }
 }
-
 
 
 extension HKUnit {

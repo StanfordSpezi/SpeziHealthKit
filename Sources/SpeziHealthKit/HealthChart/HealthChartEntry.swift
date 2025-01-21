@@ -11,7 +11,9 @@ import HealthKit
 import struct SwiftUI.Color
 
 
+/// How a ``HealthChartEntry`` should be plotted in a Health Chart.
 public struct HealthChartDrawingConfig: Sendable {
+    /// A chart type.
     public enum Mode: Sendable {
         /// The entry is drawn as a line chart, i.e. a line that moves from data point to data point
         case line
@@ -24,6 +26,7 @@ public struct HealthChartDrawingConfig: Sendable {
     let mode: Mode
     let color: Color
     
+    /// Creates a new drawing config for an entry in a health chart.
     public init(mode: Mode, color: Color) {
         self.mode = mode
         self.color = color
@@ -31,11 +34,10 @@ public struct HealthChartDrawingConfig: Sendable {
 }
 
 
-
-// TODO why is it that, if this is a class, the chart will be able to auto-update when the contained `results` property (which is @Observable) changes,
-// (even though this class itself isn't), but if we instead turn the entry into a struct, it does not work???
-// TODO Rename HealthChartDateSet? (Entry kinda sounds like it's referring to a single data point. But then again, it could very well also be the case that we want to split eg "step count" up into separate data sets, to make it look nicer?
-/// An entry in a ``HealthChart``
+/// An entry in a ``HealthChart``.
+///
+/// ## See Also
+/// - <doc:HealthChart>
 public final class HealthChartEntry<Results: HealthKitQueryResults>: Sendable {
     public typealias MakeDataPointImp = @Sendable (Results.Element, Results) -> HealthChartDataPoint?
     
@@ -84,18 +86,16 @@ public final class HealthChartEntry<Results: HealthKitQueryResults>: Sendable {
         self.variant = variant
     }
     
-    static func makeEmpty() -> Self {
-        Self.init(variant: .empty)
-    }
-    
+    /// Creates a new Entry, using the specified configuration.
     public convenience init(
         _ results: Results,
-        drawingConfig: HealthChartDrawingConfig, // TODO drawingOptions?
+        drawingConfig: HealthChartDrawingConfig,
         makeDataPoint: @escaping MakeDataPointImp
     ) {
         self.init(variant: .regular(results, drawingConfig, makeDataPoint))
     }
     
+    /// Creates a new Entry for a HealthKit query collection of quantity samples.
     public convenience init(
         _ results: Results,
         drawingConfig: HealthChartDrawingConfig
@@ -105,9 +105,10 @@ public final class HealthChartEntry<Results: HealthKitQueryResults>: Sendable {
         }
     }
     
+    /// Creates a new Entry for a statistical HealthKit query.
     public convenience init(
         _ results: Results,
-        aggregationOption: StatisticsAggregationOption, // TODO custom/better type here?!
+        aggregationOption: StatisticsAggregationOption,
         drawingConfig: HealthChartDrawingConfig
     ) where Results.Sample == HKQuantitySample, Results.Element == HKStatistics {
         self.init(results, drawingConfig: drawingConfig) { statistics, results in
@@ -117,6 +118,10 @@ public final class HealthChartEntry<Results: HealthKitQueryResults>: Sendable {
                 unit: results.sampleType.displayUnit
             )
         }
+    }
+    
+    static func makeEmpty() -> Self {
+        Self(variant: .empty)
     }
     
     func makeDataPoint(for element: Results.Element) -> HealthChartDataPoint? {

@@ -12,7 +12,6 @@ import Spezi
 
 
 extension HKHealthStore {
-    // TODO can we remove the lock here, and simply mark the dictionary as MainActor-consrained? (it only gets accessed from the main actor already...)
     private static let activeObservationsLock = NSLock()
     private static nonisolated(unsafe) var activeObservations: [HKObjectType: Int] = [:]
     
@@ -36,7 +35,11 @@ extension HKHealthStore {
             // Sadly necessary to enable capture of the `completionHandler` within the `Task`s below (isolation error)
             nonisolated(unsafe) let completionHandler = completionHandler
             if let error {
-                Logger.healthKit.error("Failed HealthKit background delivery for observer query \(query) on sample types \(String(describing: sampleTypes)) with error: \(error)")
+                Logger.healthKit.error(
+                    """
+                    Failed HealthKit background delivery for observer query \(query) on sample types \(String(describing: sampleTypes)) with error: \(error)
+                    """
+                )
                 Task { @MainActor in
                     await updateHandler(.failure(error))
                     completionHandler()

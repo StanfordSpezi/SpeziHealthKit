@@ -12,10 +12,14 @@ import SpeziFoundation
 
 
 extension HKCorrelationType {
-    public static let allKnownCorrelations: Set<HKCorrelationType> = Set(HKCorrelationTypeIdentifier.allKnownIdentifiers.map { HKCorrelationType($0) })
+    /// All well-known `HKCorrelationType`s
+    public static let allKnownCorrelations: Set<HKCorrelationType> = Set(
+        HKCorrelationTypeIdentifier.allKnownIdentifiers.map { HKCorrelationType($0) }
+    )
 }
 
 extension HKCorrelationTypeIdentifier {
+    /// All well-known `HKCorrelationTypeIdentifier`s
     public static let allKnownIdentifiers: Set<Self> = [
         .bloodPressure,
         .food
@@ -79,7 +83,7 @@ extension HKCorrelationTypeIdentifier {
             HKQuantityType(.dietaryMolybdenum)
             HKQuantityType(.dietarySelenium)
         default:
-            let _ = ()
+            let _ = () // swiftlint:disable:this redundant_discardable_let
         }
     }
 }

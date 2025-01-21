@@ -1,9 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "#DataPoints" : {
-
-    },
     "Active Energy Burned" : {
       "localizations" : {
         "de" : {
@@ -45,7 +42,6 @@
       }
     },
     "Date" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -96,7 +92,6 @@
       }
     },
     "No Data" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -115,6 +110,9 @@
           }
         }
       }
+    },
+    "Sample Type" : {
+
     },
     "Sleep Analysis" : {
       "localizations" : {
@@ -137,6 +135,7 @@
       }
     },
     "Time Range" : {
+      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {

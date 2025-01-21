@@ -10,64 +10,13 @@ import Foundation
 import HealthKit
 
 
-
-/// Associates a `HKSampleType` subclass with a `HKSample` subclass.
-public protocol _HKSampleWithSampleType: HKSample {
-    associatedtype _SampleType: HKSampleType
-}
-
-
-extension HKQuantitySample: _HKSampleWithSampleType {
-    public typealias _SampleType = HKQuantityType
-}
-
-extension HKCorrelation: _HKSampleWithSampleType {
-    public typealias _SampleType = HKCorrelationType
-}
-
-extension HKCategorySample: _HKSampleWithSampleType {
-    public typealias _SampleType = HKCategoryType
-}
-
-extension HKElectrocardiogram: _HKSampleWithSampleType {
-    public typealias _SampleType = HKElectrocardiogramType
-}
-
-extension HKAudiogramSample: _HKSampleWithSampleType {
-    public typealias _SampleType = HKAudiogramSampleType
-}
-
-
-
-/// Type-erased version of a ``SampleType``
-public protocol AnySampleType: Hashable, Identifiable, Sendable where ID == String {
-    /// The type of the sample type's underlying samples.
-    ///
-    /// E.g., for a sample type representing quantity samples, this would be `HKQuantitySample`.
-    associatedtype Sample: _HKSampleWithSampleType
-    
-    /// The underlying `HKSampleType`
-    var hkSampleType: Sample._SampleType { get }
-    
-    /// The recommended user-displayable name of this sample type.
-    var displayTitle: String { get }
-}
-
-extension AnySampleType {
-    /// Compare two type-erased ``SampleType``s, based on their identifier.
-    @inlinable public static func == (lhs: any AnySampleType, rhs: any AnySampleType) -> Bool {
-        lhs.id == rhs.id
-    }
-}
-
-
-public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType, Hashable, Identifiable, Sendable {
+public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType, Identifiable, Sendable {
     @usableFromInline
     enum Variant: Sendable {
         /// - parameter displayUnit: The unit that should be used when displaying a sample of this type to the user
         /// - parameter expectedValuesRange: The expected range of values we expect to see for this sample type, if applicable.
         ///     The main purpose of this is to be able to e.g. adjust chart value ranges based on the specific sample types being visualised.
-        case quantity(displayUnit: HKUnit, expectedValuesRange: ClosedRange<Double>?) // TODO remove the range thing?!
+        case quantity(displayUnit: HKUnit, expectedValuesRange: ClosedRange<Double>?)
         /// - parameter displayUnit: The unit that should be used when displaying a sample belonging to a correlation of this type to the user.
         ///    Depending on the specific correlation type, this value might be `nil`. (E.g., if the samples associated with the correlation don't all use the same unit.)
         case correlation(displayUnit: HKUnit?)
@@ -97,12 +46,10 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType, Hashab
         self.displayTitle = String(localized: displayTitle)
         self.variant = variant
     }
-    
-    /// Hash the sample type, based on its identifier
-    @inlinable public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
-    }
-    
+}
+
+
+extension SampleType: Hashable {
     /// Compare two sample types, based on their identifiers
     @inlinable public static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.id == rhs.id
@@ -111,6 +58,11 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType, Hashab
     /// Compare two sample types, based on their identifiers
     @inlinable public static func == (lhs: Self, rhs: SampleType<some Any>) -> Bool {
         lhs.id == rhs.id
+    }
+    
+    /// Hash the sample type, based on its identifier
+    @inlinable public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 }
 
@@ -129,6 +81,9 @@ extension SampleType where Sample == HKQuantitySample {
         }
     }
     
+    /// The expected range of values we expect to see for this sample type, if applicable.
+    ///
+    /// The main purpose of this is to be able to e.g. adjust chart value ranges based on the specific sample types being visualised.
     @inlinable public var expectedValuesRange: ClosedRange<Double>? {
         switch variant {
         case .quantity(displayUnit: _, let expectedValuesRange):

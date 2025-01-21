@@ -18,12 +18,6 @@ public enum HealthDataCollectorDeliverySetting: Hashable, Sendable {
     /// If `saveAnchor` is enabled the `HKQueryAnchor` is persisted across multiple application launches using the user defaults.
     case background(Start = .automatic, saveAnchor: Bool = true)
     
-    /// :nodoc:
-    @available(*, unavailable, renamed: "manual(saveAnchor:)")
-    public static func manual(safeAnchor saveAnchor: Bool) -> Self {
-        .manual(saveAnchor: saveAnchor)
-    }
-    
     var saveAnchor: Bool {
         switch self {
         case let .manual(saveAnchor):
@@ -48,6 +42,16 @@ public enum HealthDataCollectorDeliverySetting: Hashable, Sendable {
         !isAutomatic
     }
 }
+
+
+extension HealthDataCollectorDeliverySetting {
+    /// :nodoc:
+    @available(*, unavailable, renamed: "manual(saveAnchor:)")
+    public static func manual(safeAnchor saveAnchor: Bool) -> Self {
+        .manual(saveAnchor: saveAnchor)
+    }
+}
+
 
 extension HealthDataCollectorDeliverySetting {
     /// Determines when a ``HealthDataCollector`` is started.

@@ -7,10 +7,10 @@
 //
 
 import Foundation
-import SwiftUI
 import HealthKit
-import SpeziFoundation
 import Spezi
+import SpeziFoundation
+import SwiftUI
 
 
 /// The time range for which data should be fetched from the health store.
@@ -26,11 +26,11 @@ public enum HealthKitQueryTimeRange: Hashable, Sendable {
     /// The time range encompassing the last 365 days, including today.
     case year
     /// The time range encompassing the entire current week.
-    case currentWeek // TODO remove this?
+    case currentWeek
     /// The time range encompassing the entire current month.
-    case currentMonth // TODO remove this?
+    case currentMonth
     /// The time range encompassing the entire current year.
-    case currentYear // TODO remove this?
+    case currentYear
     /// The time range encompassing the last `N` hours, starting at the end of the current hour.
     case lastNHours(Int)
     /// The time range encompassing the last `N` days, starting at the end of the current day.
@@ -79,14 +79,28 @@ public enum HealthKitQueryTimeRange: Hashable, Sendable {
 ///     If you are interested in pre-computed sumamary values for a certain sample type over a certain time range,
 ///     consider using ``HealthKitStatisticsQuery`` instead.
 @propertyWrapper @MainActor
-public struct HealthKitQuery<Sample: _HKSampleWithSampleType>: DynamicProperty {
+public struct HealthKitQuery<Sample: _HKSampleWithSampleType>: DynamicProperty { // swiftlint:disable:this file_types_order
     private let input: SamplesQueryResults<Sample>.Input
     
     @Environment(HealthKit.self)
     private var healthKit
     
     @State
-    private var results: SamplesQueryResults<Sample> = .uninitializedForSwiftUIStateObject()
+    private var results = SamplesQueryResults<Sample>()
+    
+    /// The individual query results.
+    public var wrappedValue: some RandomAccessCollection<Sample> {
+        // Note that we're intentionally not returning `results` directly here (even though it also is a RandomAccessCollection),
+        // the reason being that it would be auto-updating, which might be unexpected since it's not communicated via the return
+        // type. Instead, we return `results.dataPoints`, i.e. essentially a snapshot of the current state of the results object.
+        results.samples
+    }
+    
+    /// The query's underlying auto-updating results object.
+    /// This can be used e.g. to provide data to a ``HealthChart``.
+    public var projectedValue: SamplesQueryResults<Sample> {
+        results
+    }
     
     /// Creates a new query.
     /// - parameter sampleType: The sample type to query for
@@ -106,7 +120,6 @@ public struct HealthKitQuery<Sample: _HKSampleWithSampleType>: DynamicProperty {
         )
     }
     
-    
     @_documentation(visibility: internal)
     public nonisolated func update() {
         runOrScheduleOnMainActor {
@@ -116,24 +129,7 @@ public struct HealthKitQuery<Sample: _HKSampleWithSampleType>: DynamicProperty {
             )
         }
     }
-    
-    
-    /// The individual query results.
-    /// TODO fix this causing crashes in release builds! (see https://github.com/swiftlang/swift/issues/78405)
-    public var wrappedValue: some RandomAccessCollection<Sample> {
-        // Note that we're intentionally not returning `results` directly here (even though it also is a RandomAccessCollection),
-        // the reason being that it would be auto-updating, which might be unexpected since it's not communicated via the return
-        // type. Instead, we return `results.dataPoints`, i.e. essentially a snapshot of the current state of the results object.
-        results.samples
-    }
-    
-    /// The query's underlying auto-updating results object.
-    /// This can be used e.g. to provide data to a ``HealthChart``.
-    public var projectedValue: SamplesQueryResults<Sample> { // TODO why not `some HealthKitQueryResults<...>`?
-        results
-    }
 }
-
 
 
 /// An auto-updating HealthKit query over samples in the HealthKit database.
@@ -148,91 +144,24 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
         let filterPredicate: NSPredicate?
     }
     
-    /// Since the ``SamplesQueryResults`` type can be used both within SwiftUI-managed contexts (i.e., Views) and outside of SwiftUI (i.e., in "normal" code),
-    /// we need to [...TODO TODO TODO]
-    private enum Variant {
-        /// The ``SamplesQueryResults`` object is used as a State Object in a SwiftUI-managed property wrapper (i.e., on a View).
-        /// In this case, we allow deferred initialization of the object, since we need the ability to create the State Object without having access to the Environment.
-        case swiftUI(HKHealthStore?)
-        /// The ``SamplesQueryResults`` object is used in a standalone context, i.e. outside of SwiftUI.
-        /// In this case, we require that all properties be fully defined when the object is instantiated.
-        case standalone(HKHealthStore)
-    }
-    
+    /// The `HKHealthStore` to be used by this query.
+    ///
+    /// We intentionally require this object be externally-supplied,
+    /// since the documentation says that apps should treat these as long-lived objects,
+    /// with only a single instance shared across the entire app.
+    /// In the context of this type specifically, this is safe, because the fileprivate `init()` is used only by the ``HealthKitQuery``
+    /// property wrapper, which assigns a non-nil health store prior to updating the `input` property.
     @ObservationIgnored
-    private var variant: Variant {
-        didSet {
-            switch (oldValue, variant) {
-            case (.swiftUI, .swiftUI), (.standalone, .standalone):
-                // Fine: we simply updated the values but stayed within the variant
-                break
-            case (.swiftUI, .standalone), (.standalone, .swiftUI):
-                // Based on the current implementation, this never happens, but we add the check to ensure that it stays this way.
-                fatalError("Invalid variant transition: cannot transition from .swiftUI variant to .standalone, or vice versa.")
-            }
-        }
-    }
-    
-    private var healthStore: HKHealthStore {
-        switch variant {
-        case .swiftUI(.some(let healthStore)), .standalone(let healthStore):
-            return healthStore
-        case .swiftUI(.none):
-            fatalError("Accessed '\(#function)' of a SwiftUI-managed \(Self.self) outside of being installed on a View.")
-        }
-    }
+    private var healthStore: HKHealthStore! // swiftlint:disable:this implicitly_unwrapped_optional
     
     @ObservationIgnored
     private var input: Input?
     
     
-    private(set) public var queryError: (any Error)?
+    public private(set) var queryError: (any Error)?
     
     @ObservationIgnored
     private var queryTask: Task<Void, Never>?
-    
-    
-    private init(variant: Variant) {
-        self.variant = variant
-    }
-    
-    /// Creates and returns a new, uninitialized ``SamplesQueryResults``, with its variant set to being used as a SwiftUI-managed State Object.
-    fileprivate static func uninitializedForSwiftUIStateObject() -> Self {
-        Self.init(variant: .swiftUI(nil))
-    }
-    
-    /// Creates a new standalone (i.e., non-SwiftUI-managed) ``SamplesQueryResults`` object.
-    /// - Note: This initializer will perform an initial fetch of the queried-for samples, and return only once that fetch has completed.
-    ///     It will **not** initiate the auto-updating of the query results; you can start this via the ``startObservingChanges`` function.
-    init(healthStore: HKHealthStore, input: Input) async {
-        self.variant = .standalone(healthStore)
-        self.input = input
-        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-            self.startQuery {
-                continuation.resume()
-            }
-        }
-    }
-    
-    /// Creates a new standalone (i.e., non-SwiftUI-managed) ``SamplesQueryResults`` object.
-    /// - Note: This initializer will perform an initial fetch of the queried-for samples, and return only once that fetch has completed.
-    ///     It will **not** initiate the auto-updating of the query results; you can start this via the ``startObservingChanges`` function.
-    public convenience init(
-        healthStore: HKHealthStore,
-        sampleType: SampleType<Sample>,
-        timeRange: HealthKitQueryTimeRange,
-        filter predicate: NSPredicate? = nil
-    ) async {
-        await self.init(
-            healthStore: healthStore,
-            input: .init(
-                sampleType: sampleType,
-                timeRange: timeRange,
-                filterPredicate: predicate
-            )
-        )
-    }
-    
     
     fileprivate private(set) var samples = OrderedArray<Sample> { lhs, rhs in
         if lhs.startDate < rhs.startDate {
@@ -245,13 +174,14 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
     }
     
     
-    deinit {
-        queryTask?.cancel()
-        queryTask = nil
-    }
+    /// Creates an empty, uninitialized ``StatisticsQueryResults`` object.
+    ///
+    /// The purpose of this initializer is to allow this type to be used as a state object in SwiftUI,
+    /// for which we need to be able to initialize it without passing in any context.
+    fileprivate init() {}
+    
     
     fileprivate func initializeSwiftUIManagedQuery(healthStore: HKHealthStore, input: Input) {
-        self.variant = .swiftUI(healthStore)
         guard self.input != input else {
             return
         }
@@ -262,92 +192,65 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
     
     /// Starts the auto-updating query.
     /// - Note: it might take a bit until the first results arrive and the query gets populated.
-    private func startQuery(initialFetchCompletionHandler: @escaping @Sendable () -> Void = {}) {
-        guard let input else {
+    private func startQuery() {
+        guard let input, let healthStore else {
             return
         }
-        
-//        Task {
-//            let initialFetch = HKSampleQueryDescriptor(
-//                predicates: [HKSamplePredicate<Sample>.sample(
-//                    type: input.sampleType.hkSampleType,
-//                    predicate: { () -> NSPredicate? in
-//                        let preds = [
-//                            input.timeRange.queryPredicate,
-//                            input.filterPredicate
-//                        ].compactMap({ $0 })
-//                        return preds.isEmpty ? nil : NSCompoundPredicate(andPredicateWithSubpredicates: preds)
-//                    }()
-//                )],
-//                sortDescriptors: [SortDescriptor<HKSample>.init(\.startDate)],
-//                limit: nil // input.limit
-//            )
-//            let startTS = CACurrentMediaTime()
-//            let results = try await initialFetch.result(for: self.healthStore)
-//            let endTS = CACurrentMediaTime()
-//            print("[\(sampleType.displayTitle)] initial fetch (#=\(results.count)) took \(endTS - startTS)")
-//        }
-        
+        let predicate = HKSamplePredicate<Sample>.sample(
+            type: input.sampleType.hkSampleType,
+            predicate: { () -> NSPredicate? in
+                let preds = [
+                    input.timeRange.queryPredicate,
+                    input.filterPredicate
+                ].compactMap { $0 }
+                return preds.isEmpty ? nil : NSCompoundPredicate(andPredicateWithSubpredicates: preds)
+            }()
+        )
         let query = HKAnchoredObjectQueryDescriptor(
-            predicates: [HKSamplePredicate<Sample>.sample(
-                type: input.sampleType.hkSampleType,
-                predicate: { () -> NSPredicate? in
-                    let preds = [
-                        input.timeRange.queryPredicate,
-                        input.filterPredicate
-                    ].compactMap({ $0 })
-                    return preds.isEmpty ? nil : NSCompoundPredicate(andPredicateWithSubpredicates: preds)
-                }()
-            )],
+            predicates: [predicate],
             // we intentionally specify a nil anchor; this way the query will first fetch all existing data matching the descriptor,
             // and then start emit update events for new/deleted data.
             anchor: nil,
             limit: nil
         )
         
-        let healthStore = self.healthStore
-        
         queryTask?.cancel()
         queryTask = Task.detached { [weak self] in
             do {
-                var isFirstUpdate = true
-                let startTS = CACurrentMediaTime()
                 let updates = query.results(for: healthStore)
                 for try await update in updates {
-                    guard let self = self else { break }
-                    print("[\(self.sampleType.displayTitle)] got an update (#new: \(update.addedSamples.count), #del: \(update.deletedObjects.count))")
-                    if isFirstUpdate {
-                        let endTS = CACurrentMediaTime()
-                        print("[\(self.sampleType.displayTitle)] initial update took: \(endTS - startTS)")
-                    }
-                    defer {
-                        isFirstUpdate = false
+                    guard let self = self else {
+                        break
                     }
                     // SAFETY: this is in fact safe, since all of the update's (i.e., the `HKAnchoredObjectQueryDescriptor<Sample>.Result` type's)
-                    // properties (i.e., deletedObjects, addedSamples, and newAnchor) are themselves Sendable.
+                    // properties (i.e., deletedObjects, addedSamples, and newAnchor) are themselves Sendable. (rdar://16358485)
                     nonisolated(unsafe) let update = update
-                    let isFirstUpdate = isFirstUpdate
                     Task { @MainActor in
                         var samples = self.samples
                         nonisolated(unsafe) let update = update
                         let deletedUUIDs = update.deletedObjects.mapIntoSet { $0.uuid }
                         samples.removeAll(where: { deletedUUIDs.contains($0.uuid) })
-                        samples.insert(contentsOf: update.addedSamples as! [Sample])
-                        precondition(samples.mapIntoSet(\.uuid).count == samples.count)
-                        self.samples = samples
-                        if isFirstUpdate {
-                            initialFetchCompletionHandler()
+                        if let addedSamples = update.addedSamples as? [Sample] {
+                            // ^^This cast will practically always be true; the issue simply is that the type system doesn't know about it.
+                            samples.insert(contentsOf: addedSamples)
                         }
+                        self.samples = samples
                     }
                 }
             } catch {
-                guard let self else { return }
+                guard let self else {
+                    return
+                }
                 Task { @MainActor in
-                    // TODO QUESTION: under which circumstances do we want to set self.samples to an empty array?
                     self.queryError = error
                 }
             }
         }
+    }
+    
+    deinit {
+        queryTask?.cancel()
+        queryTask = nil
     }
 }
 
@@ -355,10 +258,6 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
 extension SamplesQueryResults: HealthKitQueryResults {
     public typealias Index = OrderedArray<Sample>.Index
     public typealias Element = Sample
-    
-    public subscript(position: Index) -> Element {
-        samples[position]
-    }
     
     public var count: Int {
         samples.count
@@ -372,41 +271,66 @@ extension SamplesQueryResults: HealthKitQueryResults {
         samples.endIndex
     }
     
-    
-    public var timeRange: HealthKitQueryTimeRange {
-        input!.timeRange
+    public var sampleType: SampleType<Sample> {
+        guard let input else {
+            preconditionFailure("Cannot access \(#function) of \(Self.self) outside of being installed on a SwiftUI view")
+        }
+        return input.sampleType
     }
     
-    public var sampleType: SampleType<Sample> {
-        input!.sampleType
+    public var timeRange: HealthKitQueryTimeRange {
+        guard let input else {
+            preconditionFailure("Cannot access \(#function) of \(Self.self) outside of being installed on a SwiftUI view")
+        }
+        return input.timeRange
+    }
+    
+    public subscript(position: Index) -> Element {
+        samples[position]
     }
 }
 
 
-
+private func tryUnwrap<T>(_ value: T?, _ message: String) -> T {
+    if let value {
+        return value
+    } else {
+        preconditionFailure(message)
+    }
+}
 
 extension HealthKitQueryTimeRange {
+    /// The query time range's actual Date range.
     public var range: ClosedRange<Date> {
         let now = Date()
         let cal = Calendar.current
         let range: Range<Date>
         switch self {
         case .hour:
-            // TODO should "last hour" mean the whole current hour (current behaviour), or should it mean "60 minutes ago until right now"?
             range = cal.rangeOfHour(for: now)
         case .today:
             range = cal.rangeOfDay(for: now)
         case .week:
             let end = cal.startOfNextDay(for: now)
-            let start = cal.date(byAdding: .weekOfYear, value: -1, to: end)!
+            range = cal.rangeOfWeek(for: now)
+            let start = tryUnwrap(
+                cal.date(byAdding: .weekOfYear, value: -1, to: end),
+                "Unable to determine date"
+            )
             return start...end
         case .month:
             let end = cal.startOfNextDay(for: now)
-            let start = cal.date(byAdding: .month, value: -1, to: end)!
+            let start = tryUnwrap(
+                cal.date(byAdding: .month, value: -1, to: end),
+                "Unable to determine date"
+            )
             return start...end
         case .year:
             let end = cal.startOfNextDay(for: now)
-            let start = cal.date(byAdding: .year, value: -1, to: end)!
+            let start = tryUnwrap(
+                cal.date(byAdding: .year, value: -1, to: end),
+                "Unable to determine date"
+            )
             return start...end
         case .currentWeek:
             range = cal.rangeOfWeek(for: now)
@@ -416,23 +340,38 @@ extension HealthKitQueryTimeRange {
             range = cal.rangeOfYear(for: now)
         case .lastNHours(let numHours):
             let end = cal.startOfNextHour(for: now)
-            let start = cal.date(byAdding: .hour, value: -numHours, to: end)!
+            let start = tryUnwrap(
+                cal.date(byAdding: .hour, value: -numHours, to: end),
+                "Unable to determine date"
+            )
             return start...end
         case .lastNDays(let numDays):
             let end = cal.startOfNextDay(for: now)
-            let start = cal.date(byAdding: .day, value: -numDays, to: end)!
+            let start = tryUnwrap(
+                cal.date(byAdding: .day, value: -numDays, to: end),
+                "Unable to determine date"
+            )
             return start...end
         case .lastNWeeks(let numWeeks):
             let end = cal.startOfNextDay(for: now)
-            let start = cal.date(byAdding: .weekOfYear, value: -numWeeks, to: end)!
+            let start = tryUnwrap(
+                cal.date(byAdding: .weekOfYear, value: -numWeeks, to: end),
+                "Unable to determine date"
+            )
             return start...end
         case .lastNMonths(let numMonths):
             let end = cal.startOfNextDay(for: now)
-            let start = cal.date(byAdding: .month, value: -numMonths, to: end)!
+            let start = tryUnwrap(
+                cal.date(byAdding: .month, value: -numMonths, to: end),
+                "Unable to determine date"
+            )
             return start...end
         case .lastNYears(let numYears):
             let end = cal.startOfNextDay(for: now)
-            let start = cal.date(byAdding: .year, value: -numYears, to: end)!
+            let start = tryUnwrap(
+                cal.date(byAdding: .year, value: -numYears, to: end),
+                "Unable to determine date"
+            )
             return start...end
         case .custom(let range):
             return range
@@ -450,28 +389,3 @@ extension HealthKitQueryTimeRange {
         )
     }
 }
-
-
-
-// TODO remove these before opening a PR!
-
-// @inline(__always)???
-func measure<T>(_ name: String, _ block: () throws -> T) rethrows -> T {
-    let startTime = CACurrentMediaTime()
-    let retval: T = try block()
-    let endTime = CACurrentMediaTime()
-    print("[MEASURE] \(name): \(String(endTime - startTime)) sec")
-    return retval
-}
-
-
-
-// @inline(__always)???
-func measure<T>(_ name: String, _ block: () async throws -> T) async rethrows -> T {
-    let startTime = CACurrentMediaTime()
-    let retval: T = try await block()
-    let endTime = CACurrentMediaTime()
-    print("[MEASURE] \(name): \(String(endTime - startTime)) sec")
-    return retval
-}
-

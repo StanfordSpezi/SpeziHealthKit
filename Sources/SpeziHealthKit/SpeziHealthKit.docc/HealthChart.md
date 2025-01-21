@@ -37,13 +37,12 @@ var body: some View {
 ## Topics
 
 ### Creating a HealthChart
-- ``HealthChart/init(interactivity:timeInterval:_:)``
+- ``HealthChart/init(timeInterval:_:)``
 
 ### Supporting Types
 - ``HealthChartEntry``
 - ``HealthChartContentBuilder``
 - ``HealthChartDataPoint``
-- ``HealthChartInteractivity``
 - ``HealthChartTimeIntervalInput``
 - ``StatisticsAggregationOption``
 - ``HealthChartDrawingConfig``

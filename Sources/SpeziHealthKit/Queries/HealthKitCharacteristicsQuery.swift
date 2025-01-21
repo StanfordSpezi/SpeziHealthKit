@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import SwiftUI
 import HealthKit
+import SwiftUI
 
 
 /// A type-safe wrapper around `HKCharacteristicType`.
@@ -29,11 +29,11 @@ public struct HealthKitCharacteristic<Value>: Sendable {
 }
 
 
-extension HealthKitCharacteristic {
+extension HealthKitCharacteristic { // swiftlint:disable:this file_types_order
     /// The activity move mode characteristic.
     public static var activityMoveMode: HealthKitCharacteristic<HKActivityMoveMode> { .init(
         .activityMoveMode,
-        displayTitle: "Activity Mode",  // TODO "Activity Move Mode"?
+        displayTitle: "Activity Move Mode",
         accessor: { try $0.activityMoveMode().activityMoveMode }
     ) }
     
@@ -51,12 +51,13 @@ extension HealthKitCharacteristic {
     public static var dateOfBirth: HealthKitCharacteristic<Date> {
         .init(.dateOfBirth, displayTitle: "Date of Birth") { healthStore in
             let components = try healthStore.dateOfBirthComponents()
-            if let date = Calendar.current.date(from: components) { // TODO what about time zones here?!!!
+            if let date = Calendar.current.date(from: components) {
+                // Question: Do we need to take time zones into account here?
+                // What if the user entered their DoB in a different time zone than the one they're currently in?
                 return date
             } else {
-                throw NSError(domain: "SpeziHealthKit", code: 0, userInfo: [ // TODO custom error type!
-                    NSLocalizedDescriptionKey: "Unable to construct date from components"
-                ])
+                // We don't use a custom error type here, since the error will be discarded anyway.
+                throw NSError(domain: "SpeziHealthKit", code: 0)
             }
         }
     }
@@ -73,7 +74,6 @@ extension HealthKitCharacteristic {
 }
 
 
-
 /// Fetches a `HKCharacteristicType` from the HealthKit data store, in a type-safe manner.
 /// - Note: This property wrapper is not auto-updating; if the characteristic's value is changed while a view using this property wrapper is active,
 ///     it will continue displaying the old value until the view gets updated for some other reason.
@@ -83,11 +83,13 @@ public struct HealthKitCharacteristicQuery<Value>: DynamicProperty {
     
     private let characteristic: HealthKitCharacteristic<Value>
     
-    public init(_ characteristic: HealthKitCharacteristic<Value>) {
-        self.characteristic = characteristic
-    }
-    
+    /// The value of the underlying characteristic.
     public var wrappedValue: Value? {
         try? characteristic.accessor(healthKit.healthStore)
+    }
+    
+    /// Creates a new characteristic query
+    public init(_ characteristic: HealthKitCharacteristic<Value>) {
+        self.characteristic = characteristic
     }
 }

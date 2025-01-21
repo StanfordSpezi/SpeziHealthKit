@@ -8,9 +8,9 @@
 
 import Foundation
 import HealthKit
-import SwiftUI
 import Spezi
 import SpeziFoundation
+import SwiftUI
 
 
 /// Perform statistical queries on the HealthKit database, within SwiftUI views.
@@ -38,7 +38,7 @@ import SpeziFoundation
 ///     If you are interested in simply querying all individual samples for a certain sample type over a certain time range,
 ///     consider using ``HealthKitQuery`` instead.
 @propertyWrapper @MainActor
-public struct HealthKitStatisticsQuery: DynamicProperty {
+public struct HealthKitStatisticsQuery: DynamicProperty { // swiftlint:disable:this file_types_order
     public enum CumulativeAggregationOption: Hashable {
         case sum
         
@@ -77,7 +77,7 @@ public struct HealthKitStatisticsQuery: DynamicProperty {
         
         public static let hour = Self(.init(hour: 1))
         public static let day = Self(.init(day: 1))
-        public static let week = Self(.init(day: 7)) // TODO also try .init(weekOfYear: 1)?
+        public static let week = Self(.init(day: 7))
         public static let month = Self(.init(month: 1))
         public static let year = Self(.init(year: 1))
     }
@@ -86,38 +86,21 @@ public struct HealthKitStatisticsQuery: DynamicProperty {
     @Environment(HealthKit.self) private var healthKit
     
     @State private var results = StatisticsQueryResults()
+    
     private let input: StatisticsQueryResults.Input
     
-    public init(
-        _ sampleType: SampleType<HKQuantitySample>,
-        aggregatedBy options: Set<CumulativeAggregationOption>,
-        over aggInterval: AggregationInterval,
-        timeRange: HealthKitQueryTimeRange,
-        filter filterPredicate: NSPredicate? = nil
-    ) {
-        self.init(
-            sampleType,
-            rawOptions: options.reduce([.mostRecent], { $0.union($1.hkStatisticsOption) }),
-            aggInterval: aggInterval,
-            timeRange: timeRange,
-            filter: filterPredicate
-        )
+    /// The query's resulting `HKStatistics` objects.
+    public var wrappedValue: [HKStatistics] {
+        // Note that we're intentionally not returning `results` directly here (even though it also is a RandomAccessCollection),
+        // the reason being that it would be auto-updating, which might be unexpected since it's not communicated via the return
+        // type. Instead, we return `results.statistics`, i.e. essentially a snapshot of the current state of the results object.
+        results.statistics
     }
     
-    public init(
-        _ sampleType: SampleType<HKQuantitySample>,
-        aggregatedBy options: Set<DiscreteAggregationOption>,
-        over aggInterval: AggregationInterval,
-        timeRange: HealthKitQueryTimeRange,
-        filter filterPredicate: NSPredicate? = nil
-    ) {
-        self.init(
-            sampleType,
-            rawOptions: options.reduce([.mostRecent], { $0.union($1.hkStatisticsOption) }),
-            aggInterval: aggInterval,
-            timeRange: timeRange,
-            filter: filterPredicate
-        )
+    /// The query's underlying auto-updating results object.
+    /// This can be used e.g. to provide data to a ``HealthChart``.
+    public var projectedValue: StatisticsQueryResults {
+        results
     }
     
     private init(
@@ -144,19 +127,42 @@ public struct HealthKitStatisticsQuery: DynamicProperty {
             results.input = input
         }
     }
-    
-    /// The query's resulting `HKStatistics` objects.
-    public var wrappedValue: [HKStatistics] {
-        // Note that we're intentionally not returning `results` directly here (even though it also is a RandomAccessCollection),
-        // the reason being that it would be auto-updating, which might be unexpected since it's not communicated via the return
-        // type. Instead, we return `results.statistics`, i.e. essentially a snapshot of the current state of the results object.
-        results.statistics
+}
+
+
+extension HealthKitStatisticsQuery { // swiftlint:disable:this file_types_order
+    /// Create a new statistics query.
+    public init(
+        _ sampleType: SampleType<HKQuantitySample>,
+        aggregatedBy options: Set<CumulativeAggregationOption>,
+        over aggInterval: AggregationInterval,
+        timeRange: HealthKitQueryTimeRange,
+        filter filterPredicate: NSPredicate? = nil
+    ) {
+        self.init(
+            sampleType,
+            rawOptions: options.reduce(into: [.mostRecent], { $0.formUnion($1.hkStatisticsOption) }),
+            aggInterval: aggInterval,
+            timeRange: timeRange,
+            filter: filterPredicate
+        )
     }
     
-    /// The query's underlying auto-updating results object.
-    /// This can be used e.g. to provide data to a ``HealthChart``.
-    public var projectedValue: StatisticsQueryResults {
-        results
+    /// Create a new statistics query.
+    public init(
+        _ sampleType: SampleType<HKQuantitySample>,
+        aggregatedBy options: Set<DiscreteAggregationOption>,
+        over aggInterval: AggregationInterval,
+        timeRange: HealthKitQueryTimeRange,
+        filter filterPredicate: NSPredicate? = nil
+    ) {
+        self.init(
+            sampleType,
+            rawOptions: options.reduce(into: [.mostRecent], { $0.formUnion($1.hkStatisticsOption) }),
+            aggInterval: aggInterval,
+            timeRange: timeRange,
+            filter: filterPredicate
+        )
     }
 }
 
@@ -182,17 +188,17 @@ public final class StatisticsQueryResults: @unchecked Sendable {
     }
     
     
-    /// The healthStore to be used by this query.
-    /// - Note: We intentionally require this object be externally-supplied,
-    ///     since the documentation says that apps should treat these as long-lived objects,
-    ///     with only a single instance shared across the entire app.
-    ///     In the context of this type specifically, this is safe, because the public `init`s all require a `HKHealthStore`
-    ///     be provided by the caller, and the fileprivate `init()` is used only by the ``HealthKitStatisticsQuery``
-    ///     property wrapper, which assigns a non-nil health store prior to updating the `input` property.
+    /// The `HKHealthStore` to be used by this query.
+    ///
+    /// We intentionally require this object be externally-supplied,
+    /// since the documentation says that apps should treat these as long-lived objects,
+    /// with only a single instance shared across the entire app.
+    /// In the context of this type specifically, this is safe, because the fileprivate `init()` is used only by the ``HealthKitStatisticsQuery``
+    /// property wrapper, which assigns a non-nil health store prior to updating the `input` property.
     @ObservationIgnored
-    fileprivate var healthStore: HKHealthStore!
+    fileprivate var healthStore: HKHealthStore! // swiftlint:disable:this implicitly_unwrapped_optional
     
-    private(set) public var queryError: (any Error)?
+    public private(set) var queryError: (any Error)?
     
     
     @ObservationIgnored
@@ -209,45 +215,11 @@ public final class StatisticsQueryResults: @unchecked Sendable {
     
     fileprivate private(set) var statistics: [HKStatistics] = []
     
-    /// We need the ability to initialise a e
-    fileprivate init() {
-    }
-    
-    // TODO Do we really still want this? (No.)
-    public init(
-        healthStore: HKHealthStore,
-        sampleType: SampleType<HKQuantitySample>,
-        options: HKStatisticsOptions,
-        aggregationInterval: HealthKitStatisticsQuery.AggregationInterval,
-        timeRange: HealthKitQueryTimeRange,
-        filter predicate: Predicate<HKStatistics>? = nil
-    ) throws(QueryError) {
-        self.healthStore = healthStore
-        let filterPredicate: NSPredicate?
-        if let predicate {
-            guard let predicate = NSPredicate(predicate) else {
-                throw .invalidPredicate
-            }
-            filterPredicate = predicate
-        } else {
-            filterPredicate = nil
-        }
-        self.input = .init(
-            sampleType: sampleType,
-            options: options,
-            aggInterval: aggregationInterval,
-            timeRange: timeRange,
-            filterPredicate: filterPredicate
-        )
-        update()
-    }
-    
-    
-    deinit {
-        task?.cancel()
-        task = nil
-    }
-    
+    /// Creates an empty, uninitialized ``StatisticsQueryResults`` object.
+    ///
+    /// The purpose of this initializer is to allow this type to be used as a state object in SwiftUI,
+    /// for which we need to be able to initialize it without passing in any context.
+    fileprivate init() {}
     
     func update() {
         guard let healthStore, let input else {
@@ -270,15 +242,14 @@ public final class StatisticsQueryResults: @unchecked Sendable {
         task?.cancel()
         task = Task.detached { [weak self] in
             do {
-                print("[\(self) -update] fetching results")
                 let results = try catchingNSException {
                     queryDesc.results(for: healthStore)
                 }
                 for try await update in results {
-                    guard let self = self else { return }
-                    print("[\(self) -update] new update")
+                    guard let self = self else {
+                        return
+                    }
                     let statistics = update.statisticsCollection.statistics()
-                    let timeRange = input.timeRange
                     Task { @MainActor in
                         self.queryError = nil
                         self.statistics = statistics
@@ -288,7 +259,9 @@ public final class StatisticsQueryResults: @unchecked Sendable {
                 // The `queryDesc.results(for:)` call raised an NSException.
                 // This typically happens if you have an invalid value somewhere in the input.
                 // E.g.: "Statistics option HKStatisticsOptionCumulativeSum is not compatible with discrete data type HKQuantityTypeIdentifierHeartRate"
-                guard let self = self else { return }
+                guard let self = self else {
+                    return
+                }
                 Task { @MainActor in
                     self.queryError = error
                     self.statistics = []
@@ -296,17 +269,18 @@ public final class StatisticsQueryResults: @unchecked Sendable {
             }
         }
     }
+    
+    
+    deinit {
+        task?.cancel()
+        task = nil
+    }
 }
-
 
 
 extension StatisticsQueryResults: HealthKitQueryResults {
     public typealias Index = Int
     public typealias Element = HKStatistics
-    
-    public subscript(position: Int) -> HKStatistics {
-        statistics[position]
-    }
     
     public var startIndex: Int {
         statistics.startIndex
@@ -320,16 +294,24 @@ extension StatisticsQueryResults: HealthKitQueryResults {
         statistics.count
     }
     
-    
     public var sampleType: SampleType<HKQuantitySample> {
-        input!.sampleType
+        guard let input else {
+            preconditionFailure("Cannot access \(#function) of \(Self.self) outside of being installed on a SwiftUI view")
+        }
+        return input.sampleType
     }
     
     public var timeRange: HealthKitQueryTimeRange {
-        input!.timeRange
+        guard let input else {
+            preconditionFailure("Cannot access \(#function) of \(Self.self) outside of being installed on a SwiftUI view")
+        }
+        return input.timeRange
+    }
+    
+    public subscript(position: Int) -> HKStatistics {
+        statistics[position]
     }
 }
-
 
 
 extension HKStatistics: @retroactive Identifiable {}
@@ -337,52 +319,3 @@ extension HKStatistics: @retroactive Identifiable {}
 
 // it's an OptionSet, the Hashable implementation is trivial, we should be fine here...
 extension HKStatisticsOptions: @retroactive Hashable {}
-
-
-
-
-extension HealthKitStatisticsQuery.AggregationInterval {
-    /// Determines an hopefully sensible aggregation interval for the specifid query range.
-    public init(_ timeRange: HealthKitQueryTimeRange) {
-        switch timeRange {
-        case .hour:
-            self = .hour
-        case .today:
-            self = .hour
-        case .week, .currentWeek:
-            self = .day
-        case .month, .currentMonth:
-            self = .day
-        case .year, .currentYear:
-            self = .month
-        case .lastNHours(let numHours):
-            // TODO make this different based on the #hours (like we do with #daye below!)
-            self.init(DateComponents(minute: 15))
-        case .lastNDays(let numDays):
-            // TODO better mapping here!!! (and for the others below!)
-            switch numDays {
-            case ...2:
-                self = .hour
-            case 3...31:
-                self = .day
-            case 32...183:
-                self = .week
-            default:
-                self = .month
-            }
-        case .lastNWeeks(let numWeeks):
-            self = .init(.lastNDays(numWeeks * 7))
-        case .lastNMonths(let numMonths):
-            // TODO what about leap years?
-            // TODO take into account the fact that not all months have the same #days
-            self.init(.lastNDays(numMonths * 31))
-        case .lastNYears(let numYears):
-            self.init(.lastNMonths(numYears * 12))
-        case .custom(let range):
-            // TODO instead of calculating it here, have it be specified as an associated value?
-            self.init(.lastNDays(
-                Calendar.current.countDistinctDays(from: range.lowerBound, to: range.upperBound)
-            ))
-        }
-    }
-}

@@ -19,7 +19,7 @@ final class HealthKitSampleCollector: HealthDataCollector {
     
     let sampleType: HKSampleType
     private let predicate: NSPredicate?
-    public let delivery: HealthDataCollectorDeliverySetting
+    let delivery: HealthDataCollectorDeliverySetting
     @MainActor private(set) var isActive = false
     
     @MainActor private lazy var anchorUserDefaultsKey = UserDefaults.Keys.healthKitAnchorPrefix.appending(sampleType.identifier)
@@ -129,7 +129,6 @@ final class HealthKitSampleCollector: HealthDataCollector {
     
     @MainActor
     private func anchoredContinuousObjectQuery() async throws {
-        print("ANCHOR", anchor)
         let anchorDescriptor = healthStore.anchorDescriptor(sampleType: sampleType, predicate: predicate, anchor: anchor)
         let updateQueue = anchorDescriptor.results(for: healthStore)
         Task {
@@ -137,11 +136,9 @@ final class HealthKitSampleCollector: HealthDataCollector {
                 for deletedObject in results.deletedObjects {
                     await standard.remove(sample: deletedObject)
                 }
-                
                 for addedSample in results.addedSamples {
                     await standard.add(sample: addedSample)
                 }
-                print("NEW ANCHOR", results.newAnchor)
                 self.anchor = results.newAnchor
             }
         }

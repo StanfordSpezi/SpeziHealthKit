@@ -10,6 +10,29 @@ import Charts
 import SwiftUI
 
 
+struct SomeChartContent<Body: ChartContent>: ChartContent { // swiftlint:disable:this file_types_order
+    private let content: () -> Body
+    
+    var body: some ChartContent {
+        content()
+    }
+    
+    init(@ChartContentBuilder _ content: @escaping () -> Body) {
+        self.content = content
+    }
+}
+
+
+enum TimeConstants {
+    static let minute: TimeInterval = 60
+    static let hour = 60 * minute
+    static let day = 24 * hour
+    static let week = 7 * day
+    static let month = 31 * day
+    static let year = 365 * day
+}
+
+
 extension KeyValuePairs {
     /// Creates a `KeyValuePairs` object, using the elements of a `Sequence`.
     /// - parameter seq: The Sequence whose key-value pairs should be used as the values of the `KeyValuePairs` instance.
@@ -20,20 +43,6 @@ extension KeyValuePairs {
 }
 
 
-struct SomeChartContent<Body: ChartContent>: ChartContent {
-    private let content: () -> Body
-    
-    init(@ChartContentBuilder _ content: @escaping () -> Body) {
-        self.content = content
-    }
-    
-    var body: some ChartContent {
-        content()
-    }
-}
-
-
-
 extension ClosedRange where Bound == Date {
     /// The middle value of the range.
     var middle: Date {
@@ -41,7 +50,6 @@ extension ClosedRange where Bound == Date {
         return Date(timeIntervalSinceReferenceDate: lowerBound.timeIntervalSinceReferenceDate + (diff / 2))
     }
 }
-
 
 
 extension View {
@@ -64,14 +72,4 @@ extension View {
     func transforming(@ViewBuilder _ transform: (Self) -> some View) -> some View {
         transform(self)
     }
-}
-
-
-enum TimeConstants {
-    static let minute: TimeInterval = 60
-    static let hour = 60 * minute
-    static let day = 24 * hour
-    static let week = 7 * day
-    static let month = 31 * day
-    static let year = 365 * day
 }

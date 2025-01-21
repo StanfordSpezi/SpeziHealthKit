@@ -12,11 +12,13 @@ import SpeziFoundation
 
 
 extension HKCategoryType {
+    /// All well-known `HKCategoryType`s
     public static let allKnownCategories: Set<HKCategoryType> = Set(HKCategoryTypeIdentifier.allKnownIdentifiers.map { HKCategoryType($0) })
 }
 
 extension HKCategoryTypeIdentifier {
-    public static let allKnownIdentifiers = Set<Self> {
+    /// All well-known `HKCategoryTypeIdentifier`s
+    public static let allKnownIdentifiers = Set<Self> { // swiftlint:disable:this closure_body_length
         Self.appleStandHour
         Self.environmentalAudioExposureEvent
         Self.headphoneAudioExposureEvent

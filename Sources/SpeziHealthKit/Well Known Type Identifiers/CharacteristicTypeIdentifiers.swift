@@ -11,10 +11,14 @@ import HealthKit
 
 
 extension HKCharacteristicType {
-    public static let allKnownCharacteristics: Set<HKCharacteristicType> = Set(HKCharacteristicTypeIdentifier.allKnownIdentifiers.map { HKCharacteristicType($0) })
+    /// All well-known `HKCharacteristicType`s
+    public static let allKnownCharacteristics: Set<HKCharacteristicType> = Set(
+        HKCharacteristicTypeIdentifier.allKnownIdentifiers.map { HKCharacteristicType($0) }
+    )
 }
 
 extension HKCharacteristicTypeIdentifier {
+    /// All well-known `HKCharacteristicTypeIdentifier`s
     public static let allKnownIdentifiers: Set<Self> = [
         .activityMoveMode,
         .biologicalSex,

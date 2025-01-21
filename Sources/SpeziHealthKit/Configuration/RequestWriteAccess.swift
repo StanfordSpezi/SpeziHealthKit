@@ -27,10 +27,10 @@ public struct RequestWriteAccess: HealthKitConfigurationComponent {
         category: Set<HKCategoryTypeIdentifier> = [],
         correlation: Set<HKCorrelationTypeIdentifier> = []
     ) {
-        self.init(Set(quantity.map(HKQuantityType.init))
+        let types = Set<HKSampleType>(quantity.map(HKQuantityType.init))
             .union(category.map(HKCategoryType.init))
             .union(correlation.flatMap(\.knownAssociatedSampleTypes))
-        )
+        self.init(types)
     }
     
     public func configure(for healthKit: HealthKit, on standard: any HealthKitConstraint) {

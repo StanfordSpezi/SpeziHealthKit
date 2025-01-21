@@ -12,13 +12,14 @@ import SpeziFoundation
 
 
 extension HKQuantityType {
+    /// All well-known `HKQuantityType`s
     public static let allKnownQuantities: Set<HKQuantityType> = Set(HKQuantityTypeIdentifier.allKnownIdentifiers.map { HKQuantityType($0) })
 }
 
 
-
 extension HKQuantityTypeIdentifier {
-    public static let allKnownIdentifiers = Set<Self> {
+    /// All well-known `HKQuantityTypeIdentifier`s
+    public static let allKnownIdentifiers = Set<Self> { // swiftlint:disable:this closure_body_length
         Self.appleSleepingWristTemperature
         Self.bodyFatPercentage
         Self.bodyMass

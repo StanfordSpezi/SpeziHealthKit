@@ -68,10 +68,10 @@ public struct CollectSample: HealthKitConfigurationComponent {
     ///   - predicate: A custom predicate that should be passed to the HealthKit query.
     ///                The default predicate collects all samples that have been collected from the first time that the user
     ///                provided the application authorization to collect the samples.
-    ///   - delivery: The ``HealthKitDeliverySetting`` that should be used to collect the sample type. `.manual` is the default argument used.
+    ///   - delivery: The ``HealthDataCollectorDeliverySetting`` that should be used to collect the sample type. `.manual` is the default argument used.
     public init(
         _ sampleType: SampleType<some Any>,
-        delivery: HealthDataCollectorDeliverySetting = .manual(), // TODO Question @Paul : why does it default to manual?
+        delivery: HealthDataCollectorDeliverySetting = .manual(),
         predicate: NSPredicate? = nil
     ) {
         self.sampleType = sampleType.hkSampleType
