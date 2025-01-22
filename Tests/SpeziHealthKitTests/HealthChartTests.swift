@@ -28,7 +28,7 @@ final class HealthChartTests: XCTestCase {
             HealthChartEntry(results, drawingConfig: .init(mode: .line, color: .red))
         }
             .frame(width: 600, height: 500)
-            .adjustToTestLocale()
+            .withLocale(.enUS, timeZone: .losAngeles)
         
         assertSnapshot(of: healthChart, as: .image)
         
@@ -74,7 +74,7 @@ final class HealthChartTests: XCTestCase {
             HealthChartEntry(blooxOxygenResults, drawingConfig: .init(mode: .line, color: .blue))
         }
             .frame(width: 600, height: 500)
-            .adjustToTestLocale()
+            .withLocale(.enUS, timeZone: .losAngeles)
         
         assertSnapshot(of: healthChart, as: .image)
         
@@ -95,7 +95,7 @@ final class HealthChartTests: XCTestCase {
             // nothing in here
         }
             .frame(width: 600, height: 500)
-            .adjustToTestLocale()
+            .withLocale(.enUS, timeZone: .losAngeles)
         
         assertSnapshot(of: healthChart, as: .image)
     }
@@ -108,7 +108,7 @@ final class HealthChartTests: XCTestCase {
             HealthChartEntry(data, drawingConfig: .init(mode: .bar, color: .red))
         }
             .frame(width: 600, height: 500)
-            .adjustToTestLocale()
+            .withLocale(.enUS, timeZone: .losAngeles)
         
         assertSnapshot(of: healthChart, as: .image)
     }
@@ -149,7 +149,7 @@ final class HealthChartTests: XCTestCase {
                 }
             }
             .frame(width: 600, height: 500)
-            .adjustToTestLocale()
+            .withLocale(.enUS, timeZone: .losAngeles)
         }
         
         let healthChart1 = makeHealthChart(flag: true)
@@ -157,21 +157,5 @@ final class HealthChartTests: XCTestCase {
         
         let healthChart2 = makeHealthChart(flag: false)
         assertSnapshot(of: healthChart2, as: .image)
-    }
-}
-
-
-
-extension View {
-    func adjustToTestLocale() -> some View {
-        let locale = Locale(identifier: "en_US")
-        let timeZone = TimeZone(identifier: "America/Los_Angeles")!
-        var cal = Calendar.current
-        cal.locale = locale
-        cal.timeZone = timeZone
-        return self
-            .environment(\.locale, locale)
-            .environment(\.timeZone, timeZone)
-            .environment(\.calendar, cal)
     }
 }

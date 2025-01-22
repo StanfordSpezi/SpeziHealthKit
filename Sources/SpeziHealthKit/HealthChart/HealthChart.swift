@@ -195,6 +195,29 @@ public struct HealthChart<each Results: HealthKitQueryResults>: View {
     }
     
     
+    @Environment(\.locale) private var locale
+    @Environment(\.timeZone) private var timeZone
+    @Environment(\.calendar) private var calendar
+    
+    @AxisContentBuilder
+    private func xAxisContent() -> some AxisContent {
+        if let maxTimeRange = self.maxTimeRange(), let config = xAxisMarksConfig(for: maxTimeRange) {
+            let locale = self.locale
+            let timeZone = self.timeZone
+            let calendar = self.calendar
+            AxisMarks(values: .stride(by: config.strideComponent, count: config.strideCount)) { value in
+                if let date = value.as(Date.self) {
+    //                let component = Calendar.current.component(strideConfig.component, from: date)
+                    AxisValueLabel(format: config.valueFormat.locale(locale).timeZone(timeZone).calendar(calendar))
+                }
+                AxisGridLine()
+                AxisTick()
+            }
+        } else {
+            // the chart is empty (i.e., has no entries), or we weren't able to come up w/ a good config.
+            AxisMarks(values: .automatic)
+        }
+    }
     
     // Ideally, this would be nested in the `xAxisContent()` function, but the compiler currently doesn't allow this.
     private struct XAxisMarksConfig {
@@ -203,48 +226,30 @@ public struct HealthChart<each Results: HealthKitQueryResults>: View {
         let valueFormat: Date.FormatStyle
     }
     
-    @Environment(\.locale) private var locale
-    @Environment(\.timeZone) private var timeZone
-    @Environment(\.calendar) private var calendar
     
-    private func xAxisContent() -> some AxisContent {
+    private func maxTimeRange() -> HealthKitQueryTimeRange? {
         var maxTimeRange: HealthKitQueryTimeRange?
         for entry in repeat each entry {
             maxTimeRange = maxTimeRange.map { max($0, entry.results.timeRange) } ?? entry.results.timeRange
         }
-        guard let duration = maxTimeRange?.duration else {
-            // the chart is empty
-            return AxisMarks(values: .automatic)
-        }
-        
-        let config: XAxisMarksConfig
-        
+        return maxTimeRange
+    }
+    
+    private func xAxisMarksConfig(for maxTimeRange: HealthKitQueryTimeRange) -> XAxisMarksConfig? {
+        let duration = maxTimeRange.duration
         if duration <= TimeConstants.hour {
-            config = .init(strideComponent: .minute, strideCount: 10, valueFormat: .dateTime.minute())
+            return .init(strideComponent: .minute, strideCount: 10, valueFormat: .dateTime.minute())
         } else if duration <= TimeConstants.day / 2 {
-            config = .init(strideComponent: .hour, strideCount: 1, valueFormat: .dateTime.hour())
+            return .init(strideComponent: .hour, strideCount: 1, valueFormat: .dateTime.hour())
         } else if duration <= TimeConstants.day {
-            config = .init(strideComponent: .hour, strideCount: 3, valueFormat: .dateTime.hour())
+            return .init(strideComponent: .hour, strideCount: 3, valueFormat: .dateTime.hour())
         } else if duration <= TimeConstants.week {
-            config = .init(strideComponent: .day, strideCount: 1, valueFormat: .dateTime.month(.abbreviated).day())
+            return .init(strideComponent: .day, strideCount: 1, valueFormat: .dateTime.month(.abbreviated).day())
         } else if duration <= TimeConstants.month {
-            config = .init(strideComponent: .weekOfMonth, strideCount: 1, valueFormat: .dateTime.day())
+            return .init(strideComponent: .weekOfMonth, strideCount: 1, valueFormat: .dateTime.day())
         } else {
             // we just give up at this point...
-            return AxisMarks(values: .automatic)
-        }
-        
-        let locale = self.locale
-        let timeZone = self.timeZone
-        let calendar = self.calendar
-        
-        return AxisMarks(values: .stride(by: config.strideComponent, count: config.strideCount)) { value in
-            if let date = value.as(Date.self) {
-//                let component = Calendar.current.component(strideConfig.component, from: date)
-                AxisValueLabel(format: config.valueFormat.locale(locale).timeZone(timeZone).calendar(calendar))
-            }
-            AxisGridLine()
-            AxisTick()
+            return nil
         }
     }
 }

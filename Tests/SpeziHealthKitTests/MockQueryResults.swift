@@ -82,7 +82,7 @@ func makeDateProvider(
     interval: (component: Calendar.Component, multiple: Int),
     starting startDate: DateComponents
 ) throws -> some (Sequence<Date> & IteratorProtocol<Date>) {
-    let cal = Calendar.current
+    let cal = Calendar.current.withLocale(.enUS, timeZone: .losAngeles)
     let startDate = try XCTUnwrap(cal.date(from: startDate))
     return sequence(first: startDate) {
         cal.date(byAdding: interval.component, value: interval.multiple, to: $0)
