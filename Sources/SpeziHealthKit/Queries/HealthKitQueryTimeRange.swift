@@ -22,6 +22,10 @@ public struct HealthKitQueryTimeRange: Sendable {
         )
     }
     
+    var duration: TimeInterval {
+        range.lowerBound.distance(to: range.upperBound)
+    }
+    
     public init(_ range: ClosedRange<Date>) {
         self.range = range
     }
@@ -39,6 +43,13 @@ extension HealthKitQueryTimeRange: Hashable {
     
     public func hash(into hasher: inout Hasher) {
         hasher.combine(range)
+    }
+}
+
+
+extension HealthKitQueryTimeRange: Comparable {
+    public static func < (lhs: Self, rhs: Self) -> Bool {
+        lhs.duration < rhs.duration
     }
 }
 

@@ -1,7 +1,7 @@
 //
 // This source file is part of the Stanford Spezi open-source project
 //
-// SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
+// SPDX-FileCopyrightText: 2025 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
 // SPDX-License-Identifier: MIT
 //
@@ -14,7 +14,7 @@ import SnapshotTesting
 import SwiftUI
 
 
-final class SpeziHealthKitTests: XCTestCase {
+final class HealthChartTests: XCTestCase {
     @MainActor
     func testSimpleHealthChartView() throws {
         var heartRateSamplesProvider = FakeSamplesProvider(
@@ -164,6 +164,14 @@ final class SpeziHealthKitTests: XCTestCase {
 
 extension View {
     func adjustToTestLocale() -> some View {
-        self.environment(\.locale, Locale(identifier: "en_US"))
+        let locale = Locale(identifier: "en_US")
+        let timeZone = TimeZone(identifier: "America/Los_Angeles")!
+        var cal = Calendar.current
+        cal.locale = locale
+        cal.timeZone = timeZone
+        return self
+            .environment(\.locale, locale)
+            .environment(\.timeZone, timeZone)
+            .environment(\.calendar, cal)
     }
 }

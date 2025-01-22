@@ -113,6 +113,9 @@ public struct HealthChart<each Results: HealthKitQueryResults>: View {
                 view
             }
         }
+        .chartXAxis {
+            xAxisContent()
+        }
     }
     
     
@@ -189,5 +192,76 @@ public struct HealthChart<each Results: HealthKitQueryResults>: View {
             }
         }
         .foregroundStyle(by: .value("Sample Type", entry.results.sampleType.displayTitle))
+    }
+    
+    
+    
+    // Ideally, this would be nested in the `xAxisContent()` function, but the compiler currently doesn't allow this.
+    private struct XAxisMarksConfig {
+        let strideComponent: Calendar.Component
+        let strideCount: Int
+        let valueFormat: Date.FormatStyle
+    }
+    
+    @Environment(\.locale) private var locale
+    @Environment(\.timeZone) private var timeZone
+    @Environment(\.calendar) private var calendar
+    
+    private func xAxisContent() -> some AxisContent {
+        var maxTimeRange: HealthKitQueryTimeRange?
+        for entry in repeat each entry {
+            maxTimeRange = maxTimeRange.map { max($0, entry.results.timeRange) } ?? entry.results.timeRange
+        }
+        guard let duration = maxTimeRange?.duration else {
+            // the chart is empty
+            return AxisMarks(values: .automatic)
+        }
+        
+        let config: XAxisMarksConfig
+        
+        if duration <= TimeConstants.hour {
+            config = .init(strideComponent: .minute, strideCount: 10, valueFormat: .dateTime.minute())
+        } else if duration <= TimeConstants.day / 2 {
+            config = .init(strideComponent: .hour, strideCount: 1, valueFormat: .dateTime.hour())
+        } else if duration <= TimeConstants.day {
+            config = .init(strideComponent: .hour, strideCount: 3, valueFormat: .dateTime.hour())
+        } else if duration <= TimeConstants.week {
+            config = .init(strideComponent: .day, strideCount: 1, valueFormat: .dateTime.month(.abbreviated).day())
+        } else if duration <= TimeConstants.month {
+            config = .init(strideComponent: .weekOfMonth, strideCount: 1, valueFormat: .dateTime.day())
+        } else {
+            // we just give up at this point...
+            return AxisMarks(values: .automatic)
+        }
+        
+        let locale = self.locale
+        let timeZone = self.timeZone
+        let calendar = self.calendar
+        
+        return AxisMarks(values: .stride(by: config.strideComponent, count: config.strideCount)) { value in
+            if let date = value.as(Date.self) {
+//                let component = Calendar.current.component(strideConfig.component, from: date)
+                AxisValueLabel(format: config.valueFormat.locale(locale).timeZone(timeZone).calendar(calendar))
+            }
+            AxisGridLine()
+            AxisTick()
+        }
+    }
+}
+
+
+extension Date.FormatStyle {
+    /// Returns a version of the `FormatStyle` that uses the specified time zone.
+    func timeZone(_ timeZone: TimeZone) -> Self {
+        var style = self
+        style.timeZone = timeZone
+        return style
+    }
+    
+    /// Returns a version of the `FormatStyle` that uses the specified calendar.
+    func calendar(_ calendar: Calendar) -> Self {
+        var style = self
+        style.calendar = calendar
+        return style
     }
 }
