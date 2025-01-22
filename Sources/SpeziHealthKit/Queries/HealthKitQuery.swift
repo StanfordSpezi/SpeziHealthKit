@@ -55,7 +55,10 @@ public struct HealthKitQuery<Sample: _HKSampleWithSampleType>: DynamicProperty {
     private var results = SamplesQueryResults<Sample>()
     
     /// The individual query results.
-    public var wrappedValue: some RandomAccessCollection<Sample> {
+    public var wrappedValue: OrderedArray<Sample> {
+        // until https://github.com/swiftlang/swift/issues/78405 is fixed, we can't return `some RandomAccessCollection<Sample>` here,
+        // which would arguably be vastly preferable, and sadly need to expose the `OrderedArray` implementation detail :/
+        
         // Note that we're intentionally not returning `results` directly here (even though it also is a RandomAccessCollection),
         // the reason being that it would be auto-updating, which might be unexpected since it's not communicated via the return
         // type. Instead, we return `results.dataPoints`, i.e. essentially a snapshot of the current state of the results object.
@@ -151,6 +154,7 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
         guard self.input != input else {
             return
         }
+        self.healthStore = healthStore
         self.input = input
         startQuery()
     }
