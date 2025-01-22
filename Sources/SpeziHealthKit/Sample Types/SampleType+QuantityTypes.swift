@@ -9,7 +9,6 @@
 import HealthKit
 
 
-/// ## Quantity Sample Types
 extension SampleType {
     /// The sample type representing step count quantity samples
     @inlinable public static var stepCount: SampleType<HKQuantitySample> {
