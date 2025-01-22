@@ -62,7 +62,7 @@ final class HealthKitStore: Module, DefaultInitializable, EnvironmentAccessible,
         
         let content = UNMutableNotificationContent()
         content.title = "Spezi HealthKit Test App"
-        content.body = "Added sample \(sample.sampleType.description) (\(sample.uuid.uuidString) at \(Date.now.formatted(date: .numeric, time: .complete)): \((sample as? HKQuantitySample)?.quantity.description ?? "Unknown")"
+        content.body = "Added sample \(sample.sampleType.description) \((sample as? HKQuantitySample)?.quantity.description ?? #"¯\_(ツ)_/¯"#) (\(Date.now.formatted(date: .numeric, time: .complete)); \(sample.uuid.uuidString)"
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
         try? await UNUserNotificationCenter.current().add(request)
     }

@@ -11,10 +11,12 @@
   "defaultOptions" : {
     "commandLineArgumentEntries" : [
       {
-        "argument" : "-AppleLocale"
+        "argument" : "-AppleLocale",
+        "enabled" : false
       },
       {
-        "argument" : "en_US"
+        "argument" : "en_US",
+        "enabled" : false
       }
     ],
     "targetForVariableExpansion" : {

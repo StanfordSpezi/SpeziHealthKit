@@ -12,12 +12,19 @@ import HealthKit
 
 
 
-final class QueryTimeRangeTests: XCTestCase {
+final class SpeziHealthKitTests: XCTestCase {
     func testTimeRanges() {
         XCTAssertEqual(HealthKitQueryTimeRange.last(hours: 1), .currentHour)
         XCTAssertEqual(HealthKitQueryTimeRange.last(days: 1), .today)
         XCTAssertEqual(HealthKitQueryTimeRange.last(weeks: 1), .currentWeek)
         XCTAssertEqual(HealthKitQueryTimeRange.last(months: 1), .currentMonth)
         XCTAssertEqual(HealthKitQueryTimeRange.last(years: 1), .currentYear)
+    }
+    
+    func testWellKnownIdentifiers() {
+        XCTAssertEqual(HKQuantityType.allKnownQuantities.count == HKQuantityTypeIdentifier.allKnownIdentifiers.count)
+        XCTAssertEqual(HKCorrelationType.allKnownCorrelations.count == HKCorrelationTypeIdentifier.allKnownIdentifiers.count)
+        XCTAssertEqual(HKCategoryType.allKnownCategories.count == HKCategoryTypeIdentifier.allKnownIdentifiers.count)
+        XCTAssertEqual(HKObjectType.allKnownObjectTypes.count, 12)
     }
 }

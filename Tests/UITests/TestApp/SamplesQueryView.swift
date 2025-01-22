@@ -10,16 +10,20 @@ import SpeziHealthKit
 import SwiftUI
 
 
-struct SamplesQueriesView: View {
+struct SamplesQueryView: View {
     @Environment(HealthKit.self) private var healthKit
     
-    @HealthKitQuery(.stepCount, timeRange: .currentWeek)
+    @HealthKitQuery(.stepCount, timeRange: .today)
     private var stepSamples
     
     var body: some View {
         Form {
+            Section {
+                LabeledContent("#samples", value: "\(stepSamples.count)")
+            }
             makeSection(for: $stepSamples)
         }
+        .navigationTitle("Samples Query")
     }
     
     @ViewBuilder

@@ -35,11 +35,14 @@ struct HealthKitTestsView: View {
                     try await Task.sleep(until: start + .seconds(2)) // pretend that the data source triggering takes at least 2 seconds.
                 }
             }
-//            Section {
-//                NavigationLink("Samples Query") {
-//                    SamplesQueriesView()
-//                }
-//            }
+            Section {
+                NavigationLink("Samples Query") {
+                    SamplesQueryView()
+                }
+                NavigationLink("Statistics Query") {
+                    StatisticsQueryView()
+                }
+            }
             Section("Collected Samples Since App Launch") {
                 ForEach(healthKitStore.samples, id: \.self) { element in
                     Text(element.sampleType.identifier)

@@ -28,37 +28,9 @@ final class HealthKitTests: XCTestCase {
     
     
     @MainActor
-    func testTest() throws {
-        throw XCTSkip()
-        let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        
-        app.launch()
-//        XCTAssert(app.textViews["DatePicker Testing Section".uppercased()].waitForExistence(timeout: 5))
-//        let datePickers = app.datePickers.allElementsBoundByIndex
-//        XCTAssertEqual(datePickers.count, 3)
-//        datePickers[1].enterDate(DateComponents(year: 2024, month: 6, day: 2), assumingDatePickerStyle: .compact, in: app)
-//        datePickers[2].enterTime(DateComponents(hour: 20, minute: 15), assumingDatePickerStyle: .compact, in: app)
-        
-        try launchAndAddSamples(healthApp: .healthApp(), [
-//            .init(sampleType: .steps, date: nil, enterSampleValueHandler: .enterSimpleNumericValue(520, inTextField: "Steps")),
-            .steps(value: 1, date: .init(year: 1998, month: 06, day: 02, hour: 20, minute: 15))
-        ])
-        
-        app.activate()
-    }
-    
-    
-    @MainActor
     func testCollectSamples() throws {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        app.launch()
-        
-        if app.alerts["“TestApp” Would Like to Send You Notifications"].waitForExistence(timeout: 5) {
-            app.alerts["“TestApp” Would Like to Send You Notifications"].buttons["Allow"].tap()
-        }
-        
-        app.buttons["Ask for authorization"].tap()
-        try app.handleHealthKitAuthorization()
+        try launchAndHandleInitialStuff(app)
         
         // At the beginning, we expect nothing to be collected
         assertCollectedSamplesSinceLaunch(in: app, [:])
@@ -116,6 +88,77 @@ final class HealthKitTests: XCTestCase {
     
     
     @MainActor
+    func testRepeatedHealthKitAuthorization() throws {
+        let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
+        try launchAndHandleInitialStuff(app)
+        
+        // Wait for button to become disabled
+        let expectation = XCTNSPredicateExpectation(
+            predicate: NSPredicate { _, _ in
+                !app.buttons["Ask for authorization"].isEnabled
+            },
+            object: .none
+        )
+        wait(for: [expectation], timeout: 2)
+        
+        XCTAssert(!app.buttons["Ask for authorization"].isEnabled)
+    }
+    
+    
+    @MainActor
+    func testHealthKitQuery() throws {
+        let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
+        try launchAndHandleInitialStuff(app)
+        
+        for _ in 0..<7 {
+            try addSample(.stepCount, in: app)
+        }
+        
+        XCTAssert(app.buttons["Samples Query"].wait(for: \.isHittable, toEqual: true, timeout: 2))
+        app.buttons["Samples Query"].tap()
+        
+        XCTAssert(app.staticTexts.element(matching: NSPredicate(format: "label = %@", "#samples")).waitForExistence(timeout: 1))
+        XCTAssert(app.staticTexts.element(matching: NSPredicate(format: "label = %@", "Step Count 152")).waitForExistence(timeout: 1))
+    }
+    
+    
+    @MainActor
+    func testHealthKitStatisticsQuery() throws {
+        let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
+        try launchAndHandleInitialStuff(app)
+        
+        for _ in 0..<7 {
+            try addSample(.stepCount, in: app)
+        }
+        
+        XCTAssert(app.buttons["Samples Query"].wait(for: \.isHittable, toEqual: true, timeout: 2))
+        app.buttons["Statistics Query"].tap()
+        
+        let now = Calendar.current.dateComponents([.year, .month, .day], from: .now)
+        let fmt = { String(format: "%02d", $0) }
+        let todayPred = NSPredicate(
+            format: "label MATCHES %@",
+            "Steps on \(fmt(try XCTUnwrap(now.year)))-\(fmt(try XCTUnwrap(now.month)))-\(fmt(try XCTUnwrap(now.day))).*"
+        )
+        XCTAssert(app.staticTexts.element(matching: todayPred).waitForExistence(timeout: 1))
+    }
+}
+
+
+extension HealthKitTests {
+    @MainActor
+    private func launchAndHandleInitialStuff(_ app: XCUIApplication) throws {
+        app.launch()
+        if app.alerts["“TestApp” Would Like to Send You Notifications"].waitForExistence(timeout: 5) {
+            app.alerts["“TestApp” Would Like to Send You Notifications"].buttons["Allow"].tap()
+        }
+        
+        app.buttons["Ask for authorization"].tap()
+        try app.handleHealthKitAuthorization()
+    }
+    
+    
+    @MainActor
     private func addSample(_ sampleType: SampleType<HKQuantitySample>, in app: XCUIApplication) throws {
         app.navigationBars.images["plus"].tap()
         XCTAssert(app.buttons["Add Sample: \(sampleType.displayTitle)"].waitForExistence(timeout: 2))
@@ -167,34 +210,6 @@ final class HealthKitTests: XCTestCase {
             }
         }
         imp(try: 5)
-    }
-    
-    
-    @MainActor
-    func testRepeatedHealthKitAuthorization() throws {
-        throw XCTSkip()
-        let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-//        let app = XCUIApplication()
-//        app.deleteAndLaunch(withSpringboardAppName: "TestApp")
-        app.launch()
-        
-//        app.activate()
-        XCTAssert(app.buttons["Ask for authorization"].waitForExistence(timeout: 2))
-        XCTAssert(app.buttons["Ask for authorization"].isEnabled)
-        app.buttons["Ask for authorization"].tap()
-        
-        try app.handleHealthKitAuthorization()
-        
-        // Wait for button to become disabled
-        let expectation = XCTNSPredicateExpectation(
-            predicate: NSPredicate { _, _ in
-                !app.buttons["Ask for authorization"].isEnabled
-            },
-            object: .none
-        )
-        wait(for: [expectation], timeout: 2)
-        
-        XCTAssert(!app.buttons["Ask for authorization"].isEnabled)
     }
 }
 
