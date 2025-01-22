@@ -23,9 +23,9 @@ final class HealthKitTests: XCTestCase {
 //        datePickers[1].enterDate(DateComponents(year: 2024, month: 6, day: 2), assumingDatePickerStyle: .compact, in: app)
 //        datePickers[2].enterTime(DateComponents(hour: 20, minute: 15), assumingDatePickerStyle: .compact, in: app)
         
-        try launchHealthAppAndAddSomeSamples([
+        try launchAndAddSamples(healthApp: .healthApp(), [
 //            .init(sampleType: .steps, date: nil, enterSampleValueHandler: .enterSimpleNumericValue(520, inTextField: "Steps")),
-            .init(sampleType: .steps, date: .init(year: 1998, month: 06, day: 02, hour: 20, minute: 15), enterSampleValueHandler: .enterSimpleNumericValue(1, inTextField: "Steps")),
+            .steps(value: 1, date: .init(year: 1998, month: 06, day: 02, hour: 20, minute: 15))
         ])
         
         app.activate()
@@ -43,11 +43,11 @@ final class HealthKitTests: XCTestCase {
 //            .init(sampleType: .steps, date: nil, enterSampleValueHandler: .enterSimpleNumericValue(520, inTextField: "Steps"))
 //        ])
         
-        try exitAppAndOpenHealth(.electrocardiograms)
-        try exitAppAndOpenHealth(.steps)
-        try exitAppAndOpenHealth(.pushes)
-        try exitAppAndOpenHealth(.restingHeartRate)
-        try exitAppAndOpenHealth(.activeEnergy)
+        try launchAndAddSample(healthApp: .healthApp(), .electrocardiogram())
+        try launchAndAddSample(healthApp: .healthApp(), .steps())
+        try launchAndAddSample(healthApp: .healthApp(), .pushes())
+        try launchAndAddSample(healthApp: .healthApp(), .restingHeartRate())
+        try launchAndAddSample(healthApp: .healthApp(), .activeEnergy())
         
         app.activate()
         XCTAssert(app.buttons["Ask for authorization"].waitForExistence(timeout: 2))
@@ -180,6 +180,7 @@ final class HealthKitTests: XCTestCase {
         )
     }
     
+    @MainActor
     func testRepeatedHealthKitAuthorization() throws {
         throw XCTSkip()
         let app = XCUIApplication()
@@ -211,13 +212,13 @@ extension XCUIApplication {
         XCTAssert(wait(for: .runningForeground, timeout: 10.0))
         sleep(5)
 //        
-//        guard numberOfHKTypeIdentifiers() != hkTypeIdentifiers else {
-//            return
-//        }
-//        
-//        print("Wait 5 more seconds for HealthAppDataType to appear on screen ...")
-//        sleep(5)
-//        
+        guard numberOfHKTypeIdentifiers() != hkTypeIdentifiers else {
+            return
+        }
+        
+        print("Wait 5 more seconds for HealthAppDataType to appear on screen ...")
+        sleep(5)
+        
 //        guard numberOfHKTypeIdentifiers() != hkTypeIdentifiers else {
 //            return
 //        }
@@ -245,7 +246,6 @@ extension XCUIApplication {
                 observations[sampleType] = numberOfHKTypeNames
             }
         }
-        fatalError()
         return observations
     }
 }

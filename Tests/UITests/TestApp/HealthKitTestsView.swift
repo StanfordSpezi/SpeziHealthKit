@@ -156,6 +156,7 @@ struct HealthKitTestsView: View {
             let unit: HKUnit
             
             init(date: Date, duration: TimeInterval = 0, value: Double, unit: HKUnit) {
+                fatalError()
                 self.date = date
                 self.duration = duration
                 self.value = value
@@ -163,6 +164,7 @@ struct HealthKitTestsView: View {
             }
             
             init(date components: DateComponents, duration: TimeInterval = 0, value: Double, unit: HKUnit) {
+                fatalError()
                 self.date = Calendar.current.date(from: components)!
                 self.duration = duration
                 self.value = value
