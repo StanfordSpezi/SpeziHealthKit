@@ -14,11 +14,11 @@ class TestAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
         Configuration(standard: HealthKitTestAppStandard()) {
             HealthKit {
-                CollectSample( //
+                CollectSample(
                     .electrocardiogram,
                     delivery: .background(.manual)
                 )
-                CollectSample( //
+                CollectSample(
                     .stepCount,
                     delivery: .background(.automatic)
                 )
@@ -26,17 +26,18 @@ class TestAppDelegate: SpeziAppDelegate {
                     .pushCount,
                     delivery: .continuous(.manual)
                 )
-                CollectSample( //
+                CollectSample(
                     .activeEnergyBurned,
                     delivery: .continuous(.automatic)
                 )
-                CollectSample( //
-                    .restingHeartRate,
+                CollectSample(
+                    .heartRate,
                     delivery: .manual()
                 )
                 
-//                CollectSample(.bloodOxygen, delivery: .continuous(.automatic))
-//                RequestWriteAccess(quantity: [.oxygenSaturation])
+                RequestWriteAccess(
+                    quantity: [.heartRate, .oxygenSaturation, .stepCount, .height, .activeEnergyBurned]
+                )
             }
         }
     }

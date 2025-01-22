@@ -16,6 +16,8 @@
 		2FE33CB42B9B802200BD886D /* HealthKitStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE33CB32B9B802200BD886D /* HealthKitStore.swift */; };
 		2FE33CB92B9B815B00BD886D /* SpeziViews in Frameworks */ = {isa = PBXBuildFile; productRef = 2FE33CB82B9B815B00BD886D /* SpeziViews */; };
 		390F29612A785A98000A236E /* HealthKitTestAppStandard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 390F29602A785A98000A236E /* HealthKitTestAppStandard.swift */; };
+		80BDC0BA2D417897007A5B68 /* SpeziHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 80BDC0B92D417897007A5B68 /* SpeziHealthKit */; };
+		80BDC0BD2D4192E6007A5B68 /* XCTHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 80BDC0BC2D4192E6007A5B68 /* XCTHealthKit */; };
 		80E3C19D2D371B8B00A1F6A3 /* XCTHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 80E3C19C2D371B8B00A1F6A3 /* XCTHealthKit */; };
 		80E3C19F2D37222C00A1F6A3 /* SamplesQueriesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E3C19E2D37222C00A1F6A3 /* SamplesQueriesView.swift */; };
 		80E3C1DE2D382EDA00A1F6A3 /* XCTestExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 80E3C1DD2D382EDA00A1F6A3 /* XCTestExtensions */; };
@@ -62,6 +64,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				80E3C19D2D371B8B00A1F6A3 /* XCTHealthKit in Frameworks */,
+				80BDC0BD2D4192E6007A5B68 /* XCTHealthKit in Frameworks */,
+				80BDC0BA2D417897007A5B68 /* SpeziHealthKit in Frameworks */,
 				80E3C1DE2D382EDA00A1F6A3 /* XCTestExtensions in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -162,6 +166,8 @@
 			packageProductDependencies = (
 				80E3C19C2D371B8B00A1F6A3 /* XCTHealthKit */,
 				80E3C1DD2D382EDA00A1F6A3 /* XCTestExtensions */,
+				80BDC0B92D417897007A5B68 /* SpeziHealthKit */,
+				80BDC0BC2D4192E6007A5B68 /* XCTHealthKit */,
 			);
 			productName = ExampleUITests;
 			productReference = 2F6D13AC28F5F386007C25D6 /* TestAppUITests.xctest */;
@@ -198,7 +204,7 @@
 			packageReferences = (
 				2FE33CB72B9B815B00BD886D /* XCRemoteSwiftPackageReference "SpeziViews" */,
 				8042D7962D3D5B8F00807498 /* XCRemoteSwiftPackageReference "XCTestExtensions" */,
-				8042D7972D3D5BA300807498 /* XCRemoteSwiftPackageReference "XCTHealthKit" */,
+				80BDC0BB2D4192E6007A5B68 /* XCRemoteSwiftPackageReference "XCTHealthKit" */,
 			);
 			productRefGroup = 2F6D139328F5F384007C25D6 /* Products */;
 			projectDirPath = "";
@@ -679,12 +685,12 @@
 				minimumVersion = 1.1.1;
 			};
 		};
-		8042D7972D3D5BA300807498 /* XCRemoteSwiftPackageReference "XCTHealthKit" */ = {
+		80BDC0BB2D4192E6007A5B68 /* XCRemoteSwiftPackageReference "XCTHealthKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/StanfordBDHG/XCTHealthKit";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
+				branch = "lukas/try-fix-locale";
+				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -698,6 +704,15 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2FE33CB72B9B815B00BD886D /* XCRemoteSwiftPackageReference "SpeziViews" */;
 			productName = SpeziViews;
+		};
+		80BDC0B92D417897007A5B68 /* SpeziHealthKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SpeziHealthKit;
+		};
+		80BDC0BC2D4192E6007A5B68 /* XCTHealthKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 80BDC0BB2D4192E6007A5B68 /* XCRemoteSwiftPackageReference "XCTHealthKit" */;
+			productName = XCTHealthKit;
 		};
 		80E3C19C2D371B8B00A1F6A3 /* XCTHealthKit */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -46,10 +46,16 @@ public enum HealthChartTimeIntervalInput {
 }
 
 
+// MARK: HealthChart
+
 public struct HealthChart<each Results: HealthKitQueryResults>: View {
     let entry: (repeat HealthChartEntry<each Results>)
     /// The time interval for which the chart displays data, i.e. the "width" of the chart, in terms of how much time it represents/covers.
     let timeInterval: TimeInterval
+    
+    @Environment(\.locale) private var locale
+    @Environment(\.timeZone) private var timeZone
+    @Environment(\.calendar) private var calendar
     
     private var hasEntries: Bool {
         for entry in repeat each entry {
@@ -193,11 +199,18 @@ public struct HealthChart<each Results: HealthKitQueryResults>: View {
         }
         .foregroundStyle(by: .value("Sample Type", entry.results.sampleType.displayTitle))
     }
-    
-    
-    @Environment(\.locale) private var locale
-    @Environment(\.timeZone) private var timeZone
-    @Environment(\.calendar) private var calendar
+}
+
+
+// MARK: HealthChart XAxis
+
+extension HealthChart {
+    // Ideally, this would be nested in the `xAxisContent()` function, but the compiler currently doesn't allow this.
+    private struct XAxisMarksConfig {
+        let strideComponent: Calendar.Component
+        let strideCount: Int
+        let valueFormat: Date.FormatStyle
+    }
     
     @AxisContentBuilder
     private func xAxisContent() -> some AxisContent {
@@ -218,14 +231,6 @@ public struct HealthChart<each Results: HealthKitQueryResults>: View {
             AxisMarks(values: .automatic)
         }
     }
-    
-    // Ideally, this would be nested in the `xAxisContent()` function, but the compiler currently doesn't allow this.
-    private struct XAxisMarksConfig {
-        let strideComponent: Calendar.Component
-        let strideCount: Int
-        let valueFormat: Date.FormatStyle
-    }
-    
     
     private func maxTimeRange() -> HealthKitQueryTimeRange? {
         var maxTimeRange: HealthKitQueryTimeRange?

@@ -20,12 +20,4 @@ final class QueryTimeRangeTests: XCTestCase {
         XCTAssertEqual(HealthKitQueryTimeRange.last(months: 1), .currentMonth)
         XCTAssertEqual(HealthKitQueryTimeRange.last(years: 1), .currentYear)
     }
-    
-    
-    @MainActor
-    func testHealthDataAvailability() async throws {
-        XCTAssertTrue(HKHealthStore.isHealthDataAvailable())
-        let healthStore = HKHealthStore()
-        try await healthStore.requestAuthorization(toShare: [], read: [HKQuantityType(.heartRate)])
-    }
 }

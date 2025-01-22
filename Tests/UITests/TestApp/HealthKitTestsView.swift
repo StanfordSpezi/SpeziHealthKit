@@ -30,50 +30,10 @@ struct HealthKitTestsView: View {
                 }
                 .disabled(allInitialSampleTypesAreAuthorized)
                 AsyncButton("Trigger data source collection", state: $viewState) {
+                    let start = ContinuousClock.now
                     await healthKit.triggerDataSourceCollection()
-                    try await Task.sleep(for: .seconds(10))
+                    try await Task.sleep(until: start + .seconds(2)) // pretend that the data source triggering takes at least 2 seconds.
                 }
-            }
-            Section {
-                AsyncButton("Add 1 BloodOxygen Sample", state: $viewState) {
-                    try await addTestData([.init(
-                        sampleType: .bloodOxygen,
-                        samples: [.init(date: .now, value: 87, unit: .percent())]
-                    )])
-                }
-                AsyncButton("Add test data to HealthKit", state: $viewState) {
-                    let bpm: HKUnit = .count() / .minute()
-                    try await addTestData([
-                        .init(sampleType: .heartRate, samples: [
-                            .init(date: .init(year: 2025, month: 1, day: 15, hour: 11, minute: 00), value: 78, unit: bpm),
-                            .init(date: .init(year: 2025, month: 1, day: 15, hour: 11, minute: 10), value: 89, unit: bpm),
-                            .init(date: .init(year: 2025, month: 1, day: 15, hour: 11, minute: 20), value: 92, unit: bpm),
-                            .init(date: .init(year: 2025, month: 1, day: 15, hour: 11, minute: 30), value: 91, unit: bpm),
-                            .init(date: .init(year: 2025, month: 1, day: 15, hour: 11, minute: 40), value: 92, unit: bpm),
-                            .init(date: .init(year: 2025, month: 1, day: 15, hour: 11, minute: 50), value: 90, unit: bpm),
-                            .init(date: .init(year: 2025, month: 1, day: 15, hour: 12, minute: 00), value: 87, unit: bpm)
-                        ]),
-                        .init(sampleType: .bloodOxygen, samples: [
-                            .init(date: .init(year: 2025, month: 1, day: 15, hour: 11, minute: 00), value: 0.99, unit: .percent()),
-                            .init(date: .init(year: 2025, month: 1, day: 15, hour: 17, minute: 10), value: 0.98, unit: .percent()),
-                            .init(date: .init(year: 2025, month: 1, day: 15, hour: 11, minute: 20), value: 0.99, unit: .percent()),
-                            .init(date: .init(year: 2025, month: 1, day: 15, hour: 11, minute: 30), value: 0.99, unit: .percent()),
-                            .init(date: .init(year: 2025, month: 1, day: 15, hour: 11, minute: 40), value: 0.97, unit: .percent()),
-                            .init(date: .init(year: 2025, month: 1, day: 15, hour: 11, minute: 50), value: 0.99, unit: .percent()),
-                            .init(date: .init(year: 2025, month: 1, day: 15, hour: 12, minute: 00), value: 0.98, unit: .percent())
-                        ]),
-                        .init(sampleType: .stepCount, samples: [
-                            .init(date: .init(year: 2022, month: 10, day: 11, hour: 8, minute: 52), duration: 0, value: 1, unit: .count())
-                        ]),
-                        .init(sampleType: .height, samples: [
-                            .init(date: .init(year: 2025, month: 1, day: 15), value: 187, unit: .meterUnit(with: .centi))
-                        ])
-                    ])
-                }
-                AsyncButton("Delete test data from HealthKit", state: $viewState) {
-                    try await deleteTestData()
-                }
-                .tint(.red)
             }
 //            Section {
 //                NavigationLink("Samples Query") {
@@ -96,6 +56,11 @@ struct HealthKitTestsView: View {
         .viewStateAlert(state: $viewState)
         .task {
             await checkInitialSamplesAuthStatus()
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                addTestDataToolbarItem
+            }
         }
     }
     
@@ -148,33 +113,36 @@ struct HealthKitTestsView: View {
     }
     
     
-    private struct TestDataDefinition {
-        struct Sample {
-            let date: Date
-            let duration: TimeInterval
-            let value: Double
-            let unit: HKUnit
-            
-            init(date: Date, duration: TimeInterval = 0, value: Double, unit: HKUnit) {
-                fatalError()
-                self.date = date
-                self.duration = duration
-                self.value = value
-                self.unit = unit
+    private var addTestDataToolbarItem: some View {
+        let testData: [TestDataDefinition] = [ //[.heartRate, .bloodOxygen, .stepCount, .height]
+            .init(sampleType: .heartRate, samples: [
+                .init(date: .now, value: 87, unit: .count() / .minute())
+            ]),
+            .init(sampleType: .activeEnergyBurned, samples: [
+                .init(date: .now, value: 71.2, unit: .largeCalorie())
+            ]),
+            .init(sampleType: .stepCount, samples: [
+                .init(date: .now, value: 152, unit: .count())
+            ]),
+            .init(sampleType: .height, samples: [
+                .init(date: .now, value: 187, unit: .meterUnit(with: .centi))
+            ])
+        ]
+        return Menu {
+            AsyncButton("Delete Test Data from HealthKit", role: .destructive, state: $viewState) {
+                try await deleteTestData()
             }
-            
-            init(date components: DateComponents, duration: TimeInterval = 0, value: Double, unit: HKUnit) {
-                fatalError()
-                self.date = Calendar.current.date(from: components)!
-                self.duration = duration
-                self.value = value
-                self.unit = unit
+            Divider()
+            ForEach(testData, id: \.self) { entry in
+                AsyncButton("Add Sample: \(entry.sampleType.displayTitle)", state: $viewState) {
+                    try await addTestData([entry])
+                }
             }
+        } label: {
+            Image(systemName: "plus")
         }
-        let sampleType: SampleType<HKQuantitySample>
-        let samples: [Sample]
+        .accessibilityIdentifier("Add")
     }
-    
     
     private func addTestData(_ definitions: [TestDataDefinition]) async throws {
         let samples: [HKQuantitySample] = definitions.flatMap { definition in
@@ -191,15 +159,14 @@ struct HealthKitTestsView: View {
         print("Will add \(samples.count) samples to HealthKit")
         try await healthKit.askForAuthorization(for: .init(write: samples.mapIntoSet(\.sampleType)))
         for sample in samples {
+            // NOTE: for some reason, this works but calling the overload that takes an array doesn't...
             try await healthKit.healthStore.save(sample)
         }
-//        try await healthKit.healthStore.save(samples)
         print("Did add \(samples.count) samples to HealthKit")
     }
     
     
     private func deleteTestData() async throws {
-        var errors: [any Error] = []
         for sampleType in HKSampleType.allKnownObjectTypes.compactMap({ $0 as? HKSampleType }) {
             let descriptor = HKSampleQueryDescriptor(
                 predicates: [HKSamplePredicate<HKSample>.sample(
@@ -214,21 +181,37 @@ struct HealthKitTestsView: View {
                 try await healthKit.healthStore.delete(samples)
             } catch {
                 print("ERROR TRYING TO DELETE DATA OF TYPE \(sampleType): \(error)")
-                errors.append(error)
+                throw error
             }
-        }
-        
-        struct MultiError: Error {
-            let errors: [any Error]
-        }
-        
-        if !errors.isEmpty {
-            throw MultiError(errors: errors)
         }
     }
 }
 
 
+private struct TestDataDefinition: Hashable {
+    struct Sample: Hashable {
+        let date: Date
+        let duration: TimeInterval
+        let value: Double
+        let unit: HKUnit
+        
+        init(date: Date, duration: TimeInterval = 0, value: Double, unit: HKUnit) {
+            self.date = date
+            self.duration = duration
+            self.value = value
+            self.unit = unit
+        }
+        
+        init(date components: DateComponents, duration: TimeInterval = 0, value: Double, unit: HKUnit) {
+            self.date = Calendar.current.date(from: components)!
+            self.duration = duration
+            self.value = value
+            self.unit = unit
+        }
+    }
+    let sampleType: SampleType<HKQuantitySample>
+    let samples: [Sample]
+}
 
 
 private extension BackgroundDataCollectionLogEntry {
