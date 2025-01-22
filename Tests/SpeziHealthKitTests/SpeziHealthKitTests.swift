@@ -22,9 +22,9 @@ final class SpeziHealthKitTests: XCTestCase {
     }
     
     func testWellKnownIdentifiers() {
-        XCTAssertEqual(HKQuantityType.allKnownQuantities.count == HKQuantityTypeIdentifier.allKnownIdentifiers.count)
-        XCTAssertEqual(HKCorrelationType.allKnownCorrelations.count == HKCorrelationTypeIdentifier.allKnownIdentifiers.count)
-        XCTAssertEqual(HKCategoryType.allKnownCategories.count == HKCategoryTypeIdentifier.allKnownIdentifiers.count)
+        XCTAssertEqual(HKQuantityType.allKnownQuantities.count, HKQuantityTypeIdentifier.allKnownIdentifiers.count)
+        XCTAssertEqual(HKCorrelationType.allKnownCorrelations.count, HKCorrelationTypeIdentifier.allKnownIdentifiers.count)
+        XCTAssertEqual(HKCategoryType.allKnownCategories.count, HKCategoryTypeIdentifier.allKnownIdentifiers.count)
         XCTAssertEqual(HKObjectType.allKnownObjectTypes.count, 12)
     }
 }
