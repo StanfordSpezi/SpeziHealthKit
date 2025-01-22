@@ -67,11 +67,11 @@ class ExampleAppDelegate: SpeziAppDelegate {
                 )
                 CollectSample(
                     .pushCount,
-                    delivery: .anchorQuery(.manual)
+                    delivery: .continuous(.manual)
                 )
                 CollectSample(
                     .activeEnergyBurned,
-                    delivery: .anchorQuery(.automatic)
+                    delivery: .continuous(.automatic)
                 )
                 CollectSample(
                     .restingHeartRate,

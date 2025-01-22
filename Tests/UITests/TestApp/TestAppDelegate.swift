@@ -24,18 +24,18 @@ class TestAppDelegate: SpeziAppDelegate {
                 )
                 CollectSample(
                     .pushCount,
-                    delivery: .anchorQuery(.manual)
+                    delivery: .continuous(.manual)
                 )
                 CollectSample( //
                     .activeEnergyBurned,
-                    delivery: .anchorQuery(.automatic)
+                    delivery: .continuous(.automatic)
                 )
                 CollectSample( //
                     .restingHeartRate,
                     delivery: .manual()
                 )
                 
-//                CollectSample(.bloodOxygen, delivery: .anchorQuery(.automatic))
+//                CollectSample(.bloodOxygen, delivery: .continuous(.automatic))
 //                RequestWriteAccess(quantity: [.oxygenSaturation])
             }
         }

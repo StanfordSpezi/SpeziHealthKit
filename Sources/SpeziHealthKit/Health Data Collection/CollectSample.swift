@@ -18,7 +18,7 @@ import Spezi
 /// Data collection is started by the `HealthKit` module, depending on the delivery setting and delivert start setting you specify:
 /// | Delivery Setting | Delivery Start Setting | When does data collection take place |
 /// |:-----:|:-----:|:---|
-/// | `.manual` | n/a | Every call to ``HealthKit-swift.class/triggerDataSourceCollection()`` |
+/// | `.manual` | n/a | every call to ``HealthKit-swift.class/triggerDataSourceCollection()`` |
 /// | `.continuous` or `.background` | `.automatic` |  the `HealthKit` module will start the collection as soon as possible, i.e. either directly when the app is launched (if the user has already been prompted to grant access to the collected sample type), or as soon as ``HealthKit-swift.class/askForAuthorization()`` was called by the app and the user dismissed the request authorization sheet. |
 /// |^ | `.manual` | the first call to ``HealthKit-swift.class/triggerDataSourceCollection()`` will start the data collection |
 ///

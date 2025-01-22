@@ -84,7 +84,7 @@ final class HealthKitSampleCollector: HealthDataCollector {
                     isActive = false
                 }
                 try await anchoredSingleObjectQuery()
-            case .anchorQuery:
+            case .continuous:
                 healthKit.logger.notice("Starting anchor query")
                 try await anchoredContinuousObjectQuery()
                 isActive = true

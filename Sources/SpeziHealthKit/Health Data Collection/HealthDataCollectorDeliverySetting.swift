@@ -13,27 +13,23 @@ public enum HealthDataCollectorDeliverySetting: Hashable, Sendable {
     case manual(saveAnchor: Bool = true)
     /// The HealthKit data is collected based on the ``Start`` and constantly listens to updates while the application is running.
     /// If `saveAnchor` is enabled the `HKQueryAnchor` is persisted across multiple application launches using the user defaults.
-    case anchorQuery(Start = .automatic, saveAnchor: Bool = true)
+    case continuous(Start = .automatic, saveAnchor: Bool = true)
     /// The HealthKit data is collected based on the ``Start`` and constantly listens to updates even if the application is not running.
     /// If `saveAnchor` is enabled the `HKQueryAnchor` is persisted across multiple application launches using the user defaults.
     case background(Start = .automatic, saveAnchor: Bool = true)
     
     var saveAnchor: Bool {
         switch self {
-        case let .manual(saveAnchor):
-            return saveAnchor
-        case let .anchorQuery(_, saveAnchor):
-            return saveAnchor
-        case let .background(_, saveAnchor):
-            return saveAnchor
+        case .manual(let saveAnchor), .continuous(_, let saveAnchor), .background(_, let saveAnchor):
+            saveAnchor
         }
     }
     
     var isAutomatic: Bool {
         switch self {
-        case .anchorQuery(.automatic, _), .background(.automatic, _):
+        case .continuous(.automatic, _), .background(.automatic, _):
             true
-        case .manual, .anchorQuery(.manual, _), .background(.manual, _):
+        case .manual, .continuous(.manual, _), .background(.manual, _):
             false
         }
     }
@@ -46,9 +42,17 @@ public enum HealthDataCollectorDeliverySetting: Hashable, Sendable {
 
 extension HealthDataCollectorDeliverySetting {
     /// :nodoc:
+    @_documentation(visibility: internal)
     @available(*, unavailable, renamed: "manual(saveAnchor:)")
     public static func manual(safeAnchor saveAnchor: Bool) -> Self {
         .manual(saveAnchor: saveAnchor)
+    }
+    
+    /// :nodoc:
+    @_documentation(visibility: internal)
+    @available(*, unavailable, renamed: "continuous(_:saveAnchor:)")
+    public static func anchorQuery(_ start: Start = .automatic, saveAnchor: Bool = true) -> Self {
+        .continuous(start, saveAnchor: saveAnchor)
     }
 }
 
