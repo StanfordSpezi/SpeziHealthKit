@@ -12,8 +12,11 @@ import SpeziHealthKit
 import XCTest
 
 
+// NOTE: this type isn't really Sendable, but we also can't mark it as being MainActor-constrained,
+// but since we only use it in the HealthChartTests, all of which are MainActor-constrained,
+// we should be safe here.
 @Observable
-final class MockQueryResults: HealthKitQueryResults, @unchecked Sendable { // it really isn't sendable, but we also can't mark it as being MainActor-constrained, but since we only ever mutate it from the MainActor, we should (hopefully???) be safe here??
+final class MockQueryResults: HealthKitQueryResults, @unchecked Sendable { // swiftlint:disable:this file_types_order
     typealias Sample = HKQuantitySample
     typealias Element = HKQuantitySample
     typealias Index = [Sample].Index
@@ -24,18 +27,13 @@ final class MockQueryResults: HealthKitQueryResults, @unchecked Sendable { // it
     
     let queryError: (any Error)? = nil
     
+    var startIndex: Index { samples.startIndex }
+    var endIndex: Index { samples.endIndex }
+    
     init(sampleType: SampleType<Sample>, timeRange: HealthKitQueryTimeRange, samples: [Sample]) {
         self.sampleType = sampleType
         self.samples = samples
         self.timeRange = timeRange
-    }
-    
-    var startIndex: Index {
-        samples.startIndex
-    }
-    
-    var endIndex: Index {
-        samples.endIndex
     }
     
     subscript(position: Index) -> HKQuantitySample {
@@ -90,7 +88,6 @@ func makeDateProvider(
 }
 
 
-
 extension HKQuantitySample {
     convenience init(type: SampleType<HKQuantitySample>, quantity: HKQuantity, date: Date) {
         self.init(type: type.hkSampleType, quantity: quantity, start: date, end: date)
@@ -101,49 +98,8 @@ extension HKQuantitySample {
 extension IteratorProtocol {
     mutating func consume(_ count: Int) {
         var numConsumed = 0
-        while numConsumed < count, let _ = next() {
+        while numConsumed < count, _ = next() {
             numConsumed += 1
         }
     }
 }
-
-
-
-
-extension Collection {
-    public func makeLoopingIterator() -> LoopingCollectionIterator<Self> {
-        LoopingCollectionIterator(self)
-    }
-}
-
-
-public struct LoopingCollectionIterator<Base: Collection>: IteratorProtocol {
-    public typealias Element = Base.Element
-    
-    /// The collection we want to provide looping iteration over.
-    private let base: Base
-    /// The current iteration state, i.e. the index of the next element to be yielded from the iterator.
-    private var idx: Base.Index
-    
-    fileprivate init(_ base: Base) {
-        self.base = base
-        self.idx = base.startIndex
-    }
-    
-    public mutating func next() -> Element? {
-        defer {
-            base.formIndex(after: &idx)
-            if idx >= base.endIndex {
-                idx = base.startIndex
-            }
-        }
-        return base[idx]
-    }
-    
-    /// "Resets" the iterator to the beginning of the collection.
-    /// The next call to ``LoopingIterator.next()`` will yield the collection's first element.
-    public mutating func reset() {
-        idx = base.startIndex
-    }
-}
-

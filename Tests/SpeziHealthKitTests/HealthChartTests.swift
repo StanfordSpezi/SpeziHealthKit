@@ -7,11 +7,11 @@
 //
 
 import HealthKit
+import SnapshotTesting
 @testable import SpeziHealthKit
+import SwiftUI
 import XCTest
 import XCTSpezi
-import SnapshotTesting
-import SwiftUI
 
 
 final class HealthChartTests: XCTestCase {

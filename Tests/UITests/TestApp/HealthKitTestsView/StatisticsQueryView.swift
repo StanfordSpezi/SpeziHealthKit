@@ -19,11 +19,12 @@ struct StatisticsQueryView: View {
     var body: some View {
         Form {
             ForEach(dailyStepCountStats.reversed()) { statistics in
-                let numSteps = statistics.sumQuantity()!.doubleValue(for: .count())
-                HStack {
-                    Text("Steps on \((statistics.startDate...statistics.endDate).middle.formatted(.iso8601))")
-                    Spacer()
-                    Text("\(Int(numSteps))").monospaced()
+                if let numSteps = statistics.sumQuantity()?.doubleValue(for: .count()) {
+                    HStack {
+                        Text("Steps on \((statistics.startDate...statistics.endDate).middle.formatted(.iso8601))")
+                        Spacer()
+                        Text("\(Int(numSteps))").monospaced()
+                    }
                 }
             }
         }

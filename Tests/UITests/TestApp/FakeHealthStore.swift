@@ -10,17 +10,17 @@ import Foundation
 @preconcurrency import HealthKit
 import OSLog
 import Spezi
+import SpeziFoundation
 import UserNotifications
 
 
 @Observable
-final class HealthKitStore: Module, DefaultInitializable, EnvironmentAccessible, @unchecked Sendable {
+final class FakeHealthStore: Module, DefaultInitializable, EnvironmentAccessible, @unchecked Sendable {
     private enum StorageKeys {
         static let backgroundPersistance = "edu.Stanford.Spezi.SpeziHealthKitHealthKitStore.backgroundPersistance"
     }
     
-    // TODO what does this do exactly?
-    // TODO rename to disableBackgroundPersistance?!
+    // maybe rename to disableBackgroundPersistance?!
     static let collectedSamplesOnly = CommandLine.arguments.contains("--collectedSamplesOnly")
     
     private let logger = Logger(subsystem: "TestApp", category: "ExampleStandard")
@@ -28,15 +28,15 @@ final class HealthKitStore: Module, DefaultInitializable, EnvironmentAccessible,
     private(set) var samples: [HKSample] = []
     private(set) var backgroundPersistance: [BackgroundDataCollectionLogEntry] {
         didSet {
-            if !HealthKitStore.collectedSamplesOnly {
-                let data = try! JSONEncoder().encode(backgroundPersistance)
+            if !FakeHealthStore.collectedSamplesOnly {
+                let data = try! JSONEncoder().encode(backgroundPersistance) // swiftlint:disable:this force_try
                 UserDefaults.standard.set(data, forKey: StorageKeys.backgroundPersistance)
             }
         }
     }
     
     required init() {
-        if !HealthKitStore.collectedSamplesOnly {
+        if !FakeHealthStore.collectedSamplesOnly {
             let data = UserDefaults.standard.data(forKey: StorageKeys.backgroundPersistance) ?? Data()
             backgroundPersistance = (try? JSONDecoder().decode([BackgroundDataCollectionLogEntry].self, from: data)) ?? []
         } else {
@@ -46,7 +46,7 @@ final class HealthKitStore: Module, DefaultInitializable, EnvironmentAccessible,
     
     
     func configure() {
-        if !HealthKitStore.collectedSamplesOnly {
+        if !FakeHealthStore.collectedSamplesOnly {
             Task {
                 try await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound])
             }
@@ -62,7 +62,22 @@ final class HealthKitStore: Module, DefaultInitializable, EnvironmentAccessible,
         
         let content = UNMutableNotificationContent()
         content.title = "Spezi HealthKit Test App"
-        content.body = "Added sample \(sample.sampleType.description) \((sample as? HKQuantitySample)?.quantity.description ?? #"¯\_(ツ)_/¯"#) (\(Date.now.formatted(date: .numeric, time: .complete)); \(sample.uuid.uuidString)"
+        content.body = Array<String> { // swiftlint:disable:this syntactic_sugar
+            "Added sample \(sample.sampleType.identifier)"
+            if let sample = sample as? HKQuantitySample {
+                sample.quantity.description
+            } else {
+                #"¯\_(ツ)_/¯"#
+            }
+            if sample.startDate == sample.endDate {
+                sample.startDate.formatted(.iso8601)
+            } else {
+                let start = sample.startDate.formatted(.iso8601)
+                let end = sample.endDate.formatted(.iso8601)
+                "\(start) – \(end)"
+            }
+            sample.uuid.uuidString
+        }.joined(separator: " ")
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
         try? await UNUserNotificationCenter.current().add(request)
     }
@@ -80,28 +95,5 @@ final class HealthKitStore: Module, DefaultInitializable, EnvironmentAccessible,
         content.body = "Removed sample: \(sample.uuid) at \(Date.now.formatted(date: .numeric, time: .complete))"
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
         try? await UNUserNotificationCenter.current().add(request)
-    }
-}
-
-
-
-// MARK: Background Persistence
-
-enum BackgroundDataCollectionLogEntry: Codable, Hashable {
-    case added(id: UUID, type: String, date: ClosedRange<Date>, quantity: String?)
-    case removed(id: UUID)
-    
-    
-    init(_ sample: HKSample) {
-        self = .added(
-            id: sample.uuid,
-            type: sample.sampleType.identifier,
-            date: sample.startDate...sample.endDate,
-            quantity: (sample as? HKQuantitySample)?.quantity.description
-        )
-    }
-    
-    init(_ object: HKDeletedObject) {
-        self = .removed(id: object.uuid)
     }
 }

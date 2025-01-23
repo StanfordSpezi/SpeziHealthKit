@@ -15,7 +15,6 @@ import XCTHealthKit
 
 
 final class HealthKitTests: XCTestCase {
-    
     override func tearDown() {
         super.tearDown()
         MainActor.assumeIsolated {
@@ -173,8 +172,10 @@ extension HealthKitTests {
         XCTAssertTrue(app.buttons["Triggering data source collection"].waitForNonExistence(timeout: 2))
         XCTAssertTrue(app.buttons["Trigger data source collection"].waitForExistence(timeout: 2))
     }
-    
-    
+}
+
+
+extension HealthKitTests {
     typealias NumSamplesByType = [SampleType<HKQuantitySample>: Int]
     
     @MainActor
@@ -185,16 +186,16 @@ extension HealthKitTests {
         line: UInt = #line
     ) {
         func imp(try: Int) {
-            print("APP \(app.debugDescription)")
+            // swiftlint:disable:next empty_count
             let staticTexts = app.staticTexts.count > 0 ? app.staticTexts.allElementsBoundByIndex.map(\.label) : []
-            print("imp(try: \(`try`)) ALL STATIC TEXTS: \(staticTexts)")
             guard `try` > 0 else {
                 XCTFail("Unable to check (staticTexts: \(staticTexts))", file: file, line: line)
                 return
             }
-            guard staticTexts.count > 0 else {
+            guard staticTexts.count > 0 else { // swiftlint:disable:this empty_count
                 sleep(2)
-                return imp(try: `try` - 1)
+                imp(try: `try` - 1)
+                return
             }
             let actual = staticTexts
                 .filter { $0.wholeMatch(of: /HK[a-zA-Z]*/) != nil }
@@ -204,7 +205,8 @@ extension HealthKitTests {
             if expected != actual, `try` > 1 {
                 // try again
                 sleep(2)
-                return imp(try: `try` - 1)
+                imp(try: `try` - 1)
+                return
             } else {
                 XCTAssertEqual(actual, expected, file: file, line: line)
             }

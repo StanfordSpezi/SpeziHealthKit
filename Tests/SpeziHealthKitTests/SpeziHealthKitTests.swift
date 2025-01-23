@@ -6,10 +6,9 @@
 // SPDX-License-Identifier: MIT
 //
 
+import HealthKit
 import SpeziHealthKit
 import XCTest
-import HealthKit
-
 
 
 final class SpeziHealthKitTests: XCTestCase {

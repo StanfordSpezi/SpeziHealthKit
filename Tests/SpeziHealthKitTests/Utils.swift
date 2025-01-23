@@ -17,7 +17,7 @@ extension Locale {
 
 
 extension TimeZone {
-    static let losAngeles = TimeZone(identifier: "America/Los_Angeles")! // swiftlint_disable:this force_unwrapping
+    static let losAngeles = TimeZone(identifier: "America/Los_Angeles")! // swiftlint:disable:this force_unwrapping
 }
 
 

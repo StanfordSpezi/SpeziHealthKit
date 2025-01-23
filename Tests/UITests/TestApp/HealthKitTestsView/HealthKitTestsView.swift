@@ -13,7 +13,7 @@ import SwiftUI
 
 struct HealthKitTestsView: View {
     @Environment(HealthKit.self) var healthKit
-    @Environment(HealthKitStore.self) var healthKitStore
+    @Environment(FakeHealthStore.self) var fakeHealthStore
     
     @State private var allInitialSampleTypesAreAuthorized = false
     @State private var viewState: ViewState = .idle
@@ -44,13 +44,13 @@ struct HealthKitTestsView: View {
                 }
             }
             Section("Collected Samples Since App Launch") {
-                ForEach(healthKitStore.samples, id: \.self) { element in
+                ForEach(fakeHealthStore.samples, id: \.self) { element in
                     Text(element.sampleType.identifier)
                 }
-            }.accessibilityIdentifier("CollectedSamplessssssssss")
-            if !HealthKitStore.collectedSamplesOnly {
+            }.accessibilityIdentifier("CollectedSamples")
+            if !FakeHealthStore.collectedSamplesOnly {
                 Section("Background Persistance Log") {
-                    ForEach(healthKitStore.backgroundPersistance, id: \.self) { logEntry in
+                    ForEach(fakeHealthStore.backgroundPersistance) { logEntry in
                         makeRow(for: logEntry)
                     }
                 }
@@ -65,6 +65,39 @@ struct HealthKitTestsView: View {
                 addTestDataToolbarItem
             }
         }
+    }
+    
+    
+    private var addTestDataToolbarItem: some View {
+        let testData: [TestDataDefinition] = [
+            .init(sampleType: .heartRate, samples: [
+                .init(date: .now, value: 87, unit: .count() / .minute())
+            ]),
+            .init(sampleType: .activeEnergyBurned, samples: [
+                .init(date: .now, value: 71.2, unit: .largeCalorie())
+            ]),
+            .init(sampleType: .stepCount, samples: [
+                .init(date: .now, value: 152, unit: .count())
+            ]),
+            .init(sampleType: .height, samples: [
+                .init(date: .now, value: 187, unit: .meterUnit(with: .centi))
+            ])
+        ]
+        return Menu {
+            AsyncButton("Delete Test Data from HealthKit", role: .destructive, state: $viewState) {
+                try await deleteTestData()
+            }
+            Divider()
+            ForEach(testData, id: \.self) { entry in
+                AsyncButton("Add Sample: \(entry.sampleType.displayTitle)", state: $viewState) {
+                    try await addTestData([entry])
+                }
+            }
+        } label: {
+            Image(systemName: "plus")
+                .accessibilityLabel("Add")
+        }
+        .accessibilityIdentifier("Add")
     }
     
     
@@ -110,42 +143,13 @@ struct HealthKitTestsView: View {
                     }
                 }
             case .removed:
-                let _ = ()
+                EmptyView()
             }
         }
     }
     
     
-    private var addTestDataToolbarItem: some View {
-        let testData: [TestDataDefinition] = [ //[.heartRate, .bloodOxygen, .stepCount, .height]
-            .init(sampleType: .heartRate, samples: [
-                .init(date: .now, value: 87, unit: .count() / .minute())
-            ]),
-            .init(sampleType: .activeEnergyBurned, samples: [
-                .init(date: .now, value: 71.2, unit: .largeCalorie())
-            ]),
-            .init(sampleType: .stepCount, samples: [
-                .init(date: .now, value: 152, unit: .count())
-            ]),
-            .init(sampleType: .height, samples: [
-                .init(date: .now, value: 187, unit: .meterUnit(with: .centi))
-            ])
-        ]
-        return Menu {
-            AsyncButton("Delete Test Data from HealthKit", role: .destructive, state: $viewState) {
-                try await deleteTestData()
-            }
-            Divider()
-            ForEach(testData, id: \.self) { entry in
-                AsyncButton("Add Sample: \(entry.sampleType.displayTitle)", state: $viewState) {
-                    try await addTestData([entry])
-                }
-            }
-        } label: {
-            Image(systemName: "plus")
-        }
-        .accessibilityIdentifier("Add")
-    }
+    // MARK: Test Data Handling
     
     private func addTestData(_ definitions: [TestDataDefinition]) async throws {
         let samples: [HKQuantitySample] = definitions.flatMap { definition in
@@ -172,10 +176,12 @@ struct HealthKitTestsView: View {
     private func deleteTestData() async throws {
         for sampleType in HKSampleType.allKnownObjectTypes.compactMap({ $0 as? HKSampleType }) {
             let descriptor = HKSampleQueryDescriptor(
-                predicates: [HKSamplePredicate<HKSample>.sample(
-                    type: sampleType,
-                    predicate: HKQuery.predicateForObjects(from: HKSource.default())
-                )],
+                predicates: [
+                    HKSamplePredicate<HKSample>.sample(
+                        type: sampleType,
+                        predicate: HKQuery.predicateForObjects(from: HKSource.default())
+                    )
+                ],
                 sortDescriptors: []
             )
             do {
@@ -191,67 +197,11 @@ struct HealthKitTestsView: View {
 }
 
 
-private struct TestDataDefinition: Hashable {
-    struct Sample: Hashable {
-        let date: Date
-        let duration: TimeInterval
-        let value: Double
-        let unit: HKUnit
-        
-        init(date: Date, duration: TimeInterval = 0, value: Double, unit: HKUnit) {
-            self.date = date
-            self.duration = duration
-            self.value = value
-            self.unit = unit
-        }
-        
-        init(date components: DateComponents, duration: TimeInterval = 0, value: Double, unit: HKUnit) {
-            self.date = Calendar.current.date(from: components)!
-            self.duration = duration
-            self.value = value
-            self.unit = unit
-        }
-    }
-    let sampleType: SampleType<HKQuantitySample>
-    let samples: [Sample]
-}
-
-
-private extension BackgroundDataCollectionLogEntry {
-    var id: UUID {
-        switch self {
-        case .added(let id, _, _, _), .removed(let id):
-            id
-        }
-    }
+extension BackgroundDataCollectionLogEntry {
     var displayTitle: String {
         switch self {
         case .added: "Add"
         case .removed: "Delete"
         }
-    }
-}
-
-
-extension Calendar {
-    func makeNoon(_ date: Date) -> Date {
-        self.date(bySettingHour: 0, minute: 0, second: 0, of: date)!
-    }
-    
-    func makeDate(year: Int, month: Int, day: Int, hour: Int, minute: Int) -> Date {
-        self.date(from: DateComponents(year: year, month: month, day: day, hour: hour, minute: minute))!
-    }
-}
-
-
-extension Sequence {
-    @_disfavoredOverload
-    func allSatisfy(_ predicate: @Sendable (Element) async -> Bool) async -> Bool {
-        for element in self {
-            if await !predicate(element) {
-                return false
-            }
-        }
-        return true
     }
 }
