@@ -18,6 +18,12 @@ struct StatisticsQueryView: View {
     
     var body: some View {
         Form {
+            Section {
+                HealthChart {
+                    HealthChartEntry($dailyStepCountStats, aggregationOption: .sum, drawingConfig: .init(mode: .bar, color: .orange))
+                }
+                .frame(height: 400)
+            }
             ForEach(dailyStepCountStats.reversed()) { statistics in
                 if let numSteps = statistics.sumQuantity()?.doubleValue(for: .count()) {
                     HStack {

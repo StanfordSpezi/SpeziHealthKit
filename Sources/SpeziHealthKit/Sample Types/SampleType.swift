@@ -10,7 +10,7 @@ import Foundation
 import HealthKit
 
 
-public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType, Identifiable, Sendable {
+public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType {
     @usableFromInline
     enum Variant: Sendable {
         /// - parameter displayUnit: The unit that should be used when displaying a sample of this type to the user
@@ -32,10 +32,6 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType, Identi
     /// Variant-specific additional information.
     @usableFromInline let variant: Variant
     
-    @inlinable public var id: String {
-        hkSampleType.identifier
-    }
-    
     /// Creates a new ``SampleType``.
     /// Use this initializer only if the sample type you want to work with isn't already defined by SpeziHealthKit, and only if none of the static factory methods are suitable.
     /// - parameter hkSampleType: The sample type's underlying `HKSampleType`
@@ -45,24 +41,6 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType, Identi
         self.hkSampleType = hkSampleType
         self.displayTitle = String(localized: displayTitle)
         self.variant = variant
-    }
-}
-
-
-extension SampleType: Hashable {
-    /// Compare two sample types, based on their identifiers
-    @inlinable public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs.id == rhs.id
-    }
-    
-    /// Compare two sample types, based on their identifiers
-    @inlinable public static func == (lhs: Self, rhs: SampleType<some Any>) -> Bool {
-        lhs.id == rhs.id
-    }
-    
-    /// Hash the sample type, based on its identifier
-    @inlinable public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
     }
 }
 

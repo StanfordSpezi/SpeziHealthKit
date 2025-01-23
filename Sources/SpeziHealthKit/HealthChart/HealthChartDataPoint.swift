@@ -16,7 +16,7 @@ import SwiftUI
 /// a value as part of e.g. a Chart or some other user-facing UI component.
 ///
 /// This type is primarily intended to be used in the context of the ``HealthChart``, but it can also be used outside of that.
-public struct HealthChartDataPoint/*<ID: Hashable>*/: Hashable, Identifiable { // swiftlint:disable:this file_types_order
+public struct HealthChartDataPoint: Hashable, Identifiable { // swiftlint:disable:this file_types_order
     public let id: AnyHashable
     public let date: Date
     public let value: Double
@@ -31,15 +31,17 @@ public struct HealthChartDataPoint/*<ID: Hashable>*/: Hashable, Identifiable { /
     }
     
     /// Creates a DataPoint from a `HKQuantitySample`
-    public init(sample: HKQuantitySample, unit: HKUnit) /*where ID == UUID*/ {
-        self.id = AnyHashable(sample.uuid)
-        self.date = (sample.startDate...sample.endDate).middle
-        self.value = sample.quantity.doubleValue(for: unit)
-        self.unit = unit
+    public init(sample: HKQuantitySample, unit: HKUnit) {
+        self.init(
+            id: sample.uuid,
+            date: (sample.startDate...sample.endDate).middle,
+            value: sample.quantity.doubleValue(for: unit),
+            unit: unit
+        )
     }
     
     /// Creates a DataPoint from a `HKStatistics` summary object.
-    public init?(statistics: HKStatistics, aggregationOption: StatisticsAggregationOption, unit: HKUnit) /*where ID == HKStatistics.ID*/ {
+    public init?(statistics: HKStatistics, aggregationOption: StatisticsAggregationOption, unit: HKUnit) {
         self.id = AnyHashable(statistics.id)
         self.date = (statistics.startDate...statistics.endDate).middle
         let value: Double?

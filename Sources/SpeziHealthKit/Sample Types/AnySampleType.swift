@@ -25,8 +25,31 @@ public protocol AnySampleType: Hashable, Identifiable, Sendable where ID == Stri
 
 
 extension AnySampleType {
-    /// Compare two type-erased ``SampleType``s, based on their identifier.
+    /// The sample type's unique identifier, derived from its underlying `HKSampleType`
+    @inlinable public var id: String {
+        hkSampleType.identifier
+    }
+}
+
+
+extension AnySampleType {
+    /// Compare two type-erased sample type, based on their identifiers
     @inlinable public static func == (lhs: any AnySampleType, rhs: any AnySampleType) -> Bool {
         lhs.id == rhs.id
+    }
+    
+    /// Compare two sample types, based on their identifiers
+    @inlinable public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    /// Compare two sample types, based on their identifiers
+    @inlinable public static func == (lhs: Self, rhs: SampleType<some Any>) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    /// Hash the sample type, based on its identifier
+    @inlinable public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
     }
 }
