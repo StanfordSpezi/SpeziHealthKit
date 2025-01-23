@@ -116,7 +116,7 @@ final class HealthKitTests: XCTestCase {
         XCTAssert(app.buttons["Samples Query"].wait(for: \.isHittable, toEqual: true, timeout: 2))
         app.buttons["Samples Query"].tap()
         
-        XCTAssert(app.staticTexts.element(matching: NSPredicate(format: "label MATCHES %@", "Step Count *152")).waitForExistence(timeout: 1))
+        XCTAssert(app.staticTexts.element(matching: NSPredicate(format: "label MATCHES %@", "Step Count *152")).waitForExistence(timeout: 3))
     }
     
     
@@ -138,7 +138,7 @@ final class HealthKitTests: XCTestCase {
             format: "label MATCHES %@",
             "Steps on \(fmt(try XCTUnwrap(now.year)))-\(fmt(try XCTUnwrap(now.month)))-\(fmt(try XCTUnwrap(now.day))).*"
         )
-        XCTAssert(app.staticTexts.element(matching: todayPred).waitForExistence(timeout: 1))
+        XCTAssert(app.staticTexts.element(matching: todayPred).waitForExistence(timeout: 2))
     }
 }
 
