@@ -98,7 +98,7 @@ extension HKQuantitySample {
 extension IteratorProtocol {
     mutating func consume(_ count: Int) {
         var numConsumed = 0
-        while numConsumed < count, _ = next() {
+        while numConsumed < count, let _ = next() { // swiftlint:disable:this unused_optional_binding
             numConsumed += 1
         }
     }
