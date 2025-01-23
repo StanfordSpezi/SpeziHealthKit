@@ -16,10 +16,20 @@ struct SamplesQueryView: View {
     @HealthKitQuery(.stepCount, timeRange: .today)
     private var stepSamples
     
+    @HealthKitQuery(.heartRate, timeRange: .today)
+    private var heartRateSamples
+    
+    @HealthKitQuery(.bloodOxygen, timeRange: .today)
+    private var bloodOxygenSamples
+    
     var body: some View {
         Form {
             Section {
-                LabeledContent("#samples", value: "\(stepSamples.count)")
+                HealthChart {
+                    HealthChartEntry($heartRateSamples, drawingConfig: .init(mode: .line, color: .red))
+                    HealthChartEntry($bloodOxygenSamples, drawingConfig: .init(mode: .line, color: .blue))
+                }
+                .frame(height: 270)
             }
             makeSection(for: $stepSamples)
         }

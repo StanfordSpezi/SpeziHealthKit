@@ -102,7 +102,6 @@ final class HealthChartTests: XCTestCase {
     
     @MainActor
     func testEmptyHealthChartEntriesButNoData() throws {
-        throw XCTSkip()
         let data = MockQueryResults(sampleType: .heartRate, timeRange: .currentWeek, samples: [])
         let healthChart = HealthChart {
             HealthChartEntry(data, drawingConfig: .init(mode: .bar, color: .red))

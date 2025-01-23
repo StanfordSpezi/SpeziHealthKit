@@ -35,7 +35,7 @@ class TestAppDelegate: SpeziAppDelegate {
                     delivery: .manual()
                 )
                 
-                RequestReadAccess(correlation: [.bloodPressure])
+                RequestReadAccess(quantity: [.oxygenSaturation], correlation: [.bloodPressure])
                 
                 RequestWriteAccess(
                     quantity: [.heartRate, .oxygenSaturation, .stepCount, .height, .activeEnergyBurned]

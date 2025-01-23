@@ -13,16 +13,20 @@ import SwiftUI
 struct StatisticsQueryView: View {
     @Environment(HealthKit.self) private var healthKit
     
-    @HealthKitStatisticsQuery(.stepCount, aggregatedBy: [.sum], over: .day, timeRange: .today)
+    @HealthKitQuery(.heartRate, timeRange: .currentWeek)
+    private var heartRateSamples
+    
+    @HealthKitStatisticsQuery(.stepCount, aggregatedBy: [.sum], over: .day, timeRange: .currentWeek)
     private var dailyStepCountStats
     
     var body: some View {
         Form {
             Section {
                 HealthChart {
-                    HealthChartEntry($dailyStepCountStats, aggregationOption: .sum, drawingConfig: .init(mode: .bar, color: .orange))
+                    HealthChartEntry($heartRateSamples, drawingConfig: .init(mode: .line, color: .red))
+//                    HealthChartEntry($dailyStepCountStats, aggregationOption: .sum, drawingConfig: .init(mode: .bar, color: .orange))
                 }
-                .frame(height: 400)
+                .frame(height: 300)
             }
             ForEach(dailyStepCountStats.reversed()) { statistics in
                 if let numSteps = statistics.sumQuantity()?.doubleValue(for: .count()) {

@@ -116,7 +116,6 @@ final class HealthKitTests: XCTestCase {
         XCTAssert(app.buttons["Samples Query"].wait(for: \.isHittable, toEqual: true, timeout: 2))
         app.buttons["Samples Query"].tap()
         
-        XCTAssert(app.staticTexts.element(matching: NSPredicate(format: "label = %@", "#samples")).waitForExistence(timeout: 1))
         XCTAssert(app.staticTexts.element(matching: NSPredicate(format: "label MATCHES %@", "Step Count *152")).waitForExistence(timeout: 1))
     }
     
