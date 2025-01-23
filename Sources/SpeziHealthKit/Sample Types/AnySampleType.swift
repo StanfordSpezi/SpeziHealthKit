@@ -33,11 +33,6 @@ extension AnySampleType {
 
 
 extension AnySampleType {
-    /// Compare two type-erased sample type, based on their identifiers
-    @inlinable public static func == (lhs: any AnySampleType, rhs: any AnySampleType) -> Bool {
-        lhs.id == rhs.id
-    }
-    
     /// Compare two sample types, based on their identifiers
     @inlinable public static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.id == rhs.id
@@ -52,4 +47,9 @@ extension AnySampleType {
     @inlinable public func hash(into hasher: inout Hasher) {
         hasher.combine(id)
     }
+}
+
+/// Compare two type-erased sample type, based on their identifiers
+@inlinable public func == (lhs: any AnySampleType, rhs: any AnySampleType) -> Bool { // swiftlint:disable:this static_operator
+    lhs.id == rhs.id
 }
