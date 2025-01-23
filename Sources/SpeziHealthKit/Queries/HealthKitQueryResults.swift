@@ -24,6 +24,7 @@ import HealthKit
 /// ### Instance Properties
 /// - ``sampleType``
 /// - ``timeRange``
+/// - ``isCurrentlyPerformingInitialFetch``
 /// - ``queryError``
 public protocol HealthKitQueryResults<Sample, Element>: Observable, RandomAccessCollection, Sendable where Element: Identifiable {
     /// The `HKSample` subclass of the queried sample type.
@@ -44,4 +45,7 @@ public protocol HealthKitQueryResults<Sample, Element>: Observable, RandomAccess
     /// this property makes this error available.
     /// - Note: This property being non-nil typically implies that the query results themselves are empty.
     var queryError: (any Error)? { get }
+    
+    /// Whether the query is currently performing its initial fetch.
+    var isCurrentlyPerformingInitialFetch: Bool { get }
 }

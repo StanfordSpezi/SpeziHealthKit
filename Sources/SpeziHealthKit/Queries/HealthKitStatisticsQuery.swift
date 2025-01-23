@@ -122,9 +122,10 @@ public struct HealthKitStatisticsQuery: DynamicProperty { // swiftlint:disable:t
     @_documentation(visibility: internal)
     public nonisolated func update() {
         runOrScheduleOnMainActor {
-            results.healthStore = healthKit.healthStore
-            // will trigger an update of the query, but only if the input is actually different
-            results.input = input
+            results.initializeSwiftUIManagedQuery(
+                healthStore: healthKit.healthStore,
+                input: input
+            )
         }
     }
 }
@@ -179,7 +180,7 @@ public final class StatisticsQueryResults: @unchecked Sendable {
         case invalidPredicate
     }
     
-    struct Input: Hashable {
+    struct Input: Hashable, @unchecked Sendable {
         let sampleType: SampleType<HKQuantitySample>
         let options: HKStatisticsOptions
         let aggInterval: HealthKitStatisticsQuery.AggregationInterval
@@ -198,20 +199,11 @@ public final class StatisticsQueryResults: @unchecked Sendable {
     @ObservationIgnored
     fileprivate var healthStore: HKHealthStore! // swiftlint:disable:this implicitly_unwrapped_optional
     
+    @ObservationIgnored private var input: Input?
+    @ObservationIgnored private var task: Task<Void, Never>?
+    
+    public private(set) var isCurrentlyPerformingInitialFetch: Bool = false
     public private(set) var queryError: (any Error)?
-    
-    
-    @ObservationIgnored
-    fileprivate(set) var input: Input? {
-        didSet {
-            if input != oldValue {
-                update()
-            }
-        }
-    }
-    
-    @ObservationIgnored
-    private var task: Task<Void, Never>?
     
     fileprivate private(set) var statistics: [HKStatistics] = []
     
@@ -221,12 +213,26 @@ public final class StatisticsQueryResults: @unchecked Sendable {
     /// for which we need to be able to initialize it without passing in any context.
     fileprivate init() {}
     
-    func update() {
+    
+    @MainActor
+    fileprivate func initializeSwiftUIManagedQuery(healthStore: HKHealthStore, input: Input) {
+        guard self.input != input else {
+            return
+        }
+        self.healthStore = healthStore
+        self.input = input
+        startQuery()
+    }
+    
+    
+    @MainActor
+    private func startQuery() {
         guard let healthStore, let input else {
             print("[\(Self.self) -update]: healthStore and/or input missing")
             return
         }
         print("[\(self.self) -update]")
+        self.isCurrentlyPerformingInitialFetch = true
         let sampleType = input.sampleType.hkSampleType
         var predicate = input.timeRange.predicate
         if let filterPredicate = input.filterPredicate {
@@ -251,6 +257,7 @@ public final class StatisticsQueryResults: @unchecked Sendable {
                     }
                     let statistics = update.statisticsCollection.statistics()
                     Task { @MainActor in
+                        self.isCurrentlyPerformingInitialFetch = false
                         self.queryError = nil
                         self.statistics = statistics
                     }
@@ -263,6 +270,7 @@ public final class StatisticsQueryResults: @unchecked Sendable {
                     return
                 }
                 Task { @MainActor in
+                    self.isCurrentlyPerformingInitialFetch = false
                     self.queryError = error
                     self.statistics = []
                 }

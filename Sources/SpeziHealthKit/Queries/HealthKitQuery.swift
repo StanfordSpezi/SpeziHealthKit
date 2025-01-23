@@ -126,11 +126,11 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
     @ObservationIgnored
     private var input: Input?
     
-    
-    public private(set) var queryError: (any Error)?
-    
     @ObservationIgnored
     private var queryTask: Task<Void, Never>?
+    
+    public private(set) var isCurrentlyPerformingInitialFetch: Bool = false
+    public private(set) var queryError: (any Error)?
     
     fileprivate private(set) var samples = OrderedArray<Sample> { lhs, rhs in
         if lhs.startDate < rhs.startDate {
@@ -150,6 +150,7 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
     fileprivate init() {}
     
     
+    @MainActor
     fileprivate func initializeSwiftUIManagedQuery(healthStore: HKHealthStore, input: Input) {
         guard self.input != input else {
             return
@@ -162,30 +163,31 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
     
     /// Starts the auto-updating query.
     /// - Note: it might take a bit until the first results arrive and the query gets populated.
+    @MainActor
     private func startQuery() {
         guard let input, let healthStore else {
             return
         }
-        let predicate = HKSamplePredicate<Sample>.sample(
-            type: input.sampleType.hkSampleType,
-            predicate: { () -> NSPredicate? in
-                let preds = [
-                    input.timeRange.predicate,
-                    input.filterPredicate
-                ].compactMap { $0 }
-                return preds.isEmpty ? nil : NSCompoundPredicate(andPredicateWithSubpredicates: preds)
-            }()
-        )
-        let query = HKAnchoredObjectQueryDescriptor(
-            predicates: [predicate],
-            // we intentionally specify a nil anchor; this way the query will first fetch all existing data matching the descriptor,
-            // and then start emit update events for new/deleted data.
-            anchor: nil,
-            limit: nil
-        )
-        
+        self.isCurrentlyPerformingInitialFetch = true
         queryTask?.cancel()
-        queryTask = Task.detached { [weak self] in
+        queryTask = Task.detached { [weak self] in // swiftlint:disable:this closure_body_length
+            let predicate = HKSamplePredicate<Sample>.sample(
+                type: input.sampleType.hkSampleType,
+                predicate: { () -> NSPredicate? in
+                    let preds = [
+                        input.timeRange.predicate,
+                        input.filterPredicate
+                    ].compactMap { $0 }
+                    return preds.isEmpty ? nil : NSCompoundPredicate(andPredicateWithSubpredicates: preds)
+                }()
+            )
+            let query = HKAnchoredObjectQueryDescriptor(
+                predicates: [predicate],
+                // we intentionally specify a nil anchor; this way the query will first fetch all existing data matching the descriptor,
+                // and then start emit update events for new/deleted data.
+                anchor: nil,
+                limit: nil
+            )
             do {
                 let updates = query.results(for: healthStore)
                 for try await update in updates {
@@ -204,6 +206,7 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
                             // ^^This cast will practically always be true; the issue simply is that the type system doesn't know about it.
                             samples.insert(contentsOf: addedSamples)
                         }
+                        self.isCurrentlyPerformingInitialFetch = false
                         self.samples = samples
                     }
                 }
@@ -212,6 +215,7 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
                     return
                 }
                 Task { @MainActor in
+                    self.isCurrentlyPerformingInitialFetch = false
                     self.queryError = error
                 }
             }
