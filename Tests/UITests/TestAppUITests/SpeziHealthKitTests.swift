@@ -187,7 +187,9 @@ extension HealthKitTests {
     ) {
         func imp(try: Int) {
             // swiftlint:disable:next empty_count
-            let staticTexts = app.staticTexts.count > 0 ? app.staticTexts.allElementsBoundByIndex.map(\.label) : []
+            let staticTexts = app.staticTexts.count > 0
+                ? app.staticTexts.allElementsBoundByIndex.compactMap { $0.exists ? $0.label : nil }
+                : []
             guard `try` > 0 else {
                 XCTFail("Unable to check (staticTexts: \(staticTexts))", file: file, line: line)
                 return
