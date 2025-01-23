@@ -27,7 +27,7 @@ extension SampleType {
     
     /// The sample type representing heart rate quantity samples
     @inlinable public static var heartRate: SampleType<HKQuantitySample> {
-        .quantity(.heartRate, displayTitle: "Heart Rate", displayUnit: .count() / .minute(), expectedValuesRange: 60...150)
+        .quantity(.heartRate, displayTitle: "Heart Rate", displayUnit: .count() / .minute(), expectedValuesRange: 0...175)
     }
     
     /// The sample type representing resting heart rate quantity samples
