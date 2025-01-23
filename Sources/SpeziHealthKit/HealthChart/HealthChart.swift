@@ -13,43 +13,10 @@ import SpeziFoundation
 import SwiftUI
 
 
-// sadly can't nest in the struct directly :/
-// see https://github.com/swiftlang/swift/issues/72069
-/// The desired width of the chart, in time units.
-public enum HealthChartTimeIntervalInput {
-    /// The chart's time interval (i.e., the total time range represented by the visible x axis at any time)
-    /// should be determined automatically based on the specified chart entries.
-    case automatic
+public struct HealthChart: View {
+    public typealias ContentBuilder = ArrayBuilder<any HealthChartEntryProtocol>
     
-    /// The chart's visible x axis time range should equal the specified custom `TimeInterval`
-    case custom(TimeInterval)
-    
-    /// The chart's visible x axis time range should equal an hour
-    public static var hour: Self { .custom(TimeConstants.hour) }
-    
-    /// The chart's visible x axis time range should equal a day
-    public static var day: Self { .custom(TimeConstants.day) }
-    
-    /// The chart's visible x axis time range should equal a week
-    public static var week: Self { .custom(TimeConstants.week) }
-    
-    /// The chart's visible x axis time range should equal a month
-    public static var month: Self { .custom(TimeConstants.month) }
-    
-    /// The chart's visible x axis time range should equal a year
-    public static var year: Self { .custom(TimeConstants.year) }
-    
-    /// The chart's visible x axis time range should cover the width of the specified range.
-    public static func range(_ range: ClosedRange<Date>) -> Self {
-        .custom(range.lowerBound.distance(to: range.upperBound))
-    }
-}
-
-
-// MARK: HealthChart
-
-public struct HealthChart<each Results: HealthKitQueryResults>: View {
-    let entry: (repeat HealthChartEntry<each Results>)
+    let entries: [any HealthChartEntryProtocol]
     /// The time interval for which the chart displays data, i.e. the "width" of the chart, in terms of how much time it represents/covers.
     let timeInterval: TimeInterval
     
@@ -57,19 +24,9 @@ public struct HealthChart<each Results: HealthKitQueryResults>: View {
     @Environment(\.timeZone) private var timeZone
     @Environment(\.calendar) private var calendar
     
-    private var hasEntries: Bool {
-        for entry in repeat each entry {
-            if !entry.isEmpty { // swiftlint:disable:this for_where
-                return true
-            }
-        }
-        return false
-    }
-    
-    
     @_documentation(visibility: internal)
     public var body: some View {
-        if !hasEntries {
+        if entries.isEmpty {
             Text("No Data")
         } else {
             chart
@@ -91,18 +48,17 @@ public struct HealthChart<each Results: HealthKitQueryResults>: View {
         }
         .chartForegroundStyleScale({ () -> KeyValuePairs<String, Color> in
             var mapping: [(String, Color)] = []
-            func imp(_ entry: HealthChartEntry<some Any>) {
-                mapping.append((entry.results.sampleType.displayTitle, entry.drawingConfig.color))
+            for entry in entries {
+                mapping.append((entry.resultsSampleType.displayTitle, entry.drawingConfig.color))
             }
-            repeat imp(each entry)
             return KeyValuePairs<String, Color>(mapping)
         }())
         .transforming { view in
             let valuesRange = { () -> ClosedRange<Double>? in
                 var range: ClosedRange<Double>?
-                func imp(_ entry: HealthChartEntry<some Any>) {
-                    guard let expectedRange = (entry.results.sampleType as? SampleType<HKQuantitySample>)?.expectedValuesRange else {
-                        return
+                for entry in entries {
+                    guard let expectedRange = (entry.resultsSampleType as? SampleType<HKQuantitySample>)?.expectedValuesRange else {
+                        continue
                     }
                     if let currentRange = range {
                         range = min(currentRange.lowerBound, expectedRange.lowerBound)...max(currentRange.upperBound, expectedRange.upperBound)
@@ -110,7 +66,6 @@ public struct HealthChart<each Results: HealthKitQueryResults>: View {
                         range = expectedRange
                     }
                 }
-                repeat imp(each entry)
                 return range
             }()
             if let valuesRange {
@@ -131,13 +86,13 @@ public struct HealthChart<each Results: HealthKitQueryResults>: View {
         // and there is no ForEach-equivalent that would work with a variadic tuple.)
         // So, what we do instead is that we essentially unroll the for loop into manual, explicit calls of the result builder functions.
         var blocks: [AnyChartContent] = []
-        for entry in repeat each entry {
-            guard !entry.isEmpty, !entry.results.isEmpty else {
+        for entry in entries {
+            guard !entry.isEmpty, /*!entry.results.isEmpty*/ !entry.resultsDataPoints.isEmpty else {
                 continue
             }
-            guard entry.results.queryError == nil else {
-                continue
-            }
+//            guard entry.results.queryError == nil else {
+//                continue
+//            }
             blocks.append(AnyChartContent(erasing: ChartContentBuilder.buildExpression(makeChartContent(for: entry))))
         }
         var content = AnyChartContent(erasing: ChartContentBuilder.buildBlock())
@@ -154,20 +109,20 @@ public struct HealthChart<each Results: HealthKitQueryResults>: View {
     
     /// Creates a new Health Chart
     public init(
-        timeInterval timeIntervalInput: HealthChartTimeIntervalInput = .automatic,
-        @HealthChartContentBuilder _ entry: () -> (repeat HealthChartEntry<each Results>)
+        timeInterval timeIntervalInput: TimeIntervalInput = .automatic,
+        @ContentBuilder _ entry: () -> [any HealthChartEntryProtocol]
     ) {
-        let entry = entry()
-        self.entry = entry
+        let entries = entry()
+        self.entries = entries
         switch timeIntervalInput {
         case .automatic:
             self.timeInterval = { () -> TimeInterval in
                 var retval: TimeInterval = 0
-                for entry in repeat each entry {
+                for entry in entries {
                     guard !entry.isEmpty else {
                         continue
                     }
-                    let entryInterval = entry.results.timeRange.range.upperBound.distance(to: entry.results.timeRange.range.lowerBound)
+                    let entryInterval = entry.resultsTimeRange.range.upperBound.distance(to: entry.resultsTimeRange.range.lowerBound)
                     retval = max(retval, entryInterval)
                 }
                 return retval
@@ -179,25 +134,23 @@ public struct HealthChart<each Results: HealthKitQueryResults>: View {
     
     
     @ChartContentBuilder
-    private func makeChartContent<Results2: HealthKitQueryResults>(for entry: HealthChartEntry<Results2>) -> some ChartContent {
-        let name = entry.results.sampleType.displayTitle
-        ForEach(entry.results) { element in
-            if let dataPoint = entry.makeDataPoint(for: element) {
-                let xVal: PlottableValue = .value("Date", dataPoint.date)
-                let yVal: PlottableValue = .value(name, dataPoint.value * (entry.results.sampleType == .bloodOxygen ? 100 : 1))
-                SomeChartContent {
-                    switch entry.drawingConfig.mode {
-                    case .line:
-                        LineMark(x: xVal, y: yVal)
-                    case .bar:
-                        BarMark(x: xVal, y: yVal)
-                    case .point:
-                        PointMark(x: xVal, y: yVal)
-                    }
+    private func makeChartContent(for entry: any HealthChartEntryProtocol) -> some ChartContent {
+        let name = entry.resultsSampleType.displayTitle
+        ForEach(entry.resultsDataPoints) { dataPoint in
+            let xVal: PlottableValue = .value("Date", dataPoint.date)
+            let yVal: PlottableValue = .value(name, dataPoint.value * (entry.resultsSampleType == SampleType<HKQuantitySample>.bloodOxygen ? 100 : 1))
+            SomeChartContent {
+                switch entry.drawingConfig.mode {
+                case .line:
+                    LineMark(x: xVal, y: yVal)
+                case .bar:
+                    BarMark(x: xVal, y: yVal)
+                case .point:
+                    PointMark(x: xVal, y: yVal)
                 }
             }
         }
-        .foregroundStyle(by: .value("Sample Type", entry.results.sampleType.displayTitle))
+        .foregroundStyle(by: .value("Sample Type", entry.resultsSampleType.displayTitle))
     }
 }
 
@@ -234,8 +187,8 @@ extension HealthChart {
     
     private func maxTimeRange() -> HealthKitQueryTimeRange? {
         var maxTimeRange: HealthKitQueryTimeRange?
-        for entry in repeat each entry {
-            maxTimeRange = maxTimeRange.map { max($0, entry.results.timeRange) } ?? entry.results.timeRange
+        for entry in entries {
+            maxTimeRange = maxTimeRange.map { max($0, entry.resultsTimeRange) } ?? entry.resultsTimeRange
         }
         return maxTimeRange
     }
@@ -255,6 +208,39 @@ extension HealthChart {
         } else {
             // we just give up at this point...
             return nil
+        }
+    }
+}
+
+
+extension HealthChart {
+    /// The desired width of the chart, in time units.
+    public enum TimeIntervalInput {
+        /// The chart's time interval (i.e., the total time range represented by the visible x axis at any time)
+        /// should be determined automatically based on the specified chart entries.
+        case automatic
+        
+        /// The chart's visible x axis time range should equal the specified custom `TimeInterval`
+        case custom(TimeInterval)
+        
+        /// The chart's visible x axis time range should equal an hour
+        public static var hour: Self { .custom(TimeConstants.hour) }
+        
+        /// The chart's visible x axis time range should equal a day
+        public static var day: Self { .custom(TimeConstants.day) }
+        
+        /// The chart's visible x axis time range should equal a week
+        public static var week: Self { .custom(TimeConstants.week) }
+        
+        /// The chart's visible x axis time range should equal a month
+        public static var month: Self { .custom(TimeConstants.month) }
+        
+        /// The chart's visible x axis time range should equal a year
+        public static var year: Self { .custom(TimeConstants.year) }
+        
+        /// The chart's visible x axis time range should cover the width of the specified range.
+        public static func range(_ range: ClosedRange<Date>) -> Self {
+            .custom(range.lowerBound.distance(to: range.upperBound))
         }
     }
 }

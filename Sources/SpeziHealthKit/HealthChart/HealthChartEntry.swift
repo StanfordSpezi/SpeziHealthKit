@@ -34,11 +34,22 @@ public struct HealthChartDrawingConfig: Sendable {
 }
 
 
+/// Type-erased entry in a health chart
+@_documentation(visibility: internal)
+public protocol HealthChartEntryProtocol: Sendable {
+    var isEmpty: Bool { get }
+    var resultsTimeRange: HealthKitQueryTimeRange { get }
+    var resultsSampleType: any AnySampleType { get }
+    var drawingConfig: HealthChartDrawingConfig { get }
+    var resultsDataPoints: [HealthChartDataPoint] { get }
+}
+
+
 /// An entry in a ``HealthChart``.
 ///
 /// ## See Also
 /// - <doc:HealthChart>
-public final class HealthChartEntry<Results: HealthKitQueryResults>: Sendable {
+public struct HealthChartEntry<Results: HealthKitQueryResults>: Sendable {
     public typealias MakeDataPointImp = @Sendable (Results.Element, Results) -> HealthChartDataPoint?
     
     private enum Variant: Sendable {
@@ -48,7 +59,7 @@ public final class HealthChartEntry<Results: HealthKitQueryResults>: Sendable {
     
     private let variant: Variant
     
-    var results: Results {
+    private var results: Results {
         switch variant {
         case .regular(let results, _, _):
             return results
@@ -56,15 +67,8 @@ public final class HealthChartEntry<Results: HealthKitQueryResults>: Sendable {
             fatalError("Cannot access \(#function) on empty \(Self.self)")
         }
     }
-    var drawingConfig: HealthChartDrawingConfig {
-        switch variant {
-        case .regular(_, let drawingConfig, _):
-            return drawingConfig
-        case .empty:
-            fatalError("Cannot access \(#function) on empty \(Self.self)")
-        }
-    }
-    var makeDataPointImp: MakeDataPointImp {
+    
+    private var makeDataPointImp: MakeDataPointImp {
         switch variant {
         case .regular(_, _, let makeDataPointImp):
             return makeDataPointImp
@@ -73,21 +77,12 @@ public final class HealthChartEntry<Results: HealthKitQueryResults>: Sendable {
         }
     }
     
-    var isEmpty: Bool {
-        switch variant {
-        case .regular:
-            false
-        case .empty:
-            true
-        }
-    }
-    
     private init(variant: Variant) {
         self.variant = variant
     }
     
     /// Creates a new Entry, using the specified configuration.
-    public convenience init(
+    public init(
         _ results: Results,
         drawingConfig: HealthChartDrawingConfig,
         makeDataPoint: @escaping MakeDataPointImp
@@ -96,7 +91,7 @@ public final class HealthChartEntry<Results: HealthKitQueryResults>: Sendable {
     }
     
     /// Creates a new Entry for a HealthKit query collection of quantity samples.
-    public convenience init(
+    public init(
         _ results: Results,
         drawingConfig: HealthChartDrawingConfig
     ) where Results.Sample == HKQuantitySample, Results.Element == HKQuantitySample {
@@ -106,7 +101,7 @@ public final class HealthChartEntry<Results: HealthKitQueryResults>: Sendable {
     }
     
     /// Creates a new Entry for a statistical HealthKit query.
-    public convenience init(
+    public init(
         _ results: Results,
         aggregationOption: StatisticsAggregationOption,
         drawingConfig: HealthChartDrawingConfig
@@ -123,8 +118,38 @@ public final class HealthChartEntry<Results: HealthKitQueryResults>: Sendable {
     static func makeEmpty() -> Self {
         Self(variant: .empty)
     }
+}
+
+
+extension HealthChartEntry: HealthChartEntryProtocol {
+    public var drawingConfig: HealthChartDrawingConfig {
+        switch variant {
+        case .regular(_, let drawingConfig, _):
+            return drawingConfig
+        case .empty:
+            fatalError("Cannot access \(#function) on empty \(Self.self)")
+        }
+    }
     
-    func makeDataPoint(for element: Results.Element) -> HealthChartDataPoint? {
-        makeDataPointImp(element, results)
+    public var resultsTimeRange: HealthKitQueryTimeRange {
+        results.timeRange
+    }
+    
+    public var resultsSampleType: any AnySampleType {
+        results.sampleType
+    }
+    
+    public var resultsDataPoints: [HealthChartDataPoint] {
+        let results = self.results
+        return results.compactMap { makeDataPointImp($0, results) }
+    }
+    
+    public var isEmpty: Bool {
+        switch variant {
+        case .regular:
+            false
+        case .empty:
+            true
+        }
     }
 }
