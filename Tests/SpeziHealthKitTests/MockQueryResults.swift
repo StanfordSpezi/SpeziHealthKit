@@ -25,6 +25,8 @@ final class MockQueryResults: HealthKitQueryResults, @unchecked Sendable { // sw
     let timeRange: HealthKitQueryTimeRange
     var samples: [Sample]
     
+    let isCurrentlyPerformingInitialFetch: Bool = false
+    
     let queryError: (any Error)? = nil
     
     var startIndex: Index { samples.startIndex }
