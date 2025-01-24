@@ -44,33 +44,18 @@ actor ExampleStandard: Standard, HealthKitConstraint {
 
 
 Then, you can configure the ``HealthKit-class`` module in the configuration section of your `SpeziAppDelegate`.
-Provide ``HealthKitDataSourceDescription`` to define the data collection.
 You can, e.g., use ``CollectSample`` to collect a wide variety of `HKSampleTypes`:
 ```swift
 class ExampleAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
         Configuration(standard: ExampleStandard()) {
             HealthKit {
-                CollectSample(
-                    .electrocardiogram,
-                    delivery: .background(.manual)
-                )
-                CollectSample(
-                    .stepCount,
-                    delivery: .background(.automatic)
-                )
-                CollectSample(
-                    .pushCount,
-                    delivery: .continuous(.manual)
-                )
-                CollectSample(
-                    .activeEnergyBurned,
-                    delivery: .continuous(.automatic)
-                )
-                CollectSample(
-                    .restingHeartRate,
-                    delivery: .manual()
-                )
+                CollectSample(.activeEnergyBurned)
+                CollectSample(.stepCount, start: .manual)
+                CollectSample(.pushCount, start: .manual)
+                CollectSample(.heartRate, continueInBackground: true)
+                CollectSample(.electrocardiogram, start: .manual)
+                RequestReadAccess(quantity: [.oxygenSaturation])
             }
         }
     }

@@ -21,8 +21,9 @@ import SwiftUI
 /// The ``HealthKit-swift.class`` module will establish a strong reference to the collector,
 /// which will exist for the entire lifetime of the application.
 public protocol HealthDataCollector: AnyObject {
+    associatedtype Sample: _HKSampleWithSampleType
     /// The data collector's sample type
-    var sampleType: HKSampleType { get }
+    var sampleType: SampleType<Sample> { get }
     
     /// The data collector's delivery setting.
     ///
@@ -30,7 +31,7 @@ public protocol HealthDataCollector: AnyObject {
     /// - if the collector defines an automatic delivery setting, the collector will be told to start its data collection as soon as it is registered and the user
     ///     was asked to grant access to the collector's ``sampleType``
     /// - if the collector defines a manual delivery setting, it will be started the first time the application calls ``HealthKit-swift.class/triggerDataSourceCollection()``
-    var delivery: HealthDataCollectorDeliverySetting { get }
+    var deliverySetting: HealthDataCollectorDeliverySetting { get }
     
     /// Whether the data collector is currently active.
     @MainActor

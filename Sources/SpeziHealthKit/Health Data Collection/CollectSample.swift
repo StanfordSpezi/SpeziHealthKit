@@ -53,13 +53,13 @@ import Spezi
 ///     predicate: predicateOneMonth
 /// )
 /// ```
-public struct CollectSample: HealthKitConfigurationComponent {
-    private let sampleType: HKSampleType
+public struct CollectSample<Sample: _HKSampleWithSampleType>: HealthKitConfigurationComponent {
+    private let sampleType: SampleType<Sample>
     private let deliverySetting: HealthDataCollectorDeliverySetting
     private let predicate: NSPredicate?
     
     public var dataAccessRequirements: HealthKit.DataAccessRequirements {
-        .init(read: [sampleType])
+        .init(read: [sampleType.hkSampleType])
     }
     
     
@@ -70,12 +70,13 @@ public struct CollectSample: HealthKitConfigurationComponent {
     ///                provided the application authorization to collect the samples.
     ///   - delivery: The ``HealthDataCollectorDeliverySetting`` that should be used to collect the sample type. `.manual` is the default argument used.
     public init(
-        _ sampleType: SampleType<some Any>,
-        delivery: HealthDataCollectorDeliverySetting = .manual(),
+        _ sampleType: SampleType<Sample>,
+        start: HealthDataCollectorDeliverySetting.Start = .automatic,
+        continueInBackground: Bool = false,
         predicate: NSPredicate? = nil
     ) {
-        self.sampleType = sampleType.hkSampleType
-        self.deliverySetting = delivery
+        self.sampleType = sampleType
+        self.deliverySetting = .init(startSetting: start, continueInBackground: continueInBackground)
         self.predicate = predicate
     }
     
@@ -86,7 +87,7 @@ public struct CollectSample: HealthKitConfigurationComponent {
             standard: standard,
             sampleType: sampleType,
             predicate: predicate,
-            delivery: deliverySetting
+            deliverySetting: deliverySetting
         )
         await healthKit.addHealthDataCollector(collector)
     }

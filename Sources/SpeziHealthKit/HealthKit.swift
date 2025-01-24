@@ -10,6 +10,7 @@ import HealthKit
 import OSLog
 import Spezi
 import SpeziFoundation
+import SpeziLocalStorage
 import SwiftUI
 
 
@@ -26,6 +27,9 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     
     @ObservationIgnored @Application(\.logger)
     var logger
+    
+    @ObservationIgnored @Dependency(LocalStorage.self)
+    private var localStorage
     
     /// The HealthKit module's underlying `HKHealthStore`.
     public let healthStore: HKHealthStore
@@ -209,8 +213,8 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     @MainActor
     private func startAutomaticDataCollectionIfPossible(_ collector: some HealthDataCollector) async {
         if !collector.isActive,
-           collector.delivery.isAutomatic,
-           await askedForAuthorization(toRead: collector.sampleType) {
+           collector.deliverySetting.startSetting == .automatic,
+           await askedForAuthorization(toRead: collector.sampleType.hkSampleType) {
             logger.notice("Telling health data collector \(String(describing: collector)) to start its data collection")
             await collector.startDataCollection()
         }
@@ -220,7 +224,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     @MainActor
     public func triggerDataSourceCollection() async {
         await withTaskGroup(of: Void.self) { group in
-            for collector in registeredDataCollectors where collector.delivery.isManual {
+            for collector in registeredDataCollectors where collector.deliverySetting.startSetting == .manual {
                 group.addTask { @MainActor @Sendable in
                     self.logger.notice("Telling health data collector \(String(describing: collector)) to start its data collection")
                     await collector.startDataCollection()
@@ -229,8 +233,55 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
             await group.waitForAll()
         }
     }
+    
+    var queryAnchors: QueryAnchorsStorage {
+        .init(localStorage: localStorage)
+    }
 }
 
+
+// MARK: Query Anchor Management
+
+extension HealthKit {
+    struct QueryAnchorsStorage {
+        let localStorage: LocalStorage
+        private let settings = LocalStorageSetting.unencrypted(excludedFromBackup: true)
+        
+        subscript(sampleType: SampleType<some Any>) -> HKQueryAnchor? {
+            get {
+                guard let data = try? localStorage.read(
+                    Data.self,
+                    decoder: JSONDecoder(),
+                    storageKey: storageKey(for: sampleType),
+                    settings: settings
+                ) else {
+                    return nil
+                }
+                return try? NSKeyedUnarchiver.unarchivedObject(ofClass: HKQueryAnchor.self, from: data)
+            }
+            nonmutating set {
+                let storageKey = storageKey(for: sampleType)
+                if let newValue {
+                    do {
+                        let data = try NSKeyedArchiver.archivedData(withRootObject: newValue, requiringSecureCoding: true)
+                        try localStorage.store(data, encoder: JSONEncoder(), storageKey: storageKey, settings: settings)
+                    } catch {
+                        // we can't really do anything here...
+                    }
+                } else {
+                    try? localStorage.delete(storageKey: storageKey)
+                }
+            }
+        }
+        
+        private func storageKey(for sampleType: SampleType<some Any>) -> String {
+            "edu.stanford.Spezi.SpeziHealthKit.queryAnchors.\(sampleType.id)"
+        }
+    }
+}
+
+
+// MARK: Utilities
 
 extension HKUnit {
     /// Creates a unit as the composition of dividing a unit by another unit.

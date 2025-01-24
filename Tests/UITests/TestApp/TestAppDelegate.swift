@@ -16,23 +16,20 @@ class TestAppDelegate: SpeziAppDelegate {
             HealthKit {
                 CollectSample(
                     .electrocardiogram,
-                    delivery: .background(.manual)
+                    start: .manual,
+                    continueInBackground: true
                 )
                 CollectSample(
                     .stepCount,
-                    delivery: .background(.automatic)
+                    start: .automatic,
+                    continueInBackground: true
                 )
                 CollectSample(
                     .pushCount,
-                    delivery: .continuous(.manual)
+                    start: .manual
                 )
                 CollectSample(
-                    .activeEnergyBurned,
-                    delivery: .continuous(.automatic)
-                )
-                CollectSample(
-                    .heartRate,
-                    delivery: .manual()
+                    .activeEnergyBurned
                 )
                 
                 RequestReadAccess(quantity: [.oxygenSaturation], correlation: [.bloodPressure])

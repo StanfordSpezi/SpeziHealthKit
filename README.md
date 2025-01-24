@@ -57,26 +57,12 @@ class ExampleAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
         Configuration(standard: ExampleStandard()) {
             HealthKit {
-                CollectSample(
-                    .electrocardiogram,
-                    delivery: .background(.manual)
-                )
-                CollectSample(
-                    .stepCount,
-                    delivery: .background(.automatic)
-                )
-                CollectSample(
-                    .pushCount,
-                    delivery: .continuous(.manual)
-                )
-                CollectSample(
-                    .activeEnergyBurned,
-                    delivery: .continuous(.automatic)
-                )
-                CollectSample(
-                    .restingHeartRate,
-                    delivery: .manual()
-                )
+                CollectSample(.activeEnergyBurned)
+                CollectSample(.stepCount, start: .manual)
+                CollectSample(.pushCount, start: .manual)
+                CollectSample(.heartRate, continueInBackground: true)
+                CollectSample(.electrocardiogram, start: .manual)
+                RequestReadAccess(quantity: [.oxygenSaturation])
             }
         }
     }

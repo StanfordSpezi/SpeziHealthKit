@@ -29,10 +29,8 @@ This example uses the ``HealthKit-swift.class`` module to collect step count sam
 
 ```swift
 HealthKit {
-    CollectSample(
-        .stepCount,
-        delivery: .background(.automatic)
-    )
+    CollectSample(.stepCount)
+    CollectSample(.heartRate, continueInBackground: true)
     RequestReadAccess(quantity: [.heartRate, .oxygenSaturation])
 }
 ```
