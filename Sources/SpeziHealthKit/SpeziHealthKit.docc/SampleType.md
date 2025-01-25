@@ -29,30 +29,24 @@ For example, the sample type representing heart rate samples (``SampleType/heart
 - ``SampleType/displayUnit-4gadf``
 - ``SampleType/expectedValuesRange``
 
-### Creating new SampleTypes
-- ``SampleType/quantity(_:displayTitle:displayUnit:expectedValuesRange:)``
-- ``SampleType/correlation(_:displayTitle:displayUnit:)``
-- ``SampleType/category(_:displayTitle:)``
-
 ### Well-known quantity types
-- ``SampleType/stepCount``
-- ``SampleType/bloodOxygen``
-- ``SampleType/heartRate``
-- ``SampleType/restingHeartRate``
-- ``SampleType/heartRateVariability``
-- ``SampleType/pushCount``
-- ``SampleType/activeEnergyBurned``
-- ``SampleType/height``
+- <doc:SampleType+QuantityTypes>
 
 ### Well-known correlation types
 - ``SampleType/bloodPressure``
+- ``SampleType/food``
 
 ### Well-known category types
-- ``SampleType/sleepAnalysis``
+- <doc:SampleType+CategoryTypes>
 
 ### Other sample types
 - ``SampleType/audiogram``
 - ``SampleType/electrocardiogram``
+
+### Creating new SampleTypes
+- ``SampleType/quantity(_:displayTitle:displayUnit:expectedValuesRange:)``
+- ``SampleType/correlation(_:displayTitle:displayUnit:)``
+- ``SampleType/category(_:displayTitle:)``
 
 
 ### AnySampleType

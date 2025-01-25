@@ -311,12 +311,12 @@ struct SampleTypeScopedLocalStorage<Value> {
 
 extension HKUnit {
     /// Creates a unit as the composition of dividing a unit by another unit.
-    public static func / (lhs: HKUnit, rhs: HKUnit) -> HKUnit {
+    @inlinable public static func / (lhs: HKUnit, rhs: HKUnit) -> HKUnit {
         lhs.unitDivided(by: rhs)
     }
     
     /// Creates a unit as the composition of multiplying a unit with another unit.
-    public static func * (lhs: HKUnit, rhs: HKUnit) -> HKUnit {
+    @inlinable public static func * (lhs: HKUnit, rhs: HKUnit) -> HKUnit {
         lhs.unitMultiplied(by: rhs)
     }
 }
