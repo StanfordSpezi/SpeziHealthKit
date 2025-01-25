@@ -21,7 +21,7 @@ import SwiftUI
 /// ## See Also
 /// - <doc:ModuleConfiguration>
 @Observable
-public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializable {
+public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializable { // swiftlint:disable:this file_types_order
     @ObservationIgnored @StandardActor
     private var standard: any HealthKitConstraint
     
@@ -78,8 +78,8 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     public convenience init() {
         self.init { /* intentionally empty config */ }
     }
-
-
+    
+    
     /// Configures the HealthKit module.
     @_documentation(visibility: internal)
     public func configure() {
@@ -92,7 +92,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     
     
     // MARK: HealthKit authorization handling
-
+    
     /// Requests authorization for accessing all HealthKit data types defined in the ``HealthKit-swift.class`` module's current data access requirements list.
     /// Once the initial configuration of the ``HealthKit-swift.class`` module has completed, this list will consist of all data types defined by the individual configuration components,
     /// i.e., for example anything required by a ``CollectSample`` component, or explicitly requested via ``RequestReadAccess`` or ``RequestWriteAccess``.
@@ -194,9 +194,38 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
             false // fallback. better be safe than sorry.
         }
     }
-    
-    
+}
+
+
+extension HealthKit { // swiftlint:disable:this file_types_order
     // MARK: HealthKit data collection
+    
+    /// Provides access to the HealthKit module's query anchor storage system.
+    var queryAnchors: SampleTypeScopedLocalStorage<HKQueryAnchor> {
+        SampleTypeScopedLocalStorage(
+            localStorage: localStorage,
+            setting: .unencrypted(excludedFromBackup: true),
+            storageKeyPrefix: "edu.stanford.Spezi.SpeziHealthKit.queryAnchors."
+        ) { localStorage, setting, key in
+            let data = try localStorage.read(Data.self, decoder: JSONDecoder(), storageKey: key, settings: setting)
+            return try NSKeyedUnarchiver.unarchivedObject(ofClass: HKQueryAnchor.self, from: data)
+        } store: { localStorage, setting, key, value in
+            let data = try NSKeyedArchiver.archivedData(withRootObject: value, requiringSecureCoding: true)
+            try localStorage.store(data, encoder: JSONEncoder(), storageKey: key, settings: setting)
+        }
+    }
+    
+    var sampleCollectorPredicateStartDates: SampleTypeScopedLocalStorage<Date> {
+        SampleTypeScopedLocalStorage(
+            localStorage: localStorage,
+            setting: .unencrypted(excludedFromBackup: true),
+            storageKeyPrefix: "edu.stanford.Spezi.SpeziHealthKit.sampleCollectorStartDate."
+        ) { localStorage, setting, key in
+            try localStorage.read(Date.self, decoder: JSONDecoder(), storageKey: key, settings: setting)
+        } store: { localStorage, setting, key, value in
+            try localStorage.store(value, encoder: JSONEncoder(), storageKey: key, settings: setting)
+        }
+    }
     
     /// Adds a new data source for collecting health data in the background.
     ///
@@ -233,38 +262,10 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
             await group.waitForAll()
         }
     }
-    
-    /// Provides access to the HealthKit module's query anchor storage system.
-    var queryAnchors: SampleTypeScopedLocalStorage<HKQueryAnchor> {
-        SampleTypeScopedLocalStorage(
-            localStorage: localStorage,
-            setting: .unencrypted(excludedFromBackup: true),
-            storageKeyPrefix: "edu.stanford.Spezi.SpeziHealthKit.queryAnchors."
-        ) { localStorage, setting, key in
-            let data = try localStorage.read(Data.self, decoder: JSONDecoder(), storageKey: key, settings: setting)
-            return try NSKeyedUnarchiver.unarchivedObject(ofClass: HKQueryAnchor.self, from: data)
-        } store: { localStorage, setting, key, value in
-            let data = try NSKeyedArchiver.archivedData(withRootObject: value, requiringSecureCoding: true)
-            try localStorage.store(data, encoder: JSONEncoder(), storageKey: key, settings: setting)
-        }
-    }
-    
-    var sampleCollectorPredicateStartDates: SampleTypeScopedLocalStorage<Date> {
-        SampleTypeScopedLocalStorage(
-            localStorage: localStorage,
-            setting: .unencrypted(excludedFromBackup: true),
-            storageKeyPrefix: "edu.stanford.Spezi.SpeziHealthKit.sampleCollectorStartDate."
-        ) { localStorage, setting, key in
-            try localStorage.read(Date.self, decoder: JSONDecoder(), storageKey: key, settings: setting)
-        } store: { localStorage, setting, key, value in
-            try localStorage.store(value, encoder: JSONEncoder(), storageKey: key, settings: setting)
-        }
-    }
 }
 
 
 // MARK: Query Anchor Management
-
 
 struct SampleTypeScopedLocalStorage<Value> {
     private let storageKeyPrefix: String
@@ -291,6 +292,10 @@ struct SampleTypeScopedLocalStorage<Value> {
         }
     }
     
+    private func storageKey(for sampleType: SampleType<some Any>) -> String {
+        "\(storageKeyPrefix).\(sampleType.id)"
+    }
+    
     subscript(sampleType: SampleType<some Any>) -> Value? {
         get {
             try? load(storageKey(for: sampleType))
@@ -299,12 +304,7 @@ struct SampleTypeScopedLocalStorage<Value> {
             try? store(storageKey(for: sampleType), newValue)
         }
     }
-    
-    private func storageKey(for sampleType: SampleType<some Any>) -> String {
-        "\(storageKeyPrefix).\(sampleType.id)"
-    }
 }
-
 
 
 // MARK: Utilities

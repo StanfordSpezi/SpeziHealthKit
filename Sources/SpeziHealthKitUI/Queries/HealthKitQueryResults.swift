@@ -7,8 +7,8 @@
 //
 
 import Foundation
-import SpeziHealthKit
 import HealthKit
+import SpeziHealthKit
 
 
 /// An auto-updating, observable collection of results to a HealthKit query.
