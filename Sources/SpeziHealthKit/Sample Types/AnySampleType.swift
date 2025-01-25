@@ -33,6 +33,7 @@ extension AnySampleType {
 
 
 extension AnySampleType where Sample._SampleType: _HKSampleTypeWithIdentifierType {
+    /// The sample type's strongly typed identifier.
     @inlinable public var identifier: Sample._SampleType._Identifier {
         .init(rawValue: hkSampleType.identifier)
     }

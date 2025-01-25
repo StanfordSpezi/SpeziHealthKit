@@ -11,13 +11,14 @@
 import HealthKit
 
 
+/// An Identifier type used by a `HKSampleType` subclass
 public protocol _HKSampleTypeIdentifierType: Hashable {
     init(rawValue: String)
 }
 
-extension HKQuantityTypeIdentifier: _HKSampleTypeIdentifierType {}
-extension HKCorrelationTypeIdentifier: _HKSampleTypeIdentifierType {}
-extension HKCategoryTypeIdentifier: _HKSampleTypeIdentifierType {}
+extension HKQuantityTypeIdentifier: _HKSampleTypeIdentifierType {} // swiftlint:disable:this file_types_order
+extension HKCorrelationTypeIdentifier: _HKSampleTypeIdentifierType {} // swiftlint:disable:this file_types_order
+extension HKCategoryTypeIdentifier: _HKSampleTypeIdentifierType {} // swiftlint:disable:this file_types_order
 
 
 /// Associates a `HKSampleType` subclass with its corresponding identifier type.
