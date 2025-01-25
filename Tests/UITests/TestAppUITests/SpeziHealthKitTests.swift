@@ -209,7 +209,7 @@ extension HealthKitTests {
                 imp(try: `try` - 1)
                 return
             } else {
-                XCTAssertEqual(actual, expected, "Got: \(actual);\nExpected: \(expected)", file: file, line: line)
+                XCTAssertEqual(actual, expected, file: file, line: line)
             }
         }
         imp(try: 5)
