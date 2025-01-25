@@ -29,9 +29,10 @@ You need to add the Spezi HealthKit Swift package to
  [Swift package](https://developer.apple.com/documentation/xcode/creating-a-standalone-swift-package-with-xcode#Add-a-dependency-on-another-Swift-package).
 
 > Important: If your application is not yet configured to use Spezi, follow the
- [Spezi setup article](https://swiftpackageindex.com/stanfordspezi/spezi/documentation/spezi/initial-setup) and set up the core Spezi infrastructure. 
+ [Spezi setup article](https://swiftpackageindex.com/stanfordspezi/spezi/documentation/spezi/initial-setup) and set up the core Spezi infrastructure.
 
-### Example
+
+### Example: health data collection
 
 Before you configure the ``HealthKit-class`` module, make sure your `Standard` in your Spezi Application conforms to the ``HealthKitConstraint`` protocol to receive HealthKit data. The ``HealthKitConstraint/add(sample:)`` function is triggered once for every newly collected HealthKit sample, and the ``HealthKitConstraint/remove(sample:)`` function is triggered once for every deleted HealthKit sample.
 ```swift
@@ -64,6 +65,37 @@ class ExampleAppDelegate: SpeziAppDelegate {
                 CollectSample(.electrocardiogram, start: .manual)
                 RequestReadAccess(quantity: [.oxygenSaturation])
             }
+        }
+    }
+}
+```
+
+
+### Example: querying Health data in SwiftUI
+
+You can use [`SpeziHealthKitUI`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkitui)'s [`HealthKitQuery`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkitui/healthkitquery) and [`HealthKitStatisticsQuery`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkitui/healthkitstatisticsquery) property wrappers to access the Health database in a View:
+```swift
+struct ExampleView: View {
+    @HealthKitQuery(.heartRate, timeRange: .today)
+    private var heartRateSamples
+
+    var body: some View {
+        ForEach(heartRateSamples) { sample in
+            // ...
+        }
+    }
+}
+```
+
+Additionally, you can use [`SpeziHealthKitUI`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkitui)'s [`HealthChart`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkitui/healthchart) to visualise query results:
+```swift
+struct ExampleView: View {
+    @HealthKitQuery(.heartRate, timeRange: .today)
+    private var heartRateSamples
+
+    var body: some View {
+        HealthChart {
+            HealthChartEntry($heartRateSamples, drawingConfig: .init(mode: .line, color: .red))
         }
     }
 }

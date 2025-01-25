@@ -234,51 +234,77 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
         }
     }
     
-    var queryAnchors: QueryAnchorsStorage {
-        .init(localStorage: localStorage)
+    /// Provides access to the HealthKit module's query anchor storage system.
+    var queryAnchors: SampleTypeScopedLocalStorage<HKQueryAnchor> {
+        SampleTypeScopedLocalStorage(
+            localStorage: localStorage,
+            setting: .unencrypted(excludedFromBackup: true),
+            storageKeyPrefix: "edu.stanford.Spezi.SpeziHealthKit.queryAnchors."
+        ) { localStorage, setting, key in
+            let data = try localStorage.read(Data.self, decoder: JSONDecoder(), storageKey: key, settings: setting)
+            return try NSKeyedUnarchiver.unarchivedObject(ofClass: HKQueryAnchor.self, from: data)
+        } store: { localStorage, setting, key, value in
+            let data = try NSKeyedArchiver.archivedData(withRootObject: value, requiringSecureCoding: true)
+            try localStorage.store(data, encoder: JSONEncoder(), storageKey: key, settings: setting)
+        }
+    }
+    
+    var sampleCollectorPredicateStartDates: SampleTypeScopedLocalStorage<Date> {
+        SampleTypeScopedLocalStorage(
+            localStorage: localStorage,
+            setting: .unencrypted(excludedFromBackup: true),
+            storageKeyPrefix: "edu.stanford.Spezi.SpeziHealthKit.sampleCollectorStartDate."
+        ) { localStorage, setting, key in
+            try localStorage.read(Date.self, decoder: JSONDecoder(), storageKey: key, settings: setting)
+        } store: { localStorage, setting, key, value in
+            try localStorage.store(value, encoder: JSONEncoder(), storageKey: key, settings: setting)
+        }
     }
 }
 
 
 // MARK: Query Anchor Management
 
-extension HealthKit {
-    struct QueryAnchorsStorage {
-        let localStorage: LocalStorage
-        private let settings = LocalStorageSetting.unencrypted(excludedFromBackup: true)
-        
-        subscript(sampleType: SampleType<some Any>) -> HKQueryAnchor? {
-            get {
-                guard let data = try? localStorage.read(
-                    Data.self,
-                    decoder: JSONDecoder(),
-                    storageKey: storageKey(for: sampleType),
-                    settings: settings
-                ) else {
-                    return nil
-                }
-                return try? NSKeyedUnarchiver.unarchivedObject(ofClass: HKQueryAnchor.self, from: data)
-            }
-            nonmutating set {
-                let storageKey = storageKey(for: sampleType)
-                if let newValue {
-                    do {
-                        let data = try NSKeyedArchiver.archivedData(withRootObject: newValue, requiringSecureCoding: true)
-                        try localStorage.store(data, encoder: JSONEncoder(), storageKey: storageKey, settings: settings)
-                    } catch {
-                        // we can't really do anything here...
-                    }
-                } else {
-                    try? localStorage.delete(storageKey: storageKey)
-                }
-            }
+
+struct SampleTypeScopedLocalStorage<Value> {
+    private let storageKeyPrefix: String
+    private let load: (_ key: String) throws -> Value?
+    private let store: (_ key: String, _ value: Value?) throws -> Void
+    
+    init(
+        localStorage: LocalStorage,
+        setting: LocalStorageSetting,
+        storageKeyPrefix: String,
+        load: @escaping (LocalStorage, LocalStorageSetting, _ key: String) throws -> Value?,
+        store: @escaping (LocalStorage, LocalStorageSetting, _ key: String, _ value: Value) throws -> Void
+    ) {
+        self.storageKeyPrefix = storageKeyPrefix
+        self.load = {
+            try load(localStorage, setting, $0)
         }
-        
-        private func storageKey(for sampleType: SampleType<some Any>) -> String {
-            "edu.stanford.Spezi.SpeziHealthKit.queryAnchors.\(sampleType.id)"
+        self.store = { key, value in
+            if let value {
+                try store(localStorage, setting, key, value)
+            } else {
+                try localStorage.delete(storageKey: key)
+            }
         }
     }
+    
+    subscript(sampleType: SampleType<some Any>) -> Value? {
+        get {
+            try? load(storageKey(for: sampleType))
+        }
+        nonmutating set {
+            try? store(storageKey(for: sampleType), newValue)
+        }
+    }
+    
+    private func storageKey(for sampleType: SampleType<some Any>) -> String {
+        "\(storageKeyPrefix).\(sampleType.id)"
+    }
 }
+
 
 
 // MARK: Utilities

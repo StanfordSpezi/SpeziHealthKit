@@ -38,8 +38,6 @@ public protocol HealthDataCollector: AnyObject {
     var isActive: Bool { get }
     
     /// Called to inform the collector that it should start collecting data.
-    ///
-    /// Whether this results in a long-lived query being initiated, or a one-shot fetch, depends on the collector's specific ``delivery`` configuration.
     @MainActor
     func startDataCollection() async
 }

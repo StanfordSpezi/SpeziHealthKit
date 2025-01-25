@@ -18,7 +18,6 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
     private let standard: any HealthKitConstraint
     
     let sampleType: SampleType<Sample>
-//    var hkSampleType: HKSampleType { sampleType.hkSampleType }
     private let predicate: NSPredicate?
     let deliverySetting: HealthDataCollectorDeliverySetting
     @MainActor private(set) var isActive = false
@@ -48,7 +47,7 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
             self.predicate = predicate
         } else {
             self.predicate = HKQuery.predicateForSamples(
-                withStart: Self.loadDefaultQueryDate(for: sampleType.hkSampleType),
+                withStart: Self.loadDefaultQueryDate(for: sampleType, in: healthKit),
                 end: nil,
                 options: .strictEndDate
             )
@@ -56,19 +55,20 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
     }
     
     
-    private static func loadDefaultQueryDate(for sampleType: HKSampleType) -> Date {
-        let defaultPredicateDateUserDefaultsKey = UserDefaults.Keys.healthKitDefaultPredicateDatePrefix.appending(sampleType.identifier)
-        guard let date = UserDefaults.standard.object(forKey: defaultPredicateDateUserDefaultsKey) as? Date else {
+    private static func loadDefaultQueryDate(for sampleType: SampleType<Sample>, in healthKit: HealthKit) -> Date {
+        if let date = healthKit.sampleCollectorPredicateStartDates[sampleType] {
+            return date
+        } else {
             // We start date collection at the previous full minute mark to make the
             // data collection deterministic to manually entered data in HealthKit.
-            var components = Calendar.current.dateComponents(in: .current, from: .now)
+            let cal = Calendar.current
+            var components = cal.dateComponents(in: .current, from: .now)
             components.setValue(0, for: .second)
             components.setValue(0, for: .nanosecond)
-            let defaultQueryDate = components.date ?? .now
-            UserDefaults.standard.set(defaultQueryDate, forKey: defaultPredicateDateUserDefaultsKey)
+            let defaultQueryDate = cal.date(from: components) ?? .now
+            healthKit.sampleCollectorPredicateStartDates[sampleType] = defaultQueryDate
             return defaultQueryDate
         }
-        return date
     }
     
 

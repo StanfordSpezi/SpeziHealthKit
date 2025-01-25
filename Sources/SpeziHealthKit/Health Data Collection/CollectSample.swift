@@ -63,12 +63,14 @@ public struct CollectSample<Sample: _HKSampleWithSampleType>: HealthKitConfigura
     }
     
     
+    /// Creates a `CollectSample` instance that collects health samples and delivers them to the app's standard.
     /// - Parameters:
     ///   - sampleType: The ``SampleType`` that should be collected
+    ///   - start: How the sample collection should be started.
+    ///   - continueInBackground: Whether the sample collection should continue in the background, i.e., even when the app is no longer running.
     ///   - predicate: A custom predicate that should be passed to the HealthKit query.
     ///                The default predicate collects all samples that have been collected from the first time that the user
     ///                provided the application authorization to collect the samples.
-    ///   - delivery: The ``HealthDataCollectorDeliverySetting`` that should be used to collect the sample type. `.manual` is the default argument used.
     public init(
         _ sampleType: SampleType<Sample>,
         start: HealthDataCollectorDeliverySetting.Start = .automatic,
