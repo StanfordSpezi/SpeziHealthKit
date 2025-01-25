@@ -6,7 +6,7 @@
 # SPDX-License-Identifier: MIT
 # 
 
-exclude:
+ignore:
   - "Sources/SpeziHealthKit/Sample Types/SampleType+QuantityTypes.swift"
   - "Sources/SpeziHealthKit/Sample Types/SampleType+CategoryTypes.swift"
   - "Sources/SpeziHealthKit/Sample Types/SampleType+CorrelationTypes.swift"
