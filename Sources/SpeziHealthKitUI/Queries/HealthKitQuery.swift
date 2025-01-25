@@ -10,12 +10,13 @@ import Foundation
 import HealthKit
 import Spezi
 import SpeziFoundation
+import SpeziHealthKit
 import SwiftUI
 
 
 /// Query the HealthKit database within SwiftUI views.
 ///
-/// Queries are performed in the context of the ``HealthKit-swift.class`` module, which must be enabled via an app's `SpeziAppDelegate`.
+/// Queries are performed in the context of the [`HealthKit`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkit) module, which must be enabled via an app's `SpeziAppDelegate`.
 ///
 /// A query exposes, via its wrapped value, the samples it received from the HealthKit database.
 /// The actual type of the samples returned is dependent on the specific sample type being queried for.

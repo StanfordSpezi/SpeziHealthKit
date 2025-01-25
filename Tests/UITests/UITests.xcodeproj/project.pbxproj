@@ -15,6 +15,7 @@
 		2FE33CB42B9B802200BD886D /* FakeHealthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE33CB32B9B802200BD886D /* FakeHealthStore.swift */; };
 		2FE33CB92B9B815B00BD886D /* SpeziViews in Frameworks */ = {isa = PBXBuildFile; productRef = 2FE33CB82B9B815B00BD886D /* SpeziViews */; };
 		390F29612A785A98000A236E /* HealthKitTestAppStandard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 390F29602A785A98000A236E /* HealthKitTestAppStandard.swift */; };
+		808EB0282D452800009D9AB2 /* SpeziHealthKitUI in Frameworks */ = {isa = PBXBuildFile; productRef = 808EB0272D452800009D9AB2 /* SpeziHealthKitUI */; };
 		80BDC0BA2D417897007A5B68 /* SpeziHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 80BDC0B92D417897007A5B68 /* SpeziHealthKit */; };
 		80BDC0BD2D4192E6007A5B68 /* XCTHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 80BDC0BC2D4192E6007A5B68 /* XCTHealthKit */; };
 		80E2C9902D424CA400A5D177 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E2C98F2D424CA400A5D177 /* Utils.swift */; };
@@ -58,6 +59,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				808EB0282D452800009D9AB2 /* SpeziHealthKitUI in Frameworks */,
 				2F61BDC329DD02D600D71D33 /* SpeziHealthKit in Frameworks */,
 				2FE33CB92B9B815B00BD886D /* SpeziViews in Frameworks */,
 			);
@@ -152,6 +154,7 @@
 			packageProductDependencies = (
 				2F61BDC229DD02D600D71D33 /* SpeziHealthKit */,
 				2FE33CB82B9B815B00BD886D /* SpeziViews */,
+				808EB0272D452800009D9AB2 /* SpeziHealthKitUI */,
 			);
 			productName = Example;
 			productReference = 2F6D139228F5F384007C25D6 /* TestApp.app */;
@@ -712,6 +715,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2FE33CB72B9B815B00BD886D /* XCRemoteSwiftPackageReference "SpeziViews" */;
 			productName = SpeziViews;
+		};
+		808EB0272D452800009D9AB2 /* SpeziHealthKitUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SpeziHealthKitUI;
 		};
 		80BDC0B92D417897007A5B68 /* SpeziHealthKit */ = {
 			isa = XCSwiftPackageProductDependency;

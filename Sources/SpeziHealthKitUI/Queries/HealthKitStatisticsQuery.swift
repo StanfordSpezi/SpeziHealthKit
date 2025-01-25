@@ -10,6 +10,7 @@ import Foundation
 import HealthKit
 import Spezi
 import SpeziFoundation
+import SpeziHealthKit
 import SwiftUI
 
 

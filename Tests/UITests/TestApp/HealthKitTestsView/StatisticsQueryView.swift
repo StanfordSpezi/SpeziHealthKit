@@ -7,6 +7,7 @@
 //
 
 import SpeziHealthKit
+import SpeziHealthKitUI
 import SwiftUI
 
 

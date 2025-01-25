@@ -23,7 +23,7 @@ public struct HealthKitQueryTimeRange: Sendable {
         )
     }
     
-    var duration: TimeInterval {
+    public var duration: TimeInterval {
         range.lowerBound.distance(to: range.upperBound)
     }
     

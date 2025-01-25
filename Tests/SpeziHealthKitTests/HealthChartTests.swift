@@ -9,6 +9,7 @@
 import HealthKit
 import SnapshotTesting
 @testable import SpeziHealthKit
+@testable import SpeziHealthKitUI
 import SwiftUI
 import XCTest
 import XCTSpezi

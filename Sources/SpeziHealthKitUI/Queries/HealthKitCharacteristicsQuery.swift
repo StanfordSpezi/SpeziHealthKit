@@ -8,6 +8,7 @@
 
 import Foundation
 import HealthKit
+import SpeziHealthKit
 import SwiftUI
 
 

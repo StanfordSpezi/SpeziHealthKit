@@ -78,18 +78,6 @@ class ExampleAppDelegate: SpeziAppDelegate {
 - ``SampleType``
 - ``AnySampleType``
 
-
-### Querying Health Data
-- ``HealthKitQuery``
-- ``HealthKitStatisticsQuery``
-- ``HealthKitQueryTimeRange``
-- ``HealthKitQueryResults``
-- ``HealthKitCharacteristicQuery``
-- ``HealthKitCharacteristic``
-
-### Visualizing Queried Health Data
-- ``HealthChart``
-
 ### HealthKit Utilities
 - ``HealthKit/HKUnit/*(_:_:)``
 - ``HealthKit/HKUnit//(_:_:)``

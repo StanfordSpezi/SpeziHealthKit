@@ -16,11 +16,11 @@ Health samples obtained via a ``HealthKitQuery`` or statistics obtained via a ``
 
 A ``HealthChart`` is populated via the ``HealthChartEntry`` type.
 Each entry in a chart manages one data set which should be displayed.
-Typically, you probably will want to display only a single ``SampleType`` in a chart
+Typically, you probably will want to display only a single [`SampleType`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/sampletype) in a chart
 
 ### Example: Visualising Blood Oxygen Samples
 
-Use the ``HealthKitQuery`` and ``HealthKitStatisticsQuery`` property wrappers to fetch Health data for a ``SampleType`` within your view.
+Use the ``HealthKitQuery`` and ``HealthKitStatisticsQuery`` property wrappers to fetch Health data for a [`SampleType`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/sampletype) within your view.
 You then use the property wrapper's `projectedValue` to populate the chart with 
 
 ```swift
@@ -41,9 +41,9 @@ var body: some View {
 
 ### Supporting Types
 - ``HealthChartEntry``
-- ``HealthChartContentBuilder``
+- ``HealthChart/ContentBuilder``
 - ``HealthChartDataPoint``
-- ``HealthChartTimeIntervalInput``
+- ``HealthChart/TimeIntervalInput``
 - ``StatisticsAggregationOption``
 - ``HealthChartDrawingConfig``
 

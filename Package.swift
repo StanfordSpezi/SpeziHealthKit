@@ -20,7 +20,8 @@ let package = Package(
         .macOS(.v14)
     ],
     products: [
-        .library(name: "SpeziHealthKit", targets: ["SpeziHealthKit"])
+        .library(name: "SpeziHealthKit", targets: ["SpeziHealthKit"]),
+        .library(name: "SpeziHealthKitUI", targets: ["SpeziHealthKitUI"])
     ],
     dependencies: [
         .package(url: "https://github.com/StanfordSpezi/Spezi.git", from: "1.8.0"),
@@ -39,11 +40,21 @@ let package = Package(
             swiftSettings: [.enableUpcomingFeature("ExistentialAny")],
             plugins: [] + swiftLintPlugin()
         ),
+        .target(
+            name: "SpeziHealthKitUI",
+            dependencies: [
+                .target(name: "SpeziHealthKit"),
+                .product(name: "SpeziFoundation", package: "SpeziFoundation")
+            ],
+            swiftSettings: [.enableUpcomingFeature("ExistentialAny")],
+            plugins: [] + swiftLintPlugin()
+        ),
         .testTarget(
             name: "SpeziHealthKitTests",
             dependencies: [
                 .product(name: "XCTSpezi", package: "Spezi"),
                 .target(name: "SpeziHealthKit"),
+                .target(name: "SpeziHealthKitUI"),
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing")
             ],
             swiftSettings: [.enableUpcomingFeature("ExistentialAny")],
