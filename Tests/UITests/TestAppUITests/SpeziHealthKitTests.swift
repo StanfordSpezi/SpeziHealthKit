@@ -35,9 +35,9 @@ final class HealthKitTests: XCTestCase {
         assertCollectedSamplesSinceLaunch(in: app, [:])
         // Add a heart rate sample
         try addSample(.heartRate, in: app)
-        // Since the CollectSample for heart rate is .manual, it stil shouldn't be there
+        // Since the CollectSample start setting for heart rate is .manual, it stil shouldn't be there
         assertCollectedSamplesSinceLaunch(in: app, [:])
-        // We trigger manual data collection, which should make the sample show up
+        // We manually start the heart rate data collection, which should make the sample show up
         triggerDataCollection(in: app)
         assertCollectedSamplesSinceLaunch(in: app, [
             .heartRate: 1

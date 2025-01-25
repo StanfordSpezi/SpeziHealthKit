@@ -31,6 +31,7 @@ class TestAppDelegate: SpeziAppDelegate {
                 CollectSample(
                     .activeEnergyBurned
                 )
+                CollectSample(.heartRate, start: .manual)
                 
                 RequestReadAccess(quantity: [.oxygenSaturation], correlation: [.bloodPressure])
                 
