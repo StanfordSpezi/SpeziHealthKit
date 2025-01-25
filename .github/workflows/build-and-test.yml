@@ -20,9 +20,9 @@ jobs:
     name: Build and Test Swift Package
     uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
     with:
-      artifactname: SpeziHealthKit.xcresult
       runsonlabels: '["macOS", "self-hosted"]'
-      scheme: SpeziHealthKit
+      scheme: SpeziHealthKit-Package
+      artifactname: SpeziHealthKit.xcresult
   buildandtestuitests:
     name: Build and Test UI Tests
     uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
