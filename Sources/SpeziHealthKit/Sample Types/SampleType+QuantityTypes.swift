@@ -33,8 +33,7 @@ extension SampleType {
         .quantity(
             .stepCount,
             displayTitle: "Step Count",
-            displayUnit: .count(),
-            expectedValuesRange: nil
+            displayUnit: .count()
         )
     }
     
@@ -43,8 +42,7 @@ extension SampleType {
         .quantity(
             .distanceWalkingRunning,
             displayTitle: "Walking + Running Distance",
-            displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo)),
-            expectedValuesRange: nil
+            displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo))
         )
     }
     
@@ -53,8 +51,7 @@ extension SampleType {
         .quantity(
             .runningGroundContactTime,
             displayTitle: "Ground Contact Time",
-            displayUnit: .secondUnit(with: .milli),
-            expectedValuesRange: nil
+            displayUnit: .secondUnit(with: .milli)
         )
     }
     
@@ -63,8 +60,7 @@ extension SampleType {
         .quantity(
             .runningPower,
             displayTitle: "Running Power",
-            displayUnit: .watt(),
-            expectedValuesRange: nil
+            displayUnit: .watt()
         )
     }
     
@@ -73,8 +69,7 @@ extension SampleType {
         .quantity(
             .runningSpeed,
             displayTitle: "Running Speed",
-            displayUnit: localeDependentUnit(us: .mile() / .hour(), metric: .meterUnit(with: .kilo) / .hour()),
-            expectedValuesRange: nil
+            displayUnit: localeDependentUnit(us: .mile() / .hour(), metric: .meterUnit(with: .kilo) / .hour())
         )
     }
     
@@ -83,8 +78,7 @@ extension SampleType {
         .quantity(
             .runningStrideLength,
             displayTitle: "Running Stride Length",
-            displayUnit: localeDependentUnit(us: .foot(), metric: .meter()),
-            expectedValuesRange: nil
+            displayUnit: localeDependentUnit(us: .foot(), metric: .meter())
         )
     }
     
@@ -93,8 +87,7 @@ extension SampleType {
         .quantity(
             .runningVerticalOscillation,
             displayTitle: "Vertical Oscillation",
-            displayUnit: localeDependentUnit(us: .inch(), metric: .meterUnit(with: .centi)),
-            expectedValuesRange: nil
+            displayUnit: localeDependentUnit(us: .inch(), metric: .meterUnit(with: .centi))
         )
     }
     
@@ -103,8 +96,7 @@ extension SampleType {
         .quantity(
             .distanceCycling,
             displayTitle: "Cycling Distance",
-            displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo)),
-            expectedValuesRange: nil
+            displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo))
         )
     }
     
@@ -113,8 +105,7 @@ extension SampleType {
         .quantity(
             .pushCount,
             displayTitle: "Pushes",
-            displayUnit: .count(),
-            expectedValuesRange: nil
+            displayUnit: .count()
         )
     }
     
@@ -123,8 +114,7 @@ extension SampleType {
         .quantity(
             .distanceWheelchair,
             displayTitle: "Wheelchair Distance",
-            displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo)),
-            expectedValuesRange: nil
+            displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo))
         )
     }
     
@@ -133,8 +123,7 @@ extension SampleType {
         .quantity(
             .swimmingStrokeCount,
             displayTitle: "Swimming Strokes",
-            displayUnit: .count(),
-            expectedValuesRange: nil
+            displayUnit: .count()
         )
     }
     
@@ -143,8 +132,7 @@ extension SampleType {
         .quantity(
             .distanceSwimming,
             displayTitle: "Swimming Distance",
-            displayUnit: localeDependentUnit(us: .yard(), uk: .yard(), metric: .meter()),
-            expectedValuesRange: nil
+            displayUnit: localeDependentUnit(us: .yard(), uk: .yard(), metric: .meter())
         )
     }
     
@@ -153,8 +141,7 @@ extension SampleType {
         .quantity(
             .distanceDownhillSnowSports,
             displayTitle: "Downhill Snow Sports Distance",
-            displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo)),
-            expectedValuesRange: nil
+            displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo))
         )
     }
     
@@ -163,8 +150,7 @@ extension SampleType {
         .quantity(
             .basalEnergyBurned,
             displayTitle: "Resting Energy",
-            displayUnit: .largeCalorie(),
-            expectedValuesRange: nil
+            displayUnit: .largeCalorie()
         )
     }
     
@@ -173,8 +159,7 @@ extension SampleType {
         .quantity(
             .activeEnergyBurned,
             displayTitle: "Active Energy",
-            displayUnit: .largeCalorie(),
-            expectedValuesRange: nil
+            displayUnit: .largeCalorie()
         )
     }
     
@@ -183,8 +168,7 @@ extension SampleType {
         .quantity(
             .flightsClimbed,
             displayTitle: "Flights Climbed",
-            displayUnit: .count(),
-            expectedValuesRange: nil
+            displayUnit: .count()
         )
     }
     
@@ -193,8 +177,7 @@ extension SampleType {
         .quantity(
             .appleExerciseTime,
             displayTitle: "Exercise Minutes",
-            displayUnit: .minute(),
-            expectedValuesRange: nil
+            displayUnit: .minute()
         )
     }
     
@@ -203,8 +186,7 @@ extension SampleType {
         .quantity(
             .appleMoveTime,
             displayTitle: "Move Minutes",
-            displayUnit: .minute(),
-            expectedValuesRange: nil
+            displayUnit: .minute()
         )
     }
     
@@ -213,8 +195,7 @@ extension SampleType {
         .quantity(
             .appleStandTime,
             displayTitle: "Stand Hours",
-            displayUnit: .hour(),
-            expectedValuesRange: nil
+            displayUnit: .hour()
         )
     }
     
@@ -223,8 +204,7 @@ extension SampleType {
         .quantity(
             .vo2Max,
             displayTitle: "VO₂ max",
-            displayUnit: .literUnit(with: .milli) / (.gramUnit(with: .kilo) / .minute()),
-            expectedValuesRange: nil
+            displayUnit: .literUnit(with: .milli) / (.gramUnit(with: .kilo) / .minute())
         )
     }
 }
@@ -238,8 +218,7 @@ extension SampleType {
         .quantity(
             .height,
             displayTitle: "Height",
-            displayUnit: localeDependentUnit(us: .foot(), metric: .meter()),
-            expectedValuesRange: nil
+            displayUnit: localeDependentUnit(us: .foot(), metric: .meter())
         )
     }
     
@@ -248,8 +227,7 @@ extension SampleType {
         .quantity(
             .bodyMass,
             displayTitle: "Body Mass",
-            displayUnit: localeDependentUnit(us: .pound(), uk: .pound(), metric: .gramUnit(with: .kilo)),
-            expectedValuesRange: nil
+            displayUnit: localeDependentUnit(us: .pound(), uk: .pound(), metric: .gramUnit(with: .kilo))
         )
     }
     
@@ -258,8 +236,7 @@ extension SampleType {
         .quantity(
             .bodyMassIndex,
             displayTitle: "Body Mass Index",
-            displayUnit: .count(),
-            expectedValuesRange: nil
+            displayUnit: .count()
         )
     }
     
@@ -268,8 +245,7 @@ extension SampleType {
         .quantity(
             .leanBodyMass,
             displayTitle: "Lean Body Mass",
-            displayUnit: localeDependentUnit(us: .pound(), uk: .pound(), metric: .gramUnit(with: .kilo)),
-            expectedValuesRange: nil
+            displayUnit: localeDependentUnit(us: .pound(), uk: .pound(), metric: .gramUnit(with: .kilo))
         )
     }
     
@@ -278,8 +254,7 @@ extension SampleType {
         .quantity(
             .bodyFatPercentage,
             displayTitle: "Body Fat Percentage",
-            displayUnit: .percent(),
-            expectedValuesRange: nil
+            displayUnit: .percent()
         )
     }
     
@@ -288,8 +263,7 @@ extension SampleType {
         .quantity(
             .waistCircumference,
             displayTitle: "Waist Circumference",
-            displayUnit: localeDependentUnit(us: .inch(), metric: .meterUnit(with: .centi)),
-            expectedValuesRange: nil
+            displayUnit: localeDependentUnit(us: .inch(), metric: .meterUnit(with: .centi))
         )
     }
     
@@ -298,8 +272,7 @@ extension SampleType {
         .quantity(
             .appleSleepingWristTemperature,
             displayTitle: "Wrist Temperature",
-            displayUnit: localeDependentUnit(us: .degreeFahrenheit(), metric: .degreeCelsius()),
-            expectedValuesRange: nil
+            displayUnit: localeDependentUnit(us: .degreeFahrenheit(), metric: .degreeCelsius())
         )
     }
 }
@@ -313,8 +286,7 @@ extension SampleType {
         .quantity(
             .basalBodyTemperature,
             displayTitle: "Basal Body Temperature",
-            displayUnit: localeDependentUnit(us: .degreeFahrenheit(), metric: .degreeCelsius()),
-            expectedValuesRange: nil
+            displayUnit: localeDependentUnit(us: .degreeFahrenheit(), metric: .degreeCelsius())
         )
     }
 }
@@ -351,7 +323,8 @@ extension SampleType {
         .quantity(
             .heartRate,
             displayTitle: "Heart Rate",
-            displayUnit: .count() / .minute()
+            displayUnit: .count() / .minute(),
+            expectedValuesRange: 0...175
         )
     }
     
@@ -405,7 +378,8 @@ extension SampleType {
         .quantity(
             .oxygenSaturation,
             displayTitle: "Blood Oxygen",
-            displayUnit: .percent()
+            displayUnit: .percent(),
+            expectedValuesRange: 80...105
         )
     }
     

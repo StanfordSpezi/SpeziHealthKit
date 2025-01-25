@@ -8,6 +8,7 @@
 
 import HealthKit
 import SpeziHealthKit
+import SpeziHealthKitUI
 import XCTest
 
 

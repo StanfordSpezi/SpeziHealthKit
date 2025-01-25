@@ -166,6 +166,9 @@
     "Ground Contact Time" : {
 
     },
+    "Handwashing Event" : {
+
+    },
     "Headphone Audio Exposure" : {
 
     },
@@ -245,6 +248,9 @@
 
     },
     "Menstrual Cycles" : {
+
+    },
+    "Mindful Session" : {
 
     },
     "Molybdenum" : {
@@ -345,7 +351,6 @@
 
     },
     "Sleep Analysis" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
@@ -392,6 +397,9 @@
     "Thiamin" : {
 
     },
+    "Toothbrushing Event" : {
+
+    },
     "Total Fat" : {
 
     },
@@ -425,7 +433,7 @@
     "Vitamin K" : {
 
     },
-    "VO2 max" : {
+    "VO₂ max" : {
 
     },
     "Waist Circumference" : {
