@@ -41,16 +41,6 @@
         }
       }
     },
-    "Date" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Datum"
-          }
-        }
-      }
-    },
     "ECG" : {
       "localizations" : {
         "de" : {
@@ -91,16 +81,6 @@
         }
       }
     },
-    "No Data" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Keine Daten"
-          }
-        }
-      }
-    },
     "Resting Heart Rate" : {
       "localizations" : {
         "de" : {
@@ -110,9 +90,6 @@
           }
         }
       }
-    },
-    "Sample Type" : {
-
     },
     "Sleep Analysis" : {
       "localizations" : {
@@ -130,17 +107,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Schrittzahl"
-          }
-        }
-      }
-    },
-    "Time Range" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zeitraum"
           }
         }
       }
