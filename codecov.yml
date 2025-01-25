@@ -7,6 +7,6 @@
 # 
 
 exclude:
-  - "Sources/SpeziHealthKit/SampleTypes/SampleType+QuantityTypes.swift"
-  - "Sources/SpeziHealthKit/SampleTypes/SampleType+CategoryTypes.swift"
-  - "Sources/SpeziHealthKit/SampleTypes/SampleType+CorrelationTypes.swift"
+  - "Sources/SpeziHealthKit/Sample Types/SampleType+QuantityTypes.swift"
+  - "Sources/SpeziHealthKit/Sample Types/SampleType+CategoryTypes.swift"
+  - "Sources/SpeziHealthKit/Sample Types/SampleType+CorrelationTypes.swift"
