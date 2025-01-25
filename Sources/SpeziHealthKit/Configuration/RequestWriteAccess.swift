@@ -22,13 +22,13 @@ public struct RequestWriteAccess: HealthKitConfigurationComponent {
     
     /// Creates a HealthKit configuration component that requests write access to the specified type identifiers.
     public init(
-        quantity: Set<HKQuantityTypeIdentifier> = [],
-        category: Set<HKCategoryTypeIdentifier> = [],
-        correlation: Set<HKCorrelationTypeIdentifier> = []
+        quantity: Set<SampleType<HKQuantitySample>> = [],
+        category: Set<SampleType<HKCategorySample>> = [],
+        correlation: Set<SampleType<HKCorrelation>> = []
     ) {
-        let types = Set<HKSampleType>(quantity.map(HKQuantityType.init))
-            .union(category.map(HKCategoryType.init))
-            .union(correlation.flatMap(\.knownAssociatedSampleTypes))
+        let types = Set<HKSampleType>(quantity.map(\.hkSampleType))
+            .union(category.map(\.hkSampleType))
+            .union(correlation.flatMap(\.associatedQuantityTypes).map(\.hkSampleType))
         self.init(types)
     }
     

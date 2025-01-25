@@ -32,6 +32,13 @@ extension AnySampleType {
 }
 
 
+extension AnySampleType where Sample._SampleType: _HKSampleTypeWithIdentifierType {
+    @inlinable public var identifier: Sample._SampleType._Identifier {
+        .init(rawValue: hkSampleType.identifier)
+    }
+}
+
+
 extension AnySampleType {
     /// Compare two sample types, based on their identifiers
     @inlinable public static func == (lhs: Self, rhs: Self) -> Bool {

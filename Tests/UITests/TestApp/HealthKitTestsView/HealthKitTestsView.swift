@@ -164,13 +164,11 @@ struct HealthKitTestsView: View {
                 )
             }
         }
-        print("Will add \(samples.count) samples to HealthKit")
         try await healthKit.askForAuthorization(for: .init(write: samples.mapIntoSet(\.sampleType)))
         for sample in samples {
             // NOTE: for some reason, this works but calling the overload that takes an array doesn't...
             try await healthKit.healthStore.save(sample)
         }
-        print("Did add \(samples.count) samples to HealthKit")
     }
     
     
@@ -187,10 +185,8 @@ struct HealthKitTestsView: View {
             )
             do {
                 let samples = (try? await descriptor.result(for: healthKit.healthStore)) ?? []
-                print("WOULD DELETE SAMPLES FOR \(sampleType) (#=\(samples.count))")
                 try await healthKit.healthStore.delete(samples)
             } catch {
-                print("ERROR TRYING TO DELETE DATA OF TYPE \(sampleType): \(error)")
                 throw error
             }
         }

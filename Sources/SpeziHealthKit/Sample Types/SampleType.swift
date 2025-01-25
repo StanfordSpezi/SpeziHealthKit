@@ -17,9 +17,8 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType {
         /// - parameter expectedValuesRange: The expected range of values we expect to see for this sample type, if applicable.
         ///     The main purpose of this is to be able to e.g. adjust chart value ranges based on the specific sample types being visualised.
         case quantity(displayUnit: HKUnit, expectedValuesRange: ClosedRange<Double>?)
-        /// - parameter displayUnit: The unit that should be used when displaying a sample belonging to a correlation of this type to the user.
-        ///    Depending on the specific correlation type, this value might be `nil`. (E.g., if the samples associated with the correlation don't all use the same unit.)
-        case correlation(displayUnit: HKUnit?)
+        /// - parameter associatedQuantityTypes: The correlation's associated sample types, if known.
+        case correlation(associatedQuantityTypes: Set<SampleType<HKQuantitySample>>)
         case category
         case electrocardiogram
         case audiogram
@@ -77,15 +76,15 @@ extension SampleType where Sample == HKQuantitySample {
 
 
 extension SampleType where Sample == HKCorrelation {
-    /// The recommended unit that should be used when displaying values of this sample type to a user.
-    @inlinable public var displayUnit: HKUnit? {
+    /// The correlation's associated sample types, if known.
+    @inlinable public var associatedQuantityTypes: Set<SampleType<HKQuantitySample>> {
         switch variant {
-        case .correlation(let displayUnit):
-            return displayUnit
+        case .correlation(let associatedQuantityTypes):
+            return associatedQuantityTypes
         case .quantity, .category, .electrocardiogram, .audiogram:
             // SAFETY:
             // This branch is unreachable; the initializers are defined and structured in a way that all
-            // `SampleType<HKCorrelation>` objects always must specify a displayUnit.
+            // `SampleType<HKCorrelation>` objects always must specify associatedQuantityTypes.
             fatalError("Cannot provide '\(#function)' for '\(Self.self)'")
         }
     }
@@ -123,9 +122,9 @@ extension SampleType {
     @inlinable public static func correlation(
         _ identifier: HKCorrelationTypeIdentifier,
         displayTitle: LocalizedStringResource,
-        displayUnit: HKUnit?
+        associatedQuantityTypes: Set<SampleType<HKQuantitySample>>
     ) -> SampleType<HKCorrelation> {
-        .init(HKCorrelationType(identifier), displayTitle: displayTitle, variant: .correlation(displayUnit: displayUnit))
+        .init(HKCorrelationType(identifier), displayTitle: displayTitle, variant: .correlation(associatedQuantityTypes: associatedQuantityTypes))
     }
     
     /// Creates a new category sample type.

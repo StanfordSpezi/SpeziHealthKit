@@ -55,7 +55,7 @@ class ExampleAppDelegate: SpeziAppDelegate {
                 CollectSample(.pushCount, start: .manual)
                 CollectSample(.heartRate, continueInBackground: true)
                 CollectSample(.electrocardiogram, start: .manual)
-                RequestReadAccess(quantity: [.oxygenSaturation])
+                RequestReadAccess(quantity: [.bloodOxygen])
             }
         }
     }

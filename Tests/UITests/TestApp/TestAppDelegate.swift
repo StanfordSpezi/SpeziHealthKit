@@ -33,10 +33,10 @@ class TestAppDelegate: SpeziAppDelegate {
                 )
                 CollectSample(.heartRate, start: .manual)
                 
-                RequestReadAccess(quantity: [.oxygenSaturation], correlation: [.bloodPressure])
+                RequestReadAccess(quantity: [.bloodOxygen], correlation: [.bloodPressure])
                 
                 RequestWriteAccess(
-                    quantity: [.heartRate, .oxygenSaturation, .stepCount, .height, .activeEnergyBurned]
+                    quantity: [.heartRate, .bloodOxygen, .stepCount, .height, .activeEnergyBurned]
                 )
             }
         }

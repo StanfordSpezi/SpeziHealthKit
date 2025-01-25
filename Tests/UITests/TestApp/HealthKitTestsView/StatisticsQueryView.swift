@@ -20,14 +20,23 @@ struct StatisticsQueryView: View {
     @HealthKitStatisticsQuery(.stepCount, aggregatedBy: [.sum], over: .day, timeRange: .currentWeek)
     private var dailyStepCountStats
     
+    @HealthKitStatisticsQuery(.heartRate, aggregatedBy: [.average, .min, .max], over: .hour, timeRange: .currentWeek)
+    private var hourlyHeartRateState
+    
     var body: some View {
         Form {
             Section {
                 HealthChart {
                     HealthChartEntry($heartRateSamples, drawingConfig: .init(mode: .line, color: .red))
-//                    HealthChartEntry($dailyStepCountStats, aggregationOption: .sum, drawingConfig: .init(mode: .bar, color: .orange))
                 }
                 .frame(height: 300)
+            }
+            Section {
+                HealthChart {
+                    HealthChartEntry($hourlyHeartRateState, aggregationOption: .max, drawingConfig: .init(mode: .line, color: .red))
+                    HealthChartEntry($hourlyHeartRateState, aggregationOption: .avg, drawingConfig: .init(mode: .line, color: .orange))
+                    HealthChartEntry($hourlyHeartRateState, aggregationOption: .min, drawingConfig: .init(mode: .line, color: .yellow))
+                }
             }
             ForEach(dailyStepCountStats.reversed()) { statistics in
                 if let numSteps = statistics.sumQuantity()?.doubleValue(for: .count()) {

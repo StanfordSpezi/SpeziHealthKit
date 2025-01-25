@@ -11,7 +11,7 @@
 import HealthKit
 
 
-/// Associates a `HKSampleType` subclass with a `HKSample` subclass.
+/// Associates a `HKSample` subclass with its corresponding `HKSampleType` subclass.
 public protocol _HKSampleWithSampleType: HKSample {
     associatedtype _SampleType: HKSampleType
 }

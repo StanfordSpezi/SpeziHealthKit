@@ -22,14 +22,14 @@ public struct RequestReadAccess: HealthKitConfigurationComponent {
     
     /// Creates a HealthKit configuration component that requests read access to the specified sample types.
     public init(
-        quantity: Set<HKQuantityTypeIdentifier> = [],
-        category: Set<HKCategoryTypeIdentifier> = [],
-        correlation: Set<HKCorrelationTypeIdentifier> = [],
+        quantity: Set<SampleType<HKQuantitySample>> = [],
+        category: Set<SampleType<HKCategorySample>> = [],
+        correlation: Set<SampleType<HKCorrelation>> = [],
         characteristic: Set<HKCharacteristicTypeIdentifier> = []
     ) {
-        let types = Set<HKObjectType>(quantity.map(HKQuantityType.init))
-            .union(category.map(HKCategoryType.init))
-            .union(correlation.flatMap(\.knownAssociatedSampleTypes))
+        let types = Set<HKObjectType>(quantity.map(\.hkSampleType))
+            .union(category.map(\.hkSampleType))
+            .union(correlation.flatMap(\.associatedQuantityTypes).map(\.hkSampleType))
             .union(characteristic.map(HKCharacteristicType.init))
         self.init(types)
     }

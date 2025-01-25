@@ -27,4 +27,13 @@ final class SpeziHealthKitTests: XCTestCase {
         XCTAssertEqual(HKCategoryType.allKnownCategories.count, HKCategoryTypeIdentifier.allKnownIdentifiers.count)
         XCTAssertEqual(HKObjectType.allKnownObjectTypes.count, 196)
     }
+    
+    func testAssociatedSampleTypes() {
+        for sampleType in [SampleType<HKCorrelation>.bloodPressure, .food] {
+            XCTAssertEqual(
+                sampleType.associatedQuantityTypes.mapIntoSet(\.identifier.rawValue),
+                sampleType.identifier.knownAssociatedSampleTypes.mapIntoSet(\.identifier)
+            )
+        }
+    }
 }
