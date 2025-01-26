@@ -140,6 +140,37 @@ final class HealthKitTests: XCTestCase {
         )
         XCTAssert(app.staticTexts.element(matching: todayPred).waitForExistence(timeout: 2))
     }
+    
+    
+    @MainActor
+    func testCharacteristicsQuery() throws {
+        let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
+        try launchAndHandleInitialStuff(app)
+        
+        try launchHealthAppAndEnterCharacteristics(.init(
+            bloodType: .aNegative,
+            dateOfBirth: .init(year: 2022, month: 10, day: 11),
+            biologicalSex: .female,
+            skinType: .I,
+            wheelchairUse: .no
+        ))
+        
+        app.activate()
+        XCTAssert(app.buttons["Characteristics"].waitForExistence(timeout: 2))
+        app.buttons["Characteristics"].tap()
+        
+        func assertTableRow(_ title: String, _ value: String, file: StaticString = #filePath, line: UInt = #line) {
+            let predicate = NSPredicate(format: "label MATCHES %@", "\(title).*\(value)")
+            XCTAssert(app.staticTexts.matching(predicate).element.waitForExistence(timeout: 2), file: file, line: line)
+        }
+        
+        assertTableRow("Move Mode", "1")
+        assertTableRow("Blood Type", "2")
+        assertTableRow("Date of Birth", "2022-10-10T22:00:00Z")
+        assertTableRow("Biological Sex", "1")
+        assertTableRow("Skin Type", "1")
+        assertTableRow("Wheelchair Use", "1")
+    }
 }
 
 
@@ -151,8 +182,11 @@ extension HealthKitTests {
             app.alerts["“TestApp” Would Like to Send You Notifications"].buttons["Allow"].tap()
         }
         
-        app.buttons["Ask for authorization"].tap()
-        try app.handleHealthKitAuthorization()
+        XCTAssert(app.buttons["Ask for authorization"].waitForExistence(timeout: 3))
+        if app.buttons["Ask for authorization"].isEnabled {
+            app.buttons["Ask for authorization"].tap()
+            try app.handleHealthKitAuthorization()
+        }
     }
     
     

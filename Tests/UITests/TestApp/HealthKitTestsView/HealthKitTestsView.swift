@@ -43,6 +43,9 @@ struct HealthKitTestsView: View {
                 NavigationLink("Statistics Query") {
                     StatisticsQueryView()
                 }
+                NavigationLink("Characteristics") {
+                    CharacteristicsView()
+                }
             }
             Section("Collected Samples Since App Launch") {
                 ForEach(fakeHealthStore.samples, id: \.self) { element in
