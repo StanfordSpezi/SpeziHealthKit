@@ -11,6 +11,7 @@
 
 import HealthKit
 import XCTest
+import XCTHealthKit
 
 
 /// Characteristics whoch should be entered into the health app.
@@ -58,6 +59,13 @@ public struct CharacteristicsDefinition {
 
 
 extension XCTestCase {
+    private static let monthNames = [
+        "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+    ]
+    private static func monthName(for value: Int) -> String {
+        monthNames[value - 1]
+    }
+    
     /// Launches the Health app and enters the specified characteristics entries.
     @MainActor
     public func launchHealthAppAndEnterCharacteristics( // swiftlint:disable:this function_body_length cyclomatic_complexity
@@ -89,7 +97,7 @@ extension XCTestCase {
             if let month = dateOfBirth.month {
                 picker.pickerWheels
                     .element(boundBy: try XCTUnwrap(pickerWheelsMapping[.month]))
-                    .adjust(toPickerWheelValue: XCUIElement.monthName(for: month))
+                    .adjust(toPickerWheelValue: Self.monthName(for: month))
             }
             if let day = dateOfBirth.day {
                 picker.pickerWheels
@@ -116,6 +124,8 @@ extension XCTestCase {
                 picker.adjust(toPickerWheelValue: "Female")
             case .other:
                 picker.adjust(toPickerWheelValue: "Other")
+            @unknown default:
+                XCTFail("Unhandled biological sex value: \(biologicalSex)")
             }
             healthApp.cells["Sex"].tap()
         }
@@ -142,6 +152,8 @@ extension XCTestCase {
                 picker.adjust(toPickerWheelValue: "O+")
             case .oNegative:
                 picker.adjust(toPickerWheelValue: "O-")
+            @unknown default:
+                XCTFail("Unhandled blood type value: \(bloodType)")
             }
             healthApp.cells["Blood Type"].tap()
         }
@@ -164,6 +176,8 @@ extension XCTestCase {
                 picker.adjust(toPickerWheelValue: "Type V")
             case .VI:
                 picker.adjust(toPickerWheelValue: "Type VI")
+            @unknown default:
+                XCTFail("Unhandled skin type value: \(skinType)")
             }
             healthApp.cells["Fitzpatrick Skin Type"].tap()
         }
@@ -178,6 +192,8 @@ extension XCTestCase {
                 picker.adjust(toPickerWheelValue: "No")
             case .yes:
                 picker.adjust(toPickerWheelValue: "Yes")
+            @unknown default:
+                XCTFail("Unhandled wheelchair use value: \(wheelchairUse)")
             }
             healthApp.cells["Wheelchair"].tap()
         }
