@@ -59,6 +59,7 @@ public struct CharacteristicsDefinition {
 
 extension XCTestCase {
     /// Launches the Health app and enters the specified characteristics entries.
+    @MainActor
     public func launchHealthAppAndEnterCharacteristics( // swiftlint:disable:this function_body_length cyclomatic_complexity
         _ characteristics: CharacteristicsDefinition
     ) throws {
