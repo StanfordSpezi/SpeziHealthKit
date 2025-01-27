@@ -171,7 +171,7 @@ final class HealthKitTests: XCTestCase {
         
         assertTableRow("Move Mode", "1")
         assertTableRow("Blood Type", "2")
-        assertTableRow("Date of Birth", "2022-10-10T[0-9]{2}:00:00Z")
+        assertTableRow("Date of Birth", "2022-10-11T[0-9]{2}:00:00Z")
         assertTableRow("Biological Sex", "1")
         assertTableRow("Skin Type", "1")
         assertTableRow("Wheelchair Use", "1")
