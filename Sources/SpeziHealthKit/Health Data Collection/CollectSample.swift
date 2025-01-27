@@ -15,14 +15,13 @@ import Spezi
 /// This structure define what and how the ``HealthKit-class`` samples are collected.
 /// By default, all samples of the provided ``SampleType`` will be collected; you an optionally provide a filter predicate.
 ///
-/// Data collection is started by the `HealthKit` module, depending on the delivery setting and delivert start setting you specify:
-/// | Delivery Setting | Delivery Start Setting | When does data collection take place |
-/// |:-----:|:-----:|:---|
-/// | `.manual` | n/a | every call to ``HealthKit-swift.class/triggerDataSourceCollection()`` |
-/// | `.continuous` or `.background` | `.automatic` |  the `HealthKit` module will start the collection as soon as possible, i.e. either directly when the app is launched (if the user has already been prompted to grant access to the collected sample type), or as soon as ``HealthKit-swift.class/askForAuthorization()`` was called by the app and the user dismissed the request authorization sheet. |
-/// |^ | `.manual` | the first call to ``HealthKit-swift.class/triggerDataSourceCollection()`` will start the data collection |
+/// Sample collection, by default is started automatically (i.e., once the ``HealthKit-swift.class`` module has requested read access to the queried sample type).
+/// This can be configured, allowing an app to delay starting of the sample collection until a moment of its choosing.
 ///
-/// Your specify an `NSPredicate` to filter which samples should be collected.
+/// Sample collection optionally can be configured to continue in the background, i.e. even when the app is closed.
+/// This is turned off by default, and can be enabled using the `continueInBackground` parameter.
+///
+/// Your can specify an `NSPredicate` to filter which samples should be collected.
 /// For example, you can define a predicate to only collect the data collected at a time within the given start and end date.
 /// Below is an example to create a `NSPredicate` restricting the data collected in the previous month.
 /// ```swift
@@ -47,11 +46,7 @@ import Spezi
 /// Then, you just need to configure `predicate` with the  `predicateOneMonth` you defined as above during your initialization of ``CollectSample`` to only collect data samples in the previous month.
 ///
 /// ```swift
-/// CollectSample(
-///     .stepCount,
-///     deliverySetting: .background(.automatic),
-///     predicate: predicateOneMonth
-/// )
+/// CollectSample(.stepCount, predicate: predicateOneMonth)
 /// ```
 public struct CollectSample<Sample: _HKSampleWithSampleType>: HealthKitConfigurationComponent {
     private let sampleType: SampleType<Sample>
