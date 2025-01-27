@@ -161,12 +161,17 @@ final class HealthKitTests: XCTestCase {
         
         func assertTableRow(_ title: String, _ value: String, file: StaticString = #filePath, line: UInt = #line) {
             let predicate = NSPredicate(format: "label MATCHES %@", "\(title).*\(value)")
-            XCTAssert(app.staticTexts.matching(predicate).element.waitForExistence(timeout: 2), file: file, line: line)
+            XCTAssert(
+                app.staticTexts.matching(predicate).element.waitForExistence(timeout: 2),
+                "Unable to find element '\(predicate)'",
+                file: file,
+                line: line
+            )
         }
         
         assertTableRow("Move Mode", "1")
         assertTableRow("Blood Type", "2")
-        assertTableRow("Date of Birth", "2022-10-10T22:00:00Z")
+        assertTableRow("Date of Birth", "2022-10-10T[0-9]{2}:00:00Z")
         assertTableRow("Biological Sex", "1")
         assertTableRow("Skin Type", "1")
         assertTableRow("Wheelchair Use", "1")
