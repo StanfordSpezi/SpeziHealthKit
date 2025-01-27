@@ -16,9 +16,9 @@
 		2FE33CB92B9B815B00BD886D /* SpeziViews in Frameworks */ = {isa = PBXBuildFile; productRef = 2FE33CB82B9B815B00BD886D /* SpeziViews */; };
 		390F29612A785A98000A236E /* HealthKitTestAppStandard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 390F29602A785A98000A236E /* HealthKitTestAppStandard.swift */; };
 		8059BF032D464B2E007CDAFD /* XCTHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8059BF022D464B2E007CDAFD /* XCTHealthKit */; };
-		8059BF052D4694E2007CDAFD /* XCTest+CharacteristicEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8059BF042D4694E2007CDAFD /* XCTest+CharacteristicEntry.swift */; };
-		8059BF082D4694FA007CDAFD /* XCTHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8059BF072D4694FA007CDAFD /* XCTHealthKit */; };
+		8059BF0B2D4699CB007CDAFD /* XCTHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8059BF0A2D4699CB007CDAFD /* XCTHealthKit */; };
 		808EB0282D452800009D9AB2 /* SpeziHealthKitUI in Frameworks */ = {isa = PBXBuildFile; productRef = 808EB0272D452800009D9AB2 /* SpeziHealthKitUI */; };
+		80ABDD0D2D47D4C100231ADF /* XCTHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 80ABDD0C2D47D4C100231ADF /* XCTHealthKit */; };
 		80BDC0BA2D417897007A5B68 /* SpeziHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 80BDC0B92D417897007A5B68 /* SpeziHealthKit */; };
 		80E2C9902D424CA400A5D177 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E2C98F2D424CA400A5D177 /* Utils.swift */; };
 		80E2C9942D4253D900A5D177 /* BackgroundPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E2C9932D4253D900A5D177 /* BackgroundPersistence.swift */; };
@@ -48,7 +48,6 @@
 		2FE33CB32B9B802200BD886D /* FakeHealthStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeHealthStore.swift; sourceTree = "<group>"; };
 		2FE33CBA2B9B8A0200BD886D /* TestApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TestApp.entitlements; sourceTree = "<group>"; };
 		390F29602A785A98000A236E /* HealthKitTestAppStandard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitTestAppStandard.swift; sourceTree = "<group>"; };
-		8059BF042D4694E2007CDAFD /* XCTest+CharacteristicEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTest+CharacteristicEntry.swift"; sourceTree = "<group>"; };
 		80E2C98F2D424CA400A5D177 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		80E2C9932D4253D900A5D177 /* BackgroundPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundPersistence.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -75,8 +74,9 @@
 				80E3C19D2D371B8B00A1F6A3 /* XCTHealthKit in Frameworks */,
 				8059BF032D464B2E007CDAFD /* XCTHealthKit in Frameworks */,
 				80BDC0BA2D417897007A5B68 /* SpeziHealthKit in Frameworks */,
-				8059BF082D4694FA007CDAFD /* XCTHealthKit in Frameworks */,
+				8059BF0B2D4699CB007CDAFD /* XCTHealthKit in Frameworks */,
 				80E3C1DE2D382EDA00A1F6A3 /* XCTestExtensions in Frameworks */,
+				80ABDD0D2D47D4C100231ADF /* XCTHealthKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -124,7 +124,6 @@
 			isa = PBXGroup;
 			children = (
 				2F85826D29E776690021D637 /* SpeziHealthKitTests.swift */,
-				8059BF042D4694E2007CDAFD /* XCTest+CharacteristicEntry.swift */,
 			);
 			path = TestAppUITests;
 			sourceTree = "<group>";
@@ -184,7 +183,8 @@
 				80E3C1DD2D382EDA00A1F6A3 /* XCTestExtensions */,
 				80BDC0B92D417897007A5B68 /* SpeziHealthKit */,
 				8059BF022D464B2E007CDAFD /* XCTHealthKit */,
-				8059BF072D4694FA007CDAFD /* XCTHealthKit */,
+				8059BF0A2D4699CB007CDAFD /* XCTHealthKit */,
+				80ABDD0C2D47D4C100231ADF /* XCTHealthKit */,
 			);
 			productName = ExampleUITests;
 			productReference = 2F6D13AC28F5F386007C25D6 /* TestAppUITests.xctest */;
@@ -221,7 +221,7 @@
 			packageReferences = (
 				2FE33CB72B9B815B00BD886D /* XCRemoteSwiftPackageReference "SpeziViews" */,
 				8042D7962D3D5B8F00807498 /* XCRemoteSwiftPackageReference "XCTestExtensions" */,
-				8059BF062D4694FA007CDAFD /* XCRemoteSwiftPackageReference "XCTHealthKit" */,
+				80ABDD0B2D47D4C100231ADF /* XCRemoteSwiftPackageReference "XCTHealthKit" */,
 			);
 			productRefGroup = 2F6D139328F5F384007C25D6 /* Products */;
 			projectDirPath = "";
@@ -290,7 +290,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8059BF052D4694E2007CDAFD /* XCTest+CharacteristicEntry.swift in Sources */,
 				2F85826E29E776690021D637 /* SpeziHealthKitTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -703,12 +702,12 @@
 				minimumVersion = 1.1.1;
 			};
 		};
-		8059BF062D4694FA007CDAFD /* XCRemoteSwiftPackageReference "XCTHealthKit" */ = {
+		80ABDD0B2D47D4C100231ADF /* XCRemoteSwiftPackageReference "XCTHealthKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/StanfordBDHG/XCTHealthKit";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.1;
+				minimumVersion = 1.1.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -727,14 +726,18 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = XCTHealthKit;
 		};
-		8059BF072D4694FA007CDAFD /* XCTHealthKit */ = {
+		8059BF0A2D4699CB007CDAFD /* XCTHealthKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 8059BF062D4694FA007CDAFD /* XCRemoteSwiftPackageReference "XCTHealthKit" */;
 			productName = XCTHealthKit;
 		};
 		808EB0272D452800009D9AB2 /* SpeziHealthKitUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SpeziHealthKitUI;
+		};
+		80ABDD0C2D47D4C100231ADF /* XCTHealthKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 80ABDD0B2D47D4C100231ADF /* XCRemoteSwiftPackageReference "XCTHealthKit" */;
+			productName = XCTHealthKit;
 		};
 		80BDC0B92D417897007A5B68 /* SpeziHealthKit */ = {
 			isa = XCSwiftPackageProductDependency;
