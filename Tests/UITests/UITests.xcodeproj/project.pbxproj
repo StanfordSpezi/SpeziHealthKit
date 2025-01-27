@@ -706,8 +706,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/StanfordBDHG/XCTHealthKit";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.1.0;
+				branch = "lukas/improve-stability";
+				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
