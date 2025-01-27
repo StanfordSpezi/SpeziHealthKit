@@ -12,3 +12,4 @@ builder:
     - platform: ios
       documentation_targets:
       - SpeziHealthKit
+      - SpeziHealthKitUI
