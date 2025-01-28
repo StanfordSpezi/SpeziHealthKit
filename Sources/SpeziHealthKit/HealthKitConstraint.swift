@@ -10,28 +10,27 @@ import HealthKit
 import Spezi
 
 
-/// A Constraint which all `Standard` instances must conform to when using the Spezi HealthKit module.
-///
+/// The Constraint your app's `Standard` must conform to when using the Spezi HealthKit module.
 ///
 /// Make sure that your standard in your Spezi Application conforms to the ``HealthKitConstraint``
 /// protocol to receive HealthKit data.
 /// The ``HealthKitConstraint/add(sample:)`` function is triggered once for every newly collected HealthKit sample, and the ``HealthKitConstraint/remove(sample:)`` function is triggered once for every deleted HealthKit sample.
 /// ```swift
 /// actor ExampleStandard: Standard, HealthKitConstraint {
-///    // Add the newly collected HKSample to your application.
-///    func add(sample: HKSample) async {
-///        ...
-///    }
-///  
-///    // Remove the deleted HKSample from your application.
-///    func remove(sample: HKDeletedObject) {
-///        ...
-///    }
+///     // Add the newly collected HKSample to your application.
+///     func add(sample: HKSample) async {
+///         // ...
+///     }
+///
+///     // Remove the deleted HKSample from your application.
+///     func remove(sample: HKDeletedObject) {
+///         // ...
+///     }
 /// }
 /// ```
 ///
 public protocol HealthKitConstraint: Standard {
-    /// Notifies the `Standard` about the addition of a HealthKit ``HKSample`` sample instance.
+    /// Notifies the `Standard` about the addition of a HealthKit `HKSample` sample instance.
     /// - Parameter sample: The `HKSample` that should be added.
     func add(sample: HKSample) async
     

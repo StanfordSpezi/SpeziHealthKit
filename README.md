@@ -16,11 +16,11 @@ SPDX-License-Identifier: MIT
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FStanfordSpezi%2FSpeziHealthKit%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/StanfordSpezi/SpeziHealthKit)
 [![](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2FStanfordSpezi%2FSpeziHealthKit%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/StanfordSpezi/SpeziHealthKit)
 
-Simplifies access to HealthKit samples ranging from single, anchored, and background queries.
+Access Health data in your Spezi app.
 
 ## Overview
 
-The Spezi HealthKit module simplifies access to HealthKit samples ranging from single, anchored, and background queries.
+The Spezi HealthKit module enables apps to integrate with Apple's HealthKit system, fetch data, set up long-lived background data collection, and visualize Health-related data.
 
 ### Setup
 
@@ -29,12 +29,12 @@ You need to add the Spezi HealthKit Swift package to
 [Swift package](https://developer.apple.com/documentation/xcode/creating-a-standalone-swift-package-with-xcode#Add-a-dependency-on-another-Swift-package).
 
 > Important: If your application is not yet configured to use Spezi, follow the
-[Spezi setup article](https://swiftpackageindex.com/stanfordspezi/spezi/documentation/spezi/initial-setup) and set up the core Spezi infrastructure.
+  [Spezi setup article](https://swiftpackageindex.com/stanfordspezi/spezi/documentation/spezi/initial-setup) and set up the core Spezi infrastructure.
 
-### Example
 
-Before you configure the ``HealthKit`` module, make sure your `Standard` in your Spezi Application conforms to the ``HealthKitConstraint`` protocol to receive HealthKit data.
-The [`add(sample:)`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkitconstraint/add(sample:)) function is triggered once for every newly collected HealthKit sample, and the [`remove(sample:)`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkitconstraint/remove(sample:)) function
+### Example: health data collection
+
+Before you configure the ``HealthKit-class`` module, make sure your `Standard` in your Spezi Application conforms to the ``HealthKitConstraint`` protocol to receive HealthKit data. The ``HealthKitConstraint/add(sample:)`` function is triggered once for every newly collected HealthKit sample, and the ``HealthKitConstraint/remove(sample:)`` function is triggered once for every deleted HealthKit sample.
 ```swift
 actor ExampleStandard: Standard, HealthKitConstraint {
     // Add the newly collected HKSample to your application.
@@ -50,41 +50,57 @@ actor ExampleStandard: Standard, HealthKitConstraint {
 ```
 
 
-Then, you can configure the ``HealthKit`` module in the configuration section of your `SpeziAppDelegate`.
+Then, you can configure the ``HealthKit-class`` module in the configuration section of your `SpeziAppDelegate`.
 Provide ``HealthKitDataSourceDescription`` to define the data collection.
 You can, e.g., use ``CollectSample`` to collect a wide variety of `HKSampleTypes`:
 ```swift
 class ExampleAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
         Configuration(standard: ExampleStandard()) {
-            if HKHealthStore.isHealthDataAvailable() {
-                HealthKit {
-                    CollectSample(
-                        HKQuantityType.electrocardiogramType(),
-                        deliverySetting: .background(.manual)
-                    )
-                    CollectSample(
-                        HKQuantityType(.stepCount),
-                        deliverySetting: .background(.automatic)
-                    )
-                    CollectSample(
-                        HKQuantityType(.pushCount),
-                        deliverySetting: .anchorQuery(.manual)
-                    )
-                    CollectSample(
-                        HKQuantityType(.activeEnergyBurned),
-                        deliverySetting: .anchorQuery(.automatic)
-                    )
-                    CollectSample(
-                        HKQuantityType(.restingHeartRate),
-                        deliverySetting: .manual()
-                    )
-                }
+            HealthKit {
+                CollectSample(.activeEnergyBurned)
+                CollectSample(.stepCount, start: .manual)
+                CollectSample(.pushCount, start: .manual)
+                CollectSample(.heartRate, continueInBackground: true)
+                CollectSample(.electrocardiogram, start: .manual)
+                RequestReadAccess(quantity: [.bloodOxygen])
             }
         }
     }
 }
 ```
+
+
+### Example: querying Health data in SwiftUI
+
+You can use [`SpeziHealthKitUI`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkitui)'s [`HealthKitQuery`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkitui/healthkitquery) and [`HealthKitStatisticsQuery`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkitui/healthkitstatisticsquery) property wrappers to access the Health database in a View:
+```swift
+struct ExampleView: View {
+    @HealthKitQuery(.heartRate, timeRange: .today)
+    private var heartRateSamples
+
+    var body: some View {
+        ForEach(heartRateSamples) { sample in
+            // ...
+        }
+    }
+}
+```
+
+Additionally, you can use [`SpeziHealthKitUI`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkitui)'s [`HealthChart`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkitui/healthchart) to visualise query results:
+```swift
+struct ExampleView: View {
+    @HealthKitQuery(.heartRate, timeRange: .today)
+    private var heartRateSamples
+
+    var body: some View {
+        HealthChart {
+            HealthChartEntry($heartRateSamples, drawingConfig: .init(mode: .line, color: .red))
+        }
+    }
+}
+```
+
 
 For more information, please refer to the [API documentation](https://swiftpackageindex.com/StanfordSpezi/SpeziHealthKit/documentation).
 

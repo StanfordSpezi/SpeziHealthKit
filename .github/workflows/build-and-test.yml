@@ -20,22 +20,24 @@ jobs:
     name: Build and Test Swift Package
     uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
     with:
-      artifactname: SpeziHealthKit.xcresult
       runsonlabels: '["macOS", "self-hosted"]'
-      scheme: SpeziHealthKit
+      scheme: SpeziHealthKit-Package
+      artifactname: SpeziHealthKit-Package.xcresult
+      resultBundle: SpeziHealthKit-Package.xcresult
   buildandtestuitests:
     name: Build and Test UI Tests
     uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
     with:
-      artifactname: TestApp.xcresult
       runsonlabels: '["macOS", "self-hosted"]'
       path: 'Tests/UITests'
       scheme: TestApp
+      artifactname: TestApp.xcresult
+      resultBundle: TestApp.xcresult
   uploadcoveragereport:
     name: Upload Coverage Report
     needs: [buildandtest, buildandtestuitests]
     uses: StanfordSpezi/.github/.github/workflows/create-and-upload-coverage-report.yml@v2
     with:
-      coveragereports: SpeziHealthKit.xcresult TestApp.xcresult
+      coveragereports: SpeziHealthKit-Package.xcresult TestApp.xcresult
     secrets:
       token: ${{ secrets.CODECOV_TOKEN }}

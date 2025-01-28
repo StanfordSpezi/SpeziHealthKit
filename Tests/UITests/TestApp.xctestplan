@@ -9,6 +9,16 @@
     }
   ],
   "defaultOptions" : {
+    "commandLineArgumentEntries" : [
+      {
+        "argument" : "-AppleLocale",
+        "enabled" : false
+      },
+      {
+        "argument" : "en_US",
+        "enabled" : false
+      }
+    ],
     "targetForVariableExpansion" : {
       "containerPath" : "container:UITests.xcodeproj",
       "identifier" : "2F6D139128F5F384007C25D6",

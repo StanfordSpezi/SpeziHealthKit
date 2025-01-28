@@ -15,64 +15,59 @@ extension HKHealthStore {
     private static let activeObservationsLock = NSLock()
     private static nonisolated(unsafe) var activeObservations: [HKObjectType: Int] = [:]
     
-
     @MainActor
     func startBackgroundDelivery(
         for sampleTypes: Set<HKSampleType>,
         withPredicate predicate: NSPredicate? = nil,
-        observerQuery: @escaping @Sendable @MainActor (
-            Result<(sampleTypes: Set<HKSampleType>, completionHandler: HKObserverQueryCompletionHandler), Error>
+        updateHandler: @escaping @MainActor @Sendable (
+            Result<(sampleTypes: Set<HKSampleType>, completionHandler: HKObserverQueryCompletionHandler), any Error>
         ) async -> Void
     ) async throws {
-        var queryDescriptors: [HKQueryDescriptor] = []
-        for sampleType in sampleTypes {
-            queryDescriptors.append(
-                HKQueryDescriptor(sampleType: sampleType, predicate: predicate)
-            )
+        let queryDescriptors: [HKQueryDescriptor] = sampleTypes.map {
+            HKQueryDescriptor(sampleType: $0, predicate: predicate)
         }
-        
-        let observerQuery = HKObserverQuery(queryDescriptors: queryDescriptors) { query, samples, completionHandler, error in
-            // From https://developer.apple.com/documentation/healthkit/hkobserverquery/executing_observer_queries:
+        let observerQuery = HKObserverQuery(queryDescriptors: queryDescriptors) { query, sampleTypes, completionHandler, error in
+            // From https://developer.apple.com/documentation/healthkit/hkobserverquery/executing_observer_queries
             // "Whenever a matching sample is added to or deleted from the HealthKit store,
             // the system calls the query’s update handler on the same background queue (but not necessarily the same thread)."
             // So, the observerQuery has to be @Sendable!
             
             // Sadly necessary to enable capture of the `completionHandler` within the `Task`s below (isolation error)
             nonisolated(unsafe) let completionHandler = completionHandler
-            
-            guard error == nil,
-                  let samples else {
-                Logger.healthKit.error("Failed HealthKit background delivery for observer query \(query) with error: \(error)")
+            if let error {
+                Logger.healthKit.error(
+                    """
+                    Failed HealthKit background delivery for observer query \(query) on sample types \(String(describing: sampleTypes)) with error: \(error)
+                    """
+                )
                 Task { @MainActor in
-                    await observerQuery(.failure(error ?? NSError(domain: "Spezi HealthKit", code: -1)))
+                    await updateHandler(.failure(error))
                     completionHandler()
                 }
                 return
             }
-            
+            guard let sampleTypes else {
+                // invalid observer query update (both error and sampleTypes were nil).
+                // There's nothing we can do here, so we just ignore it.
+                return
+            }
             Task { @MainActor in
-                await observerQuery(.success((samples, completionHandler)))
+                await updateHandler(.success((sampleTypes, completionHandler)))
             }
         }
-        
         self.execute(observerQuery)
         try await enableBackgroundDelivery(for: sampleTypes)
     }
     
     
-    private func enableBackgroundDelivery(
-        for objectTypes: Set<HKObjectType>,
-        frequency: HKUpdateFrequency = .immediate
-    ) async throws {
-        try await self.requestAuthorization(toShare: [], read: objectTypes as Set<HKObjectType>)
-        
+    private func enableBackgroundDelivery(for objectTypes: Set<HKObjectType>) async throws {
         var enabledObjectTypes: Set<HKObjectType> = []
         do {
             for objectType in objectTypes {
-                try await self.enableBackgroundDelivery(for: objectType, frequency: frequency)
+                try await self.enableBackgroundDelivery(for: objectType, frequency: .immediate)
                 enabledObjectTypes.insert(objectType)
                 Self.activeObservationsLock.withLock {
-                    HKHealthStore.activeObservations[objectType] = HKHealthStore.activeObservations[objectType, default: 0] + 1
+                    Self.activeObservations[objectType, default: 0] += 1
                 }
             }
         } catch {
@@ -86,17 +81,17 @@ extension HKHealthStore {
     private func disableBackgroundDelivery(
         for objectTypes: Set<HKObjectType>
     ) {
-        for objectType in objectTypes {
-            Self.activeObservationsLock.withLock {
+        Self.activeObservationsLock.withLock {
+            for objectType in objectTypes {
                 if let activeObservation = HKHealthStore.activeObservations[objectType] {
                     let newActiveObservation = activeObservation - 1
                     if newActiveObservation <= 0 {
-                        HKHealthStore.activeObservations[objectType] = nil
+                        Self.activeObservations[objectType] = nil
                         Task { @MainActor in
                             try await self.disableBackgroundDelivery(for: objectType)
                         }
                     } else {
-                        HKHealthStore.activeObservations[objectType] = newActiveObservation
+                        Self.activeObservations[objectType] = newActiveObservation
                     }
                 }
             }

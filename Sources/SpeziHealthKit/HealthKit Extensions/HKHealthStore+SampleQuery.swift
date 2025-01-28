@@ -15,8 +15,6 @@ extension HKHealthStore {
         for sampleType: HKSampleType,
         withPredicate predicate: NSPredicate? = nil
     ) async throws -> [HKSample] {
-        try await self.requestAuthorization(toShare: [], read: [sampleType])
-        
         // Create the descriptor.
         let sampleQueryDescriptor = HKSampleQueryDescriptor(
             predicates: [

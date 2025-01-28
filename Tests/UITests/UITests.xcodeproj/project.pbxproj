@@ -3,22 +3,27 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		2F61BDC329DD02D600D71D33 /* SpeziHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 2F61BDC229DD02D600D71D33 /* SpeziHealthKit */; };
 		2F6D139A28F5F386007C25D6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F6D139928F5F386007C25D6 /* Assets.xcassets */; };
 		2F85826E29E776690021D637 /* SpeziHealthKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F85826D29E776690021D637 /* SpeziHealthKitTests.swift */; };
-		2F85827129E776780021D637 /* HealthKitTestsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F85827029E776780021D637 /* HealthKitTestsView.swift */; };
 		2F85827329E776AC0021D637 /* TestAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F85827229E776AC0021D637 /* TestAppDelegate.swift */; };
-		2F85827F29E7782C0021D637 /* XCTestExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 2F85827E29E7782C0021D637 /* XCTestExtensions */; };
 		2FA7382C290ADFAA007ACEB9 /* TestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA7382B290ADFAA007ACEB9 /* TestApp.swift */; };
-		2FE33CB42B9B802200BD886D /* HealthKitStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE33CB32B9B802200BD886D /* HealthKitStore.swift */; };
-		2FE33CB62B9B804700BD886D /* Array+RawRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE33CB52B9B804700BD886D /* Array+RawRepresentable.swift */; };
+		2FE33CB42B9B802200BD886D /* FakeHealthStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE33CB32B9B802200BD886D /* FakeHealthStore.swift */; };
 		2FE33CB92B9B815B00BD886D /* SpeziViews in Frameworks */ = {isa = PBXBuildFile; productRef = 2FE33CB82B9B815B00BD886D /* SpeziViews */; };
 		390F29612A785A98000A236E /* HealthKitTestAppStandard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 390F29602A785A98000A236E /* HealthKitTestAppStandard.swift */; };
-		97B029102A5710C800946EF8 /* XCTHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 97B0290F2A5710C800946EF8 /* XCTHealthKit */; };
+		8059BF032D464B2E007CDAFD /* XCTHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8059BF022D464B2E007CDAFD /* XCTHealthKit */; };
+		8059BF0B2D4699CB007CDAFD /* XCTHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8059BF0A2D4699CB007CDAFD /* XCTHealthKit */; };
+		808EB0282D452800009D9AB2 /* SpeziHealthKitUI in Frameworks */ = {isa = PBXBuildFile; productRef = 808EB0272D452800009D9AB2 /* SpeziHealthKitUI */; };
+		80ABDD0D2D47D4C100231ADF /* XCTHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 80ABDD0C2D47D4C100231ADF /* XCTHealthKit */; };
+		80BDC0BA2D417897007A5B68 /* SpeziHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 80BDC0B92D417897007A5B68 /* SpeziHealthKit */; };
+		80E2C9902D424CA400A5D177 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E2C98F2D424CA400A5D177 /* Utils.swift */; };
+		80E2C9942D4253D900A5D177 /* BackgroundPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E2C9932D4253D900A5D177 /* BackgroundPersistence.swift */; };
+		80E3C19D2D371B8B00A1F6A3 /* XCTHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 80E3C19C2D371B8B00A1F6A3 /* XCTHealthKit */; };
+		80E3C1DE2D382EDA00A1F6A3 /* XCTestExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 80E3C1DD2D382EDA00A1F6A3 /* XCTestExtensions */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,21 +42,26 @@
 		2F6D139928F5F386007C25D6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2F6D13AC28F5F386007C25D6 /* TestAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TestAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F85826D29E776690021D637 /* SpeziHealthKitTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpeziHealthKitTests.swift; sourceTree = "<group>"; };
-		2F85827029E776780021D637 /* HealthKitTestsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HealthKitTestsView.swift; sourceTree = "<group>"; };
 		2F85827229E776AC0021D637 /* TestAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAppDelegate.swift; sourceTree = "<group>"; };
 		2FA7382B290ADFAA007ACEB9 /* TestApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestApp.swift; sourceTree = "<group>"; };
 		2FB0758A299DDB9000C0B37F /* TestApp.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = TestApp.xctestplan; sourceTree = "<group>"; };
-		2FE33CB32B9B802200BD886D /* HealthKitStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitStore.swift; sourceTree = "<group>"; };
-		2FE33CB52B9B804700BD886D /* Array+RawRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+RawRepresentable.swift"; sourceTree = "<group>"; };
+		2FE33CB32B9B802200BD886D /* FakeHealthStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeHealthStore.swift; sourceTree = "<group>"; };
 		2FE33CBA2B9B8A0200BD886D /* TestApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TestApp.entitlements; sourceTree = "<group>"; };
 		390F29602A785A98000A236E /* HealthKitTestAppStandard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitTestAppStandard.swift; sourceTree = "<group>"; };
+		80E2C98F2D424CA400A5D177 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		80E2C9932D4253D900A5D177 /* BackgroundPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundPersistence.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		80E2C98E2D424C8F00A5D177 /* HealthKitTestsView */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = HealthKitTestsView; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		2F6D138F28F5F384007C25D6 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				808EB0282D452800009D9AB2 /* SpeziHealthKitUI in Frameworks */,
 				2F61BDC329DD02D600D71D33 /* SpeziHealthKit in Frameworks */,
 				2FE33CB92B9B815B00BD886D /* SpeziViews in Frameworks */,
 			);
@@ -61,8 +71,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2F85827F29E7782C0021D637 /* XCTestExtensions in Frameworks */,
-				97B029102A5710C800946EF8 /* XCTHealthKit in Frameworks */,
+				80E3C19D2D371B8B00A1F6A3 /* XCTHealthKit in Frameworks */,
+				8059BF032D464B2E007CDAFD /* XCTHealthKit in Frameworks */,
+				80BDC0BA2D417897007A5B68 /* SpeziHealthKit in Frameworks */,
+				8059BF0B2D4699CB007CDAFD /* XCTHealthKit in Frameworks */,
+				80E3C1DE2D382EDA00A1F6A3 /* XCTestExtensions in Frameworks */,
+				80ABDD0D2D47D4C100231ADF /* XCTHealthKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -97,9 +111,10 @@
 				2FA7382B290ADFAA007ACEB9 /* TestApp.swift */,
 				2F85827229E776AC0021D637 /* TestAppDelegate.swift */,
 				390F29602A785A98000A236E /* HealthKitTestAppStandard.swift */,
-				2FE33CB32B9B802200BD886D /* HealthKitStore.swift */,
-				2F85827029E776780021D637 /* HealthKitTestsView.swift */,
-				2FE33CB52B9B804700BD886D /* Array+RawRepresentable.swift */,
+				2FE33CB32B9B802200BD886D /* FakeHealthStore.swift */,
+				80E2C9932D4253D900A5D177 /* BackgroundPersistence.swift */,
+				80E2C98F2D424CA400A5D177 /* Utils.swift */,
+				80E2C98E2D424C8F00A5D177 /* HealthKitTestsView */,
 				2F6D139928F5F386007C25D6 /* Assets.xcassets */,
 			);
 			path = TestApp;
@@ -136,10 +151,14 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				80E2C98E2D424C8F00A5D177 /* HealthKitTestsView */,
+			);
 			name = TestApp;
 			packageProductDependencies = (
 				2F61BDC229DD02D600D71D33 /* SpeziHealthKit */,
 				2FE33CB82B9B815B00BD886D /* SpeziViews */,
+				808EB0272D452800009D9AB2 /* SpeziHealthKitUI */,
 			);
 			productName = Example;
 			productReference = 2F6D139228F5F384007C25D6 /* TestApp.app */;
@@ -160,8 +179,12 @@
 			);
 			name = TestAppUITests;
 			packageProductDependencies = (
-				2F85827E29E7782C0021D637 /* XCTestExtensions */,
-				97B0290F2A5710C800946EF8 /* XCTHealthKit */,
+				80E3C19C2D371B8B00A1F6A3 /* XCTHealthKit */,
+				80E3C1DD2D382EDA00A1F6A3 /* XCTestExtensions */,
+				80BDC0B92D417897007A5B68 /* SpeziHealthKit */,
+				8059BF022D464B2E007CDAFD /* XCTHealthKit */,
+				8059BF0A2D4699CB007CDAFD /* XCTHealthKit */,
+				80ABDD0C2D47D4C100231ADF /* XCTHealthKit */,
 			);
 			productName = ExampleUITests;
 			productReference = 2F6D13AC28F5F386007C25D6 /* TestAppUITests.xctest */;
@@ -196,9 +219,9 @@
 			);
 			mainGroup = 2F6D138928F5F384007C25D6;
 			packageReferences = (
-				2F85827B29E778110021D637 /* XCRemoteSwiftPackageReference "XCTestExtensions" */,
-				97B0290E2A5710C800946EF8 /* XCRemoteSwiftPackageReference "XCTHealthKit" */,
 				2FE33CB72B9B815B00BD886D /* XCRemoteSwiftPackageReference "SpeziViews" */,
+				8042D7962D3D5B8F00807498 /* XCRemoteSwiftPackageReference "XCTestExtensions" */,
+				80ABDD0B2D47D4C100231ADF /* XCRemoteSwiftPackageReference "XCTHealthKit" */,
 			);
 			productRefGroup = 2F6D139328F5F384007C25D6 /* Products */;
 			projectDirPath = "";
@@ -245,7 +268,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export PATH=\"$PATH:/opt/homebrew/bin\"\nif which swiftlint > /dev/null; then\n  cd ../../ && swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+			shellScript = "#export PATH=\"$PATH:/opt/homebrew/bin\"\n#if which swiftlint > /dev/null; then\n#  cd ../../ && swiftlint\n#else\n#  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\n#fi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -254,12 +277,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2FE33CB42B9B802200BD886D /* HealthKitStore.swift in Sources */,
+				2FE33CB42B9B802200BD886D /* FakeHealthStore.swift in Sources */,
 				2FA7382C290ADFAA007ACEB9 /* TestApp.swift in Sources */,
 				390F29612A785A98000A236E /* HealthKitTestAppStandard.swift in Sources */,
-				2F85827129E776780021D637 /* HealthKitTestsView.swift in Sources */,
 				2F85827329E776AC0021D637 /* TestAppDelegate.swift in Sources */,
-				2FE33CB62B9B804700BD886D /* Array+RawRepresentable.swift in Sources */,
+				80E2C9942D4253D900A5D177 /* BackgroundPersistence.swift in Sources */,
+				80E2C9902D424CA400A5D177 /* Utils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -340,6 +363,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
 			};
 			name = Debug;
 		};
@@ -394,6 +418,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -408,11 +433,12 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = 637867499T;
+				DEVELOPMENT_TEAM = A485NLSB8K;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_TESTING_SEARCH_PATHS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "The TestApp accesses your HealthKit data to run the tests.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "The TestApp writes test samples to your HealthKit database to have testing data. There is a mechanism for deleting this (and only this!!!) data.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -423,12 +449,12 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = edu.stanford.spezi.healthkit.testapp;
+				PRODUCT_BUNDLE_IDENTIFIER = de.lukaskollmer.r4nyieurguier;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_STRICT_CONCURRENCY = complete;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = "$(inherited)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -443,11 +469,12 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = A485NLSB8K;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_TESTING_SEARCH_PATHS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "The TestApp accesses your HealthKit data to run the tests.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "The TestApp writes test samples to your HealthKit database to have testing data. There is a mechanism for deleting this (and only this!!!) data.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -458,12 +485,12 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = edu.stanford.spezi.healthkit.testapp;
+				PRODUCT_BUNDLE_IDENTIFIER = de.lukaskollmer.r4nyieurguier;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_STRICT_CONCURRENCY = complete;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = "$(inherited)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -481,7 +508,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = "$(inherited)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = TestApp;
 			};
@@ -500,7 +527,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = "$(inherited)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = TestApp;
 			};
@@ -564,6 +591,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = TEST;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
 			};
 			name = Test;
 		};
@@ -577,11 +605,12 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = 637867499T;
+				DEVELOPMENT_TEAM = A485NLSB8K;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_TESTING_SEARCH_PATHS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "The TestApp accesses your HealthKit data to run the tests.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "The TestApp writes test samples to your HealthKit database to have testing data. There is a mechanism for deleting this (and only this!!!) data.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -592,12 +621,12 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = edu.stanford.spezi.healthkit.testapp;
+				PRODUCT_BUNDLE_IDENTIFIER = de.lukaskollmer.r4nyieurguier;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_STRICT_CONCURRENCY = complete;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = "$(inherited)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Test;
@@ -615,7 +644,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = "$(inherited)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = TestApp;
 			};
@@ -657,14 +686,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		2F85827B29E778110021D637 /* XCRemoteSwiftPackageReference "XCTestExtensions" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/StanfordSpezi/XCTestExtensions";
-			requirement = {
-				kind = upToNextMinorVersion;
-				minimumVersion = 0.4.6;
-			};
-		};
 		2FE33CB72B9B815B00BD886D /* XCRemoteSwiftPackageReference "SpeziViews" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/StanfordSpezi/SpeziViews.git";
@@ -673,12 +694,20 @@
 				minimumVersion = 1.3.1;
 			};
 		};
-		97B0290E2A5710C800946EF8 /* XCRemoteSwiftPackageReference "XCTHealthKit" */ = {
+		8042D7962D3D5B8F00807498 /* XCRemoteSwiftPackageReference "XCTestExtensions" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/StanfordBDHG/XCTestExtensions";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.1;
+			};
+		};
+		80ABDD0B2D47D4C100231ADF /* XCRemoteSwiftPackageReference "XCTHealthKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/StanfordBDHG/XCTHealthKit";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.3.5;
+				minimumVersion = 1.1.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -688,20 +717,39 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = SpeziHealthKit;
 		};
-		2F85827E29E7782C0021D637 /* XCTestExtensions */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 2F85827B29E778110021D637 /* XCRemoteSwiftPackageReference "XCTestExtensions" */;
-			productName = XCTestExtensions;
-		};
 		2FE33CB82B9B815B00BD886D /* SpeziViews */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 2FE33CB72B9B815B00BD886D /* XCRemoteSwiftPackageReference "SpeziViews" */;
 			productName = SpeziViews;
 		};
-		97B0290F2A5710C800946EF8 /* XCTHealthKit */ = {
+		8059BF022D464B2E007CDAFD /* XCTHealthKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 97B0290E2A5710C800946EF8 /* XCRemoteSwiftPackageReference "XCTHealthKit" */;
 			productName = XCTHealthKit;
+		};
+		8059BF0A2D4699CB007CDAFD /* XCTHealthKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = XCTHealthKit;
+		};
+		808EB0272D452800009D9AB2 /* SpeziHealthKitUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SpeziHealthKitUI;
+		};
+		80ABDD0C2D47D4C100231ADF /* XCTHealthKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 80ABDD0B2D47D4C100231ADF /* XCRemoteSwiftPackageReference "XCTHealthKit" */;
+			productName = XCTHealthKit;
+		};
+		80BDC0B92D417897007A5B68 /* SpeziHealthKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SpeziHealthKit;
+		};
+		80E3C19C2D371B8B00A1F6A3 /* XCTHealthKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = XCTHealthKit;
+		};
+		80E3C1DD2D382EDA00A1F6A3 /* XCTestExtensions */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = XCTestExtensions;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

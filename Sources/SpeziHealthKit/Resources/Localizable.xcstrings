@@ -1,0 +1,491 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Active Energy" : {
+
+    },
+    "Active Energy Burned" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aktivitätsenergie"
+          }
+        }
+      }
+    },
+    "Alcohol Consumption" : {
+
+    },
+    "Atrial Fibrillation" : {
+
+    },
+    "Audiogram" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hörtest"
+          }
+        }
+      }
+    },
+    "Basal Body Temperature" : {
+
+    },
+    "Biotin" : {
+
+    },
+    "Blood Alcohol Content" : {
+
+    },
+    "Blood Glucose" : {
+
+    },
+    "Blood Oxygen" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blutsauerstoff"
+          }
+        }
+      }
+    },
+    "Blood Pressure" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blutdruck"
+          }
+        }
+      }
+    },
+    "Blood Pressure (Diastolic)" : {
+
+    },
+    "Blood Pressure (Systolic)" : {
+
+    },
+    "Body Fat Percentage" : {
+
+    },
+    "Body Mass" : {
+
+    },
+    "Body Mass Index" : {
+
+    },
+    "Body Temperature" : {
+
+    },
+    "Caffeine" : {
+
+    },
+    "Calcium" : {
+
+    },
+    "Carbohydrates" : {
+
+    },
+    "Cardio Recovery" : {
+
+    },
+    "Cervical Mucus Quality" : {
+
+    },
+    "Chloride" : {
+
+    },
+    "Cholesterol" : {
+
+    },
+    "Chromium" : {
+
+    },
+    "Contraceptives" : {
+
+    },
+    "Copper" : {
+
+    },
+    "Cycling Distance" : {
+
+    },
+    "Dietary Energy Consumed" : {
+
+    },
+    "Double Support Time" : {
+
+    },
+    "Downhill Snow Sports Distance" : {
+
+    },
+    "ECG" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "EKG"
+          }
+        }
+      }
+    },
+    "Electrodermal Activity" : {
+
+    },
+    "Environmental Audio Exposure" : {
+
+    },
+    "Environmental Audio Exposure Event" : {
+
+    },
+    "Exercise Minutes" : {
+
+    },
+    "Fiber" : {
+
+    },
+    "Flights Climbed" : {
+
+    },
+    "Folate" : {
+
+    },
+    "Food" : {
+
+    },
+    "Forced Expiratory Volume, 1 sec" : {
+
+    },
+    "Forced Vital Capacity" : {
+
+    },
+    "Ground Contact Time" : {
+
+    },
+    "Handwashing Event" : {
+
+    },
+    "Headphone Audio Exposure" : {
+
+    },
+    "Headphone Audio Exposure Event" : {
+
+    },
+    "Heart Rate" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Puls"
+          }
+        }
+      }
+    },
+    "Heart Rate Variability" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herzfrequenzvariabilität"
+          }
+        }
+      }
+    },
+    "Height" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Größe"
+          }
+        }
+      }
+    },
+    "High Heart Rate Event" : {
+
+    },
+    "Infrequent Periods" : {
+
+    },
+    "Inhaler Usage" : {
+
+    },
+    "Insulin Delivery" : {
+
+    },
+    "Iodine" : {
+
+    },
+    "Iron" : {
+
+    },
+    "Irregular Cycles" : {
+
+    },
+    "Irregular Heart Rythm Event" : {
+
+    },
+    "Lactation" : {
+
+    },
+    "Lean Body Mass" : {
+
+    },
+    "Low Cardio Fitness Event" : {
+
+    },
+    "Low Heart Rate Event" : {
+
+    },
+    "Magnesium" : {
+
+    },
+    "Manganese" : {
+
+    },
+    "Menstrual Cycles" : {
+
+    },
+    "Mindful Session" : {
+
+    },
+    "Molybdenum" : {
+
+    },
+    "Monounsaturated Fat" : {
+
+    },
+    "Move Minutes" : {
+
+    },
+    "Niacin" : {
+
+    },
+    "Number of Times Fallen" : {
+
+    },
+    "Ovulation Test Result" : {
+
+    },
+    "Pantothenic Acid" : {
+
+    },
+    "Peak Expiratory Flow Rate" : {
+
+    },
+    "Peripheral Perfusion Index" : {
+
+    },
+    "Persistent Spotting" : {
+
+    },
+    "Phosphorus" : {
+
+    },
+    "Polyunsaturated Fat" : {
+
+    },
+    "Potassium" : {
+
+    },
+    "Pregnancy" : {
+
+    },
+    "Pregnancy Test Result" : {
+
+    },
+    "Progesterone Test Result" : {
+
+    },
+    "Prolonged Periods" : {
+
+    },
+    "Protein" : {
+
+    },
+    "Pushes" : {
+
+    },
+    "Respiratory Rate" : {
+
+    },
+    "Resting Energy" : {
+
+    },
+    "Resting Heart Rate" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ruhepuls"
+          }
+        }
+      }
+    },
+    "Riboflavin" : {
+
+    },
+    "Running Power" : {
+
+    },
+    "Running Speed" : {
+
+    },
+    "Running Stride Length" : {
+
+    },
+    "Saturated Fat" : {
+
+    },
+    "Selenium" : {
+
+    },
+    "Sexual Activity" : {
+
+    },
+    "Six-Minute Walk Distance" : {
+
+    },
+    "Sleep Analysis" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schlafanalyse"
+          }
+        }
+      }
+    },
+    "Sodium" : {
+
+    },
+    "Spotting" : {
+
+    },
+    "Stair Speed (Down)" : {
+
+    },
+    "Stair Speed (Up)" : {
+
+    },
+    "Stand Hours" : {
+
+    },
+    "Step Count" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schrittzahl"
+          }
+        }
+      }
+    },
+    "Sugar" : {
+
+    },
+    "Swimming Distance" : {
+
+    },
+    "Swimming Strokes" : {
+
+    },
+    "Thiamin" : {
+
+    },
+    "Toothbrushing Event" : {
+
+    },
+    "Total Fat" : {
+
+    },
+    "Underwater Depth" : {
+
+    },
+    "UV Index" : {
+
+    },
+    "Vertical Oscillation" : {
+
+    },
+    "Vitamin A" : {
+
+    },
+    "Vitamin B6" : {
+
+    },
+    "Vitamin B12" : {
+
+    },
+    "Vitamin C" : {
+
+    },
+    "Vitamin D" : {
+
+    },
+    "Vitamin E" : {
+
+    },
+    "Vitamin K" : {
+
+    },
+    "VO₂ max" : {
+
+    },
+    "Waist Circumference" : {
+
+    },
+    "Walking + Running Distance" : {
+
+    },
+    "Walking Asymmetry" : {
+
+    },
+    "Walking Heart Rate Average" : {
+
+    },
+    "Walking Speed" : {
+
+    },
+    "Walking Steadiness" : {
+
+    },
+    "Walking Steadiness Event" : {
+
+    },
+    "Walking Step Length" : {
+
+    },
+    "Water" : {
+
+    },
+    "Water Temperature" : {
+
+    },
+    "Wheelchair Distance" : {
+
+    },
+    "Wheelchair Push Count" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rollstuhlschübe"
+          }
+        }
+      }
+    },
+    "Wrist Temperature" : {
+
+    },
+    "Zinc" : {
+
+    }
+  },
+  "version" : "1.0"
+}

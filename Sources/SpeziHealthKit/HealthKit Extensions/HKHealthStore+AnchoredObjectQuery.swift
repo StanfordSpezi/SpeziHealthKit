@@ -10,14 +10,7 @@
 import Spezi
 
 
-#if compiler(<6)
-extension HKSample: Swift.Identifiable {}
-#else
-extension HKSample: @retroactive Identifiable {}
-#endif
-
-
-extension HKSample {
+extension HKSample: @retroactive Identifiable {
     /// The `uuid` identifier.
     public var id: UUID {
         uuid
@@ -25,32 +18,23 @@ extension HKSample {
 }
 
 extension HKHealthStore {
-    // We disable the SwiftLint as we order the parameters in a logical order and
-    // therefore don't put the predicate at the end here.
-    // swiftlint:disable function_default_parameter_at_end
     @MainActor
     func anchoredSingleObjectQuery(
         for sampleType: HKSampleType,
-        using anchor: HKQueryAnchor? = nil,
-        withPredicate predicate: NSPredicate? = nil,
+        using anchor: HKQueryAnchor? = nil, // swiftlint:disable:this function_default_parameter_at_end
+        withPredicate predicate: NSPredicate? = nil, // swiftlint:disable:this function_default_parameter_at_end
         standard: any HealthKitConstraint
     ) async throws -> HKQueryAnchor {
-        try await self.requestAuthorization(toShare: [], read: [sampleType])
-
         let anchorDescriptor = anchorDescriptor(sampleType: sampleType, predicate: predicate, anchor: anchor)
         let result = try await anchorDescriptor.result(for: self)
-
         for deletedObject in result.deletedObjects {
             await standard.remove(sample: deletedObject)
         }
-
         for addedSample in result.addedSamples {
             await standard.add(sample: addedSample)
         }
-
-        return (result.newAnchor)
+        return result.newAnchor
     }
-    // swiftlint:enable function_default_parameter_at_end
     
     
     func anchorDescriptor(

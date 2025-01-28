@@ -1,61 +1,39 @@
 //
 // This source file is part of the Stanford Spezi open-source project
 //
-// SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
+// SPDX-FileCopyrightText: 2025 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
 // SPDX-License-Identifier: MIT
 //
 
 import HealthKit
-@testable import SpeziHealthKit
+import SpeziHealthKit
+import SpeziHealthKitUI
 import XCTest
-import XCTSpezi
+
 
 final class SpeziHealthKitTests: XCTestCase {
-    static let collectedSamples: Set<HKSampleType> = [
-        HKQuantityType(.stepCount),
-        HKQuantityType(.distanceWalkingRunning)
-    ]
-    
-    @MainActor let healthKitModule = HealthKit {
-        CollectSamples(
-            collectedSamples,
-            deliverySetting: .anchorQuery(.automatic)
-        )
+    func testTimeRanges() {
+        XCTAssertEqual(HealthKitQueryTimeRange.last(hours: 1), .currentHour)
+        XCTAssertEqual(HealthKitQueryTimeRange.last(days: 1), .today)
+        XCTAssertEqual(HealthKitQueryTimeRange.last(weeks: 1), .currentWeek)
+        XCTAssertEqual(HealthKitQueryTimeRange.last(months: 1), .currentMonth)
+        XCTAssertEqual(HealthKitQueryTimeRange.last(years: 1), .currentYear)
     }
     
-    override func tearDown() {
-        // Clean up UserDefaults
-        UserDefaults.standard.removeObject(forKey: UserDefaults.Keys.healthKitRequestedSampleTypes)
+    func testWellKnownIdentifiers() {
+        XCTAssertEqual(HKQuantityType.allKnownQuantities.count, HKQuantityTypeIdentifier.allKnownIdentifiers.count)
+        XCTAssertEqual(HKCorrelationType.allKnownCorrelations.count, HKCorrelationTypeIdentifier.allKnownIdentifiers.count)
+        XCTAssertEqual(HKCategoryType.allKnownCategories.count, HKCategoryTypeIdentifier.allKnownIdentifiers.count)
+        XCTAssertEqual(HKObjectType.allKnownObjectTypes.count, 196)
     }
     
-    /// No authorizations for HealthKit data are given in the ``UserDefaults``
-    @MainActor
-    func testSpeziHealthKitCollectionNotAuthorized1() {
-        XCTAssert(!healthKitModule.authorized)
-    }
-    
-    /// Not enough authorizations for HealthKit data given in the ``UserDefaults``
-    @MainActor
-    func testSpeziHealthKitCollectionNotAuthorized2() {
-        // Set up UserDefaults
-        UserDefaults.standard.set(
-            Array(Self.collectedSamples.map { $0.identifier }.dropLast()),  // Drop one of the required authorizations
-            forKey: UserDefaults.Keys.healthKitRequestedSampleTypes
-        )
-        
-        XCTAssert(!healthKitModule.authorized)
-    }
-    
-    /// Authorization for HealthKit data are given in the ``UserDefaults``
-    @MainActor
-    func testSpeziHealthKitCollectionAlreadyAuthorized() {
-        // Set up UserDefaults
-        UserDefaults.standard.set(
-            Self.collectedSamples.map { $0.identifier },
-            forKey: UserDefaults.Keys.healthKitRequestedSampleTypes
-        )
-        
-        XCTAssert(healthKitModule.authorized)
+    func testAssociatedSampleTypes() {
+        for sampleType in [SampleType<HKCorrelation>.bloodPressure, .food] {
+            XCTAssertEqual(
+                sampleType.associatedQuantityTypes.mapIntoSet(\.identifier.rawValue),
+                sampleType.identifier.knownAssociatedSampleTypes.mapIntoSet(\.identifier)
+            )
+        }
     }
 }

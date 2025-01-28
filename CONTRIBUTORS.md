@@ -13,3 +13,4 @@ SpeziHealthKit contributors
 
 * [Paul Schmiedmayer](https://github.com/PSchmiedmayer)
 * [Andreas Bauer](https://github.com/Supereg)
+* [Lukas Kollmer](https://github.com/lukaskollmer)

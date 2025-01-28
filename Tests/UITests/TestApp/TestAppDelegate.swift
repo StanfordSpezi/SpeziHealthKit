@@ -14,25 +14,33 @@ class TestAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
         Configuration(standard: HealthKitTestAppStandard()) {
             HealthKit {
-                CollectSample( //
-                    HKQuantityType.electrocardiogramType(),
-                    deliverySetting: .background(.manual)
-                )
-                CollectSample( //
-                    HKQuantityType(.stepCount),
-                    deliverySetting: .background(.automatic)
+                CollectSample(
+                    .electrocardiogram,
+                    start: .manual,
+                    continueInBackground: true
                 )
                 CollectSample(
-                    HKQuantityType(.pushCount),
-                    deliverySetting: .anchorQuery(.manual)
+                    .stepCount,
+                    start: .automatic,
+                    continueInBackground: true
                 )
-                CollectSample( //
-                    HKQuantityType(.activeEnergyBurned),
-                    deliverySetting: .anchorQuery(.automatic)
+                CollectSample(
+                    .pushCount,
+                    start: .manual
                 )
-                CollectSample( //
-                    HKQuantityType(.restingHeartRate),
-                    deliverySetting: .manual()
+                CollectSample(
+                    .activeEnergyBurned
+                )
+                CollectSample(.heartRate, start: .manual)
+                
+                RequestReadAccess(
+                    quantity: [.bloodOxygen],
+                    correlation: [.bloodPressure],
+                    characteristic: [.activityMoveMode, .biologicalSex, .bloodType, .dateOfBirth, .fitzpatrickSkinType, .wheelchairUse]
+                )
+                
+                RequestWriteAccess(
+                    quantity: [.heartRate, .bloodOxygen, .stepCount, .height, .activeEnergyBurned]
                 )
             }
         }
