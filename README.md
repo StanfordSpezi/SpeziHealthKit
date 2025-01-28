@@ -70,6 +70,9 @@ class ExampleAppDelegate: SpeziAppDelegate {
 }
 ```
 
+> [!TIP]
+> See [`SampleType`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/sampletype) for a complete list of supported sample types.
+
 
 ### Querying Health Data in SwiftUI
 

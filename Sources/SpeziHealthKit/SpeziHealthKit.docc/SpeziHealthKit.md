@@ -63,6 +63,8 @@ class ExampleAppDelegate: SpeziAppDelegate {
 }
 ```
 
+> Tip: See ``SampleType`` for a complete list of supported sample types.
+
 > Important: In order to be able to read Health data, your app's `Info.plist` file must include the `NSHealthShareUsageDescription` key.
 
 ## Topics

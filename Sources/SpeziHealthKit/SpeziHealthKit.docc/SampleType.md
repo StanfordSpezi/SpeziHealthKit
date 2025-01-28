@@ -8,7 +8,7 @@ SPDX-FileCopyrightText: 2025 Stanford University and the project authors (see CO
 SPDX-License-Identifier: MIT
 -->
 
-Safely work with HealthKit data types.
+Work with HealthKit data types.
 
 ## Overview
 
@@ -17,7 +17,7 @@ The `SampleType` struct enables easy access to the various types of data support
 `SampleType` is generic over the sample type's respective `HKSample` subclass.
 For example, the sample type representing heart rate samples (``SampleType/heartRate``) will fetch quantity samples, and is therefore a `SampleType<HKQuantitySample>`. 
 
-- Note: `SampleType` already defines extensions for many HealthKit data types. It is strongly recommended you use these, whenever possible.
+> Note: `SampleType` already defines extensions for many HealthKit data types. It is strongly recommended you use these, whenever possible.
 
 
 ## Topics
