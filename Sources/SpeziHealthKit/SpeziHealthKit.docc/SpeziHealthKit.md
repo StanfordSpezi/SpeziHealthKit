@@ -27,7 +27,7 @@ You need to add the Spezi HealthKit Swift package to
 
 ### Example
 
-Before you configure the ``HealthKit-class`` module, make sure your `Standard` in your Spezi Application conforms to the ``HealthKitConstraint`` protocol to receive HealthKit data. The ``HealthKitConstraint/add(sample:)`` function is triggered once for every newly collected HealthKit sample, and the ``HealthKitConstraint/remove(sample:)`` function is triggered once for every deleted HealthKit sample.
+Before you configure the ``HealthKit-class`` module, make sure your `Standard` in your Spezi Application conforms to the ``HealthKitConstraint`` protocol to receive HealthKit data. The ``HealthKitConstraint/add(sample:)`` function is called once for every newly collected HealthKit sample, and the ``HealthKitConstraint/remove(sample:)`` function is called once for every deleted HealthKit sample.
 ```swift
 actor ExampleStandard: Standard, HealthKitConstraint {
     // Add the newly collected HKSample to your application.
@@ -44,7 +44,7 @@ actor ExampleStandard: Standard, HealthKitConstraint {
 
 
 Then, you can configure the ``HealthKit-class`` module in the configuration section of your `SpeziAppDelegate`.
-You can, e.g., use ``CollectSample`` to collect a wide variety of `HKSampleTypes`:
+You can, e.g., use ``CollectSample`` to collect a wide variety of HealthKit data types:
 ```swift
 class ExampleAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {

@@ -34,7 +34,7 @@ You need to add the Spezi HealthKit Swift package to
 
 ### Health Data Collection
 
-Before you configure the ``HealthKit-class`` module, make sure your `Standard` in your Spezi Application conforms to the ``HealthKitConstraint`` protocol to receive HealthKit data. The ``HealthKitConstraint/add(sample:)`` function is triggered once for every newly collected HealthKit sample, and the ``HealthKitConstraint/remove(sample:)`` function is triggered once for every deleted HealthKit sample.
+Before you configure the [`HealthKit`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkit-swift.class)  module, make sure your `Standard` in your Spezi Application conforms to the [`HealthKitConstraint`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkitconstraint) protocol to receive HealthKit data. The [`HealthKitConstraint/add(sample:)`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkitconstraint/add(sample:)) function is called once for every newly collected HealthKit sample, and the [`HealthKitConstraint/remove(sample:)`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkitconstraint/remove(sample:)) function is called once for every deleted HealthKit sample.
 ```swift
 actor ExampleStandard: Standard, HealthKitConstraint {
     // Add the newly collected HKSample to your application.
@@ -50,9 +50,8 @@ actor ExampleStandard: Standard, HealthKitConstraint {
 ```
 
 
-Then, you can configure the ``HealthKit-class`` module in the configuration section of your `SpeziAppDelegate`.
-Provide ``HealthKitDataSourceDescription`` to define the data collection.
-You can, e.g., use ``CollectSample`` to collect a wide variety of `HKSampleTypes`:
+Then, you can configure the [`HealthKit`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkit-swift.class) module in the configuration section of your `SpeziAppDelegate`.
+You can, e.g., use [`CollectSample`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/collectsample) to collect a wide variety of HealthKit data types:
 ```swift
 class ExampleAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
@@ -106,7 +105,7 @@ For more information, please refer to the [API documentation](https://swiftpacka
 
 ## The Spezi Template Application
 
-The [Spezi Template Application](https://github.com/StanfordSpezi/SpeziTemplateApplication) provides a great starting point and example using the `SpeziHealthKit` module.
+The [Spezi Template Application](https://github.com/StanfordSpezi/SpeziTemplateApplication) provides a great starting point and example using the [`SpeziHealthKit`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit) module.
 
 
 ## Contributing
