@@ -7,6 +7,5 @@
 # 
 
 ignore:
-  - "Sources/SpeziHealthKit/Sample Types/SampleType\\+QuantityTypes.swift"
-  - "Sources/SpeziHealthKit/Sample Types/SampleType\\+CategoryTypes.swift"
-  - "Sources/SpeziHealthKit/Sample Types/SampleType\\+CorrelationTypes.swift"
+  - "Sources/SpeziHealthKit/Sample Types/SampleTypes.swift"
+
