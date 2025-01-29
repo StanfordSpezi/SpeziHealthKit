@@ -83,7 +83,7 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "--collectedSamplesOnly"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>
