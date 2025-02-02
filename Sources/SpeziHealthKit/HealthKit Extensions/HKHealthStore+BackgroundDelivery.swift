@@ -12,9 +12,6 @@ import Spezi
 
 
 extension HKHealthStore {
-    private static let activeObservationsLock = NSLock()
-    private static nonisolated(unsafe) var activeObservations: [HKObjectType: Int] = [:]
-    
     final class BackgroundObserverQueryInvalidator: @unchecked Sendable {
         private let healthStore: HKHealthStore
         private weak var query: HKQuery?
@@ -30,6 +27,9 @@ extension HKHealthStore {
             }
         }
     }
+    
+    private static let activeObservationsLock = NSLock()
+    private static nonisolated(unsafe) var activeObservations: [HKObjectType: Int] = [:]
     
     @MainActor @discardableResult
     func startBackgroundDelivery(
