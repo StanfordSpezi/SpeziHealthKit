@@ -48,7 +48,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     @ObservationIgnored private var pendingConfiguration: [any HealthKitConfigurationComponent]
     
     /// All background-data-collecting data sources registered with the HealthKit module.
-    @ObservationIgnored private var registeredDataCollectors: [any HealthDataCollector] = []
+    @ObservationIgnored /* private-but-testable */ private(set) var registeredDataCollectors: [any HealthDataCollector] = []
     
     
     /// Creates a new instance of the ``HealthKit-class`` module, with the specified configuration.
