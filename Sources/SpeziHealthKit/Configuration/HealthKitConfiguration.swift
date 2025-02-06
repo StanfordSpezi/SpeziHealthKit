@@ -56,5 +56,10 @@ extension HealthKit {
         public mutating func merge(with other: Self) {
             self = self.merging(with: other)
         }
+        
+        /// Whether the data access requirements is empty
+        public var isEmpty: Bool {
+            read.isEmpty && write.isEmpty
+        }
     }
 }

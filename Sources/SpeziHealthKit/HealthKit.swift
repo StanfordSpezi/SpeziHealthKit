@@ -132,11 +132,13 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
         guard HKHealthStore.isHealthDataAvailable() else {
             return
         }
-        self.dataAccessRequirements.merge(with: accessRequirements)
-        try await healthStore.requestAuthorization(
-            toShare: accessRequirements.write,
-            read: accessRequirements.read
-        )
+        if !accessRequirements.isEmpty {
+            self.dataAccessRequirements.merge(with: accessRequirements)
+            try await healthStore.requestAuthorization(
+                toShare: accessRequirements.write,
+                read: accessRequirements.read
+            )
+        }
         for collector in registeredDataCollectors {
             await startAutomaticDataCollectionIfPossible(collector)
         }
