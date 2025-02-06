@@ -241,6 +241,7 @@ extension HealthKit { // swiftlint:disable:this file_types_order
         if !didConfigure {
             pendingConfiguration.append(collectSample)
         } else {
+            dataAccessRequirements.merge(with: collectSample.dataAccessRequirements)
             await collectSample.configure(for: self, on: standard)
         }
     }
