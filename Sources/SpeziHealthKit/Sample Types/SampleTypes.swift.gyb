@@ -973,7 +973,7 @@ import HealthKit
 
 // MARK: ${display_title} Types
 
-extension SampleType {
+extension SampleType where Sample == ${hk_class} {
 % for ty in types:
     /// ${ty.doc}
     @inlinable public static var ${ty.property_name}: SampleType<${hk_class}> {

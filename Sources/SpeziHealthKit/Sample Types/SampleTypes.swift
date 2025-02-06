@@ -31,7 +31,7 @@ import HealthKit
 
 // MARK: Quantity Types
 
-extension SampleType {
+extension SampleType where Sample == HKQuantitySample {
     /// A quantity sample type that measures the number of steps the user has taken.
     @inlinable public static var stepCount: SampleType<HKQuantitySample> {
         .quantity(
@@ -1168,7 +1168,7 @@ extension SampleType {
 
 // MARK: Category Types
 
-extension SampleType {
+extension SampleType where Sample == HKCategorySample {
     /// A category sample type that counts the number of hours in the day during which the user has stood and moved for at least one minute per hour.
     @inlinable public static var appleStandHour: SampleType<HKCategorySample> {
         .category(
@@ -1441,7 +1441,7 @@ extension SampleType {
 
 // MARK: Correlation Types
 
-extension SampleType {
+extension SampleType where Sample == HKCorrelation {
     /// The sample type representing blood pressure correlation samples
     @inlinable public static var bloodPressure: SampleType<HKCorrelation> {
         .correlation(
