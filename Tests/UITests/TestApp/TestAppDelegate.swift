@@ -34,6 +34,9 @@ class TestAppDelegate: SpeziAppDelegate {
                 CollectSample(.heartRate, start: .manual)
                 CollectSample(.heartRate, start: .manual)
                 
+                CollectSample(.stairAscentSpeed, continueInBackground: true)
+                CollectSample(.stairDescentSpeed, continueInBackground: false)
+                
                 RequestReadAccess(
                     quantity: [.bloodOxygen],
                     correlation: [.bloodPressure],

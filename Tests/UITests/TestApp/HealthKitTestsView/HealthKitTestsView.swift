@@ -23,7 +23,7 @@ struct HealthKitTestsView: View {
     private var bloodOxygenSamples
     
     var body: some View {
-        Form {
+        Form { // swiftlint:disable:this closure_body_length
             Section {
                 AsyncButton("Ask for authorization", state: $viewState) {
                     try? await healthKit.askForAuthorization()
@@ -34,6 +34,11 @@ struct HealthKitTestsView: View {
                     let start = ContinuousClock.now
                     await healthKit.triggerDataSourceCollection()
                     try await Task.sleep(until: start + .seconds(2)) // pretend that the data source triggering takes at least 2 seconds.
+                }
+                AsyncButton("Register additional CollectSample instances") {
+                    // we have matching ones for these in the AppDelegate, and we now add the resp reverse, to check the subsumption.
+                    await healthKit.addHealthDataCollector(CollectSample(.stairAscentSpeed, continueInBackground: false))
+                    await healthKit.addHealthDataCollector(CollectSample(.stairDescentSpeed, continueInBackground: true))
                 }
             }
             Section {
