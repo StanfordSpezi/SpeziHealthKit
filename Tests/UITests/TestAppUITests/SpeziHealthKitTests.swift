@@ -83,6 +83,9 @@ final class HealthKitTests: XCTestCase {
             .activeEnergyBurned: 3,
             .stepCount: 1
         ])
+        
+        app.buttons["Register additional CollectSample instances"].tap()
+        sleep(1) // give it some time to handle this.
     }
     
     

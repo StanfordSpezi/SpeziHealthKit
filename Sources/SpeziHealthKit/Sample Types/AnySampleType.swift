@@ -61,3 +61,13 @@ extension AnySampleType {
 @inlinable public func == (lhs: any AnySampleType, rhs: any AnySampleType) -> Bool { // swiftlint:disable:this static_operator
     lhs.id == rhs.id
 }
+
+/// Compare two type-erased sample type, based on their identifiers
+@inlinable public func == (lhs: any AnySampleType, rhs: SampleType<some Any>) -> Bool { // swiftlint:disable:this static_operator
+    lhs.id == rhs.id
+}
+
+/// Compare two type-erased sample type, based on their identifiers
+@inlinable public func == (lhs: SampleType<some Any>, rhs: any AnySampleType) -> Bool { // swiftlint:disable:this static_operator
+    lhs.id == rhs.id
+}
