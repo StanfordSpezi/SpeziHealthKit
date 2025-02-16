@@ -21,7 +21,7 @@ import SwiftUI
 /// ## See Also
 /// - <doc:ModuleConfiguration>
 @Observable
-public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializable { // swiftlint:disable:this file_types_order
+public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializable {
     @ObservationIgnored @StandardActor
     private var standard: any HealthKitConstraint
     
@@ -203,34 +203,24 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
 }
 
 
-extension HealthKit { // swiftlint:disable:this file_types_order
+extension HealthKit {
     // MARK: HealthKit data collection
     
     /// Provides access to the HealthKit module's query anchor storage system.
     var queryAnchors: SampleTypeScopedLocalStorage<HKQueryAnchor> {
         SampleTypeScopedLocalStorage(
             localStorage: localStorage,
-            setting: .unencrypted(excludedFromBackup: true),
-            storageKeyPrefix: "edu.stanford.Spezi.SpeziHealthKit.queryAnchors."
-        ) { localStorage, setting, key in
-            let data = try localStorage.read(Data.self, decoder: JSONDecoder(), storageKey: key, settings: setting)
-            return try NSKeyedUnarchiver.unarchivedObject(ofClass: HKQueryAnchor.self, from: data)
-        } store: { localStorage, setting, key, value in
-            let data = try NSKeyedArchiver.archivedData(withRootObject: value, requiringSecureCoding: true)
-            try localStorage.store(data, encoder: JSONEncoder(), storageKey: key, settings: setting)
-        }
+            storageKeyPrefix: "edu.stanford.Spezi.SpeziHealthKit.queryAnchors",
+            storageSetting: .unencrypted(excludeFromBackup: false)
+        )
     }
     
     var sampleCollectorPredicateStartDates: SampleTypeScopedLocalStorage<Date> {
         SampleTypeScopedLocalStorage(
             localStorage: localStorage,
-            setting: .unencrypted(excludedFromBackup: true),
-            storageKeyPrefix: "edu.stanford.Spezi.SpeziHealthKit.sampleCollectorStartDate."
-        ) { localStorage, setting, key in
-            try localStorage.read(Date.self, decoder: JSONDecoder(), storageKey: key, settings: setting)
-        } store: { localStorage, setting, key, value in
-            try localStorage.store(value, encoder: JSONEncoder(), storageKey: key, settings: setting)
-        }
+            storageKeyPrefix: "edu.stanford.Spezi.SpeziHealthKit.sampleCollectorStartDate",
+            storageSetting: .unencrypted(excludeFromBackup: false)
+        )
     }
     
     /// Adds a new ``CollectSample`` definition to the module.
@@ -317,48 +307,6 @@ extension HealthKit { // swiftlint:disable:this file_types_order
                 }
             }
             await group.waitForAll()
-        }
-    }
-}
-
-
-// MARK: Query Anchor Management
-
-struct SampleTypeScopedLocalStorage<Value> {
-    private let storageKeyPrefix: String
-    private let load: (_ key: String) throws -> Value?
-    private let store: (_ key: String, _ value: Value?) throws -> Void
-    
-    init(
-        localStorage: LocalStorage,
-        setting: LocalStorageSetting,
-        storageKeyPrefix: String,
-        load: @escaping (LocalStorage, LocalStorageSetting, _ key: String) throws -> Value?,
-        store: @escaping (LocalStorage, LocalStorageSetting, _ key: String, _ value: Value) throws -> Void
-    ) {
-        self.storageKeyPrefix = storageKeyPrefix
-        self.load = {
-            try load(localStorage, setting, $0)
-        }
-        self.store = { key, value in
-            if let value {
-                try store(localStorage, setting, key, value)
-            } else {
-                try localStorage.delete(storageKey: key)
-            }
-        }
-    }
-    
-    private func storageKey(for sampleType: SampleType<some Any>) -> String {
-        "\(storageKeyPrefix).\(sampleType.id)"
-    }
-    
-    subscript(sampleType: SampleType<some Any>) -> Value? {
-        get {
-            try? load(storageKey(for: sampleType))
-        }
-        nonmutating set {
-            try? store(storageKey(for: sampleType), newValue)
         }
     }
 }
