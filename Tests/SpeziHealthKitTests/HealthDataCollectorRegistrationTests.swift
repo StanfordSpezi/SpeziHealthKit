@@ -45,7 +45,10 @@ final class HealthDataCollectorRegistrationTests: XCTestCase {
         var erasedCollectors: [AnyObject] = healthKit.registeredDataCollectors
         
         XCTAssertEqual(healthKit.registeredDataCollectors.count, 5)
-        XCTAssertEqual(Set(healthKit.registeredDataCollectors.map { $0.typeErasedSampleType.displayTitle }), [SampleType.heartRate, .stepCount, .bloodGlucose, .dietaryPotassium, .pushCount].mapIntoSet(\.displayTitle))
+        XCTAssertEqual(
+            Set(healthKit.registeredDataCollectors.map { $0.typeErasedSampleType.displayTitle }),
+            [SampleType.heartRate, .stepCount, .bloodGlucose, .dietaryPotassium, .pushCount].mapIntoSet(\.displayTitle)
+        )
         
         await healthKit.addHealthDataCollector(CollectSample(.bloodOxygen))
         XCTAssertEqual(healthKit.registeredDataCollectors.count, 6)
