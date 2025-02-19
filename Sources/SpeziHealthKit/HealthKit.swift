@@ -314,9 +314,9 @@ extension HealthKit {
         case .dontAdd:
             return
         case .replace(let index):
-            await registeredDataCollectors[index].stopDataCollection()
-            registeredDataCollectors.remove(at: index)
-            fallthrough
+            let oldCollector = exchange(&registeredDataCollectors[index], with: newCollector)
+            await oldCollector.stopDataCollection()
+            await startAutomaticDataCollectionIfPossible(newCollector)
         case .add:
             registeredDataCollectors.append(newCollector)
             await startAutomaticDataCollectionIfPossible(newCollector)
