@@ -37,4 +37,8 @@ extension HKAudiogramSample: _HKSampleWithSampleType {
     public typealias _SampleType = HKAudiogramSampleType
 }
 
+extension HKWorkout: _HKSampleWithSampleType {
+    public typealias _SampleType = HKWorkoutType
+}
+
 // swiftlint:enable type_name
