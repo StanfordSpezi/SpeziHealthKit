@@ -23,14 +23,15 @@ final class HealthDataCollectorRegistrationTests: XCTestCase {
     @MainActor
     func testCollectSamplesRegistration() async throws {
         let healthKit = HealthKit {
-            CollectSample(.heartRate)
-            CollectSample(.heartRate)
+//            CollectSample(.heartRate)
+//            CollectSample(.heartRate)
             CollectSample(.stepCount, continueInBackground: false)
             CollectSample(.stepCount, continueInBackground: true)
             CollectSample(.bloodOxygen, continueInBackground: false)
             CollectSample(.bloodOxygen, continueInBackground: true)
             CollectSample(.height, continueInBackground: true)
             CollectSample(.height, continueInBackground: false)
+            CollectSample(.bodyMass)
             CollectSample(.bodyMass)
         }
         withDependencyResolution(standard: TestStandard()) {
