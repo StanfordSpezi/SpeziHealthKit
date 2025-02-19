@@ -27,6 +27,10 @@ final class HealthDataCollectorRegistrationTests: XCTestCase {
             CollectSample(.heartRate)
             CollectSample(.stepCount, continueInBackground: false)
             CollectSample(.stepCount, continueInBackground: true)
+            CollectSample(.bloodOxygen, continueInBackground: false)
+            CollectSample(.bloodOxygen, continueInBackground: true)
+            CollectSample(.height, continueInBackground: true)
+            CollectSample(.height, continueInBackground: false)
         }
         withDependencyResolution(standard: TestStandard()) {
             healthKit
