@@ -48,7 +48,6 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     public let _initialConfigDataAccessRequirements: DataAccessRequirements // swiftlint:disable:this identifier_name
     
     /// Which HealthKit data we need to be able to access, for read and/or write operations.
-    @MainActor
     private(set) var dataAccessRequirements: DataAccessRequirements = .init()
     
     /// Whether all of the module's current data access requirements were prompted to the user.
@@ -57,25 +56,24 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     /// e.g. if additional data access requirements are introduced after a call to ``HealthKit-swift.class/askForAuthorization()``, it might transition from `true` back to `false`.
     ///
     /// - Note: This property being `true` does not imply that the user actually granted access to all sample types; it just means that the user was asked.
-    @MainActor
     public private(set) var isFullyAuthorized: Bool = false
     
     /// The state of the module's configuration, i.e. whether the initial configuration is still pending, currently ongoing, or already completed.
-    @ObservationIgnored @MainActor public private(set) var configurationState: ConfigState = .pending
+    @ObservationIgnored public private(set) var configurationState: ConfigState = .pending
     
     /// Configurations which were supplied to the initializer, but have not yet been applied.
     /// - Note: This property is intended only to store the configuration until `configure()` has been called. It is not used afterwards.
-    @ObservationIgnored @MainActor private var pendingConfiguration: [any HealthKitConfigurationComponent] = []
+    @ObservationIgnored private var pendingConfiguration: [any HealthKitConfigurationComponent] = []
     
     /// All background-data-collecting data sources registered with the HealthKit module.
-    @ObservationIgnored @MainActor /* private-but-testable */ private(set) var registeredDataCollectors: [any HealthDataCollector] = []
+    @ObservationIgnored /* private-but-testable */ private(set) var registeredDataCollectors: [any HealthDataCollector] = []
     
     
     /// Creates a new instance of the ``HealthKit-class`` module, with the specified configuration.
     /// - parameter config: The configuration defines the behaviour of the `HealthKit` module,
     ///     specifying e.g. which samples the app wants to continuously collect (via ``CollectSample``),
     ///     and which sample and object types the user should be prompted to grant the app read access to (via ``RequestReadAccess``).
-    @MainActor public init(
+    public init(
         @ArrayBuilder<any HealthKitConfigurationComponent> _ config: () -> [any HealthKitConfigurationComponent]
     ) {
         healthStore = HKHealthStore()
@@ -84,19 +82,6 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
             dataReqs.merging(with: component.dataAccessRequirements)
         }
         dataAccessRequirements = _initialConfigDataAccessRequirements
-        checkHealthKitAvailability()
-    }
-    
-    
-    /// Creates a new instance of the ``HealthKit-class`` module, with an empty configuration.
-    public init() {
-        healthStore = HKHealthStore()
-        _initialConfigDataAccessRequirements = .init()
-        checkHealthKitAvailability()
-    }
-    
-    
-    private func checkHealthKitAvailability() {
         if !HKHealthStore.isHealthDataAvailable() {
             // If HealthKit is not available, we still initialise the module and the health store as normal.
             // Queries and sample collection, in this case, will simply not return any results.
@@ -107,6 +92,12 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
                 """
             )
         }
+    }
+    
+    
+    /// Creates a new instance of the ``HealthKit-class`` module, with an empty configuration.
+    public convenience init() {
+        self.init { /* intentionally empty config */ }
     }
     
     
