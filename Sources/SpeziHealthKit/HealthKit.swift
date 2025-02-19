@@ -15,7 +15,7 @@ import SwiftUI
 
 
 private func tmp_printToStderr(_ items: Any..., terminator: String = "\n") {
-    let text = items.map { String(describing: $0) }.joined(separator: " ") + terminator
+    let text = "warning: " + items.map { String(describing: $0) }.joined(separator: " ") + terminator
     fputs(text, stderr)
     fflush(stderr)
 }
@@ -101,8 +101,9 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     /// Configures the HealthKit module.
     @_documentation(visibility: internal)
     public func configure() {
+        tmp_printToStderr("HealthKit.configure/0")
         Task {
-            tmp_printToStderr("HealthKit.configure")
+            tmp_printToStderr("HealthKit.configure/1")
             didConfigure = true
             for (idx, component) in exchange(&pendingConfiguration, with: []).enumerated() {
                 tmp_printToStderr("HealthKit.configure idx=\(idx) START")
