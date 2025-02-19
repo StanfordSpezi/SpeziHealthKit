@@ -33,9 +33,7 @@ public struct RequestReadAccess: HealthKitConfigurationComponent {
         characteristic: [any HealthKitCharacteristicProtocol] = [],
         other: [any AnySampleType] = []
     ) {
-        let types = Set<HKObjectType>(quantity.map(\.hkSampleType))
-            .union(category.map(\.hkSampleType))
-            .union(correlation.flatMap(\.associatedQuantityTypes).map(\.hkSampleType))
+        let types = (collectAllUnderyingEffectiveSampleTypes(quantity, category, correlation) as Set<HKObjectType>)
             .union(characteristic.map(\.hkType))
             .union(other.map { $0.hkSampleType })
         self.init(types)
