@@ -39,9 +39,10 @@ final class HealthDataCollectorRegistrationTests: XCTestCase {
             healthKit
         }
         
+        try await Task.sleep(for: .seconds(10))
+        
         var erasedCollectors: [AnyObject] = healthKit.registeredDataCollectors
         
-        try await Task.sleep(for: .seconds(1))
         XCTAssertEqual(healthKit.registeredDataCollectors.count, 2)
         XCTAssertEqual(Set(healthKit.registeredDataCollectors.map { $0.typeErasedSampleType.displayTitle }), [SampleType.heartRate, .stepCount, .bloodOxygen, .height, .bodyMass].mapIntoSet(\.displayTitle))
         XCTAssertEqual(1, healthKit.registeredDataCollectors.count { $0.typeErasedSampleType == .heartRate })

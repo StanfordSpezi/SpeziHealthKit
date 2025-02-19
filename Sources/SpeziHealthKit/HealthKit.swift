@@ -95,9 +95,12 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     @_documentation(visibility: internal)
     public func configure() {
         Task {
+            fputs("HealthKit.configure\n", stderr)
             didConfigure = true
-            for component in exchange(&pendingConfiguration, with: []) {
+            for (idx, component) in exchange(&pendingConfiguration, with: []).enumerated() {
+                fputs("HealthKit.configure idx=\(idx) START\n", stderr)
                 await component.configure(for: self, on: self.standard)
+                fputs("HealthKit.configure idx=\(idx) END\n", stderr)
             }
         }
     }
