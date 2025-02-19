@@ -14,6 +14,13 @@ import SpeziLocalStorage
 import SwiftUI
 
 
+private func tmp_printToStderr(_ items: Any..., terminator: String = "\n") {
+    let text = items.map { String(describing: $0) }.joined(separator: " ") + terminator
+    fputs(text, stderr)
+    fflush(stderr)
+}
+
+
 /// Spezi Module for interacting with the HealthKit system.
 ///
 /// See <doc:ModuleConfiguration> for a detailed introduction.
@@ -95,12 +102,12 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     @_documentation(visibility: internal)
     public func configure() {
         Task {
-            fputs("HealthKit.configure\n", stderr)
+            tmp_printToStderr("HealthKit.configure")
             didConfigure = true
             for (idx, component) in exchange(&pendingConfiguration, with: []).enumerated() {
-                fputs("HealthKit.configure idx=\(idx) START\n", stderr)
+                tmp_printToStderr("HealthKit.configure idx=\(idx) START")
                 await component.configure(for: self, on: self.standard)
-                fputs("HealthKit.configure idx=\(idx) END\n", stderr)
+                tmp_printToStderr("HealthKit.configure idx=\(idx) END")
             }
         }
     }
