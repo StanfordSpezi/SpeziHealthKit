@@ -40,6 +40,7 @@ struct HealthKitTestsView: View {
                     await healthKit.addHealthDataCollector(CollectSample(.stairAscentSpeed, continueInBackground: false))
                     await healthKit.addHealthDataCollector(CollectSample(.stairDescentSpeed, continueInBackground: true))
                 }
+                LabeledContent("isFullyAuthorized", value: "\(healthKit.isFullyAuthorized)")
             }
             Section {
                 NavigationLink("Samples Query") {
@@ -114,10 +115,10 @@ struct HealthKitTestsView: View {
     private func checkInitialSamplesAuthStatus() async {
         let reqs = healthKit._initialConfigDataAccessRequirements
         let readFullyAuthd = await reqs.read.allSatisfy { @MainActor type in
-            await healthKit.askedForAuthorization(toRead: type)
+            await healthKit.didAskForAuthorization(toRead: type)
         }
         let writeFullyAuthd = reqs.write.allSatisfy { type in
-            healthKit.askedForAuthorization(toWrite: type)
+            healthKit.didAskForAuthorization(toWrite: type)
         }
         allInitialSampleTypesAreAuthorized = readFullyAuthd && writeFullyAuthd
     }

@@ -24,6 +24,7 @@ public struct RequestReadAccess: HealthKitConfigurationComponent {
     /// - parameter quantity: Any quantity sample types you wish to request read access for
     /// - parameter category: Any category sample types you wish to request read access for
     /// - parameter correlation: Any correlation sample types you wish to request read access for. Note: rather than requesting access for the correlation type itself (which is not allowed), this will request access for the set of the specific correlation types' underlying sample types. For example, a read access request to the ``SampleType/bloodPressure`` correlation type, will get translated into read access requests to ``SampleType/bloodPressureSystolic`` and ``SampleType/bloodPressureDiastolic``.
+    /// - parameter characteristic: Any characteristic sample types you wish to request read access for
     /// - parameter other: Any other sample types you wish to request read access to. Use this parameter for "special" sample types which don't fall into any of the other categories, e.g. ``SampleType/workout`` or ``SampleType/electrocardiogram``.
     public init(
         quantity: Set<SampleType<HKQuantitySample>> = [],

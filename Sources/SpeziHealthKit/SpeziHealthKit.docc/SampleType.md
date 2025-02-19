@@ -26,7 +26,6 @@ For example, the sample type representing heart rate samples (``SampleType/heart
 - ``SampleType/hkSampleType``
 - ``SampleType/displayTitle``
 - ``SampleType/displayUnit-1rnhb``
-- ``SampleType/displayUnit-4gadf``
 - ``SampleType/expectedValuesRange``
 
 ### Well-known quantity types
@@ -45,7 +44,7 @@ For example, the sample type representing heart rate samples (``SampleType/heart
 
 ### Creating new SampleTypes
 - ``SampleType/quantity(_:displayTitle:displayUnit:expectedValuesRange:)``
-- ``SampleType/correlation(_:displayTitle:displayUnit:)``
+- ``SampleType/correlation(_:displayTitle:associatedQuantityTypes:)``
 - ``SampleType/category(_:displayTitle:)``
 
 

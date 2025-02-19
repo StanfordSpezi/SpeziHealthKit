@@ -21,7 +21,7 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType {
         case correlation(associatedQuantityTypes: Set<SampleType<HKQuantitySample>>)
         case category
         /// The ``SampleType`` represents an `HKSampleType` outside the "normal" ones, i.e. one that isn't a quantity, correlation, or category sample,
-        /// and which we also don't need to carrt any special data for.
+        /// and which we also don't need to carry any special data for.
         case other
     }
     
@@ -119,7 +119,6 @@ extension SampleType {
     /// Use this initializer only if the sample type you want to work with isn't already defined by SpeziHealthKit.
     /// - parameter identifier: The sample type's underlying `HKCorrelationTypeIdentifier`
     /// - parameter displayTitle: The localized string which should be used when displaying this sample type's title in a user-visible context.
-    /// - parameter displayUnit: The unit which should be used when displaying values of this correlation type to the user, if applicable.
     @inlinable public static func correlation(
         _ identifier: HKCorrelationTypeIdentifier,
         displayTitle: LocalizedStringResource,
