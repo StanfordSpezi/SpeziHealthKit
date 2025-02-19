@@ -31,6 +31,7 @@ final class HealthDataCollectorRegistrationTests: XCTestCase {
             CollectSample(.bloodOxygen, continueInBackground: true)
             CollectSample(.height, continueInBackground: true)
             CollectSample(.height, continueInBackground: false)
+            CollectSample(.weight)
         }
         withDependencyResolution(standard: TestStandard()) {
             healthKit
@@ -40,7 +41,7 @@ final class HealthDataCollectorRegistrationTests: XCTestCase {
         
         try await Task.sleep(for: .seconds(1))
         XCTAssertEqual(healthKit.registeredDataCollectors.count, 2)
-        XCTAssertEqual(Set(healthKit.registeredDataCollectors.map { $0.typeErasedSampleType.displayTitle }), [SampleType.heartRate, .stepCount, .bloodOxygen, .height].mapIntoSet(\.displayTitle))
+        XCTAssertEqual(Set(healthKit.registeredDataCollectors.map { $0.typeErasedSampleType.displayTitle }), [SampleType.heartRate, .stepCount, .bloodOxygen, .height, .weight].mapIntoSet(\.displayTitle))
         XCTAssertEqual(1, healthKit.registeredDataCollectors.count { $0.typeErasedSampleType == .heartRate })
         XCTAssertEqual(1, healthKit.registeredDataCollectors.count { $0.typeErasedSampleType == .stepCount })
         
