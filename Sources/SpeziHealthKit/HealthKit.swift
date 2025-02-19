@@ -28,7 +28,17 @@ private func tmp_printToStderr(_ items: Any..., terminator: String = "\n") {
 /// ## See Also
 /// - <doc:ModuleConfiguration>
 @Observable
-public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializable {
+public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializable, @unchecked Sendable {
+    /// The state of the HealthKit module's initial configuration operation.
+    public enum ConfigState: Hashable, Sendable {
+        /// The module has yet to perform its initial configuration
+        case pending
+        /// The module is currently performing its initial configuration
+        case ongoing
+        /// The module has completes its initial configuration
+        case completed
+    }
+    
     @ObservationIgnored @StandardActor
     private var standard: any HealthKitConstraint
     
@@ -55,8 +65,8 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     /// - Note: This property being `true` does not imply that the user actually granted access to all sample types; it just means that the user was asked.
     public private(set) var isFullyAuthorized: Bool = false
     
-    /// Whether the module has already been configured.
-    @ObservationIgnored private var didConfigure = false
+    /// The state of the module's configuration, i.e. whether the initial configuration is still pending, currently ongoing, or already completed.
+    @ObservationIgnored public private(set) var configurationState: ConfigState = .pending
     
     /// Configurations which were supplied to the initializer, but have not yet been applied.
     /// - Note: This property is intended only to store the configuration until `configure()` has been called. It is not used afterwards.
@@ -101,15 +111,16 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     /// Configures the HealthKit module.
     @_documentation(visibility: internal)
     public func configure() {
+        configurationState = .ongoing
         tmp_printToStderr("HealthKit.configure/0")
         Task {
             tmp_printToStderr("HealthKit.configure/1")
-            didConfigure = true
             for (idx, component) in exchange(&pendingConfiguration, with: []).enumerated() {
                 tmp_printToStderr("HealthKit.configure idx=\(idx) START")
                 await component.configure(for: self, on: self.standard)
                 tmp_printToStderr("HealthKit.configure idx=\(idx) END")
             }
+            configurationState = .completed
         }
     }
     
@@ -278,9 +289,10 @@ extension HealthKit {
     /// Calling this function is equivalent to including the ``CollectSample`` definition in the initial module configuration.
     @MainActor
     public func addHealthDataCollector(_ collectSample: CollectSample<some Any>) async {
-        if !didConfigure {
+        switch configurationState {
+        case .pending:
             pendingConfiguration.append(collectSample)
-        } else {
+        case .ongoing, .completed:
             dataAccessRequirements.merge(with: collectSample.dataAccessRequirements)
             await collectSample.configure(for: self, on: standard)
         }

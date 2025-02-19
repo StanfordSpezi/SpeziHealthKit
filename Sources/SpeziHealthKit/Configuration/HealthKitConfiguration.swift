@@ -28,7 +28,7 @@ public protocol HealthKitConfigurationComponent {
 
 extension HealthKit {
     /// Defines the object and sample types the ``HealthKit-swift.class`` module requires read and/or write access to.
-    public struct DataAccessRequirements {
+    public struct DataAccessRequirements: Hashable, Sendable {
         /// The object types a component needs read access to.
         /// The ``HealthKit-swift.class`` module will include these object types in the
         /// request when the app calls ``HealthKit-swift.class/askForAuthorization()``
