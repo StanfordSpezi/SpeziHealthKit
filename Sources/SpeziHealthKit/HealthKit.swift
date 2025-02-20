@@ -380,6 +380,7 @@ extension HealthKit {
             registeredDataCollectors.append(newCollector)
             await startAutomaticDataCollectionIfPossible(newCollector)
         }
+        await updateIsFullyAuthorized(for: dataAccessRequirements)
     }
     
     
