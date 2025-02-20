@@ -25,7 +25,6 @@ Use SpeziHealthKitUI's ``HealthChart`` to visualize health data queried via [`Sp
 - ``HealthKitQueryTimeRange``
 - ``HealthKitQueryResults``
 - ``HealthKitCharacteristicQuery``
-- ``HealthKitCharacteristic``
 
 ### Visualizing Queried Health Data
 - ``HealthChart``

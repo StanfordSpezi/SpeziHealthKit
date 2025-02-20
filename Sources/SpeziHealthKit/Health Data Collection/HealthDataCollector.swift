@@ -17,7 +17,7 @@ import SwiftUI
 ///     In most cases, it shouldn't be necessary to define and implement a custom data collector.
 ///
 /// Custom `HealthDataCollector`s can be registered with the ``HealthKit-swift.class`` module
-/// using ``HealthKit-swift.class/addHealthDataCollector(_:)``.
+/// using ``HealthKit-swift.class/addHealthDataCollector(_:)-1sq79`` or ``HealthKit-swift.class/addHealthDataCollector(_:)-10bp6``.
 /// The ``HealthKit-swift.class`` module will establish a strong reference to the collector,
 /// which will exist for the entire lifetime of the application.
 public protocol HealthDataCollector: AnyObject {

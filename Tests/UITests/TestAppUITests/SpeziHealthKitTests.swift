@@ -200,9 +200,13 @@ extension HealthKitTests {
     
     @MainActor
     private func addSample(_ sampleType: SampleType<HKQuantitySample>, in app: XCUIApplication) throws {
-        app.navigationBars.images["plus"].tap()
-        XCTAssert(app.buttons["Add Sample: \(sampleType.displayTitle)"].waitForExistence(timeout: 2))
-        app.buttons["Add Sample: \(sampleType.displayTitle)"].tap()
+        let menuButton = app.navigationBars.images["plus"]
+        XCTAssert(menuButton.waitForExistence(timeout: 1))
+        menuButton.tap()
+        let addSampleButton = app.buttons["Add Sample: \(sampleType.displayTitle)"]
+        XCTAssert(addSampleButton.waitForExistence(timeout: 2))
+        addSampleButton.tap()
+        usleep(500_000) // i sleep
     }
     
     

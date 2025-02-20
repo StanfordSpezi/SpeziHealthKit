@@ -71,3 +71,30 @@ extension AnySampleType {
 @inlinable public func == (lhs: SampleType<some Any>, rhs: any AnySampleType) -> Bool { // swiftlint:disable:this static_operator
     lhs.id == rhs.id
 }
+
+
+extension AnySampleType {
+    /// The sample types which should be used when requesting read/write authorization for this sample type with HealthKit.
+    ///
+    /// The reason this exists is that HealthKit doesn't allow such requests for some sample types, e.g. correlation types:
+    /// instead of requesting read/write access to "blood pressure", apps need to request read/write access to each of the correlation's contained types,
+    /// (eg:, in the case of blood pressure, systolic and diastolic blood pressure).
+    var effectiveSampleTypesForAuthentication: [any AnySampleType] {
+        if let self = self as? SampleType<HKCorrelation> {
+            Array(self.associatedQuantityTypes)
+        } else {
+            [self]
+        }
+    }
+}
+
+
+func collectAllUnderyingEffectiveSampleTypes<each S>(
+    _ seq: repeat each S
+) -> Set<HKSampleType> where repeat (each S): Sequence, repeat (each S).Element: AnySampleType {
+    var retval = Set<HKSampleType>()
+    for seq in repeat each seq {
+        retval.formUnion(seq.flatMap { $0.effectiveSampleTypesForAuthentication }.map { $0.hkSampleType })
+    }
+    return retval
+}

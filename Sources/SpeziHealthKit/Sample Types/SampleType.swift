@@ -20,8 +20,9 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType {
         /// - parameter associatedQuantityTypes: The correlation's associated sample types, if known.
         case correlation(associatedQuantityTypes: Set<SampleType<HKQuantitySample>>)
         case category
-        case electrocardiogram
-        case audiogram
+        /// The ``SampleType`` represents an `HKSampleType` outside the "normal" ones, i.e. one that isn't a quantity, correlation, or category sample,
+        /// and which we also don't need to carry any special data for.
+        case other
     }
     
     public let hkSampleType: Sample._SampleType
@@ -50,7 +51,7 @@ extension SampleType where Sample == HKQuantitySample {
         switch variant {
         case .quantity(let displayUnit, _):
             return displayUnit
-        case .correlation, .category, .electrocardiogram, .audiogram:
+        case .correlation, .category, .other:
             // SAFETY:
             // This branch is unreachable; the initializers are defined and structured in a way that all
             // `SampleType<HKQuantitySample>` objects always must specify a displayUnit.
@@ -65,7 +66,7 @@ extension SampleType where Sample == HKQuantitySample {
         switch variant {
         case .quantity(displayUnit: _, let expectedValuesRange):
             return expectedValuesRange
-        case .correlation, .category, .electrocardiogram, .audiogram:
+        case .correlation, .category, .other:
             // SAFETY:
             // This branch is unreachable; the initializers are defined and structured in a way that all
             // `SampleType<HKQuantitySample>` objects always must specify an expectedValuesRange.
@@ -81,7 +82,7 @@ extension SampleType where Sample == HKCorrelation {
         switch variant {
         case .correlation(let associatedQuantityTypes):
             return associatedQuantityTypes
-        case .quantity, .category, .electrocardiogram, .audiogram:
+        case .quantity, .category, .other:
             // SAFETY:
             // This branch is unreachable; the initializers are defined and structured in a way that all
             // `SampleType<HKCorrelation>` objects always must specify associatedQuantityTypes.
@@ -118,7 +119,6 @@ extension SampleType {
     /// Use this initializer only if the sample type you want to work with isn't already defined by SpeziHealthKit.
     /// - parameter identifier: The sample type's underlying `HKCorrelationTypeIdentifier`
     /// - parameter displayTitle: The localized string which should be used when displaying this sample type's title in a user-visible context.
-    /// - parameter displayUnit: The unit which should be used when displaying values of this correlation type to the user, if applicable.
     @inlinable public static func correlation(
         _ identifier: HKCorrelationTypeIdentifier,
         displayTitle: LocalizedStringResource,
@@ -142,17 +142,25 @@ extension SampleType {
 
 // MARK: Other sample types
 
-extension SampleType {
+extension SampleType where Sample == HKElectrocardiogram {
     /// The electrocardiogram sample type
     @inlinable public static var electrocardiogram: SampleType<HKElectrocardiogram> {
-        .init(HKSampleType.electrocardiogramType(), displayTitle: "ECG", variant: .electrocardiogram)
+        .init(HKSampleType.electrocardiogramType(), displayTitle: "ECG", variant: .other)
     }
 }
 
 
-extension SampleType {
+extension SampleType where Sample == HKAudiogramSample {
     /// The audiogram sample type
     @inlinable public static var audiogram: SampleType<HKAudiogramSample> {
-        .init(HKSampleType.audiogramSampleType(), displayTitle: "Audiogram", variant: .audiogram)
+        .init(HKSampleType.audiogramSampleType(), displayTitle: "Audiogram", variant: .other)
+    }
+}
+
+
+extension SampleType where Sample == HKWorkout {
+    /// The workout sample type
+    @inlinable public static var workout: SampleType<HKWorkout> {
+        .init(HKSampleType.workoutType(), displayTitle: "Workout", variant: .other)
     }
 }

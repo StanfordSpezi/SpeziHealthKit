@@ -80,6 +80,11 @@ extension HealthKitQueryTimeRange {
         .init(Calendar.current.rangeOfYear(for: .now))
     }
     
+    /// The time range encompassing all of time.
+    public static var ever: Self {
+        .init(Date.distantPast..<Date.distantFuture)
+    }
+    
     /// The time range encompassing the last `N` hours, starting at the end of the current hour.
     public static func last(hours: Int) -> Self {
         lastXImp(.hour, startOfComponentFn: Calendar.startOfHour, numUnits: hours)
