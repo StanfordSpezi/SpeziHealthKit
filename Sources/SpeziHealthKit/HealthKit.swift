@@ -109,6 +109,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
             for component in exchange(&pendingConfiguration, with: []) {
                 await component.configure(for: self, on: self.standard)
             }
+            await updateIsFullyAuthorized(for: dataAccessRequirements)
             configurationState = .completed
         }
     }
