@@ -9,6 +9,20 @@
     }
   ],
   "defaultOptions" : {
+    "codeCoverage" : {
+      "targets" : [
+        {
+          "containerPath" : "container:..\/..",
+          "identifier" : "SpeziHealthKit",
+          "name" : "SpeziHealthKit"
+        },
+        {
+          "containerPath" : "container:..\/..",
+          "identifier" : "SpeziHealthKitUI",
+          "name" : "SpeziHealthKitUI"
+        }
+      ]
+    },
     "commandLineArgumentEntries" : [
       {
         "argument" : "-AppleLocale",
