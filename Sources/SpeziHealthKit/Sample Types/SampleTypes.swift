@@ -1473,3 +1473,107 @@ extension SampleType where Sample == HKCorrelation {
         }
     }
 }
+
+
+// MARK: Clinical Types
+
+extension SampleType where Sample == HKClinicalRecord {
+    /// A category sample type for allergy records.
+    @inlinable public static var allergyRecord: SampleType<HKClinicalRecord> {
+        .clinical(
+            .allergyRecord,
+            displayTitle: "Allergy Record"
+        )
+    }
+    
+    /// A category sample type for clinical note records.
+    @inlinable public static var clinicalNoteRecord: SampleType<HKClinicalRecord> {
+        .clinical(
+            .clinicalNoteRecord,
+            displayTitle: "Clinical Note Record"
+        )
+    }
+    
+    /// A category sample type for condition records.
+    @inlinable public static var conditionRecord: SampleType<HKClinicalRecord> {
+        .clinical(
+            .conditionRecord,
+            displayTitle: "Condition Record"
+        )
+    }
+    
+    /// A category sample type for immunization records.
+    @inlinable public static var immunizationRecord: SampleType<HKClinicalRecord> {
+        .clinical(
+            .immunizationRecord,
+            displayTitle: "Immunization Record"
+        )
+    }
+    
+    /// A category sample type for lab result records.
+    @inlinable public static var labResultRecord: SampleType<HKClinicalRecord> {
+        .clinical(
+            .labResultRecord,
+            displayTitle: "Lab Result Record"
+        )
+    }
+    
+    /// A category sample type for medication records.
+    @inlinable public static var medicationRecord: SampleType<HKClinicalRecord> {
+        .clinical(
+            .medicationRecord,
+            displayTitle: "Medication Record"
+        )
+    }
+    
+    /// A category sample type for procedure records.
+    @inlinable public static var procedureRecord: SampleType<HKClinicalRecord> {
+        .clinical(
+            .procedureRecord,
+            displayTitle: "Procedure Record"
+        )
+    }
+    
+    /// A category sample type for vital sign records.
+    @inlinable public static var vitalSignRecord: SampleType<HKClinicalRecord> {
+        .clinical(
+            .vitalSignRecord,
+            displayTitle: "Vital Sign Record"
+        )
+    }
+    
+    /// A category sample type for coverage records.
+    @inlinable public static var coverageRecord: SampleType<HKClinicalRecord> {
+        .clinical(
+            .coverageRecord,
+            displayTitle: "Coverage Record"
+        )
+    }
+    
+
+    /// Returns the shared Category type for the specified identifier.
+    public init?(_ identifier: HKClinicalTypeIdentifier) where Sample == HKClinicalRecord {
+        switch identifier {
+        case .allergyRecord:
+            self = .allergyRecord
+        case .clinicalNoteRecord:
+            self = .clinicalNoteRecord
+        case .conditionRecord:
+            self = .conditionRecord
+        case .immunizationRecord:
+            self = .immunizationRecord
+        case .labResultRecord:
+            self = .labResultRecord
+        case .medicationRecord:
+            self = .medicationRecord
+        case .procedureRecord:
+            self = .procedureRecord
+        case .vitalSignRecord:
+            self = .vitalSignRecord
+        case .coverageRecord:
+            self = .coverageRecord
+        default:
+            return nil
+        }
+    }
+}
