@@ -91,22 +91,29 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
                         // if the sample collector has been turned off, we don't want to process these.
                         return
                     }
-                    guard case let .success((sampleTypes, completionHandler)) = result else {
-                        return
+                    switch result {
+                    case .failure(let error):
+                        self.healthKit.logger.error("Error in background delivery: \(error)")
+                    case let .success((sampleTypes, completionHandler)):
+                        defer {
+                            // Inform to HealthKit that the data has been processed:
+                            // https://developer.apple.com/documentation/healthkit/hkobserverquerycompletionhandler
+                            completionHandler()
+                        }
+                        guard !sampleTypes.isEmpty else {
+                            return
+                        }
+                        guard sampleTypes.contains(self.sampleType.hkSampleType) else {
+                            self.healthKit.logger.warning("Received Observation query types (\(sampleTypes)) are not corresponding to the CollectSample type \(self.sampleType.hkSampleType)")
+                            return
+                        }
+                        do {
+                            try await self.anchoredSingleObjectQuery()
+                            self.healthKit.logger.debug("Successfully processed background update for \(self.sampleType.hkSampleType)")
+                        } catch {
+                            self.healthKit.logger.error("Could not query samples in a background update for \(self.sampleType.hkSampleType): \(error)")
+                        }
                     }
-                    guard sampleTypes.contains(self.sampleType.hkSampleType) else {
-                        self.healthKit.logger.warning("Received Observation query types (\(sampleTypes)) are not corresponding to the CollectSample type \(self.sampleType.hkSampleType)")
-                        completionHandler()
-                        return
-                    }
-                    do {
-                        try await self.anchoredSingleObjectQuery()
-                        self.healthKit.logger.debug("Successfully processed background update for \(self.sampleType.hkSampleType)")
-                    } catch {
-                        self.healthKit.logger.error("Could not query samples in a background update for \(self.sampleType.hkSampleType): \(error)")
-                    }
-                    // Provide feedback to HealthKit that the data has been processed: https://developer.apple.com/documentation/healthkit/hkobserverquerycompletionhandler
-                    completionHandler()
                 }
                 isActive = true
                 queryVariant = .backgroundDelivery(queryInvalidator)
