@@ -237,7 +237,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     
     /// Returns whether the user was already asked for authorization to  the specified sample type.
     /// - Note: A `true` return value does **not** imply that the user actually granted access; it just means that the user was asked.
-    ///     Use ``HealthKit-swift.class/isAuthorized(toWrite:)`` to check the current authorization status.
+    ///     Use ``HealthKit-swift.class/isAuthorized(toWrite:)-4a3vx`` to check the current authorization status.
     public func didAskForAuthorization(toWrite sampleType: SampleType<some Any>) -> Bool {
         sampleType.effectiveSampleTypesForAuthentication.allSatisfy {
             didAskForAuthorization(toWrite: $0.hkSampleType)
@@ -247,7 +247,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     /// Returns whether the user was already asked for authorization to the specified object type.
     ///
     /// - Note: A `true` return value does **not** imply that the user actually granted access; it just means that the user was asked.
-    ///     Use ``HealthKit-swift.class/isAuthorized(toWrite:)`` to check the current authorization status.
+    ///     Use ``HealthKit-swift.class/isAuthorized(toWrite:)-1v3ch`` to check the current authorization status.
     public func didAskForAuthorization(toWrite objectType: HKObjectType) -> Bool {
         switch healthStore.authorizationStatus(for: objectType) {
         case .notDetermined:
@@ -262,7 +262,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     
     /// Returns whether the application is currently authorized to write data of the specified object type into the health store..
     /// - Note: A `false` return value does **not** imply that the user actually denied access; it could also mean that the user hasn't yet been asked.
-    ///     Use ``HealthKit-swift.class/didAskForAuthorization(toWrite:)`` to determine that.
+    ///     Use ``HealthKit-swift.class/didAskForAuthorization(toWrite:)-1q0oz`` to determine that.
     public func isAuthorized(toWrite sampleType: SampleType<some Any>) -> Bool {
         sampleType.effectiveSampleTypesForAuthentication.allSatisfy {
             isAuthorized(toWrite: $0.hkSampleType)
@@ -271,7 +271,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     
     /// Returns whether the application is currently authorized to write data of the specified object type into the health store..
     /// - Note: A `false` return value does **not** imply that the user actually denied access; it could also mean that the user hasn't yet been asked.
-    ///     Use ``HealthKit-swift.class/didAskForAuthorization(toWrite:)`` to determine that.
+    ///     Use ``HealthKit-swift.class/didAskForAuthorization(toWrite:)-3rlz6`` to determine that.
     public func isAuthorized(toWrite objectType: HKObjectType) -> Bool {
         switch healthStore.authorizationStatus(for: objectType) {
         case .sharingAuthorized:
