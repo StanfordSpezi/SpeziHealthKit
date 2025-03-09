@@ -50,6 +50,7 @@ For example, the sample type representing heart rate samples (``SampleType/heart
 - ``SampleType/quantity(_:displayTitle:displayUnit:expectedValuesRange:)``
 - ``SampleType/correlation(_:displayTitle:associatedQuantityTypes:)``
 - ``SampleType/category(_:displayTitle:)``
+- ``SampleType/clinical(_:displayTitle:)``
 
 ### Comparing Sample Types
 - ``SampleType/==(_:_:)-8xhr4``
