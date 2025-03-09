@@ -137,6 +137,17 @@ extension SampleType {
     ) -> SampleType<HKCategorySample> {
         .init(HKCategoryType(identifier), displayTitle: displayTitle, variant: .category)
     }
+    
+    /// Creates a new clinical record sample type.
+    /// Use this initializer only if the sample type you want to work with isn't already defined by SpeziHealthKit.
+    /// - parameter identifier: The sample type's underlying `HKClinicalTypeIdentifier`
+    /// - parameter displayTitle: The localized string which should be used when displaying this sample type's title in a user-visible context.
+    @inlinable public static func clinical(
+        _ identifier: HKClinicalTypeIdentifier,
+        displayTitle: LocalizedStringResource
+    ) -> SampleType<HKClinicalRecord> {
+        .init(HKClinicalType(identifier), displayTitle: displayTitle, variant: .other)
+    }
 }
 
 
@@ -162,18 +173,5 @@ extension SampleType where Sample == HKWorkout {
     /// The workout sample type
     @inlinable public static var workout: SampleType<HKWorkout> {
         .init(HKSampleType.workoutType(), displayTitle: "Workout", variant: .other)
-    }
-}
-
-extension SampleType where Sample == HKClinicalRecord {
-    /// Creates a new clinical record sample type.
-    /// Use this initializer only if the sample type you want to work with isn't already defined by SpeziHealthKit.
-    /// - parameter identifier: The sample type's underlying `HKClinicalTypeIdentifier`
-    /// - parameter displayTitle: The localized string which should be used when displaying this sample type's title in a user-visible context.
-    @inlinable public static func clinical(
-        _ identifier: HKClinicalTypeIdentifier,
-        displayTitle: LocalizedStringResource
-    ) -> SampleType<HKClinicalRecord> {
-        .init(HKClinicalType(identifier), displayTitle: displayTitle, variant: .other)
     }
 }

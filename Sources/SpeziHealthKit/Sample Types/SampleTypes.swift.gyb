@@ -959,47 +959,47 @@ clinical_types = [
     SampleType.clinical_type(
         identifier='allergyRecord',
         display_title='Allergy Record',
-        doc='A category sample type for allergy records.'
+        doc='A type identifier for records of allergic or intolerant reactions.'
     ),
     SampleType.clinical_type(
         identifier='clinicalNoteRecord',
         display_title='Clinical Note Record',
-        doc='A category sample type for clinical note records.'
+        doc='A type identifier for records of clinical notes.'
     ),
     SampleType.clinical_type(
         identifier='conditionRecord',
         display_title='Condition Record',
-        doc='A category sample type for condition records.'
+        doc='A type identifier for records of a condition, problem, diagnosis, or other event.'
     ),
     SampleType.clinical_type(
         identifier='immunizationRecord',
         display_title='Immunization Record',
-        doc='A category sample type for immunization records.'
+        doc='A type identifier for records of the current or historical administration of vaccines.'
     ),
     SampleType.clinical_type(
         identifier='labResultRecord',
         display_title='Lab Result Record',
-        doc='A category sample type for lab result records.'
+        doc='A type identifier for records of lab results.'
     ),
     SampleType.clinical_type(
         identifier='medicationRecord',
         display_title='Medication Record',
-        doc='A category sample type for medication records.'
+        doc='A type identifier for records of medication.'
     ),
     SampleType.clinical_type(
         identifier='procedureRecord',
         display_title='Procedure Record',
-        doc='A category sample type for procedure records.'
+        doc='A type identifier for records of procedures.'
     ),
     SampleType.clinical_type(
         identifier='vitalSignRecord',
         display_title='Vital Sign Record',
-        doc='A category sample type for vital sign records.'
+        doc='A type identifier for records of vital signs.'
     ),
     SampleType.clinical_type(
         identifier='coverageRecord',
         display_title='Coverage Record',
-        doc='A category sample type for coverage records.'
+        doc='A type identifier for records containing information about the user’s insurance coverage.'
     )
 ]
 

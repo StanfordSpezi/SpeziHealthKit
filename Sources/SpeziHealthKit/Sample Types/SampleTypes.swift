@@ -1477,7 +1477,7 @@ extension SampleType where Sample == HKCorrelation {
 // MARK: Clinical Types
 
 extension SampleType where Sample == HKClinicalRecord {
-    /// A category sample type for allergy records.
+    /// A type identifier for records of allergic or intolerant reactions.
     @inlinable public static var allergyRecord: SampleType<HKClinicalRecord> {
         .clinical(
             .allergyRecord,
@@ -1485,7 +1485,7 @@ extension SampleType where Sample == HKClinicalRecord {
         )
     }
 
-    /// A category sample type for clinical note records.
+    /// A type identifier for records of clinical notes.
     @inlinable public static var clinicalNoteRecord: SampleType<HKClinicalRecord> {
         .clinical(
             .clinicalNoteRecord,
@@ -1493,7 +1493,7 @@ extension SampleType where Sample == HKClinicalRecord {
         )
     }
 
-    /// A category sample type for condition records.
+    /// A type identifier for records of a condition, problem, diagnosis, or other event.
     @inlinable public static var conditionRecord: SampleType<HKClinicalRecord> {
         .clinical(
             .conditionRecord,
@@ -1501,7 +1501,7 @@ extension SampleType where Sample == HKClinicalRecord {
         )
     }
 
-    /// A category sample type for immunization records.
+    /// A type identifier for records of the current or historical administration of vaccines.
     @inlinable public static var immunizationRecord: SampleType<HKClinicalRecord> {
         .clinical(
             .immunizationRecord,
@@ -1509,7 +1509,7 @@ extension SampleType where Sample == HKClinicalRecord {
         )
     }
 
-    /// A category sample type for lab result records.
+    /// A type identifier for records of lab results.
     @inlinable public static var labResultRecord: SampleType<HKClinicalRecord> {
         .clinical(
             .labResultRecord,
@@ -1517,7 +1517,7 @@ extension SampleType where Sample == HKClinicalRecord {
         )
     }
 
-    /// A category sample type for medication records.
+    /// A type identifier for records of medication.
     @inlinable public static var medicationRecord: SampleType<HKClinicalRecord> {
         .clinical(
             .medicationRecord,
@@ -1525,7 +1525,7 @@ extension SampleType where Sample == HKClinicalRecord {
         )
     }
 
-    /// A category sample type for procedure records.
+    /// A type identifier for records of procedures.
     @inlinable public static var procedureRecord: SampleType<HKClinicalRecord> {
         .clinical(
             .procedureRecord,
@@ -1533,7 +1533,7 @@ extension SampleType where Sample == HKClinicalRecord {
         )
     }
 
-    /// A category sample type for vital sign records.
+    /// A type identifier for records of vital signs.
     @inlinable public static var vitalSignRecord: SampleType<HKClinicalRecord> {
         .clinical(
             .vitalSignRecord,
@@ -1541,7 +1541,7 @@ extension SampleType where Sample == HKClinicalRecord {
         )
     }
 
-    /// A category sample type for coverage records.
+    /// A type identifier for records containing information about the user’s insurance coverage.
     @inlinable public static var coverageRecord: SampleType<HKClinicalRecord> {
         .clinical(
             .coverageRecord,

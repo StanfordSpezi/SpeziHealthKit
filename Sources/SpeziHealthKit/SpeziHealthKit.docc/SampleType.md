@@ -38,14 +38,22 @@ For example, the sample type representing heart rate samples (``SampleType/heart
 ### Well-known category types
 - <doc:SampleType+CategoryTypes>
 
+### Well-known clinical record types
+- <doc:SampleType+ClinicalRecords>
+
 ### Other sample types
 - ``SampleType/audiogram``
 - ``SampleType/electrocardiogram``
+- ``SampleType/workout``
 
-### Creating new SampleTypes
+### Creating new SampleType
 - ``SampleType/quantity(_:displayTitle:displayUnit:expectedValuesRange:)``
 - ``SampleType/correlation(_:displayTitle:associatedQuantityTypes:)``
 - ``SampleType/category(_:displayTitle:)``
+
+### Comparing Sample Types
+- ``SampleType/==(_:_:)-8xhr4``
+- ``SampleType/==(_:_:)-4gmmo``
 
 
 ### AnySampleType
