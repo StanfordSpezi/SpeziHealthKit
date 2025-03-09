@@ -18,6 +18,9 @@
     "Alcohol Consumption" : {
 
     },
+    "Allergy Record" : {
+
+    },
     "Atrial Fibrillation" : {
 
     },
@@ -105,10 +108,19 @@
     "Chromium" : {
 
     },
+    "Clinical Note Record" : {
+
+    },
+    "Condition Record" : {
+
+    },
     "Contraceptives" : {
 
     },
     "Copper" : {
+
+    },
+    "Coverage Record" : {
 
     },
     "Cycling Distance" : {
@@ -208,6 +220,9 @@
     "High Heart Rate Event" : {
 
     },
+    "Immunization Record" : {
+
+    },
     "Infrequent Periods" : {
 
     },
@@ -229,6 +244,9 @@
     "Irregular Heart Rythm Event" : {
 
     },
+    "Lab Result Record" : {
+
+    },
     "Lactation" : {
 
     },
@@ -245,6 +263,9 @@
 
     },
     "Manganese" : {
+
+    },
+    "Medication Record" : {
 
     },
     "Menstrual Cycles" : {
@@ -296,6 +317,9 @@
 
     },
     "Pregnancy Test Result" : {
+
+    },
+    "Procedure Record" : {
 
     },
     "Progesterone Test Result" : {
@@ -410,6 +434,9 @@
 
     },
     "Vertical Oscillation" : {
+
+    },
+    "Vital Sign Record" : {
 
     },
     "Vitamin A" : {

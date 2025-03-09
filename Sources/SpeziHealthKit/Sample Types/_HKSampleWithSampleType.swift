@@ -41,4 +41,8 @@ extension HKWorkout: _HKSampleWithSampleType {
     public typealias _SampleType = HKWorkoutType
 }
 
+extension HKClinicalRecord: _HKSampleWithSampleType {
+    public typealias _SampleType = HKClinicalType
+}
+
 // swiftlint:enable type_name

@@ -19,6 +19,7 @@ public protocol _HKSampleTypeIdentifierType: Hashable {
 extension HKQuantityTypeIdentifier: _HKSampleTypeIdentifierType {} // swiftlint:disable:this file_types_order
 extension HKCorrelationTypeIdentifier: _HKSampleTypeIdentifierType {} // swiftlint:disable:this file_types_order
 extension HKCategoryTypeIdentifier: _HKSampleTypeIdentifierType {} // swiftlint:disable:this file_types_order
+extension HKClinicalTypeIdentifier: _HKSampleTypeIdentifierType {} // swiftlint:disable:this file_types_order
 
 
 /// Associates a `HKSampleType` subclass with its corresponding identifier type.
@@ -37,6 +38,10 @@ extension HKCorrelationType: _HKSampleTypeWithIdentifierType {
 
 extension HKCategoryType: _HKSampleTypeWithIdentifierType {
     public typealias _Identifier = HKCategoryTypeIdentifier
+}
+
+extension HKClinicalType: _HKSampleTypeWithIdentifierType {
+    public typealias _Identifier = HKClinicalTypeIdentifier
 }
 
 // swiftlint:enable type_name

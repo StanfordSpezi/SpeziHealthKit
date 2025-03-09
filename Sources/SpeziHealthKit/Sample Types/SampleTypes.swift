@@ -1473,3 +1473,106 @@ extension SampleType where Sample == HKCorrelation {
         }
     }
 }
+
+// MARK: Clinical Types
+
+extension SampleType where Sample == HKClinicalRecord {
+    /// A type identifier for records of allergic or intolerant reactions.
+    @inlinable public static var allergyRecord: SampleType<HKClinicalRecord> {
+        .clinical(
+            .allergyRecord,
+            displayTitle: "Allergy Record"
+        )
+    }
+
+    /// A type identifier for records of clinical notes.
+    @inlinable public static var clinicalNoteRecord: SampleType<HKClinicalRecord> {
+        .clinical(
+            .clinicalNoteRecord,
+            displayTitle: "Clinical Note Record"
+        )
+    }
+
+    /// A type identifier for records of a condition, problem, diagnosis, or other event.
+    @inlinable public static var conditionRecord: SampleType<HKClinicalRecord> {
+        .clinical(
+            .conditionRecord,
+            displayTitle: "Condition Record"
+        )
+    }
+
+    /// A type identifier for records of the current or historical administration of vaccines.
+    @inlinable public static var immunizationRecord: SampleType<HKClinicalRecord> {
+        .clinical(
+            .immunizationRecord,
+            displayTitle: "Immunization Record"
+        )
+    }
+
+    /// A type identifier for records of lab results.
+    @inlinable public static var labResultRecord: SampleType<HKClinicalRecord> {
+        .clinical(
+            .labResultRecord,
+            displayTitle: "Lab Result Record"
+        )
+    }
+
+    /// A type identifier for records of medication.
+    @inlinable public static var medicationRecord: SampleType<HKClinicalRecord> {
+        .clinical(
+            .medicationRecord,
+            displayTitle: "Medication Record"
+        )
+    }
+
+    /// A type identifier for records of procedures.
+    @inlinable public static var procedureRecord: SampleType<HKClinicalRecord> {
+        .clinical(
+            .procedureRecord,
+            displayTitle: "Procedure Record"
+        )
+    }
+
+    /// A type identifier for records of vital signs.
+    @inlinable public static var vitalSignRecord: SampleType<HKClinicalRecord> {
+        .clinical(
+            .vitalSignRecord,
+            displayTitle: "Vital Sign Record"
+        )
+    }
+
+    /// A type identifier for records containing information about the user’s insurance coverage.
+    @inlinable public static var coverageRecord: SampleType<HKClinicalRecord> {
+        .clinical(
+            .coverageRecord,
+            displayTitle: "Coverage Record"
+        )
+    }
+
+
+    /// Returns the shared Clinical type for the specified identifier.
+    public init?(_ identifier: HKClinicalTypeIdentifier) where Sample == HKClinicalRecord {
+        switch identifier {
+        case .allergyRecord:
+            self = .allergyRecord
+        case .clinicalNoteRecord:
+            self = .clinicalNoteRecord
+        case .conditionRecord:
+            self = .conditionRecord
+        case .immunizationRecord:
+            self = .immunizationRecord
+        case .labResultRecord:
+            self = .labResultRecord
+        case .medicationRecord:
+            self = .medicationRecord
+        case .procedureRecord:
+            self = .procedureRecord
+        case .vitalSignRecord:
+            self = .vitalSignRecord
+        case .coverageRecord:
+            self = .coverageRecord
+        default:
+            return nil
+        }
+    }
+}

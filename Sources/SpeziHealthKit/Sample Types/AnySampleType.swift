@@ -10,6 +10,16 @@ import HealthKit
 
 
 /// Type-erased version of a ``SampleType``
+///
+/// ## Topics
+/// ### Instance Properties
+/// - ``hkSampleType``
+/// - ``displayTitle``
+/// - ``identifier``
+/// ### Comparing type-erased sample types
+/// - ``==(_:_:)-4zjyo``
+/// - ``==(_:_:)-5dq7``
+/// - ``==(_:_:)-80mw5``
 public protocol AnySampleType: Hashable, Identifiable, Sendable where ID == String {
     /// The type of the sample type's underlying samples.
     ///

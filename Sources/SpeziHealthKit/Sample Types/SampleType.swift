@@ -119,6 +119,7 @@ extension SampleType {
     /// Use this initializer only if the sample type you want to work with isn't already defined by SpeziHealthKit.
     /// - parameter identifier: The sample type's underlying `HKCorrelationTypeIdentifier`
     /// - parameter displayTitle: The localized string which should be used when displaying this sample type's title in a user-visible context.
+    /// - parameter associatedQuantityTypes: The sample type's associated quantity sample types. E.g.: for the blood pressure correlation type, the associated quantity types would be systolic and siastolic blood pressure.
     @inlinable public static func correlation(
         _ identifier: HKCorrelationTypeIdentifier,
         displayTitle: LocalizedStringResource,
@@ -136,6 +137,17 @@ extension SampleType {
         displayTitle: LocalizedStringResource
     ) -> SampleType<HKCategorySample> {
         .init(HKCategoryType(identifier), displayTitle: displayTitle, variant: .category)
+    }
+    
+    /// Creates a new clinical record sample type.
+    /// Use this initializer only if the sample type you want to work with isn't already defined by SpeziHealthKit.
+    /// - parameter identifier: The sample type's underlying `HKClinicalTypeIdentifier`
+    /// - parameter displayTitle: The localized string which should be used when displaying this sample type's title in a user-visible context.
+    @inlinable public static func clinical(
+        _ identifier: HKClinicalTypeIdentifier,
+        displayTitle: LocalizedStringResource
+    ) -> SampleType<HKClinicalRecord> {
+        .init(HKClinicalType(identifier), displayTitle: displayTitle, variant: .other)
     }
 }
 
