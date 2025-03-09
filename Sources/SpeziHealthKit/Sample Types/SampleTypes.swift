@@ -1474,7 +1474,6 @@ extension SampleType where Sample == HKCorrelation {
     }
 }
 
-
 // MARK: Clinical Types
 
 extension SampleType where Sample == HKClinicalRecord {
@@ -1485,7 +1484,7 @@ extension SampleType where Sample == HKClinicalRecord {
             displayTitle: "Allergy Record"
         )
     }
-    
+
     /// A category sample type for clinical note records.
     @inlinable public static var clinicalNoteRecord: SampleType<HKClinicalRecord> {
         .clinical(
@@ -1493,7 +1492,7 @@ extension SampleType where Sample == HKClinicalRecord {
             displayTitle: "Clinical Note Record"
         )
     }
-    
+
     /// A category sample type for condition records.
     @inlinable public static var conditionRecord: SampleType<HKClinicalRecord> {
         .clinical(
@@ -1501,7 +1500,7 @@ extension SampleType where Sample == HKClinicalRecord {
             displayTitle: "Condition Record"
         )
     }
-    
+
     /// A category sample type for immunization records.
     @inlinable public static var immunizationRecord: SampleType<HKClinicalRecord> {
         .clinical(
@@ -1509,7 +1508,7 @@ extension SampleType where Sample == HKClinicalRecord {
             displayTitle: "Immunization Record"
         )
     }
-    
+
     /// A category sample type for lab result records.
     @inlinable public static var labResultRecord: SampleType<HKClinicalRecord> {
         .clinical(
@@ -1517,7 +1516,7 @@ extension SampleType where Sample == HKClinicalRecord {
             displayTitle: "Lab Result Record"
         )
     }
-    
+
     /// A category sample type for medication records.
     @inlinable public static var medicationRecord: SampleType<HKClinicalRecord> {
         .clinical(
@@ -1525,7 +1524,7 @@ extension SampleType where Sample == HKClinicalRecord {
             displayTitle: "Medication Record"
         )
     }
-    
+
     /// A category sample type for procedure records.
     @inlinable public static var procedureRecord: SampleType<HKClinicalRecord> {
         .clinical(
@@ -1533,7 +1532,7 @@ extension SampleType where Sample == HKClinicalRecord {
             displayTitle: "Procedure Record"
         )
     }
-    
+
     /// A category sample type for vital sign records.
     @inlinable public static var vitalSignRecord: SampleType<HKClinicalRecord> {
         .clinical(
@@ -1541,7 +1540,7 @@ extension SampleType where Sample == HKClinicalRecord {
             displayTitle: "Vital Sign Record"
         )
     }
-    
+
     /// A category sample type for coverage records.
     @inlinable public static var coverageRecord: SampleType<HKClinicalRecord> {
         .clinical(
@@ -1549,9 +1548,9 @@ extension SampleType where Sample == HKClinicalRecord {
             displayTitle: "Coverage Record"
         )
     }
-    
 
-    /// Returns the shared Category type for the specified identifier.
+
+    /// Returns the shared Clinical type for the specified identifier.
     public init?(_ identifier: HKClinicalTypeIdentifier) where Sample == HKClinicalRecord {
         switch identifier {
         case .allergyRecord:
