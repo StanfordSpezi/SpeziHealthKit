@@ -235,9 +235,14 @@ public final class StatisticsQueryResults: @unchecked Sendable {
         print("[\(self.self) -update]")
         self.isCurrentlyPerformingInitialFetch = true
         let sampleType = input.sampleType.hkSampleType
-        var predicate = input.timeRange.predicate
-        if let filterPredicate = input.filterPredicate {
-            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, filterPredicate])
+        let predicate: NSPredicate?
+        switch (input.timeRange.predicate, input.filterPredicate) {
+        case (.none, .none):
+            predicate = nil
+        case (.some(let pred), .none), (.none, .some(let pred)):
+            predicate = pred
+        case (.some(let pred1), .some(let pred2)):
+            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [pred1, pred2])
         }
         let queryDesc = HKStatisticsCollectionQueryDescriptor(
             predicate: HKSamplePredicate<HKQuantitySample>.quantitySample(type: sampleType, predicate: predicate),

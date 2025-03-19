@@ -85,3 +85,45 @@ extension HealthKit {
         return (added: result.addedSamples, deleted: result.deletedObjects)
     }
 }
+
+
+extension HealthKit {
+    public struct ContinuousQueryElement<Sample: _HKSampleWithSampleType> {
+        typealias Update = HKAnchoredObjectQueryDescriptor<Sample>.Results.Element
+        
+        private let update: Update
+        
+        public var addedSamples: [Sample] {
+            update.addedSamples
+        }
+        public var deletedObjects: [HKDeletedObject] {
+            update.deletedObjects
+        }
+        public var newAnchor: QueryAnchor<Sample> {
+            QueryAnchor(hkAnchor: update.newAnchor)
+        }
+        
+        fileprivate init(update: Update) {
+            self.update = update
+        }
+    }
+    
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    public func continuousQuery<Sample>(
+        _ sampleType: SampleType<Sample>,
+        startTime: HealthKitQueryTimeRange,
+        anchor: QueryAnchor<Sample>,
+        limit: Int? = nil,
+        predicate filterPredicate: NSPredicate? = nil
+    ) async throws -> some AsyncSequence<ContinuousQueryElement<Sample>, any Error> {
+        let predicate = sampleType._makeSamplePredicate(
+            filter: NSCompoundPredicate(andPredicateWithSubpredicates: [startTime.lowerBoundPredicate, filterPredicate].compactMap(\.self))
+        )
+        let queryDescriptor = HKAnchoredObjectQueryDescriptor<Sample>(
+            predicates: [predicate],
+            anchor: anchor.hkAnchor
+        )
+        let results = queryDescriptor.results(for: healthStore)
+        return results.map { ContinuousQueryElement(update: $0) }
+    }
+}
