@@ -44,23 +44,6 @@ extension HealthKitQueryTimeRange {
             )
         }
     }
-    
-    /// An `NSPredicate` which matches all samples that start after the time range's lower bound.
-    ///
-    /// - Note: This predicate will completely ignore the time range's end date.
-    ///
-    /// - Note: A `nil` value means that no predicate is needed. This would be equivalent to a predicate that always returns `true`.
-    public var lowerBoundPredicate: NSPredicate? {
-        if range.lowerBound == .distantPast {
-            nil
-        } else {
-            HKQuery.predicateForSamples(
-                withStart: range.lowerBound,
-                end: nil,
-                options: [.strictStartDate]
-            )
-        }
-    }
 }
 
 

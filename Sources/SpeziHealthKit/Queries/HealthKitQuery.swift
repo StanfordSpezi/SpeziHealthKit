@@ -120,20 +120,20 @@ extension HealthKit {
     /// This function returns an `AsyncSequence`, which will emit new elements whenever HealthKit informs us about changes to the database.
     ///
     /// - parameter sampleType: The ``SampleType`` that should be queried for.
-    /// - parameter startDate: The earliest point in time for which results should be returned. Even though this parameter is a ``HealthKitQueryTimeRange``, only the lower bound will be taken into account.
+    /// - parameter timeRange: The time range for which the query should return samples.
     /// - parameter anchor: A ``QueryAnchor``, which allows the caller to run a query that fetches only those objects which have been added since the last time the query was run.
     /// - parameter limit: The maximum number of samples the query will return.
     /// - parameter filterPredicate: Optional refining predicate that allows you to filter which samples should be fetched.
     @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
     public func continuousQuery<Sample>(
         _ sampleType: SampleType<Sample>,
-        startDate: HealthKitQueryTimeRange,
+        timeRange: HealthKitQueryTimeRange,
         anchor: QueryAnchor<Sample>,
         limit: Int? = nil,
         predicate filterPredicate: NSPredicate? = nil
     ) async throws -> some AsyncSequence<ContinuousQueryElement<Sample>, any Error> {
         let predicate = sampleType._makeSamplePredicate(
-            filter: NSCompoundPredicate(andPredicateWithSubpredicates: [startDate.lowerBoundPredicate, filterPredicate].compactMap(\.self))
+            filter: NSCompoundPredicate(andPredicateWithSubpredicates: [timeRange.predicate, filterPredicate].compactMap(\.self))
         )
         let queryDescriptor = HKAnchoredObjectQueryDescriptor<Sample>(
             predicates: [predicate],
