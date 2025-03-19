@@ -117,7 +117,7 @@ extension HealthKit {
     }
     
     
-    /// Runs a long-running query of HealthKit data.
+    /// Performs a long-running query of HealthKit data.
     ///
     /// Use this function to run a continuous, long-running HealthKit data query.
     /// This function returns an `AsyncSequence`, which will emit new elements whenever HealthKit informs us about changes to the database.
@@ -127,6 +127,30 @@ extension HealthKit {
     /// - parameter anchor: A ``QueryAnchor``, which allows the caller to run a query that fetches only those objects which have been added since the last time the query was run.
     /// - parameter limit: The maximum number of samples the query will return.
     /// - parameter filterPredicate: Optional refining predicate that allows you to filter which samples should be fetched.
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    public func continuousQuery<Sample>(
+        _ sampleType: SampleType<Sample>,
+        timeRange: HealthKitQueryTimeRange,
+        anchor: QueryAnchor<Sample>,
+        limit: Int? = nil,
+        predicate filterPredicate: NSPredicate? = nil
+    ) -> some AsyncSequence<ContinuousQueryElement<Sample>, any Error> {
+        continuousQueryImp(sampleType, timeRange: timeRange, anchor: anchor, limit: limit, predicate: filterPredicate)
+    }
+    
+    
+    /// Performs a long-running query of HealthKit data.
+    ///
+    /// Use this function to run a continuous, long-running HealthKit data query.
+    /// This function returns an `AsyncSequence`, which will emit new elements whenever HealthKit informs us about changes to the database.
+    ///
+    /// - parameter sampleType: The ``SampleType`` that should be queried for.
+    /// - parameter timeRange: The time range for which the query should return samples.
+    /// - parameter anchor: A ``QueryAnchor``, which allows the caller to run a query that fetches only those objects which have been added since the last time the query was run.
+    /// - parameter limit: The maximum number of samples the query will return.
+    /// - parameter filterPredicate: Optional refining predicate that allows you to filter which samples should be fetched.
+    @available(iOS, deprecated: 18.0)
+    @_disfavoredOverload
     public func continuousQuery<Sample>(
         _ sampleType: SampleType<Sample>,
         timeRange: HealthKitQueryTimeRange,
@@ -134,8 +158,17 @@ extension HealthKit {
         limit: Int? = nil,
         predicate filterPredicate: NSPredicate? = nil
     ) -> AsyncMapSequence<HKAnchoredObjectQueryDescriptor<Sample>.Results, ContinuousQueryElement<Sample>> {
-        // ^^^ we sadly can't use `some AsyncSequence<ContinuousQueryElement<Sample>, any Error>` here,
-        // since the Failure parameter is only available starting with iOS 18...
+        continuousQueryImp(sampleType, timeRange: timeRange, anchor: anchor, limit: limit, predicate: filterPredicate)
+    }
+    
+    
+    private func continuousQueryImp<Sample>(
+        _ sampleType: SampleType<Sample>,
+        timeRange: HealthKitQueryTimeRange,
+        anchor: QueryAnchor<Sample>,
+        limit: Int? = nil,
+        predicate filterPredicate: NSPredicate? = nil
+    ) -> AsyncMapSequence<HKAnchoredObjectQueryDescriptor<Sample>.Results, ContinuousQueryElement<Sample>> {
         let predicate = sampleType._makeSamplePredicate(
             filter: NSCompoundPredicate(andPredicateWithSubpredicates: [timeRange.predicate, filterPredicate].compactMap(\.self))
         )
