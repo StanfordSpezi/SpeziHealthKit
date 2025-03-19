@@ -7,7 +7,7 @@
 //
 
 import HealthKit
-import SpeziHealthKit
+@testable import SpeziHealthKit
 import SpeziHealthKitUI
 import XCTest
 
@@ -35,5 +35,16 @@ final class SpeziHealthKitTests: XCTestCase {
                 sampleType.identifier.knownAssociatedSampleTypes.mapIntoSet(\.identifier)
             )
         }
+    }
+    
+    
+    func testQueryAnchorCoding() throws {
+        func imp(_ anchor: QueryAnchor<HKQuantitySample>, line: UInt = #line) throws {
+            let encoded = try JSONEncoder().encode(anchor)
+            let decoded = try JSONDecoder().decode(QueryAnchor<HKQuantitySample>.self, from: encoded)
+            XCTAssertEqual(anchor, decoded, line: line)
+        }
+        try imp(QueryAnchor(hkAnchor: HKQueryAnchor(fromValue: 5734987678924)))
+        try imp(QueryAnchor())
     }
 }
