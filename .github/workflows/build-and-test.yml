@@ -16,14 +16,32 @@ on:
   workflow_dispatch:
 
 jobs:
-  buildandtest:
-    name: Build and Test Swift Package
+  buildandtest_ios:
+    name: Build and Test Swift Package iOS
     uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
     with:
       runsonlabels: '["macOS", "self-hosted"]'
       scheme: SpeziHealthKit-Package
-      artifactname: SpeziHealthKit-Package.xcresult
-      resultBundle: SpeziHealthKit-Package.xcresult
+      artifactname: SpeziHealthKit-Package-iOS.xcresult
+      resultBundle: SpeziHealthKit-Package-iOS.xcresult
+  buildandtest_watchos:
+    name: Build and Test Swift Package watchOS
+    uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
+    with:
+      runsonlabels: '["macOS", "self-hosted"]'
+      scheme: SpeziHealthKit-Package
+      destination: 'platform=watchOS Simulator,name=Apple Watch Series 10 (46mm)'
+      artifactname: SpeziHealthKit-Package-watchOS.xcresult
+      resultBundle: SpeziHealthKit-Package-watchOS.xcresult
+  buildandtest_macos:
+    name: Build and Test Swift Package macOS
+    uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
+    with:
+      runsonlabels: '["macOS", "self-hosted"]'
+      scheme: SpeziHealthKit-Package
+      destination: 'platform=macOS,arch=arm64'
+      artifactname: SpeziHealthKit-Package-macOS.xcresult
+      resultBundle: SpeziHealthKit-Package-macOS.xcresult
   buildandtestuitests:
     name: Build and Test UI Tests
     uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
@@ -35,9 +53,9 @@ jobs:
       resultBundle: TestApp.xcresult
   uploadcoveragereport:
     name: Upload Coverage Report
-    needs: [buildandtest, buildandtestuitests]
+    needs: [buildandtest_ios, buildandtest_watchos, buildandtest_macos, buildandtestuitests]
     uses: StanfordSpezi/.github/.github/workflows/create-and-upload-coverage-report.yml@v2
     with:
-      coveragereports: SpeziHealthKit-Package.xcresult TestApp.xcresult
+      coveragereports: SpeziHealthKit-Package-iOS.xcresult SpeziHealthKit-Package-watchOS.xcresult SpeziHealthKit-Package-macOS.xcresult TestApp.xcresult
     secrets:
       token: ${{ secrets.CODECOV_TOKEN }}
