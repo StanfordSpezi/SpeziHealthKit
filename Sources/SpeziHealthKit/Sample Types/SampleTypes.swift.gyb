@@ -889,6 +889,213 @@ category_types = [
         identifier='handwashingEvent',
         display_title='Handwashing Event',
         doc='A category sample type for handwashing events.'
+    ),
+
+    # Symptoms
+    # Symptoms: Abdominal and Gastrointestinal
+    SampleType.category_type(
+        identifier='abdominalCramps',
+        display_title='Abdominal Cramps',
+        doc='A category type that records abdominal cramps as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='bloating',
+        display_title='Bloating',
+        doc='A category type that records bloating as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='constipation',
+        display_title='Constipation',
+        doc='A category type that records constipation as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='diarrhea',
+        display_title='Diarrhea',
+        doc='A category type that records diarrhea as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='heartburn',
+        display_title='Heartburn',
+        doc='A category type that records heartburn as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='nausea',
+        display_title='Nausea',
+        doc='A category type that records nausea as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='vomiting',
+        display_title='Vomiting',
+        doc='A category type that records vomiting as a symptom.'
+    ),
+    # Symptoms: Constitutional
+    SampleType.category_type(
+        identifier='appetiteChanges',
+        display_title='Appetite Changes',
+        doc='A category type that records changes in appetite as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='chills',
+        display_title='Chills',
+        doc='A category type that records chills as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='dizziness',
+        display_title='Dizziness',
+        doc='A category type that records dizziness as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='fainting',
+        display_title='Fainting',
+        doc='A category type that records fainting as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='fatigue',
+        display_title='Fatigue',
+        doc='A category type that records fatigue as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='fever',
+        display_title='Fever',
+        doc='A category type that records fever as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='generalizedBodyAche',
+        display_title='Generalized Body Ache',
+        doc='A category type that records body ache as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='hotFlashes',
+        display_title='Hot Flashes',
+        doc='A category type that records hot flashes as a symptom.'
+    ),
+    # Symptoms: Heart and Lung
+    SampleType.category_type(
+        identifier='chestTightnessOrPain',
+        display_title='Chest Tightness or Pain',
+        doc='A category type that records chest tightness or pain as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='coughing',
+        display_title='Coughing',
+        doc='A category type that records coughing as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='rapidPoundingOrFlutteringHeartbeat',
+        display_title='Rapid Pounding or Fluttering Heartbeat',
+        doc='A category type that records a rapid, pounding, or fluttering heartbeat as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='shortnessOfBreath',
+        display_title='Shortness of Breath',
+        doc='A category type that records shortness of breath as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='skippedHeartbeat',
+        display_title='Skipped Heartbeat',
+        doc='A category type that records skipped heartbeat as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='wheezing',
+        display_title='Wheezing',
+        doc='A category type that records wheezing as a symptom.'
+    ),
+    # Symptoms: Musculoskeletal
+    SampleType.category_type(
+        identifier='lowerBackPain',
+        display_title='Lower Back Pain',
+        doc='A category type that records lower back pain as a symptom.'
+    ),
+    # Symptoms: Neurological
+    SampleType.category_type(
+        identifier='headache',
+        display_title='Headache',
+        doc='A category type that records headache as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='memoryLapse',
+        display_title='Memory Lapse',
+        doc='A category type that records memory lapse as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='moodChanges',
+        display_title='Mood Changes',
+        doc='A category type that records mood changes as a symptom.'
+    ),
+    # Symptoms: Nose and Throat
+    SampleType.category_type(
+        identifier='lossOfSmell',
+        display_title='Loss of Smell',
+        doc='A category type that records loss of smell as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='lossOfTaste',
+        display_title='Loss of Taste',
+        doc='A category type that records loss of taste as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='runnyNose',
+        display_title='Runny Nose',
+        doc='A category type that records runny nose as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='soreThroat',
+        display_title='Sore Throat',
+        doc='A category type that records sore throat as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='sinusCongestion',
+        display_title='Sinus Congestion',
+        doc='A category type that records sinus congestion as a symptom.'
+    ),
+    # Symptoms: Reproduction
+    SampleType.category_type(
+        identifier='breastPain',
+        display_title='Breast Pain',
+        doc='A category type that records breast pain as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='pelvicPain',
+        display_title='Pelvic Pain',
+        doc='A category type that records pelvic pain as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='vaginalDryness',
+        display_title='Vaginal Dryness',
+        doc='A category type that records vaginal dryness as a symptom.'
+    ),
+    # Symptoms: Skin and Hair
+    SampleType.category_type(
+        identifier='acne',
+        display_title='Acne',
+        doc='A category type that records acne as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='drySkin',
+        display_title='Dry Skin',
+        doc='A category type that records dry skin as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='hairLoss',
+        display_title='Hair Loss',
+        doc='A category type that records hair loss as a symptom.'
+    ),
+    # Symptoms: Sleep
+    SampleType.category_type(
+        identifier='nightSweats',
+        display_title='Night Sweats',
+        doc='A category type that records night sweats as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='sleepChanges',
+        display_title='Sleep Changes',
+        doc='A category type that records sleep changes as a symptom.'
+    ),
+    # Symptoms: Urinary
+    SampleType.category_type(
+        identifier='bladderIncontinence',
+        display_title='Bladder Incontinence',
+        doc='A category type that records bladder incontinence as a symptom.'
     )
 ]
 

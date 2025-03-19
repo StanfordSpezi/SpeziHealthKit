@@ -1377,6 +1377,318 @@ extension SampleType where Sample == HKCategorySample {
         )
     }
 
+    /// A category type that records abdominal cramps as a symptom.
+    @inlinable public static var abdominalCramps: SampleType<HKCategorySample> {
+        .category(
+            .abdominalCramps,
+            displayTitle: "Abdominal Cramps"
+        )
+    }
+
+    /// A category type that records bloating as a symptom.
+    @inlinable public static var bloating: SampleType<HKCategorySample> {
+        .category(
+            .bloating,
+            displayTitle: "Bloating"
+        )
+    }
+
+    /// A category type that records constipation as a symptom.
+    @inlinable public static var constipation: SampleType<HKCategorySample> {
+        .category(
+            .constipation,
+            displayTitle: "Constipation"
+        )
+    }
+
+    /// A category type that records diarrhea as a symptom.
+    @inlinable public static var diarrhea: SampleType<HKCategorySample> {
+        .category(
+            .diarrhea,
+            displayTitle: "Diarrhea"
+        )
+    }
+
+    /// A category type that records heartburn as a symptom.
+    @inlinable public static var heartburn: SampleType<HKCategorySample> {
+        .category(
+            .heartburn,
+            displayTitle: "Heartburn"
+        )
+    }
+
+    /// A category type that records nausea as a symptom.
+    @inlinable public static var nausea: SampleType<HKCategorySample> {
+        .category(
+            .nausea,
+            displayTitle: "Nausea"
+        )
+    }
+
+    /// A category type that records vomiting as a symptom.
+    @inlinable public static var vomiting: SampleType<HKCategorySample> {
+        .category(
+            .vomiting,
+            displayTitle: "Vomiting"
+        )
+    }
+
+    /// A category type that records changes in appetite as a symptom.
+    @inlinable public static var appetiteChanges: SampleType<HKCategorySample> {
+        .category(
+            .appetiteChanges,
+            displayTitle: "Appetite Changes"
+        )
+    }
+
+    /// A category type that records chills as a symptom.
+    @inlinable public static var chills: SampleType<HKCategorySample> {
+        .category(
+            .chills,
+            displayTitle: "Chills"
+        )
+    }
+
+    /// A category type that records dizziness as a symptom.
+    @inlinable public static var dizziness: SampleType<HKCategorySample> {
+        .category(
+            .dizziness,
+            displayTitle: "Dizziness"
+        )
+    }
+
+    /// A category type that records fainting as a symptom.
+    @inlinable public static var fainting: SampleType<HKCategorySample> {
+        .category(
+            .fainting,
+            displayTitle: "Fainting"
+        )
+    }
+
+    /// A category type that records fatigue as a symptom.
+    @inlinable public static var fatigue: SampleType<HKCategorySample> {
+        .category(
+            .fatigue,
+            displayTitle: "Fatigue"
+        )
+    }
+
+    /// A category type that records fever as a symptom.
+    @inlinable public static var fever: SampleType<HKCategorySample> {
+        .category(
+            .fever,
+            displayTitle: "Fever"
+        )
+    }
+
+    /// A category type that records body ache as a symptom.
+    @inlinable public static var generalizedBodyAche: SampleType<HKCategorySample> {
+        .category(
+            .generalizedBodyAche,
+            displayTitle: "Generalized Body Ache"
+        )
+    }
+
+    /// A category type that records hot flashes as a symptom.
+    @inlinable public static var hotFlashes: SampleType<HKCategorySample> {
+        .category(
+            .hotFlashes,
+            displayTitle: "Hot Flashes"
+        )
+    }
+
+    /// A category type that records chest tightness or pain as a symptom.
+    @inlinable public static var chestTightnessOrPain: SampleType<HKCategorySample> {
+        .category(
+            .chestTightnessOrPain,
+            displayTitle: "Chest Tightness or Pain"
+        )
+    }
+
+    /// A category type that records coughing as a symptom.
+    @inlinable public static var coughing: SampleType<HKCategorySample> {
+        .category(
+            .coughing,
+            displayTitle: "Coughing"
+        )
+    }
+
+    /// A category type that records a rapid, pounding, or fluttering heartbeat as a symptom.
+    @inlinable public static var rapidPoundingOrFlutteringHeartbeat: SampleType<HKCategorySample> {
+        .category(
+            .rapidPoundingOrFlutteringHeartbeat,
+            displayTitle: "Rapid Pounding or Fluttering Heartbeat"
+        )
+    }
+
+    /// A category type that records shortness of breath as a symptom.
+    @inlinable public static var shortnessOfBreath: SampleType<HKCategorySample> {
+        .category(
+            .shortnessOfBreath,
+            displayTitle: "Shortness of Breath"
+        )
+    }
+
+    /// A category type that records skipped heartbeat as a symptom.
+    @inlinable public static var skippedHeartbeat: SampleType<HKCategorySample> {
+        .category(
+            .skippedHeartbeat,
+            displayTitle: "Skipped Heartbeat"
+        )
+    }
+
+    /// A category type that records wheezing as a symptom.
+    @inlinable public static var wheezing: SampleType<HKCategorySample> {
+        .category(
+            .wheezing,
+            displayTitle: "Wheezing"
+        )
+    }
+
+    /// A category type that records lower back pain as a symptom.
+    @inlinable public static var lowerBackPain: SampleType<HKCategorySample> {
+        .category(
+            .lowerBackPain,
+            displayTitle: "Lower Back Pain"
+        )
+    }
+
+    /// A category type that records headache as a symptom.
+    @inlinable public static var headache: SampleType<HKCategorySample> {
+        .category(
+            .headache,
+            displayTitle: "Headache"
+        )
+    }
+
+    /// A category type that records memory lapse as a symptom.
+    @inlinable public static var memoryLapse: SampleType<HKCategorySample> {
+        .category(
+            .memoryLapse,
+            displayTitle: "Memory Lapse"
+        )
+    }
+
+    /// A category type that records mood changes as a symptom.
+    @inlinable public static var moodChanges: SampleType<HKCategorySample> {
+        .category(
+            .moodChanges,
+            displayTitle: "Mood Changes"
+        )
+    }
+
+    /// A category type that records loss of smell as a symptom.
+    @inlinable public static var lossOfSmell: SampleType<HKCategorySample> {
+        .category(
+            .lossOfSmell,
+            displayTitle: "Loss of Smell"
+        )
+    }
+
+    /// A category type that records loss of taste as a symptom.
+    @inlinable public static var lossOfTaste: SampleType<HKCategorySample> {
+        .category(
+            .lossOfTaste,
+            displayTitle: "Loss of Taste"
+        )
+    }
+
+    /// A category type that records runny nose as a symptom.
+    @inlinable public static var runnyNose: SampleType<HKCategorySample> {
+        .category(
+            .runnyNose,
+            displayTitle: "Runny Nose"
+        )
+    }
+
+    /// A category type that records sore throat as a symptom.
+    @inlinable public static var soreThroat: SampleType<HKCategorySample> {
+        .category(
+            .soreThroat,
+            displayTitle: "Sore Throat"
+        )
+    }
+
+    /// A category type that records sinus congestion as a symptom.
+    @inlinable public static var sinusCongestion: SampleType<HKCategorySample> {
+        .category(
+            .sinusCongestion,
+            displayTitle: "Sinus Congestion"
+        )
+    }
+
+    /// A category type that records breast pain as a symptom.
+    @inlinable public static var breastPain: SampleType<HKCategorySample> {
+        .category(
+            .breastPain,
+            displayTitle: "Breast Pain"
+        )
+    }
+
+    /// A category type that records pelvic pain as a symptom.
+    @inlinable public static var pelvicPain: SampleType<HKCategorySample> {
+        .category(
+            .pelvicPain,
+            displayTitle: "Pelvic Pain"
+        )
+    }
+
+    /// A category type that records vaginal dryness as a symptom.
+    @inlinable public static var vaginalDryness: SampleType<HKCategorySample> {
+        .category(
+            .vaginalDryness,
+            displayTitle: "Vaginal Dryness"
+        )
+    }
+
+    /// A category type that records acne as a symptom.
+    @inlinable public static var acne: SampleType<HKCategorySample> {
+        .category(
+            .acne,
+            displayTitle: "Acne"
+        )
+    }
+
+    /// A category type that records dry skin as a symptom.
+    @inlinable public static var drySkin: SampleType<HKCategorySample> {
+        .category(
+            .drySkin,
+            displayTitle: "Dry Skin"
+        )
+    }
+
+    /// A category type that records hair loss as a symptom.
+    @inlinable public static var hairLoss: SampleType<HKCategorySample> {
+        .category(
+            .hairLoss,
+            displayTitle: "Hair Loss"
+        )
+    }
+
+    /// A category type that records night sweats as a symptom.
+    @inlinable public static var nightSweats: SampleType<HKCategorySample> {
+        .category(
+            .nightSweats,
+            displayTitle: "Night Sweats"
+        )
+    }
+
+    /// A category type that records sleep changes as a symptom.
+    @inlinable public static var sleepChanges: SampleType<HKCategorySample> {
+        .category(
+            .sleepChanges,
+            displayTitle: "Sleep Changes"
+        )
+    }
+
+    /// A category type that records bladder incontinence as a symptom.
+    @inlinable public static var bladderIncontinence: SampleType<HKCategorySample> {
+        .category(
+            .bladderIncontinence,
+            displayTitle: "Bladder Incontinence"
+        )
+    }
+
 
     /// Returns the shared Category type for the specified identifier.
     public init?(_ identifier: HKCategoryTypeIdentifier) where Sample == HKCategorySample {
@@ -1433,6 +1745,84 @@ extension SampleType where Sample == HKCategorySample {
             self = .toothbrushingEvent
         case .handwashingEvent:
             self = .handwashingEvent
+        case .abdominalCramps:
+            self = .abdominalCramps
+        case .bloating:
+            self = .bloating
+        case .constipation:
+            self = .constipation
+        case .diarrhea:
+            self = .diarrhea
+        case .heartburn:
+            self = .heartburn
+        case .nausea:
+            self = .nausea
+        case .vomiting:
+            self = .vomiting
+        case .appetiteChanges:
+            self = .appetiteChanges
+        case .chills:
+            self = .chills
+        case .dizziness:
+            self = .dizziness
+        case .fainting:
+            self = .fainting
+        case .fatigue:
+            self = .fatigue
+        case .fever:
+            self = .fever
+        case .generalizedBodyAche:
+            self = .generalizedBodyAche
+        case .hotFlashes:
+            self = .hotFlashes
+        case .chestTightnessOrPain:
+            self = .chestTightnessOrPain
+        case .coughing:
+            self = .coughing
+        case .rapidPoundingOrFlutteringHeartbeat:
+            self = .rapidPoundingOrFlutteringHeartbeat
+        case .shortnessOfBreath:
+            self = .shortnessOfBreath
+        case .skippedHeartbeat:
+            self = .skippedHeartbeat
+        case .wheezing:
+            self = .wheezing
+        case .lowerBackPain:
+            self = .lowerBackPain
+        case .headache:
+            self = .headache
+        case .memoryLapse:
+            self = .memoryLapse
+        case .moodChanges:
+            self = .moodChanges
+        case .lossOfSmell:
+            self = .lossOfSmell
+        case .lossOfTaste:
+            self = .lossOfTaste
+        case .runnyNose:
+            self = .runnyNose
+        case .soreThroat:
+            self = .soreThroat
+        case .sinusCongestion:
+            self = .sinusCongestion
+        case .breastPain:
+            self = .breastPain
+        case .pelvicPain:
+            self = .pelvicPain
+        case .vaginalDryness:
+            self = .vaginalDryness
+        case .acne:
+            self = .acne
+        case .drySkin:
+            self = .drySkin
+        case .hairLoss:
+            self = .hairLoss
+        case .nightSweats:
+            self = .nightSweats
+        case .sleepChanges:
+            self = .sleepChanges
+        case .bladderIncontinence:
+            self = .bladderIncontinence
         default:
             return nil
         }
