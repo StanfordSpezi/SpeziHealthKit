@@ -19,7 +19,6 @@ extension HealthKit {
     /// - parameter timeRange: The time range you want to fetch samples for.
     /// - parameter limit: The number of objects that should be fetched. `nil` indicates that no limit should be applied.
     /// - parameter filterPredicate: Optional refining predicate that allows you to filter which samples should be fetched.
-    /// ``continuousQuery(_:startTime:anchor:limit:predicate:)``
     public func query<Sample>(
         _ sampleType: SampleType<Sample>,
         timeRange: HealthKitQueryTimeRange,
