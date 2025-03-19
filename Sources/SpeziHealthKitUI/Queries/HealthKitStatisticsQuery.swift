@@ -241,7 +241,7 @@ public final class StatisticsQueryResults: @unchecked Sendable {
             predicate = nil
         case (.some(let pred), .none), (.none, .some(let pred)):
             predicate = pred
-        case (.some(let pred1), .some(let pred2)):
+        case let (.some(pred1), .some(pred2)):
             predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [pred1, pred2])
         }
         let queryDesc = HKStatisticsCollectionQueryDescriptor(

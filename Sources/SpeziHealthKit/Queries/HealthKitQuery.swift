@@ -19,6 +19,7 @@ extension HealthKit {
     /// - parameter timeRange: The time range you want to fetch samples for.
     /// - parameter limit: The number of objects that should be fetched. `nil` indicates that no limit should be applied.
     /// - parameter filterPredicate: Optional refining predicate that allows you to filter which samples should be fetched.
+    /// ``continuousQuery(_:startTime:anchor:limit:predicate:)``
     public func query<Sample>(
         _ sampleType: SampleType<Sample>,
         timeRange: HealthKitQueryTimeRange,
@@ -65,6 +66,7 @@ extension HealthKit {
     /// - parameter anchor: The query anchor; this allows you to run a query that fetches only those samples which have been added to / removed from the HealthKit database since the last query.
     ///     This parameter is `inout`; the function will update its value to a new anchor, which represents the state of the HealthKit database as of after the query has run.
     /// - parameter limit: The number of objects that should be fetched. `nil` indicates that no limit should be applied.
+    /// - parameter filterPredicate: Optional refining predicate that allows you to filter which samples should be fetched.
     public func anchorQuery<Sample>(
         _ sampleType: SampleType<Sample>,
         timeRange: HealthKitQueryTimeRange,
@@ -88,17 +90,21 @@ extension HealthKit {
 
 
 extension HealthKit {
+    /// An element produced by continuous HealthKit queries to inform about updates to the HealthKit database
     public struct ContinuousQueryElement<Sample: _HKSampleWithSampleType> {
         typealias Update = HKAnchoredObjectQueryDescriptor<Sample>.Results.Element
         
         private let update: Update
         
+        /// The samples which have been added since the last update.
         public var addedSamples: [Sample] {
             update.addedSamples
         }
+        /// The objects which have been deleted since the last update.
         public var deletedObjects: [HKDeletedObject] {
             update.deletedObjects
         }
+        /// The new query anchor, representing the state of the database as of directly after this update.
         public var newAnchor: QueryAnchor<Sample> {
             QueryAnchor(hkAnchor: update.newAnchor)
         }
@@ -108,20 +114,31 @@ extension HealthKit {
         }
     }
     
+    /// Runs a long-running query of HealthKit data.
+    ///
+    /// Use this function to run a continuous, long-running HealthKit data query.
+    /// This function returns an `AsyncSequence`, which will emit new elements whenever HealthKit informs us about changes to the database.
+    ///
+    /// - parameter sampleType: The ``SampleType`` that should be queried for.
+    /// - parameter startDate: The earliest point in time for which results should be returned. Even though this parameter is a ``HealthKitQueryTimeRange``, only the lower bound will be taken into account.
+    /// - parameter anchor: A ``QueryAnchor``, which allows the caller to run a query that fetches only those objects which have been added since the last time the query was run.
+    /// - parameter limit: The maximum number of samples the query will return.
+    /// - parameter filterPredicate: Optional refining predicate that allows you to filter which samples should be fetched.
     @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
     public func continuousQuery<Sample>(
         _ sampleType: SampleType<Sample>,
-        startTime: HealthKitQueryTimeRange,
+        startDate: HealthKitQueryTimeRange,
         anchor: QueryAnchor<Sample>,
         limit: Int? = nil,
         predicate filterPredicate: NSPredicate? = nil
     ) async throws -> some AsyncSequence<ContinuousQueryElement<Sample>, any Error> {
         let predicate = sampleType._makeSamplePredicate(
-            filter: NSCompoundPredicate(andPredicateWithSubpredicates: [startTime.lowerBoundPredicate, filterPredicate].compactMap(\.self))
+            filter: NSCompoundPredicate(andPredicateWithSubpredicates: [startDate.lowerBoundPredicate, filterPredicate].compactMap(\.self))
         )
         let queryDescriptor = HKAnchoredObjectQueryDescriptor<Sample>(
             predicates: [predicate],
-            anchor: anchor.hkAnchor
+            anchor: anchor.hkAnchor,
+            limit: limit
         )
         let results = queryDescriptor.results(for: healthStore)
         return results.map { ContinuousQueryElement(update: $0) }
