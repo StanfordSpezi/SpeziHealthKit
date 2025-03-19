@@ -44,7 +44,7 @@ final class SpeziHealthKitTests: XCTestCase {
             let decoded = try JSONDecoder().decode(QueryAnchor<HKQuantitySample>.self, from: encoded)
             XCTAssertEqual(anchor, decoded, line: line)
         }
-        try imp(QueryAnchor(hkAnchor: HKQueryAnchor(fromValue: 5734987678924)))
+        try imp(QueryAnchor(HKQueryAnchor(fromValue: 5734987678924)))
         try imp(QueryAnchor())
     }
 }
