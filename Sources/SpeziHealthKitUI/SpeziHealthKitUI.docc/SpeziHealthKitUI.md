@@ -22,7 +22,6 @@ Use SpeziHealthKitUI's ``HealthChart`` to visualize health data queried via [`Sp
 ### Querying Health Data in SwiftUI
 - ``HealthKitQuery``
 - ``HealthKitStatisticsQuery``
-- ``HealthKitQueryTimeRange``
 - ``HealthKitQueryResults``
 - ``HealthKitCharacteristicQuery``
 

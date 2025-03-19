@@ -16,11 +16,15 @@ public struct HealthKitQueryTimeRange: Sendable {
     public let range: ClosedRange<Date>
     
     public var predicate: NSPredicate {
-        HKQuery.predicateForSamples(
-            withStart: range.lowerBound,
-            end: range.upperBound,
-            options: [.strictStartDate, .strictEndDate]
-        )
+        if self == .ever {
+            NSPredicate(value: true)
+        } else {
+            HKQuery.predicateForSamples(
+                withStart: range.lowerBound,
+                end: range.upperBound,
+                options: [.strictStartDate, .strictEndDate]
+            )
+        }
     }
     
     public var duration: TimeInterval {

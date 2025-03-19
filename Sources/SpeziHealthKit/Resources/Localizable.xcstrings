@@ -1,6 +1,12 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Abdominal Cramps" : {
+
+    },
+    "Acne" : {
+
+    },
     "Active Energy" : {
 
     },
@@ -21,6 +27,9 @@
     "Allergy Record" : {
 
     },
+    "Appetite Changes" : {
+
+    },
     "Atrial Fibrillation" : {
 
     },
@@ -38,6 +47,12 @@
 
     },
     "Biotin" : {
+
+    },
+    "Bladder Incontinence" : {
+
+    },
+    "Bloating" : {
 
     },
     "Blood Alcohol Content" : {
@@ -84,6 +99,9 @@
     "Body Temperature" : {
 
     },
+    "Breast Pain" : {
+
+    },
     "Caffeine" : {
 
     },
@@ -97,6 +115,12 @@
 
     },
     "Cervical Mucus Quality" : {
+
+    },
+    "Chest Tightness or Pain" : {
+
+    },
+    "Chills" : {
 
     },
     "Chloride" : {
@@ -114,10 +138,16 @@
     "Condition Record" : {
 
     },
+    "Constipation" : {
+
+    },
     "Contraceptives" : {
 
     },
     "Copper" : {
+
+    },
+    "Coughing" : {
 
     },
     "Coverage Record" : {
@@ -126,13 +156,22 @@
     "Cycling Distance" : {
 
     },
+    "Diarrhea" : {
+
+    },
     "Dietary Energy Consumed" : {
+
+    },
+    "Dizziness" : {
 
     },
     "Double Support Time" : {
 
     },
     "Downhill Snow Sports Distance" : {
+
+    },
+    "Dry Skin" : {
 
     },
     "ECG" : {
@@ -157,6 +196,15 @@
     "Exercise Minutes" : {
 
     },
+    "Fainting" : {
+
+    },
+    "Fatigue" : {
+
+    },
+    "Fever" : {
+
+    },
     "Fiber" : {
 
     },
@@ -175,10 +223,19 @@
     "Forced Vital Capacity" : {
 
     },
+    "Generalized Body Ache" : {
+
+    },
     "Ground Contact Time" : {
 
     },
+    "Hair Loss" : {
+
+    },
     "Handwashing Event" : {
+
+    },
+    "Headache" : {
 
     },
     "Headphone Audio Exposure" : {
@@ -207,6 +264,9 @@
         }
       }
     },
+    "Heartburn" : {
+
+    },
     "Height" : {
       "localizations" : {
         "de" : {
@@ -218,6 +278,9 @@
       }
     },
     "High Heart Rate Event" : {
+
+    },
+    "Hot Flashes" : {
 
     },
     "Immunization Record" : {
@@ -253,10 +316,19 @@
     "Lean Body Mass" : {
 
     },
+    "Loss of Smell" : {
+
+    },
+    "Loss of Taste" : {
+
+    },
     "Low Cardio Fitness Event" : {
 
     },
     "Low Heart Rate Event" : {
+
+    },
+    "Lower Back Pain" : {
 
     },
     "Magnesium" : {
@@ -266,6 +338,9 @@
 
     },
     "Medication Record" : {
+
+    },
+    "Memory Lapse" : {
 
     },
     "Menstrual Cycles" : {
@@ -280,10 +355,19 @@
     "Monounsaturated Fat" : {
 
     },
+    "Mood Changes" : {
+
+    },
     "Move Minutes" : {
 
     },
+    "Nausea" : {
+
+    },
     "Niacin" : {
+
+    },
+    "Night Sweats" : {
 
     },
     "Number of Times Fallen" : {
@@ -296,6 +380,9 @@
 
     },
     "Peak Expiratory Flow Rate" : {
+
+    },
+    "Pelvic Pain" : {
 
     },
     "Peripheral Perfusion Index" : {
@@ -334,6 +421,9 @@
     "Pushes" : {
 
     },
+    "Rapid Pounding or Fluttering Heartbeat" : {
+
+    },
     "Respiratory Rate" : {
 
     },
@@ -362,6 +452,9 @@
     "Running Stride Length" : {
 
     },
+    "Runny Nose" : {
+
+    },
     "Saturated Fat" : {
 
     },
@@ -371,7 +464,16 @@
     "Sexual Activity" : {
 
     },
+    "Shortness of Breath" : {
+
+    },
+    "Sinus Congestion" : {
+
+    },
     "Six-Minute Walk Distance" : {
+
+    },
+    "Skipped Heartbeat" : {
 
     },
     "Sleep Analysis" : {
@@ -384,7 +486,13 @@
         }
       }
     },
+    "Sleep Changes" : {
+
+    },
     "Sodium" : {
+
+    },
+    "Sore Throat" : {
 
     },
     "Spotting" : {
@@ -433,6 +541,9 @@
     "UV Index" : {
 
     },
+    "Vaginal Dryness" : {
+
+    },
     "Vertical Oscillation" : {
 
     },
@@ -461,6 +572,9 @@
 
     },
     "VO₂ max" : {
+
+    },
+    "Vomiting" : {
 
     },
     "Waist Circumference" : {
@@ -506,6 +620,9 @@
           }
         }
       }
+    },
+    "Wheezing" : {
+
     },
     "Workout" : {
 
