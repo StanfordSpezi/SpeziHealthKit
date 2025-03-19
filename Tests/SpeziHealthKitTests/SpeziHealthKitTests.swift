@@ -25,7 +25,7 @@ final class SpeziHealthKitTests: XCTestCase {
         XCTAssertEqual(HKQuantityType.allKnownQuantities.count, HKQuantityTypeIdentifier.allKnownIdentifiers.count)
         XCTAssertEqual(HKCorrelationType.allKnownCorrelations.count, HKCorrelationTypeIdentifier.allKnownIdentifiers.count)
         XCTAssertEqual(HKCategoryType.allKnownCategories.count, HKCategoryTypeIdentifier.allKnownIdentifiers.count)
-        XCTAssertEqual(HKObjectType.allKnownObjectTypes.count, 196)
+        XCTAssertEqual(HKObjectType.allKnownObjectTypes.count, 198)
     }
     
     func testAssociatedSampleTypes() {

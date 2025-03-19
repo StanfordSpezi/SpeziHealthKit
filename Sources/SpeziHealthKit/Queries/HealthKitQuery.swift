@@ -127,7 +127,7 @@ extension HealthKit {
     /// - parameter anchor: A ``QueryAnchor``, which allows the caller to run a query that fetches only those objects which have been added since the last time the query was run.
     /// - parameter limit: The maximum number of samples the query will return.
     /// - parameter filterPredicate: Optional refining predicate that allows you to filter which samples should be fetched.
-    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+    @available(macOS 15.0, iOS 18.0, watchOS 11.0, *)
     public func continuousQuery<Sample>(
         _ sampleType: SampleType<Sample>,
         timeRange: HealthKitQueryTimeRange,
@@ -150,6 +150,8 @@ extension HealthKit {
     /// - parameter limit: The maximum number of samples the query will return.
     /// - parameter filterPredicate: Optional refining predicate that allows you to filter which samples should be fetched.
     @available(iOS, deprecated: 18.0)
+    @available(macOS, deprecated: 15.0)
+    @available(watchOS, deprecated: 11.0)
     @_disfavoredOverload
     public func continuousQuery<Sample>(
         _ sampleType: SampleType<Sample>,

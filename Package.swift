@@ -17,7 +17,8 @@ let package = Package(
     defaultLocalization: "en",
     platforms: [
         .iOS(.v17),
-        .macOS(.v14)
+        .macOS(.v14),
+        .watchOS(.v10)
     ],
     products: [
         .library(name: "SpeziHealthKit", targets: ["SpeziHealthKit"]),

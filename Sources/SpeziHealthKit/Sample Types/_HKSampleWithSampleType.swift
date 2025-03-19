@@ -89,6 +89,7 @@ extension HKWorkout: _HKSampleWithSampleType {
     }
 }
 
+@available(watchOS, unavailable)
 extension HKClinicalRecord: _HKSampleWithSampleType {
     public typealias _SampleType = HKClinicalType
     

@@ -52,6 +52,12 @@
     "Bladder Incontinence" : {
 
     },
+    "Bleeding After Pregnancy" : {
+
+    },
+    "Bleeding During Pregnancy" : {
+
+    },
     "Bloating" : {
 
     },
@@ -153,7 +159,25 @@
     "Coverage Record" : {
 
     },
+    "Cross-Country Skiing Distance" : {
+
+    },
+    "Cross-Country Skiing Speed" : {
+
+    },
+    "Cycling Cadence" : {
+
+    },
     "Cycling Distance" : {
+
+    },
+    "Cycling Functional Threshold Power" : {
+
+    },
+    "Cycling Power" : {
+
+    },
+    "Cycling Speed" : {
 
     },
     "Diarrhea" : {
@@ -191,6 +215,12 @@
 
     },
     "Environmental Audio Exposure Event" : {
+
+    },
+    "Environmental Sound Reduction" : {
+
+    },
+    "Estimated Workout Effort Score" : {
 
     },
     "Exercise Minutes" : {
@@ -376,6 +406,12 @@
     "Ovulation Test Result" : {
 
     },
+    "Paddle Sports Distance" : {
+
+    },
+    "Paddle Sports Speed" : {
+
+    },
     "Pantothenic Acid" : {
 
     },
@@ -392,6 +428,9 @@
 
     },
     "Phosphorus" : {
+
+    },
+    "Physical Effort" : {
 
     },
     "Polyunsaturated Fat" : {
@@ -443,6 +482,12 @@
     "Riboflavin" : {
 
     },
+    "Rowing Distance" : {
+
+    },
+    "Rowing Speed" : {
+
+    },
     "Running Power" : {
 
     },
@@ -473,6 +518,9 @@
     "Six-Minute Walk Distance" : {
 
     },
+    "Skating Sports Distance" : {
+
+    },
     "Skipped Heartbeat" : {
 
     },
@@ -486,7 +534,13 @@
         }
       }
     },
+    "Sleep Apnea" : {
+
+    },
     "Sleep Changes" : {
+
+    },
+    "Sleeping Breathing Disturbances" : {
 
     },
     "Sodium" : {
@@ -527,6 +581,9 @@
 
     },
     "Thiamin" : {
+
+    },
+    "Time In Daylight" : {
 
     },
     "Toothbrushing Event" : {
@@ -625,6 +682,9 @@
 
     },
     "Workout" : {
+
+    },
+    "Workout Effort Score" : {
 
     },
     "Wrist Temperature" : {
