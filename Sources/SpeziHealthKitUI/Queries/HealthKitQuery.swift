@@ -171,7 +171,7 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
         }
         self.isCurrentlyPerformingInitialFetch = true
         queryTask?.cancel()
-        queryTask = Task.detached { [weak self] in // swiftlint:disable:this closure_body_length
+        queryTask = Task.detached { [weak self] in
             let query = healthKit.continuousQuery(
                 input.sampleType,
                 timeRange: input.timeRange,
