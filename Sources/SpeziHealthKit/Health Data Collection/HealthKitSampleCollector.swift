@@ -29,7 +29,7 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
     private var queryVariant: QueryVariant?
     
     @MainActor private var anchor: QueryAnchor<Sample> {
-        get { healthKit.queryAnchors[sampleType].map { QueryAnchor(hkAnchor: $0) } ?? QueryAnchor() }
+        get { healthKit.queryAnchors[sampleType].map { QueryAnchor($0) } ?? QueryAnchor() }
         set { healthKit.queryAnchors[sampleType] = newValue.hkAnchor }
     }
     
@@ -184,7 +184,7 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
                 for addedSample in results.addedSamples {
                     await standard.add(sample: addedSample)
                 }
-                self.anchor = .init(hkAnchor: results.newAnchor)
+                self.anchor = QueryAnchor(results.newAnchor)
             }
         }
         queryVariant = .anchorQuery(task)

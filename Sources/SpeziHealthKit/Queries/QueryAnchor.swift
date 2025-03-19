@@ -21,7 +21,7 @@ public struct QueryAnchor<Sample: _HKSampleWithSampleType>: Hashable, Codable, S
         self.hkAnchor = nil
     }
     
-    init(hkAnchor: HKQueryAnchor) {
+    init(_ hkAnchor: HKQueryAnchor) {
         self.hkAnchor = hkAnchor
     }
     
@@ -34,7 +34,7 @@ public struct QueryAnchor<Sample: _HKSampleWithSampleType>: Hashable, Codable, S
             guard let anchor = try NSKeyedUnarchiver.unarchivedObject(ofClass: HKQueryAnchor.self, from: data) else {
                 throw DecodingError.valueNotFound(HKQueryAnchor.self, .init(codingPath: [], debugDescription: ""))
             }
-            self = QueryAnchor(hkAnchor: anchor)
+            self = QueryAnchor(anchor)
         }
     }
     

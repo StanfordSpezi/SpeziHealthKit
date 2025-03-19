@@ -83,7 +83,7 @@ extension HealthKit {
             limit: limit
         )
         let result = try await queryDescriptor.result(for: healthStore)
-        anchor = .init(hkAnchor: result.newAnchor)
+        anchor = QueryAnchor(result.newAnchor)
         return (added: result.addedSamples, deleted: result.deletedObjects)
     }
 }
@@ -109,7 +109,7 @@ extension HealthKit {
         }
         /// The new query anchor, representing the state of the database as of directly after this update.
         public var newAnchor: QueryAnchor<Sample> {
-            QueryAnchor(hkAnchor: update.newAnchor)
+            QueryAnchor(update.newAnchor)
         }
         
         fileprivate init(update: Update) {
