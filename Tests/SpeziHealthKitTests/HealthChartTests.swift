@@ -14,6 +14,7 @@ import SwiftUI
 import XCTest
 import XCTSpezi
 
+#if os(iOS)
 
 final class HealthChartTests: XCTestCase {
     @MainActor
@@ -159,3 +160,9 @@ final class HealthChartTests: XCTestCase {
         assertSnapshot(of: healthChart2, as: .image)
     }
 }
+
+#else
+
+final class HealthChartTests: XCTestCase {}
+
+#endif

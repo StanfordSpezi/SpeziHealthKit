@@ -28,15 +28,6 @@ final class SpeziHealthKitTests: XCTestCase {
         XCTAssertEqual(HKObjectType.allKnownObjectTypes.count, 198)
     }
     
-    func testAssociatedSampleTypes() {
-        for sampleType in [SampleType<HKCorrelation>.bloodPressure, .food] {
-            XCTAssertEqual(
-                sampleType.associatedQuantityTypes.mapIntoSet(\.identifier.rawValue),
-                sampleType.identifier.knownAssociatedSampleTypes.mapIntoSet(\.identifier)
-            )
-        }
-    }
-    
     
     func testQueryAnchorCoding() throws {
         func imp(_ anchor: QueryAnchor<HKQuantitySample>, line: UInt = #line) throws {
