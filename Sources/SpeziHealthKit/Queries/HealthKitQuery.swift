@@ -114,6 +114,7 @@ extension HealthKit {
         }
     }
     
+    
     /// Runs a long-running query of HealthKit data.
     ///
     /// Use this function to run a continuous, long-running HealthKit data query.
@@ -124,14 +125,15 @@ extension HealthKit {
     /// - parameter anchor: A ``QueryAnchor``, which allows the caller to run a query that fetches only those objects which have been added since the last time the query was run.
     /// - parameter limit: The maximum number of samples the query will return.
     /// - parameter filterPredicate: Optional refining predicate that allows you to filter which samples should be fetched.
-    @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
     public func continuousQuery<Sample>(
         _ sampleType: SampleType<Sample>,
         timeRange: HealthKitQueryTimeRange,
         anchor: QueryAnchor<Sample>,
         limit: Int? = nil,
         predicate filterPredicate: NSPredicate? = nil
-    ) async throws -> some AsyncSequence<ContinuousQueryElement<Sample>, any Error> {
+    ) -> AsyncMapSequence<HKAnchoredObjectQueryDescriptor<Sample>.Results, ContinuousQueryElement<Sample>> {
+        // ^^^ we sadly can't use `some AsyncSequence<ContinuousQueryElement<Sample>, any Error>` here,
+        // since the Failure parameter is only available starting with iOS 18...
         let predicate = sampleType._makeSamplePredicate(
             filter: NSCompoundPredicate(andPredicateWithSubpredicates: [timeRange.predicate, filterPredicate].compactMap(\.self))
         )
