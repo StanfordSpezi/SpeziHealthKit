@@ -14,9 +14,9 @@ import SwiftUI
 import XCTest
 import XCTSpezi
 
-#if os(iOS)
 
 final class HealthChartTests: XCTestCase {
+#if os(iOS)
     @MainActor
     func testSimpleHealthChartView() throws {
         var heartRateSamplesProvider = FakeSamplesProvider(
@@ -159,10 +159,5 @@ final class HealthChartTests: XCTestCase {
         let healthChart2 = makeHealthChart(flag: false)
         assertSnapshot(of: healthChart2, as: .image)
     }
-}
-
-#else
-
-final class HealthChartTests: XCTestCase {}
-
 #endif
+}
