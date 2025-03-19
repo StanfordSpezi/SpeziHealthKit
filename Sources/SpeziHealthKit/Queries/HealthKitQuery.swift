@@ -91,7 +91,10 @@ extension HealthKit {
 
 extension HealthKit {
     /// An element produced by continuous HealthKit queries to inform about updates to the HealthKit database
-    public struct ContinuousQueryElement<Sample: _HKSampleWithSampleType> {
+    public struct ContinuousQueryElement<Sample: _HKSampleWithSampleType>: @unchecked Sendable {
+        // ^^SAFETY: this is in fact safe, since all of the update's (i.e., the `HKAnchoredObjectQueryDescriptor<Sample>.Result` type's)
+        // properties (i.e., deletedObjects, addedSamples, and newAnchor) are themselves Sendable. (rdar://16358485)
+        
         typealias Update = HKAnchoredObjectQueryDescriptor<Sample>.Results.Element
         
         private let update: Update

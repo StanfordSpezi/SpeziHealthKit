@@ -179,41 +179,16 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
                 limit: nil,
                 predicate: input.filterPredicate
             )
-//            let predicate = HKSamplePredicate<Sample>.sample(
-//                type: input.sampleType.hkSampleType,
-//                predicate: { () -> NSPredicate? in
-//                    let preds = [
-//                        input.timeRange.predicate,
-//                        input.filterPredicate
-//                    ].compactMap { $0 }
-//                    return preds.isEmpty ? nil : NSCompoundPredicate(andPredicateWithSubpredicates: preds)
-//                }()
-//            )
-//            let query = HKAnchoredObjectQueryDescriptor(
-//                predicates: [predicate],
-//                // we intentionally specify a nil anchor; this way the query will first fetch all existing data matching the descriptor,
-//                // and then start emit update events for new/deleted data.
-//                anchor: nil,
-//                limit: nil
-//            )
             do {
-//                let updates = query.results(for: healthStore)
                 for try await update in query {
                     guard let self = self else {
                         break
                     }
-                    // SAFETY: this is in fact safe, since all of the update's (i.e., the `HKAnchoredObjectQueryDescriptor<Sample>.Result` type's)
-                    // properties (i.e., deletedObjects, addedSamples, and newAnchor) are themselves Sendable. (rdar://16358485)
-                    nonisolated(unsafe) let update = update
                     Task { @MainActor in
                         var samples = self.samples
-                        nonisolated(unsafe) let update = update
                         let deletedUUIDs = update.deletedObjects.mapIntoSet { $0.uuid }
                         samples.removeAll(where: { deletedUUIDs.contains($0.uuid) })
-                        if let addedSamples = update.addedSamples as? [Sample] {
-                            // ^^This cast will practically always be true; the issue simply is that the type system doesn't know about it.
-                            samples.insert(contentsOf: addedSamples)
-                        }
+                        samples.insert(contentsOf: update.addedSamples)
                         self.isCurrentlyPerformingInitialFetch = false
                         self.samples = samples
                     }
