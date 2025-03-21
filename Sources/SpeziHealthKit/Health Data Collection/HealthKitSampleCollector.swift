@@ -150,7 +150,7 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
     private func anchoredSingleObjectQuery() async throws {
         var anchor = self.anchor
         nonisolated(unsafe) let predicate = self.predicate
-        let (added, deleted) = try await healthKit.anchorQuery(
+        let (added, deleted) = try await healthKit.query(
             sampleType,
             timeRange: .ever,
             anchor: &anchor,

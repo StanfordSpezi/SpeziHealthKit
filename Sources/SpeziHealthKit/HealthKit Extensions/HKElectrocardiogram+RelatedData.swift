@@ -23,7 +23,6 @@ extension HKElectrocardiogram {
         public let voltage: HKQuantity
     }
     
-    
     /// All possible `HKCategoryType`s (`HKCategoryTypeIdentifier`s) that can be associated with an `HKElectrocardiogram`.
     public static let correlatedSymptomTypes: [SampleType<HKCategorySample>] = [
         .rapidPoundingOrFlutteringHeartbeat,

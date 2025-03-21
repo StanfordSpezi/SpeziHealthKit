@@ -47,7 +47,7 @@ extension HealthKit {
     /// // of the past half year, 5000 samples at a time
     /// var anchor = QueryAnchor<HKQuantitySample>()
     /// while true {
-    ///     let samples = try await anchorQuery(
+    ///     let samples = try await query(
     ///         .heartRate,
     ///         timeRange: .last(months: 6),
     ///         anchor: &anchor,
@@ -66,7 +66,7 @@ extension HealthKit {
     ///     This parameter is `inout`; the function will update its value to a new anchor, which represents the state of the HealthKit database as of after the query has run.
     /// - parameter limit: The number of objects that should be fetched. `nil` indicates that no limit should be applied.
     /// - parameter filterPredicate: Optional refining predicate that allows you to filter which samples should be fetched.
-    public func anchorQuery<Sample>(
+    public func query<Sample>(
         _ sampleType: SampleType<Sample>,
         timeRange: HealthKitQueryTimeRange,
         anchor: inout QueryAnchor,
