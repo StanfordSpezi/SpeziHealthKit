@@ -35,16 +35,22 @@ You need to add the Spezi HealthKit Swift package to
 ### Health Data Collection
 
 Before you configure the [`HealthKit`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkit-swift.class)  module, make sure your `Standard` in your Spezi Application conforms to the [`HealthKitConstraint`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkitconstraint) protocol to receive HealthKit data.
-The [`HealthKitConstraint/add(sample:)`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkitconstraint/add(sample:)) function is called once for every newly collected HealthKit sample, and the [`HealthKitConstraint/remove(sample:)`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkitconstraint/remove(sample:)) function is called once for every deleted HealthKit sample.
+The [`HealthKitConstraint/handleNewSamples(_:ofType:)`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkitconstraint/handleNewSamples(_:ofType:)) function is called once for every batch of newly collected HealthKit samples, and the [`HealthKitConstraint/handleDeletedObjects(_:ofType:)`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkitconstraint/handleDeletedObjects(_:ofType:)) function is called once for every batch of deleted HealthKit objects.
 ```swift
 actor ExampleStandard: Standard, HealthKitConstraint {
-    // Add the newly collected HKSample to your application.
-    func add(sample: HKSample) async {
+    // Add the newly collected HealthKit samples to your application.
+    func handleNewSamples<Sample>(
+        _ addedSamples: some Collection<Sample>,
+        ofType sampleType: SampleType<Sample>
+    ) async {
         // ...
     }
 
-    // Remove the deleted HKSample from your application.
-    func remove(sample: HKDeletedObject) {
+    // Remove the deleted HealthKit objects from your application.
+    func handleDeletedObjects<Sample>(
+        _ deletedObjects: some Collection<HKDeletedObject>,
+        ofType sampleType: SampleType<Sample>
+    ) async {
         // ...
     }
 }

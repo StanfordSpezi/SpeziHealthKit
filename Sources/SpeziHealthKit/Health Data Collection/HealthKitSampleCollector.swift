@@ -156,12 +156,7 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
             anchor: &anchor,
             predicate: predicate
         )
-        for sample in added {
-            await standard.add(sample: sample)
-        }
-        for object in deleted {
-            await standard.remove(sample: object)
-        }
+        await handleQueryResult(added: added, deleted: deleted)
         self.anchor = anchor
     }
 
@@ -174,19 +169,25 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
         )
         let updateQueue = queryDescriptor.results(for: healthStore)
         let task = Task {
-            for try await results in updateQueue {
+            for try await update in updateQueue {
                 guard isActive else {
                     return
                 }
-                for deletedObject in results.deletedObjects {
-                    await standard.remove(sample: deletedObject)
-                }
-                for addedSample in results.addedSamples {
-                    await standard.add(sample: addedSample)
-                }
-                self.anchor = QueryAnchor(results.newAnchor)
+                await handleQueryResult(added: update.addedSamples, deleted: update.deletedObjects)
+                self.anchor = QueryAnchor(update.newAnchor)
             }
         }
         queryVariant = .anchorQuery(task)
+    }
+    
+    
+    @MainActor
+    private func handleQueryResult(added: some Collection<Sample> & Sendable, deleted: some Collection<HKDeletedObject> & Sendable) async {
+        if !deleted.isEmpty {
+            await standard.handleDeletedObjects(deleted, ofType: sampleType)
+        }
+        if !added.isEmpty {
+            await standard.handleNewSamples(added, ofType: sampleType)
+        }
     }
 }
