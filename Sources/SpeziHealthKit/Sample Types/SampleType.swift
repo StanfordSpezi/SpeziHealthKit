@@ -11,6 +11,8 @@ import HealthKit
 
 
 public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType {
+    public typealias Sample = Sample
+    
     @usableFromInline
     enum Variant: Sendable {
         /// - parameter displayUnit: The unit that should be used when displaying a sample of this type to the user
@@ -41,6 +43,11 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType {
         self.hkSampleType = hkSampleType
         self.displayTitle = String(localized: displayTitle)
         self.variant = variant
+    }
+    
+    // swiftlint:disable:next identifier_name
+    public func _makeSamplePredicateInternal(filter filterPredicate: NSPredicate?) -> HKSamplePredicate<Sample._QueryResult> {
+        Sample._makeSamplePredicateInternal(type: hkSampleType, filter: filterPredicate)
     }
 }
 
@@ -143,6 +150,7 @@ extension SampleType {
     /// Use this initializer only if the sample type you want to work with isn't already defined by SpeziHealthKit.
     /// - parameter identifier: The sample type's underlying `HKClinicalTypeIdentifier`
     /// - parameter displayTitle: The localized string which should be used when displaying this sample type's title in a user-visible context.
+    @available(watchOS, unavailable)
     @inlinable public static func clinical(
         _ identifier: HKClinicalTypeIdentifier,
         displayTitle: LocalizedStringResource

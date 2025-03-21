@@ -72,16 +72,6 @@ struct SampleTypeScopedLocalStorage<Value> {
         localStorage: LocalStorage,
         storageKeyPrefix: String,
         storageSetting: LocalStorageSetting
-    ) where Value: NSObject & NSSecureCoding {
-        self.init(localStorage: localStorage) { sampleType in
-            LocalStorageKey<Value>("\(storageKeyPrefix).\(sampleType.id)", setting: storageSetting)
-        }
-    }
-    
-    init(
-        localStorage: LocalStorage,
-        storageKeyPrefix: String,
-        storageSetting: LocalStorageSetting
     ) where Value: Codable {
         self.init(localStorage: localStorage) { sampleType in
             LocalStorageKey<Value>("\(storageKeyPrefix).\(sampleType.id)", setting: storageSetting)

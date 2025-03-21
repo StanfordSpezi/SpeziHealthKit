@@ -1,6 +1,12 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Abdominal Cramps" : {
+
+    },
+    "Acne" : {
+
+    },
     "Active Energy" : {
 
     },
@@ -21,6 +27,9 @@
     "Allergy Record" : {
 
     },
+    "Appetite Changes" : {
+
+    },
     "Atrial Fibrillation" : {
 
     },
@@ -38,6 +47,18 @@
 
     },
     "Biotin" : {
+
+    },
+    "Bladder Incontinence" : {
+
+    },
+    "Bleeding After Pregnancy" : {
+
+    },
+    "Bleeding During Pregnancy" : {
+
+    },
+    "Bloating" : {
 
     },
     "Blood Alcohol Content" : {
@@ -84,6 +105,9 @@
     "Body Temperature" : {
 
     },
+    "Breast Pain" : {
+
+    },
     "Caffeine" : {
 
     },
@@ -97,6 +121,12 @@
 
     },
     "Cervical Mucus Quality" : {
+
+    },
+    "Chest Tightness or Pain" : {
+
+    },
+    "Chills" : {
 
     },
     "Chloride" : {
@@ -114,25 +144,58 @@
     "Condition Record" : {
 
     },
+    "Constipation" : {
+
+    },
     "Contraceptives" : {
 
     },
     "Copper" : {
 
     },
+    "Coughing" : {
+
+    },
     "Coverage Record" : {
+
+    },
+    "Cross-Country Skiing Distance" : {
+
+    },
+    "Cross-Country Skiing Speed" : {
+
+    },
+    "Cycling Cadence" : {
 
     },
     "Cycling Distance" : {
 
     },
+    "Cycling Functional Threshold Power" : {
+
+    },
+    "Cycling Power" : {
+
+    },
+    "Cycling Speed" : {
+
+    },
+    "Diarrhea" : {
+
+    },
     "Dietary Energy Consumed" : {
+
+    },
+    "Dizziness" : {
 
     },
     "Double Support Time" : {
 
     },
     "Downhill Snow Sports Distance" : {
+
+    },
+    "Dry Skin" : {
 
     },
     "ECG" : {
@@ -154,7 +217,22 @@
     "Environmental Audio Exposure Event" : {
 
     },
+    "Environmental Sound Reduction" : {
+
+    },
+    "Estimated Workout Effort Score" : {
+
+    },
     "Exercise Minutes" : {
+
+    },
+    "Fainting" : {
+
+    },
+    "Fatigue" : {
+
+    },
+    "Fever" : {
 
     },
     "Fiber" : {
@@ -175,10 +253,19 @@
     "Forced Vital Capacity" : {
 
     },
+    "Generalized Body Ache" : {
+
+    },
     "Ground Contact Time" : {
 
     },
+    "Hair Loss" : {
+
+    },
     "Handwashing Event" : {
+
+    },
+    "Headache" : {
 
     },
     "Headphone Audio Exposure" : {
@@ -207,6 +294,9 @@
         }
       }
     },
+    "Heartburn" : {
+
+    },
     "Height" : {
       "localizations" : {
         "de" : {
@@ -218,6 +308,9 @@
       }
     },
     "High Heart Rate Event" : {
+
+    },
+    "Hot Flashes" : {
 
     },
     "Immunization Record" : {
@@ -253,10 +346,19 @@
     "Lean Body Mass" : {
 
     },
+    "Loss of Smell" : {
+
+    },
+    "Loss of Taste" : {
+
+    },
     "Low Cardio Fitness Event" : {
 
     },
     "Low Heart Rate Event" : {
+
+    },
+    "Lower Back Pain" : {
 
     },
     "Magnesium" : {
@@ -266,6 +368,9 @@
 
     },
     "Medication Record" : {
+
+    },
+    "Memory Lapse" : {
 
     },
     "Menstrual Cycles" : {
@@ -280,10 +385,19 @@
     "Monounsaturated Fat" : {
 
     },
+    "Mood Changes" : {
+
+    },
     "Move Minutes" : {
 
     },
+    "Nausea" : {
+
+    },
     "Niacin" : {
+
+    },
+    "Night Sweats" : {
 
     },
     "Number of Times Fallen" : {
@@ -292,10 +406,19 @@
     "Ovulation Test Result" : {
 
     },
+    "Paddle Sports Distance" : {
+
+    },
+    "Paddle Sports Speed" : {
+
+    },
     "Pantothenic Acid" : {
 
     },
     "Peak Expiratory Flow Rate" : {
+
+    },
+    "Pelvic Pain" : {
 
     },
     "Peripheral Perfusion Index" : {
@@ -305,6 +428,9 @@
 
     },
     "Phosphorus" : {
+
+    },
+    "Physical Effort" : {
 
     },
     "Polyunsaturated Fat" : {
@@ -334,6 +460,9 @@
     "Pushes" : {
 
     },
+    "Rapid Pounding or Fluttering Heartbeat" : {
+
+    },
     "Respiratory Rate" : {
 
     },
@@ -353,6 +482,12 @@
     "Riboflavin" : {
 
     },
+    "Rowing Distance" : {
+
+    },
+    "Rowing Speed" : {
+
+    },
     "Running Power" : {
 
     },
@@ -360,6 +495,9 @@
 
     },
     "Running Stride Length" : {
+
+    },
+    "Runny Nose" : {
 
     },
     "Saturated Fat" : {
@@ -371,7 +509,19 @@
     "Sexual Activity" : {
 
     },
+    "Shortness of Breath" : {
+
+    },
+    "Sinus Congestion" : {
+
+    },
     "Six-Minute Walk Distance" : {
+
+    },
+    "Skating Sports Distance" : {
+
+    },
+    "Skipped Heartbeat" : {
 
     },
     "Sleep Analysis" : {
@@ -384,7 +534,19 @@
         }
       }
     },
+    "Sleep Apnea" : {
+
+    },
+    "Sleep Changes" : {
+
+    },
+    "Sleeping Breathing Disturbances" : {
+
+    },
     "Sodium" : {
+
+    },
+    "Sore Throat" : {
 
     },
     "Spotting" : {
@@ -421,6 +583,9 @@
     "Thiamin" : {
 
     },
+    "Time In Daylight" : {
+
+    },
     "Toothbrushing Event" : {
 
     },
@@ -431,6 +596,9 @@
 
     },
     "UV Index" : {
+
+    },
+    "Vaginal Dryness" : {
 
     },
     "Vertical Oscillation" : {
@@ -461,6 +629,9 @@
 
     },
     "VO₂ max" : {
+
+    },
+    "Vomiting" : {
 
     },
     "Waist Circumference" : {
@@ -507,7 +678,13 @@
         }
       }
     },
+    "Wheezing" : {
+
+    },
     "Workout" : {
+
+    },
+    "Workout Effort Score" : {
 
     },
     "Wrist Temperature" : {

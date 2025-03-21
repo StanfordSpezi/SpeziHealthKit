@@ -81,6 +81,13 @@ class ExampleAppDelegate: SpeziAppDelegate {
 - ``SampleType``
 - ``AnySampleType``
 
+### Working with ECG Data
+- ``HealthKit/HKElectrocardiogram/symptoms(from:)``
+- ``HealthKit/HKElectrocardiogram/voltageMeasurements(from:)``
+- ``HealthKit/HKElectrocardiogram/Symptoms``
+- ``HealthKit/HKElectrocardiogram/Measurement``
+- ``HealthKit/HKElectrocardiogram/correlatedSymptomTypes``
+
 ### HealthKit Utilities
 - ``HealthKit/HKUnit/*(_:_:)``
 - ``HealthKit/HKUnit//(_:_:)``
