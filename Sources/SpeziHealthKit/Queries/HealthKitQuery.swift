@@ -69,7 +69,7 @@ extension HealthKit {
     public func anchorQuery<Sample>(
         _ sampleType: SampleType<Sample>,
         timeRange: HealthKitQueryTimeRange,
-        anchor: inout QueryAnchor<Sample>,
+        anchor: inout QueryAnchor,
         limit: Int? = nil,
         predicate filterPredicate: NSPredicate? = nil
     ) async throws -> (added: [Sample], deleted: [HKDeletedObject]) {
@@ -107,7 +107,7 @@ extension HealthKit {
             update.deletedObjects
         }
         /// The new query anchor, representing the state of the database as of directly after this update.
-        public var newAnchor: QueryAnchor<Sample> {
+        public var newAnchor: QueryAnchor {
             QueryAnchor(update.newAnchor)
         }
         
@@ -131,7 +131,7 @@ extension HealthKit {
     public func continuousQuery<Sample>(
         _ sampleType: SampleType<Sample>,
         timeRange: HealthKitQueryTimeRange,
-        anchor: QueryAnchor<Sample>,
+        anchor: QueryAnchor,
         limit: Int? = nil,
         predicate filterPredicate: NSPredicate? = nil
     ) -> some AsyncSequence<ContinuousQueryElement<Sample>, any Error> {
@@ -156,7 +156,7 @@ extension HealthKit {
     public func continuousQuery<Sample>(
         _ sampleType: SampleType<Sample>,
         timeRange: HealthKitQueryTimeRange,
-        anchor: QueryAnchor<Sample>,
+        anchor: QueryAnchor,
         limit: Int? = nil,
         predicate filterPredicate: NSPredicate? = nil
     ) -> AsyncMapSequence<HKAnchoredObjectQueryDescriptor<Sample>.Results, ContinuousQueryElement<Sample>> {
@@ -167,7 +167,7 @@ extension HealthKit {
     private func continuousQueryImp<Sample>(
         _ sampleType: SampleType<Sample>,
         timeRange: HealthKitQueryTimeRange,
-        anchor: QueryAnchor<Sample>,
+        anchor: QueryAnchor,
         limit: Int? = nil,
         predicate filterPredicate: NSPredicate? = nil
     ) -> AsyncMapSequence<HKAnchoredObjectQueryDescriptor<Sample>.Results, ContinuousQueryElement<Sample>> {

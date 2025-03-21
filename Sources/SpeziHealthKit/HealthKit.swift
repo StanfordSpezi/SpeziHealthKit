@@ -304,7 +304,7 @@ extension HealthKit {
     // MARK: HealthKit data collection
     
     /// Provides access to the HealthKit module's query anchor storage system.
-    var queryAnchors: SampleTypeScopedLocalStorage<HKQueryAnchor> {
+    var queryAnchors: SampleTypeScopedLocalStorage<QueryAnchor> {
         SampleTypeScopedLocalStorage(
             localStorage: localStorage,
             storageKeyPrefix: "edu.stanford.Spezi.SpeziHealthKit.queryAnchors",

@@ -11,7 +11,7 @@ import HealthKit
 
 
 /// Used by anchor queries to keep track of the last-seen state of the HealthKit database.
-public struct QueryAnchor<Sample: _HKSampleWithSampleType>: Hashable, Codable, Sendable {
+public struct QueryAnchor: Hashable, Codable, Sendable {
     let hkAnchor: HKQueryAnchor?
     
     /// Creates a new, empty `QueryAnchor`.
@@ -21,7 +21,8 @@ public struct QueryAnchor<Sample: _HKSampleWithSampleType>: Hashable, Codable, S
         self.hkAnchor = nil
     }
     
-    init(_ hkAnchor: HKQueryAnchor) {
+    /// Creates a `QueryAnchor` from a HealthKit `HKQueryAnchor`.
+    public init(_ hkAnchor: HKQueryAnchor) {
         self.hkAnchor = hkAnchor
     }
     

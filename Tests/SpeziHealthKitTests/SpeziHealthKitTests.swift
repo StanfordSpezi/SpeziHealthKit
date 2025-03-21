@@ -30,9 +30,9 @@ final class SpeziHealthKitTests: XCTestCase {
     
     
     func testQueryAnchorCoding() throws {
-        func imp(_ anchor: QueryAnchor<HKQuantitySample>, line: UInt = #line) throws {
+        func imp(_ anchor: QueryAnchor, line: UInt = #line) throws {
             let encoded = try JSONEncoder().encode(anchor)
-            let decoded = try JSONDecoder().decode(QueryAnchor<HKQuantitySample>.self, from: encoded)
+            let decoded = try JSONDecoder().decode(QueryAnchor.self, from: encoded)
             XCTAssertEqual(anchor, decoded, line: line)
         }
         try imp(QueryAnchor(HKQueryAnchor(fromValue: 5734987678924)))

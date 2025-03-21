@@ -28,9 +28,9 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
     @MainActor private(set) var isActive = false
     private var queryVariant: QueryVariant?
     
-    @MainActor private var anchor: QueryAnchor<Sample> {
-        get { healthKit.queryAnchors[sampleType].map { QueryAnchor($0) } ?? QueryAnchor() }
-        set { healthKit.queryAnchors[sampleType] = newValue.hkAnchor }
+    @MainActor private var anchor: QueryAnchor {
+        get { healthKit.queryAnchors[sampleType] ?? QueryAnchor() }
+        set { healthKit.queryAnchors[sampleType] = newValue }
     }
     
     private var healthStore: HKHealthStore { healthKit.healthStore }
