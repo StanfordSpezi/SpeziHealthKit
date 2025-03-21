@@ -15,11 +15,21 @@ import SpeziHealthKit
 actor HealthKitTestAppStandard: Standard, HealthKitConstraint {
     @Dependency(FakeHealthStore.self) private var fakeHealthStore
     
-    func add(sample: HKSample) async {
-        await fakeHealthStore.add(sample: sample)
+    func handleNewSamples<Sample>(
+        _ addedSamples: some Collection<Sample>,
+        ofType sampleType: SampleType<Sample>
+    ) async {
+        for sample in addedSamples {
+            await fakeHealthStore.add(sample)
+        }
     }
     
-    func remove(sample: HKDeletedObject) async {
-        await fakeHealthStore.remove(sample: sample)
+    func handleDeletedObjects<Sample>(
+        _ deletedObjects: some Collection<HKDeletedObject>,
+        ofType sampleType: SampleType<Sample>
+    ) async {
+        for object in deletedObjects {
+            await fakeHealthStore.remove(object)
+        }
     }
 }
