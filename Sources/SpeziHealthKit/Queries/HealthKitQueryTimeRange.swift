@@ -15,14 +15,6 @@ import SpeziFoundation
 public struct HealthKitQueryTimeRange: Sendable {
     public let range: ClosedRange<Date>
     
-    public var predicate: NSPredicate {
-        HKQuery.predicateForSamples(
-            withStart: range.lowerBound,
-            end: range.upperBound,
-            options: [.strictStartDate, .strictEndDate]
-        )
-    }
-    
     public var duration: TimeInterval {
         range.lowerBound.distance(to: range.upperBound)
     }
@@ -33,6 +25,24 @@ public struct HealthKitQueryTimeRange: Sendable {
     
     public init(_ range: Range<Date>) {
         self.init(range.lowerBound...range.upperBound.addingTimeInterval(-1))
+    }
+}
+
+
+extension HealthKitQueryTimeRange {
+    /// An `NSPredicate` that matches all samples which fall into the time range.
+    ///
+    /// - Note: A `nil` value means that no predicate is needed. This would be equivalent to a predicate that always returns `true`.
+    public var predicate: NSPredicate? {
+        if self == .ever {
+            nil
+        } else {
+            HKQuery.predicateForSamples(
+                withStart: range.lowerBound,
+                end: range.upperBound,
+                options: [.strictStartDate, .strictEndDate]
+            )
+        }
     }
 }
 

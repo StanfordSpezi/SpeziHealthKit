@@ -16,16 +16,35 @@ def localeDependentUnit(*, us: str, uk: Optional[str] = None, metric: str) -> st
         return f'localeDependentUnit(us: {us}, metric: {metric})'
 
 
+class Availability(object):
+    def __init__(self, *, iOS: Optional[str] = None, macOS: Optional[str] = None, watchOS: Optional[str] = None):
+        self.iOS = iOS
+        self.macOS = macOS
+        self.watchOS = watchOS
+    
+    def components(self) -> list[str]:
+        components = []
+        if self.iOS is not None:
+            components.append(f'iOS {self.iOS}')
+        if self.macOS is not None:
+            components.append(f'macOS {self.macOS}')
+        if self.watchOS is not None:
+            components.append(f'watchOS {self.watchOS}')
+        return components
+
+
 class SampleType(object):
     def __init__(
         self,
         *,
+        availability: Optional[Availability] = None,
         identifier: str,
         property_name: Optional[str],
         display_title: str,
         extra_init_params: list[tuple[str, any]] = [],
         doc: str
     ):
+        self.availability = availability
         self.identifier = identifier
         self.property_name = property_name or identifier
         self.display_title = display_title
@@ -35,6 +54,7 @@ class SampleType(object):
     @staticmethod
     def quantity_type(
         *,
+        availability: Optional[Availability] = None,
         identifier: str,
         property_name: Optional[str] = None,
         display_title: str,
@@ -43,6 +63,7 @@ class SampleType(object):
         doc: str
     ) -> 'Self':
         return SampleType(
+            availability=availability,
             identifier=identifier,
             property_name=property_name,
             display_title=display_title,
@@ -56,12 +77,14 @@ class SampleType(object):
     @staticmethod
     def category_type(
         *,
+        availability: Optional[Availability] = None,
         identifier: str,
         property_name: Optional[str] = None,
         display_title: str,
         doc: str
     ) -> 'Self':
         return SampleType(
+            availability=availability,
             identifier=identifier,
             property_name=property_name,
             display_title=display_title,
@@ -71,6 +94,7 @@ class SampleType(object):
     @staticmethod
     def correlation_type(
         *,
+        availability: Optional[Availability] = None,
         identifier: str,
         property_name: Optional[str] = None,
         display_title: str,
@@ -78,6 +102,7 @@ class SampleType(object):
         doc: str
     ) -> 'Self':
         return SampleType(
+            availability=availability,
             identifier=identifier,
             property_name=property_name,
             display_title=display_title,
@@ -90,12 +115,14 @@ class SampleType(object):
     @staticmethod
     def clinical_type(
         *,
+        availability: Optional[Availability] = None,
         identifier: str,
         property_name: Optional[str] = None,
         display_title: str,
         doc: str
     ) -> 'Self':
         return SampleType(
+            availability=availability,
             identifier=identifier,
             property_name=property_name,
             display_title=display_title,
@@ -740,7 +767,123 @@ quantity_types = [
         display_title='Water Temperature',
         display_unit=localeDependentUnit(us='.degreeFahrenheit()', metric='.degreeCelsius()'),
         doc=' A quantity sample that records the water temperature.'
-    )
+    ),
+
+    # Other
+    SampleType.quantity_type(
+        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0'),
+        identifier='appleSleepingBreathingDisturbances',
+        display_title='Sleeping Breathing Disturbances',
+        display_unit='.count()',
+        doc='A quantity sample that records breathing disturbances during sleep.'
+    ),
+    SampleType.quantity_type(
+        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0'),
+        identifier='crossCountrySkiingSpeed',
+        display_title='Cross-Country Skiing Speed',
+        display_unit=localeDependentUnit(us='.mile() / .hour()', metric='.meterUnit(with: .kilo) / .hour()'),
+        doc='A quantity sample that records cross-country skiing speed.'
+    ),
+    SampleType.quantity_type(
+        identifier='cyclingCadence',
+        display_title='Cycling Cadence',
+        display_unit='.count() / .minute()', # TODO check this!!!
+        doc='A quantity sample that records cycling cadence.'
+    ),
+    SampleType.quantity_type(
+        identifier='cyclingFunctionalThresholdPower',
+        display_title='Cycling Functional Threshold Power',
+        display_unit='.watt()',
+        doc='A quantity sample that records cycling functional threshold power.'
+    ),
+    SampleType.quantity_type(
+        identifier='cyclingPower',
+        display_title='Cycling Power',
+        display_unit='.watt()',
+        doc='A quantity sample that records cycling power.'
+    ),
+    SampleType.quantity_type(
+        identifier='cyclingSpeed',
+        display_title='Cycling Speed',
+        display_unit=localeDependentUnit(us='.mile() / .hour()', metric='.meterUnit(with: .kilo) / .hour()'),
+        doc='A quantity sample that records cycling speed.'
+    ),
+    SampleType.quantity_type(
+        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0'),
+        identifier='distanceCrossCountrySkiing',
+        display_title='Cross-Country Skiing Distance',
+        display_unit=localeDependentUnit(us='.mile()', metric='.meterUnit(with: .kilo)'),
+        doc='A quantity sample that records cross-country skiing distance.'
+    ),
+    SampleType.quantity_type(
+        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0'),
+        identifier='distancePaddleSports',
+        display_title='Paddle Sports Distance',
+        display_unit=localeDependentUnit(us='.mile()', metric='.meterUnit(with: .kilo)'),
+        doc='A quantity sample that records paddle sports distance.'
+    ),
+    SampleType.quantity_type(
+        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0'),
+        identifier='distanceRowing',
+        display_title='Rowing Distance',
+        display_unit=localeDependentUnit(us='.mile()', metric='.meterUnit(with: .kilo)'),
+        doc='A quantity sample that records rowing distance.'
+    ),
+    SampleType.quantity_type(
+        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0'),
+        identifier='distanceSkatingSports',
+        display_title='Skating Sports Distance',
+        display_unit=localeDependentUnit(us='.mile()', metric='.meterUnit(with: .kilo)'),
+        doc='A quantity sample that records skating sports distance.'
+    ),
+    SampleType.quantity_type(
+        identifier='environmentalSoundReduction',
+        display_title='Environmental Sound Reduction',
+        display_unit='.decibelHearingLevel()',
+        doc='A quantity sample that records environmental sound reduction.'
+    ),
+    SampleType.quantity_type(
+        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0'),
+        identifier='estimatedWorkoutEffortScore',
+        display_title='Estimated Workout Effort Score',
+        display_unit='.count()', # TODO not sure about this one
+        doc='A quantity sample that records estimated physical effort during workouts.'
+    ),
+    SampleType.quantity_type(
+        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0'),
+        identifier='paddleSportsSpeed',
+        display_title='Paddle Sports Speed',
+        display_unit=localeDependentUnit(us='.mile() / .hour()', metric='.meterUnit(with: .kilo) / .hour()'),
+        doc='A quantity sample that records paddle sports speed.'
+    ),
+    SampleType.quantity_type(
+        identifier='physicalEffort',
+        display_title='Physical Effort',
+        display_unit='.kilocalorie() / (.gramUnit(with: .kilo) * .hour())',
+        doc='A quantity sample that records physical effort.'
+    ),
+    SampleType.quantity_type(
+        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0'),
+        identifier='rowingSpeed',
+        display_title='Rowing Speed',
+        display_unit=localeDependentUnit(us='.mile() / .hour()', metric='.meterUnit(with: .kilo) / .hour()'),
+        doc='A quantity sample that records rowing speed.'
+    ),
+    SampleType.quantity_type(
+        identifier='timeInDaylight',
+        display_title='Time In Daylight',
+        display_unit='.minute()',
+        doc='A quantity sample that records time spent in daylight.'
+    ),
+    SampleType.quantity_type(
+        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0'),
+        identifier='workoutEffortScore',
+        display_title='Workout Effort Score',
+        display_unit='.count()', # TODO not sure about this one
+        doc='A quantity sample that records workout effort.'
+    ),
+
+
 ]
 
 
@@ -889,6 +1032,231 @@ category_types = [
         identifier='handwashingEvent',
         display_title='Handwashing Event',
         doc='A category sample type for handwashing events.'
+    ),
+
+    # Symptoms
+    # Symptoms: Abdominal and Gastrointestinal
+    SampleType.category_type(
+        identifier='abdominalCramps',
+        display_title='Abdominal Cramps',
+        doc='A category type that records abdominal cramps as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='bloating',
+        display_title='Bloating',
+        doc='A category type that records bloating as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='constipation',
+        display_title='Constipation',
+        doc='A category type that records constipation as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='diarrhea',
+        display_title='Diarrhea',
+        doc='A category type that records diarrhea as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='heartburn',
+        display_title='Heartburn',
+        doc='A category type that records heartburn as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='nausea',
+        display_title='Nausea',
+        doc='A category type that records nausea as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='vomiting',
+        display_title='Vomiting',
+        doc='A category type that records vomiting as a symptom.'
+    ),
+    # Symptoms: Constitutional
+    SampleType.category_type(
+        identifier='appetiteChanges',
+        display_title='Appetite Changes',
+        doc='A category type that records changes in appetite as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='chills',
+        display_title='Chills',
+        doc='A category type that records chills as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='dizziness',
+        display_title='Dizziness',
+        doc='A category type that records dizziness as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='fainting',
+        display_title='Fainting',
+        doc='A category type that records fainting as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='fatigue',
+        display_title='Fatigue',
+        doc='A category type that records fatigue as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='fever',
+        display_title='Fever',
+        doc='A category type that records fever as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='generalizedBodyAche',
+        display_title='Generalized Body Ache',
+        doc='A category type that records body ache as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='hotFlashes',
+        display_title='Hot Flashes',
+        doc='A category type that records hot flashes as a symptom.'
+    ),
+    # Symptoms: Heart and Lung
+    SampleType.category_type(
+        identifier='chestTightnessOrPain',
+        display_title='Chest Tightness or Pain',
+        doc='A category type that records chest tightness or pain as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='coughing',
+        display_title='Coughing',
+        doc='A category type that records coughing as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='rapidPoundingOrFlutteringHeartbeat',
+        display_title='Rapid Pounding or Fluttering Heartbeat',
+        doc='A category type that records a rapid, pounding, or fluttering heartbeat as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='shortnessOfBreath',
+        display_title='Shortness of Breath',
+        doc='A category type that records shortness of breath as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='skippedHeartbeat',
+        display_title='Skipped Heartbeat',
+        doc='A category type that records skipped heartbeat as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='wheezing',
+        display_title='Wheezing',
+        doc='A category type that records wheezing as a symptom.'
+    ),
+    # Symptoms: Musculoskeletal
+    SampleType.category_type(
+        identifier='lowerBackPain',
+        display_title='Lower Back Pain',
+        doc='A category type that records lower back pain as a symptom.'
+    ),
+    # Symptoms: Neurological
+    SampleType.category_type(
+        identifier='headache',
+        display_title='Headache',
+        doc='A category type that records headache as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='memoryLapse',
+        display_title='Memory Lapse',
+        doc='A category type that records memory lapse as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='moodChanges',
+        display_title='Mood Changes',
+        doc='A category type that records mood changes as a symptom.'
+    ),
+    # Symptoms: Nose and Throat
+    SampleType.category_type(
+        identifier='lossOfSmell',
+        display_title='Loss of Smell',
+        doc='A category type that records loss of smell as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='lossOfTaste',
+        display_title='Loss of Taste',
+        doc='A category type that records loss of taste as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='runnyNose',
+        display_title='Runny Nose',
+        doc='A category type that records runny nose as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='soreThroat',
+        display_title='Sore Throat',
+        doc='A category type that records sore throat as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='sinusCongestion',
+        display_title='Sinus Congestion',
+        doc='A category type that records sinus congestion as a symptom.'
+    ),
+    # Symptoms: Reproduction
+    SampleType.category_type(
+        identifier='breastPain',
+        display_title='Breast Pain',
+        doc='A category type that records breast pain as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='pelvicPain',
+        display_title='Pelvic Pain',
+        doc='A category type that records pelvic pain as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='vaginalDryness',
+        display_title='Vaginal Dryness',
+        doc='A category type that records vaginal dryness as a symptom.'
+    ),
+    SampleType.category_type(
+        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0'),
+        identifier='bleedingDuringPregnancy',
+        display_title='Bleeding During Pregnancy',
+        doc='A category type that records bleeding during pregnancy as a symptom.'
+    ),
+    SampleType.category_type(
+        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0'),
+        identifier='bleedingAfterPregnancy',
+        display_title='Bleeding After Pregnancy',
+        doc='A category type that records bleeding after pregnancy as a symptom.'
+    ),
+    # Symptoms: Skin and Hair
+    SampleType.category_type(
+        identifier='acne',
+        display_title='Acne',
+        doc='A category type that records acne as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='drySkin',
+        display_title='Dry Skin',
+        doc='A category type that records dry skin as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='hairLoss',
+        display_title='Hair Loss',
+        doc='A category type that records hair loss as a symptom.'
+    ),
+    # Symptoms: Sleep
+    SampleType.category_type(
+        identifier='nightSweats',
+        display_title='Night Sweats',
+        doc='A category type that records night sweats as a symptom.'
+    ),
+    SampleType.category_type(
+        identifier='sleepChanges',
+        display_title='Sleep Changes',
+        doc='A category type that records sleep changes as a symptom.'
+    ),
+    SampleType.category_type(
+        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0'),
+        identifier='sleepApneaEvent',
+        display_title='Sleep Apnea',
+        doc='A category type that records sleep apnea as a symptom.'
+    ),
+    # Symptoms: Urinary
+    SampleType.category_type(
+        identifier='bladderIncontinence',
+        display_title='Bladder Incontinence',
+        doc='A category type that records bladder incontinence as a symptom.'
     )
 ]
 
@@ -1005,10 +1373,10 @@ clinical_types = [
 
 
 gen_inputs = [
-    ('Quantity', 'HKQuantitySample', 'quantity', quantity_types),
-    ('Category', 'HKCategorySample', 'category', category_types),
-    ('Correlation', 'HKCorrelation', 'correlation', correlation_types),
-    ('Clinical', 'HKClinicalRecord', 'clinical', clinical_types)
+    ('Quantity', 'Quantities', 'HKQuantitySample', 'HKQuantityType', 'quantity', quantity_types),
+    ('Category', 'Categories', 'HKCategorySample', 'HKCategoryType', 'category', category_types),
+    ('Correlation', 'Correlations', 'HKCorrelation', 'HKCorrelationType', 'correlation', correlation_types),
+    ('Clinical Record', 'Clinical Records', 'HKClinicalRecord', 'HKClinicalType', 'clinical', clinical_types)
 ]
 }%
 
@@ -1033,13 +1401,19 @@ import HealthKit
 }
 
 
-% for (display_title, hk_class, ctor, types) in gen_inputs:
+% for (display_title, display_title_plural, hk_class, hk_sampletype_class, ctor, types) in gen_inputs:
 
 // MARK: ${display_title} Types
 
+% if hk_class == 'HKClinicalRecord':
+@available(watchOS, unavailable)
+% end
 extension SampleType where Sample == ${hk_class} {
 % for ty in types:
     /// ${ty.doc}
+% if ty.availability is not None:
+    @available(${', '.join(ty.availability.components())}, *)
+% end
     @inlinable public static var ${ty.property_name}: SampleType<${hk_class}> {
         .${ctor}(
             .${ty.identifier},
@@ -1049,19 +1423,62 @@ extension SampleType where Sample == ${hk_class} {
         % end
         )
     }
-
 % end
 
+%{
+def make_hashtag_availability_for_if(availability: Availability, trailing_comma: bool) -> str:
+    if availability is None:
+        return ''
+    else:
+        return f'#available({', '.join(availability.components())}, *){', ' if trailing_comma else ''}'
+}%
     /// Returns the shared ${display_title} type for the specified identifier.
-    public init?(_ identifier: HK${display_title}TypeIdentifier) where Sample == ${hk_class} {
-        switch identifier {
-        % for ty in types:
-        case .${ty.identifier}:
+    public init?(_ identifier: ${hk_sampletype_class}Identifier) where Sample == ${hk_class} {
+        if ${make_hashtag_availability_for_if(types[0].availability, True)}identifier == .${types[0].identifier} {
+            self = .${types[0].property_name}
+        % for ty in types[1:]:
+        } else if ${make_hashtag_availability_for_if(ty.availability, True)}identifier == .${ty.identifier} {
             self = .${ty.property_name}
         % end
-        default:
+        } else {
             return nil
         }
     }
 }
+
+extension ${hk_sampletype_class} {
+    /// All well-known `${hk_sampletype_class}`s
+    public static let allKnown${''.join(display_title_plural.split())}: Set<${hk_sampletype_class}> = Set(
+        ${hk_sampletype_class}Identifier.allKnownIdentifiers.map { ${hk_sampletype_class}($0) }
+    )
+}
+
+extension ${hk_sampletype_class}Identifier {
+    /// All well-known `${hk_sampletype_class}Identifier`s
+    public static let allKnownIdentifiers: Set<${hk_sampletype_class}Identifier> = {
+        var identifiers = Set<${hk_sampletype_class}Identifier>()
+        % for ty in types:
+        % availability_check = make_hashtag_availability_for_if(ty.availability, False)
+        % if availability_check != '':
+        if ${availability_check} {
+            identifiers.insert(Self.${ty.identifier})
+        }
+        % else:
+        identifiers.insert(Self.${ty.identifier})
+        % end
+        % end
+        return identifiers
+    }()
+}
 % end
+
+extension HKObjectType {
+    /// All well-known `HKObjectType`s
+    public static let allKnownObjectTypes: Set<HKObjectType> = {
+        var types = Set<HKObjectType>()
+        % for (display_title, display_title_plural, hk_class, hk_sampletype_class, ctor, types) in gen_inputs:
+        types.formUnion(${hk_sampletype_class}.allKnown${''.join(display_title_plural.split())})
+        % end
+        return types
+    }()
+}

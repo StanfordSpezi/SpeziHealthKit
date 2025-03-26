@@ -54,7 +54,7 @@ final class FakeHealthStore: Module, DefaultInitializable, EnvironmentAccessible
     }
     
     @MainActor
-    func add(sample: HKSample) async {
+    func add(_ sample: HKSample) async {
         logger.debug("Added sample: \(sample.debugDescription)")
         
         samples.append(sample)
@@ -83,16 +83,16 @@ final class FakeHealthStore: Module, DefaultInitializable, EnvironmentAccessible
     }
     
     @MainActor
-    func remove(sample: HKDeletedObject) async {
-        logger.debug("Removed sample: \(sample.debugDescription)")
-        if let index = samples.firstIndex(where: { $0.uuid == sample.uuid }) {
+    func remove(_ object: HKDeletedObject) async {
+        logger.debug("Removed sample: \(object.debugDescription)")
+        if let index = samples.firstIndex(where: { $0.uuid == object.uuid }) {
             samples.remove(at: index)
         }
-        backgroundPersistance.insert(.init(sample), at: 0)
+        backgroundPersistance.insert(.init(object), at: 0)
         
         let content = UNMutableNotificationContent()
         content.title = "Spezi HealthKit Test App"
-        content.body = "Removed sample: \(sample.uuid) at \(Date.now.formatted(date: .numeric, time: .complete))"
+        content.body = "Removed sample: \(object.uuid) at \(Date.now.formatted(date: .numeric, time: .complete))"
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
         try? await UNUserNotificationCenter.current().add(request)
     }

@@ -28,10 +28,9 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
     @MainActor private(set) var isActive = false
     private var queryVariant: QueryVariant?
     
-    @MainActor private lazy var anchor: HKQueryAnchor? = loadAnchor() {
-        didSet {
-            saveAnchor()
-        }
+    @MainActor private var anchor: QueryAnchor {
+        get { healthKit.queryAnchors[sampleType] ?? QueryAnchor() }
+        set { healthKit.queryAnchors[sampleType] = newValue }
     }
     
     private var healthStore: HKHealthStore { healthKit.healthStore }
@@ -149,49 +148,46 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
 
     @MainActor
     private func anchoredSingleObjectQuery() async throws {
-        let resultsAnchor = try await healthStore.anchoredSingleObjectQuery(
-            for: self.sampleType.hkSampleType,
-            using: self.anchor,
-            withPredicate: predicate,
-            standard: self.standard
+        var anchor = self.anchor
+        nonisolated(unsafe) let predicate = self.predicate
+        let (added, deleted) = try await healthKit.query(
+            sampleType,
+            timeRange: .ever,
+            anchor: &anchor,
+            predicate: predicate
         )
-        self.anchor = resultsAnchor
+        await handleQueryResult(added: added, deleted: deleted)
+        self.anchor = anchor
     }
 
     
     @MainActor
     private func anchoredContinuousObjectQuery() async throws {
-        let anchorDescriptor = healthStore.anchorDescriptor(
-            sampleType: sampleType.hkSampleType,
-            predicate: predicate,
-            anchor: anchor
+        let queryDescriptor = HKAnchoredObjectQueryDescriptor(
+            predicates: [sampleType._makeSamplePredicate(filter: predicate)],
+            anchor: anchor.hkAnchor
         )
-        let updateQueue = anchorDescriptor.results(for: healthStore)
+        let updateQueue = queryDescriptor.results(for: healthStore)
         let task = Task {
-            for try await results in updateQueue {
+            for try await update in updateQueue {
                 guard isActive else {
                     return
                 }
-                for deletedObject in results.deletedObjects {
-                    await standard.remove(sample: deletedObject)
-                }
-                for addedSample in results.addedSamples {
-                    await standard.add(sample: addedSample)
-                }
-                self.anchor = results.newAnchor
+                await handleQueryResult(added: update.addedSamples, deleted: update.deletedObjects)
+                self.anchor = QueryAnchor(update.newAnchor)
             }
         }
         queryVariant = .anchorQuery(task)
     }
-
+    
     
     @MainActor
-    private func saveAnchor() {
-        healthKit.queryAnchors[sampleType] = anchor
-    }
-    
-    @MainActor
-    private func loadAnchor() -> HKQueryAnchor? {
-        healthKit.queryAnchors[sampleType]
+    private func handleQueryResult(added: some Collection<Sample> & Sendable, deleted: some Collection<HKDeletedObject> & Sendable) async {
+        if !deleted.isEmpty {
+            await standard.handleDeletedObjects(deleted, ofType: sampleType)
+        }
+        if !added.isEmpty {
+            await standard.handleNewSamples(added, ofType: sampleType)
+        }
     }
 }

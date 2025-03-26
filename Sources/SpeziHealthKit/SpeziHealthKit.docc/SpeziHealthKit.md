@@ -28,16 +28,22 @@ You need to add the Spezi HealthKit Swift package to
 ### Example
 
 Before you configure the ``HealthKit-class`` module, make sure your `Standard` in your Spezi Application conforms to the ``HealthKitConstraint`` protocol to receive HealthKit data.
-The ``HealthKitConstraint/add(sample:)`` function is called once for every newly collected HealthKit sample, and the ``HealthKitConstraint/remove(sample:)`` function is called once for every deleted HealthKit sample.
+The ``HealthKitConstraint/handleNewSamples(_:ofType:)`` function is called once for every batch of newly collected HealthKit samples, and the ``HealthKitConstraint/handleDeletedObjects(_:ofType:)`` function is called once for every batch of deleted HealthKit objects.
 ```swift
 actor ExampleStandard: Standard, HealthKitConstraint {
-    // Add the newly collected HKSample to your application.
-    func add(sample: HKSample) async {
+    // Add the newly collected HealthKit samples to your application.
+    func handleNewSamples<Sample>(
+        _ addedSamples: some Collection<Sample>,
+        ofType sampleType: SampleType<Sample>
+    ) async {
         // ...
     }
 
-    // Remove the deleted HKSample from your application.
-    func remove(sample: HKDeletedObject) {
+    // Remove the deleted HealthKit objects from your application.
+    func handleDeletedObjects<Sample>(
+        _ deletedObjects: some Collection<HKDeletedObject>,
+        ofType sampleType: SampleType<Sample>
+    ) async {
         // ...
     }
 }
@@ -80,6 +86,13 @@ class ExampleAppDelegate: SpeziAppDelegate {
 ### HealthKit Sample Types
 - ``SampleType``
 - ``AnySampleType``
+
+### Working with ECG Data
+- ``HealthKit/HKElectrocardiogram/symptoms(from:)``
+- ``HealthKit/HKElectrocardiogram/voltageMeasurements(from:)``
+- ``HealthKit/HKElectrocardiogram/Symptoms``
+- ``HealthKit/HKElectrocardiogram/Measurement``
+- ``HealthKit/HKElectrocardiogram/correlatedSymptomTypes``
 
 ### HealthKit Utilities
 - ``HealthKit/HKUnit/*(_:_:)``

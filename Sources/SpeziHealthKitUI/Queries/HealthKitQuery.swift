@@ -94,7 +94,7 @@ public struct HealthKitQuery<Sample: _HKSampleWithSampleType>: DynamicProperty {
     public nonisolated func update() {
         runOrScheduleOnMainActor {
             results.initializeSwiftUIManagedQuery(
-                healthStore: healthKit.healthStore,
+                healthKit: healthKit,
                 input: input
             )
         }
@@ -122,7 +122,7 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
     /// In the context of this type specifically, this is safe, because the fileprivate `init()` is used only by the ``HealthKitQuery``
     /// property wrapper, which assigns a non-nil health store prior to updating the `input` property.
     @ObservationIgnored
-    private var healthStore: HKHealthStore! // swiftlint:disable:this implicitly_unwrapped_optional
+    private var healthKit: HealthKit! // swiftlint:disable:this implicitly_unwrapped_optional
     
     @ObservationIgnored
     private var input: Input?
@@ -152,11 +152,11 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
     
     
     @MainActor
-    fileprivate func initializeSwiftUIManagedQuery(healthStore: HKHealthStore, input: Input) {
+    fileprivate func initializeSwiftUIManagedQuery(healthKit: HealthKit, input: Input) {
         guard self.input != input else {
             return
         }
-        self.healthStore = healthStore
+        self.healthKit = healthKit
         self.input = input
         startQuery()
     }
@@ -166,47 +166,29 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
     /// - Note: it might take a bit until the first results arrive and the query gets populated.
     @MainActor
     private func startQuery() {
-        guard let input, let healthStore else {
+        guard let input, let healthKit else {
             return
         }
         self.isCurrentlyPerformingInitialFetch = true
         queryTask?.cancel()
-        queryTask = Task.detached { [weak self] in // swiftlint:disable:this closure_body_length
-            let predicate = HKSamplePredicate<Sample>.sample(
-                type: input.sampleType.hkSampleType,
-                predicate: { () -> NSPredicate? in
-                    let preds = [
-                        input.timeRange.predicate,
-                        input.filterPredicate
-                    ].compactMap { $0 }
-                    return preds.isEmpty ? nil : NSCompoundPredicate(andPredicateWithSubpredicates: preds)
-                }()
-            )
-            let query = HKAnchoredObjectQueryDescriptor(
-                predicates: [predicate],
-                // we intentionally specify a nil anchor; this way the query will first fetch all existing data matching the descriptor,
-                // and then start emit update events for new/deleted data.
-                anchor: nil,
-                limit: nil
+        queryTask = Task.detached { [weak self] in
+            let query = healthKit.continuousQuery(
+                input.sampleType,
+                timeRange: input.timeRange,
+                anchor: QueryAnchor(),
+                limit: nil,
+                predicate: input.filterPredicate
             )
             do {
-                let updates = query.results(for: healthStore)
-                for try await update in updates {
+                for try await update in query {
                     guard let self = self else {
                         break
                     }
-                    // SAFETY: this is in fact safe, since all of the update's (i.e., the `HKAnchoredObjectQueryDescriptor<Sample>.Result` type's)
-                    // properties (i.e., deletedObjects, addedSamples, and newAnchor) are themselves Sendable. (rdar://16358485)
-                    nonisolated(unsafe) let update = update
                     Task { @MainActor in
                         var samples = self.samples
-                        nonisolated(unsafe) let update = update
                         let deletedUUIDs = update.deletedObjects.mapIntoSet { $0.uuid }
                         samples.removeAll(where: { deletedUUIDs.contains($0.uuid) })
-                        if let addedSamples = update.addedSamples as? [Sample] {
-                            // ^^This cast will practically always be true; the issue simply is that the type system doesn't know about it.
-                            samples.insert(contentsOf: addedSamples)
-                        }
+                        samples.insert(contentsOf: update.addedSamples)
                         self.isCurrentlyPerformingInitialFetch = false
                         self.samples = samples
                     }

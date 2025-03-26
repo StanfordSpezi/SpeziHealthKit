@@ -14,33 +14,39 @@ import SwiftUI
 extension HKElectrocardiogram {
     /// A type alias used to associate symptoms in an `HKElectrocardiogram`.
     public typealias Symptoms = [HKCategoryType: HKCategoryValueSeverity]
-    /// A type alias used to associate voltage measurements in an `HKElectrocardiogram`.
-    public typealias VoltageMeasurements = [(TimeInterval, HKQuantity)]
     
+    /// A single voltage measurement in an `HKElectrocardiogram`.
+    public struct Measurement: Hashable, Sendable {
+        /// The time of the measurement relative to the sample’s start time.
+        public let timeOffset: TimeInterval
+        /// The voltage as determined by the Apple Watch sensor, similar to a Lead I ECG.
+        public let voltage: HKQuantity
+    }
     
     /// All possible `HKCategoryType`s (`HKCategoryTypeIdentifier`s) that can be associated with an `HKElectrocardiogram`.
-    public static let correlatedSymptomTypes: [HKCategoryType] = [
-        HKCategoryType(.rapidPoundingOrFlutteringHeartbeat),
-        HKCategoryType(.skippedHeartbeat),
-        HKCategoryType(.fatigue),
-        HKCategoryType(.shortnessOfBreath),
-        HKCategoryType(.chestTightnessOrPain),
-        HKCategoryType(.fainting),
-        HKCategoryType(.dizziness)
+    public static let correlatedSymptomTypes: [SampleType<HKCategorySample>] = [
+        .rapidPoundingOrFlutteringHeartbeat,
+        .skippedHeartbeat,
+        .fatigue,
+        .shortnessOfBreath,
+        .chestTightnessOrPain,
+        .fainting,
+        .dizziness
     ]
     
     
     /// Load the symptoms of an `HKElectrocardiogram` instance from an `HKHealthStore` instance.
-    /// - Parameter healthStore: The `HKHealthStore` instance that should be used to load the `Symptoms`.
+    /// - Parameter healthKit: The ``HealthKit`` instance that should be used to load the `Symptoms`.
     /// - Returns: The symptoms associated with an `HKElectrocardiogram`.
-    public func symptoms(from healthStore: HKHealthStore) async throws -> Symptoms {
+    public func symptoms(from healthKit: HealthKit) async throws -> Symptoms {
         switch symptomsStatus {
         case .present:
-            try await healthStore.requestAuthorization(toShare: [], read: Set(HKElectrocardiogram.correlatedSymptomTypes))
+            try await healthKit.askForAuthorization(for: .init(
+                read: HKElectrocardiogram.correlatedSymptomTypes.map(\.hkSampleType)
+            ))
             let predicate = HKQuery.predicateForObjectsAssociated(electrocardiogram: self)
             return try await HKElectrocardiogram.correlatedSymptomTypes.reduce(into: Symptoms()) { symptoms, categoryType in
-                if let sample = try await healthStore.sampleQuery(for: categoryType, withPredicate: predicate).first,
-                   let sample = sample as? HKCategorySample {
+                if let sample = try await healthKit.query(categoryType, timeRange: .ever, predicate: predicate).first {
                     symptoms[sample.categoryType] = HKCategoryValueSeverity(rawValue: sample.value)
                 }
             }
@@ -51,18 +57,23 @@ extension HKElectrocardiogram {
         }
     }
     
+    
     /// Load the voltage measurements of an `HKElectrocardiogram` instance from an `HKHealthStore` instance.
     /// - Parameter healthStore: The `HKHealthStore` instance that should be used to load the `VoltageMeasurements`.
     /// - Returns: The voltage measurements associated with an `HKElectrocardiogram`.
-    public func voltageMeasurements(from healthStore: HKHealthStore) async throws -> VoltageMeasurements {
-        let electrocardiogramQueryDescriptor = HKElectrocardiogramQueryDescriptor(self)
-        var voltageMeasurements: VoltageMeasurements = []
-        voltageMeasurements.reserveCapacity(numberOfVoltageMeasurements)
-        for try await measurement in electrocardiogramQueryDescriptor.results(for: healthStore) {
-            if let voltageQuantity = measurement.quantity(for: .appleWatchSimilarToLeadI) {
-                voltageMeasurements.append((measurement.timeSinceSampleStart, voltageQuantity))
+    public func voltageMeasurements(from healthStore: HKHealthStore) async throws -> [Measurement] {
+        let queryDescriptor = HKElectrocardiogramQueryDescriptor(self)
+        var measurements: [Measurement] = []
+        measurements.reserveCapacity(numberOfVoltageMeasurements)
+        for try await measurement in queryDescriptor.results(for: healthStore) {
+            guard let voltage = measurement.quantity(for: .appleWatchSimilarToLeadI) else {
+                continue
             }
+            measurements.append(.init(
+                timeOffset: measurement.timeSinceSampleStart,
+                voltage: voltage
+            ))
         }
-        return voltageMeasurements
+        return measurements
     }
 }

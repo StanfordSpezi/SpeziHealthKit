@@ -31,6 +31,10 @@ public protocol AnySampleType: Hashable, Identifiable, Sendable where ID == Stri
     
     /// The recommended user-displayable name of this sample type.
     var displayTitle: String { get }
+    
+    /// Creates a properly-typed `HKSamplePredicate` object, for the current sample type.
+    func _makeSamplePredicateInternal(filter filterPredicate: NSPredicate?) -> HKSamplePredicate<Sample._QueryResult>
+    // swiftlint:disable:previous identifier_name
 }
 
 
@@ -38,6 +42,15 @@ extension AnySampleType {
     /// The sample type's unique identifier, derived from its underlying `HKSampleType`
     @inlinable public var id: String {
         hkSampleType.identifier
+    }
+    
+    // swiftlint:disable:next identifier_name
+    func _makeSamplePredicate(filter filterPredicate: NSPredicate?) -> HKSamplePredicate<Sample> {
+        let predicate = _makeSamplePredicateInternal(filter: filterPredicate)
+        guard let predicate = predicate as? HKSamplePredicate<Sample> else {
+            preconditionFailure("HKSamplePredicate has invalid type. Expected '\(HKSamplePredicate<Sample>.self)'; got '\(type(of: predicate))'")
+        }
+        return predicate
     }
 }
 

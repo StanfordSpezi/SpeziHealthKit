@@ -98,7 +98,7 @@ public struct HealthChart: View {
         }
         var content = AnyChartContent(erasing: ChartContentBuilder.buildBlock())
         for block in blocks {
-            if #available(iOS 18, macOS 15, *) {
+            if #available(iOS 18, macOS 15, watchOS 11, *) {
                 content = AnyChartContent(erasing: ChartContentBuilder.buildBlock(content, block))
             } else {
                 content = AnyChartContent(erasing: ChartContentBuilder.buildPartialBlock(accumulated: content, next: block))
