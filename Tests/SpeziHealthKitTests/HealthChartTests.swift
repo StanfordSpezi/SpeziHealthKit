@@ -18,8 +18,8 @@ import SpeziTesting
 struct HealthChartTests {
 #if os(iOS)
     @MainActor
-    @Test
-    func testSimpleHealthChartView() throws {
+    @Test("Simple HealthChart View Snapshot")
+    func simpleHealthChartViewSnapshot() throws {
         var heartRateSamplesProvider = FakeSamplesProvider(
             sampleType: .heartRate,
             values: [97 as Double, 95, 91, 89, 89, 92, 117, 119, 118, 95, 85, 87].makeLoopingIterator(),
@@ -47,8 +47,8 @@ struct HealthChartTests {
     
     
     @MainActor
-    @Test
-    func testMultiEntryHealthChartView() throws {
+    @Test("Multi Entry HealthChart View Snapshot")
+    func multiEntryHealthChartViewSnapshot() throws {
         var heartRateSamplesProvider = FakeSamplesProvider(
             sampleType: .heartRate,
             values: [97 as Double, 95, 91, 89, 89, 92, 117, 119, 118, 95, 85, 87].makeLoopingIterator(),
@@ -94,8 +94,8 @@ struct HealthChartTests {
     
     
     @MainActor
-    @Test
-    func testEmptyHealthChartNoEntries() {
+    @Test("Empty HealthChart No Entries Snapshot")
+    func emptyHealthChartNoEntriesSnapshot() {
         let healthChart = HealthChart {
             // nothing in here
         }
@@ -106,8 +106,8 @@ struct HealthChartTests {
     }
     
     @MainActor
-    @Test
-    func testEmptyHealthChartEntriesButNoData() throws {
+    @Test("Empty HealthChart Entries But No Data Snapshot")
+    func emptyHealthChartEntriesButNoDataSnapshot() throws {
         let data = MockQueryResults(sampleType: .heartRate, timeRange: .currentWeek, samples: [])
         let healthChart = HealthChart {
             HealthChartEntry(data, drawingConfig: .init(mode: .bar, color: .red))
@@ -120,8 +120,8 @@ struct HealthChartTests {
     
     
     @MainActor
-    @Test
-    func testConditionalHealthChartContent() throws {
+    @Test("Conditional HealthChart Content Snapshot")
+    func conditionalHealthChartContentSnapshot() throws {
         var heartRateSamplesProvider = FakeSamplesProvider(
             sampleType: .heartRate,
             values: [97 as Double, 95, 91, 89, 89, 92, 117, 119, 118, 95, 85, 87].makeLoopingIterator(),

@@ -13,7 +13,7 @@ import Testing
 
 
 struct SpeziHealthKitTests {
-    @Test
+    @Test("Equal Time Ranges")
     func equalTimeRanges() {
         #expect(HealthKitQueryTimeRange.last(hours: 1) == .currentHour)
         #expect(HealthKitQueryTimeRange.last(days: 1) == .today)
@@ -22,7 +22,7 @@ struct SpeziHealthKitTests {
         #expect(HealthKitQueryTimeRange.last(years: 1) == .currentYear)
     }
 
-    @Test
+    @Test("Equal Well Known Identifiers")
     func equalWellKnownIdentifiers() {
         #expect(HKQuantityType.allKnownQuantities.count == HKQuantityTypeIdentifier.allKnownIdentifiers.count)
         #expect(HKCorrelationType.allKnownCorrelations.count == HKCorrelationTypeIdentifier.allKnownIdentifiers.count)
