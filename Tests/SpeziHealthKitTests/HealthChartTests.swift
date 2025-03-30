@@ -11,13 +11,14 @@ import SnapshotTesting
 @testable import SpeziHealthKit
 @testable import SpeziHealthKitUI
 import SwiftUI
-import XCTest
-import XCTSpezi
+import Testing
+import SpeziTesting
 
 
-final class HealthChartTests: XCTestCase {
+struct HealthChartTests {
 #if os(iOS)
     @MainActor
+    @Test
     func testSimpleHealthChartView() throws {
         var heartRateSamplesProvider = FakeSamplesProvider(
             sampleType: .heartRate,
@@ -46,6 +47,7 @@ final class HealthChartTests: XCTestCase {
     
     
     @MainActor
+    @Test
     func testMultiEntryHealthChartView() throws {
         var heartRateSamplesProvider = FakeSamplesProvider(
             sampleType: .heartRate,
@@ -92,6 +94,7 @@ final class HealthChartTests: XCTestCase {
     
     
     @MainActor
+    @Test
     func testEmptyHealthChartNoEntries() {
         let healthChart = HealthChart {
             // nothing in here
@@ -103,6 +106,7 @@ final class HealthChartTests: XCTestCase {
     }
     
     @MainActor
+    @Test
     func testEmptyHealthChartEntriesButNoData() throws {
         let data = MockQueryResults(sampleType: .heartRate, timeRange: .currentWeek, samples: [])
         let healthChart = HealthChart {
@@ -116,6 +120,7 @@ final class HealthChartTests: XCTestCase {
     
     
     @MainActor
+    @Test
     func testConditionalHealthChartContent() throws {
         var heartRateSamplesProvider = FakeSamplesProvider(
             sampleType: .heartRate,
