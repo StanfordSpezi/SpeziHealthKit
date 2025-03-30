@@ -15,7 +15,7 @@ import Testing
 import SpeziTesting
 
 
-struct HealthChartTests {
+extension SpeziHealthKitTests {
 #if os(iOS)
     @MainActor
     @Test("Simple HealthChart View Snapshot")

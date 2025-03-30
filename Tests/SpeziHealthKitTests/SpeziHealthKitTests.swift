@@ -12,6 +12,7 @@ import SpeziHealthKitUI
 import Testing
 
 
+@Suite("SpeziHealthKitTests")
 struct SpeziHealthKitTests {
     @Test("Equal Time Ranges")
     func equalTimeRanges() {
