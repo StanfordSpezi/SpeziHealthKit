@@ -9,9 +9,8 @@
 
 import Spezi
 @testable import SpeziHealthKit
-import Testing
 import SpeziTesting
-
+import Testing
 
 private actor TestStandard: Standard, HealthKitConstraint {
     func handleNewSamples<Sample>(

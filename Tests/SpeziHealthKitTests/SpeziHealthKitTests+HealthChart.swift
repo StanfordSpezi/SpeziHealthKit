@@ -10,9 +10,9 @@ import HealthKit
 import SnapshotTesting
 @testable import SpeziHealthKit
 @testable import SpeziHealthKitUI
+import SpeziTesting
 import SwiftUI
 import Testing
-import SpeziTesting
 
 
 extension SpeziHealthKitTests {
