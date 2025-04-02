@@ -33,6 +33,15 @@ jobs:
       destination: 'platform=watchOS Simulator,name=Apple Watch Series 10 (46mm)'
       artifactname: SpeziHealthKit-Package-watchOS.xcresult
       resultBundle: SpeziHealthKit-Package-watchOS.xcresult
+  buildandtest_visionos:
+    name: Build and Test Swift Package visionOS
+    uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
+    with:
+      runsonlabels: '["macOS", "self-hosted"]'
+      scheme: SpeziHealthKit-Package
+      destination: 'platform=visionOS Simulator,name=Apple Vision Pro'
+      artifactname: SpeziHealthKit-Package-visionOS.xcresult
+      resultBundle: SpeziHealthKit-Package-visionOS.xcresult
   buildandtest_macos:
     name: Build and Test Swift Package macOS
     uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
@@ -53,9 +62,9 @@ jobs:
       resultBundle: TestApp.xcresult
   uploadcoveragereport:
     name: Upload Coverage Report
-    needs: [buildandtest_ios, buildandtest_watchos, buildandtest_macos, buildandtestuitests]
+    needs: [buildandtest_ios, buildandtest_watchos, buildandtest_visionos, buildandtest_macos, buildandtestuitests]
     uses: StanfordSpezi/.github/.github/workflows/create-and-upload-coverage-report.yml@v2
     with:
-      coveragereports: SpeziHealthKit-Package-iOS.xcresult SpeziHealthKit-Package-watchOS.xcresult SpeziHealthKit-Package-macOS.xcresult TestApp.xcresult
+      coveragereports: SpeziHealthKit-Package-iOS.xcresult SpeziHealthKit-Package-watchOS.xcresult SpeziHealthKit-Package-visionOS.xcresult SpeziHealthKit-Package-macOS.xcresult TestApp.xcresult
     secrets:
       token: ${{ secrets.CODECOV_TOKEN }}
