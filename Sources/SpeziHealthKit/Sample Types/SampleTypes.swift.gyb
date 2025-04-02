@@ -17,10 +17,11 @@ def localeDependentUnit(*, us: str, uk: Optional[str] = None, metric: str) -> st
 
 
 class Availability(object):
-    def __init__(self, *, iOS: Optional[str] = None, macOS: Optional[str] = None, watchOS: Optional[str] = None):
+    def __init__(self, *, iOS: Optional[str] = None, macOS: Optional[str] = None, watchOS: Optional[str] = None, visionOS: Optional[str] = None):
         self.iOS = iOS
         self.macOS = macOS
         self.watchOS = watchOS
+        self.visionOS = visionOS
     
     def components(self) -> list[str]:
         components = []
@@ -30,6 +31,8 @@ class Availability(object):
             components.append(f'macOS {self.macOS}')
         if self.watchOS is not None:
             components.append(f'watchOS {self.watchOS}')
+        if self.visionOS is not None:
+            components.append(f'visionOS {self.visionOS}')
         return components
 
 
