@@ -9,33 +9,36 @@
 import HealthKit
 @testable import SpeziHealthKit
 import SpeziHealthKitUI
-import XCTest
+import Testing
 
 
-final class SpeziHealthKitTests: XCTestCase {
-    func testTimeRanges() {
-        XCTAssertEqual(HealthKitQueryTimeRange.last(hours: 1), .currentHour)
-        XCTAssertEqual(HealthKitQueryTimeRange.last(days: 1), .today)
-        XCTAssertEqual(HealthKitQueryTimeRange.last(weeks: 1), .currentWeek)
-        XCTAssertEqual(HealthKitQueryTimeRange.last(months: 1), .currentMonth)
-        XCTAssertEqual(HealthKitQueryTimeRange.last(years: 1), .currentYear)
+@Suite("SpeziHealthKitTests")
+struct SpeziHealthKitTests {
+    @Test("Equal Time Ranges")
+    func equalTimeRanges() {
+        #expect(HealthKitQueryTimeRange.last(hours: 1) == .currentHour)
+        #expect(HealthKitQueryTimeRange.last(days: 1) == .today)
+        #expect(HealthKitQueryTimeRange.last(weeks: 1) == .currentWeek)
+        #expect(HealthKitQueryTimeRange.last(months: 1) == .currentMonth)
+        #expect(HealthKitQueryTimeRange.last(years: 1) == .currentYear)
     }
-    
-    func testWellKnownIdentifiers() {
-        XCTAssertEqual(HKQuantityType.allKnownQuantities.count, HKQuantityTypeIdentifier.allKnownIdentifiers.count)
-        XCTAssertEqual(HKCorrelationType.allKnownCorrelations.count, HKCorrelationTypeIdentifier.allKnownIdentifiers.count)
-        XCTAssertEqual(HKCategoryType.allKnownCategories.count, HKCategoryTypeIdentifier.allKnownIdentifiers.count)
-        XCTAssertEqual(HKObjectType.allKnownObjectTypes.count, 198)
+
+    @Test("Equal Well Known Identifiers")
+    func equalWellKnownIdentifiers() {
+        #expect(HKQuantityType.allKnownQuantities.count == HKQuantityTypeIdentifier.allKnownIdentifiers.count)
+        #expect(HKCorrelationType.allKnownCorrelations.count == HKCorrelationTypeIdentifier.allKnownIdentifiers.count)
+        #expect(HKCategoryType.allKnownCategories.count == HKCategoryTypeIdentifier.allKnownIdentifiers.count)
+        #expect(HKObjectType.allKnownObjectTypes.count == 198)
     }
-    
-    
-    func testQueryAnchorCoding() throws {
-        func imp(_ anchor: QueryAnchor, line: UInt = #line) throws {
-            let encoded = try JSONEncoder().encode(anchor)
-            let decoded = try JSONDecoder().decode(QueryAnchor.self, from: encoded)
-            XCTAssertEqual(anchor, decoded, line: line)
-        }
-        try imp(QueryAnchor(HKQueryAnchor(fromValue: 5734987678924)))
-        try imp(QueryAnchor())
+
+
+    @Test("Query anchors codable", arguments: [
+        QueryAnchor(HKQueryAnchor(fromValue: 5734987678924)),
+        QueryAnchor()
+    ])
+    func equalQueryAnchorCoding2(_ anchor: QueryAnchor) throws {
+        let encoded = try JSONEncoder().encode(anchor)
+        let decoded = try JSONDecoder().decode(QueryAnchor.self, from: encoded)
+        #expect(anchor == decoded)
     }
 }
