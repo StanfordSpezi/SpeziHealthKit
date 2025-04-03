@@ -18,7 +18,8 @@ let package = Package(
     platforms: [
         .iOS(.v17),
         .macOS(.v14),
-        .watchOS(.v10)
+        .watchOS(.v10),
+        .visionOS(.v1)
     ],
     products: [
         .library(name: "SpeziHealthKit", targets: ["SpeziHealthKit"]),

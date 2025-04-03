@@ -17,10 +17,11 @@ def localeDependentUnit(*, us: str, uk: Optional[str] = None, metric: str) -> st
 
 
 class Availability(object):
-    def __init__(self, *, iOS: Optional[str] = None, macOS: Optional[str] = None, watchOS: Optional[str] = None):
+    def __init__(self, *, iOS: Optional[str] = None, macOS: Optional[str] = None, watchOS: Optional[str] = None, visionOS: Optional[str] = None):
         self.iOS = iOS
         self.macOS = macOS
         self.watchOS = watchOS
+        self.visionOS = visionOS
     
     def components(self) -> list[str]:
         components = []
@@ -30,6 +31,8 @@ class Availability(object):
             components.append(f'macOS {self.macOS}')
         if self.watchOS is not None:
             components.append(f'watchOS {self.watchOS}')
+        if self.visionOS is not None:
+            components.append(f'visionOS {self.visionOS}')
         return components
 
 
@@ -771,14 +774,14 @@ quantity_types = [
 
     # Other
     SampleType.quantity_type(
-        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0'),
+        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0', visionOS='2.0'),
         identifier='appleSleepingBreathingDisturbances',
         display_title='Sleeping Breathing Disturbances',
         display_unit='.count()',
         doc='A quantity sample that records breathing disturbances during sleep.'
     ),
     SampleType.quantity_type(
-        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0'),
+        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0', visionOS='2.0'),
         identifier='crossCountrySkiingSpeed',
         display_title='Cross-Country Skiing Speed',
         display_unit=localeDependentUnit(us='.mile() / .hour()', metric='.meterUnit(with: .kilo) / .hour()'),
@@ -809,28 +812,28 @@ quantity_types = [
         doc='A quantity sample that records cycling speed.'
     ),
     SampleType.quantity_type(
-        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0'),
+        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0', visionOS='2.0'),
         identifier='distanceCrossCountrySkiing',
         display_title='Cross-Country Skiing Distance',
         display_unit=localeDependentUnit(us='.mile()', metric='.meterUnit(with: .kilo)'),
         doc='A quantity sample that records cross-country skiing distance.'
     ),
     SampleType.quantity_type(
-        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0'),
+        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0', visionOS='2.0'),
         identifier='distancePaddleSports',
         display_title='Paddle Sports Distance',
         display_unit=localeDependentUnit(us='.mile()', metric='.meterUnit(with: .kilo)'),
         doc='A quantity sample that records paddle sports distance.'
     ),
     SampleType.quantity_type(
-        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0'),
+        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0', visionOS='2.0'),
         identifier='distanceRowing',
         display_title='Rowing Distance',
         display_unit=localeDependentUnit(us='.mile()', metric='.meterUnit(with: .kilo)'),
         doc='A quantity sample that records rowing distance.'
     ),
     SampleType.quantity_type(
-        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0'),
+        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0', visionOS='2.0'),
         identifier='distanceSkatingSports',
         display_title='Skating Sports Distance',
         display_unit=localeDependentUnit(us='.mile()', metric='.meterUnit(with: .kilo)'),
@@ -843,14 +846,14 @@ quantity_types = [
         doc='A quantity sample that records environmental sound reduction.'
     ),
     SampleType.quantity_type(
-        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0'),
+        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0', visionOS='2.0'),
         identifier='estimatedWorkoutEffortScore',
         display_title='Estimated Workout Effort Score',
         display_unit='.count()', # TODO not sure about this one
         doc='A quantity sample that records estimated physical effort during workouts.'
     ),
     SampleType.quantity_type(
-        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0'),
+        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0', visionOS='2.0'),
         identifier='paddleSportsSpeed',
         display_title='Paddle Sports Speed',
         display_unit=localeDependentUnit(us='.mile() / .hour()', metric='.meterUnit(with: .kilo) / .hour()'),
@@ -863,7 +866,7 @@ quantity_types = [
         doc='A quantity sample that records physical effort.'
     ),
     SampleType.quantity_type(
-        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0'),
+        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0', visionOS='2.0'),
         identifier='rowingSpeed',
         display_title='Rowing Speed',
         display_unit=localeDependentUnit(us='.mile() / .hour()', metric='.meterUnit(with: .kilo) / .hour()'),
@@ -876,7 +879,7 @@ quantity_types = [
         doc='A quantity sample that records time spent in daylight.'
     ),
     SampleType.quantity_type(
-        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0'),
+        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0', visionOS='2.0'),
         identifier='workoutEffortScore',
         display_title='Workout Effort Score',
         display_unit='.count()', # TODO not sure about this one
@@ -1208,13 +1211,13 @@ category_types = [
         doc='A category type that records vaginal dryness as a symptom.'
     ),
     SampleType.category_type(
-        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0'),
+        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0', visionOS='2.0'),
         identifier='bleedingDuringPregnancy',
         display_title='Bleeding During Pregnancy',
         doc='A category type that records bleeding during pregnancy as a symptom.'
     ),
     SampleType.category_type(
-        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0'),
+        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0', visionOS='2.0'),
         identifier='bleedingAfterPregnancy',
         display_title='Bleeding After Pregnancy',
         doc='A category type that records bleeding after pregnancy as a symptom.'
@@ -1247,7 +1250,7 @@ category_types = [
         doc='A category type that records sleep changes as a symptom.'
     ),
     SampleType.category_type(
-        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0'),
+        availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0', visionOS='2.0'),
         identifier='sleepApneaEvent',
         display_title='Sleep Apnea',
         doc='A category type that records sleep apnea as a symptom.'
