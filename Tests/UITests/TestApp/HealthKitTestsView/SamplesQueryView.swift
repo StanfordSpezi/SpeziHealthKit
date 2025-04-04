@@ -31,6 +31,16 @@ struct SamplesQueryView: View {
                     HealthChartEntry($bloodOxygenSamples, drawingConfig: .init(mode: .line, color: .blue))
                 }
                 .frame(height: 270)
+                
+                Text("Area and Average Chart")
+                    .font(.headline)
+                    .padding(.vertical)
+                
+                EnhancedHealthChart.areaChart(showAverage: true) {
+                    HealthChartEntry($heartRateSamples, drawingConfig: .init(mode: .line, color: .red))
+                    HealthChartEntry($bloodOxygenSamples, drawingConfig: .init(mode: .line, color: .blue))
+                }
+                .frame(height: 270)
             }
             makeSection(for: $stepSamples)
         }
