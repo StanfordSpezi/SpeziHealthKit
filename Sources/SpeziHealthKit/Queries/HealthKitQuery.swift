@@ -23,6 +23,7 @@ extension HealthKit {
         _ sampleType: SampleType<Sample>,
         timeRange: HealthKitQueryTimeRange,
         limit: Int? = nil,
+        sortedBy sortDescriptors: [SortDescriptor<Sample>] = [SortDescriptor<Sample>(\.startDate, order: .forward)],
         predicate filterPredicate: NSPredicate? = nil
     ) async throws -> [Sample] {
         let predicate = sampleType._makeSamplePredicate(
@@ -30,7 +31,7 @@ extension HealthKit {
         )
         let queryDescriptor = HKSampleQueryDescriptor<Sample>(
             predicates: [predicate],
-            sortDescriptors: [SortDescriptor<Sample>(\.startDate, order: .forward)],
+            sortDescriptors: sortDescriptors,
             limit: limit
         )
         return try await queryDescriptor.result(for: healthStore)
