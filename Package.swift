@@ -39,6 +39,8 @@ let package = Package(
                 .product(name: "SpeziFoundation", package: "SpeziFoundation"),
                 .product(name: "SpeziLocalStorage", package: "SpeziStorage")
             ],
+            exclude: ["Sample Types/SampleTypes.swift.gyb"],
+            resources: [.process("Resources")],
             swiftSettings: [.enableUpcomingFeature("ExistentialAny")],
             plugins: [] + swiftLintPlugin()
         ),
@@ -59,6 +61,7 @@ let package = Package(
                 .target(name: "SpeziHealthKitUI"),
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing")
             ],
+            resources: [.process("__Snapshots__")],
             swiftSettings: [.enableUpcomingFeature("ExistentialAny")],
             plugins: [] + swiftLintPlugin()
         )
