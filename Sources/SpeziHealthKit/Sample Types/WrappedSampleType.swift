@@ -53,24 +53,24 @@ public enum WrappedSampleType: Hashable, Identifiable, Sendable {
     
     /// Attempts to wrap a sample type.
     public init?(_ sampleType: any AnySampleType) {
-        if let sampleType = sampleType as? SampleType<HKQuantitySample> {
+        switch sampleType {
+        case let sampleType as SampleType<HKQuantitySample>:
             self = .quantity(sampleType)
-        } else if let sampleType = sampleType as? SampleType<HKCorrelation> {
+        case let sampleType as SampleType<HKCorrelation>:
             self = .correlation(sampleType)
-        } else if let sampleType = sampleType as? SampleType<HKCategorySample> {
+        case let sampleType as SampleType<HKCategorySample>:
             self = .category(sampleType)
-        } else if let sampleType = sampleType as? SampleType<HKElectrocardiogram> {
+        #if !os(watchOS)
+        case let sampleType as SampleType<HKClinicalRecord>:
+            self = .clinical(sampleType)
+        #endif
+        case let sampleType as SampleType<HKElectrocardiogram>:
             self = .electrocardiogram(sampleType)
-        } else if let sampleType = sampleType as? SampleType<HKAudiogramSample> {
+        case let sampleType as SampleType<HKAudiogramSample>:
             self = .audiogram(sampleType)
-        } else if let sampleType = sampleType as? SampleType<HKWorkout> {
+        case let sampleType as SampleType<HKWorkout>:
             self = .workout(sampleType)
-        } else {
-            #if !os(watchOS)
-            if let sampleType = sampleType as? SampleType<HKClinicalRecord> {
-                self = .clinical(sampleType)
-            }
-            #endif
+        default:
             return nil
         }
     }
