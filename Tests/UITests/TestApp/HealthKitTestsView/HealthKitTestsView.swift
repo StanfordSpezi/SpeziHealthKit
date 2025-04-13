@@ -43,6 +43,11 @@ struct HealthKitTestsView: View {
                 LabeledContent("isFullyAuthorized", value: "\(healthKit.isFullyAuthorized)")
             }
             Section {
+                NavigationLink("Bulk Exporter") {
+                    BulkExportView()
+                }
+            }
+            Section {
                 NavigationLink("Samples Query") {
                     SamplesQueryView()
                 }

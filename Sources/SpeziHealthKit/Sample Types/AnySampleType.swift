@@ -20,7 +20,7 @@ import HealthKit
 /// - ``==(_:_:)-4zjyo``
 /// - ``==(_:_:)-5dq7``
 /// - ``==(_:_:)-80mw5``
-public protocol AnySampleType: Hashable, Identifiable, Sendable where ID == String {
+public protocol AnySampleType<Sample>: Hashable, Identifiable, Sendable where ID == String {
     /// The type of the sample type's underlying samples.
     ///
     /// E.g., for a sample type representing quantity samples, this would be `HKQuantitySample`.

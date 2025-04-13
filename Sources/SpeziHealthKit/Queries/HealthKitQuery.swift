@@ -184,3 +184,16 @@ extension HealthKit {
         return results.map { ContinuousQueryElement(update: $0) }
     }
 }
+
+
+extension HealthKit {
+    /// Fetches the `startDate` of the oldest sample in the HealthKit database, for the specified sample type.
+    public func oldestSampleDate(for sampleType: SampleType<some Any>) async throws -> Date? {
+        try await query(
+            sampleType,
+            timeRange: .ever,
+            limit: 1,
+            sortedBy: [SortDescriptor(\.startDate, order: .forward)]
+        ).first?.startDate
+    }
+}

@@ -49,6 +49,8 @@ class TestAppDelegate: SpeziAppDelegate {
                     quantity: [.heartRate, .bloodOxygen, .stepCount, .height, .activeEnergyBurned]
                 )
             }
+            
+            BulkHealthExporter()
         }
     }
 }
