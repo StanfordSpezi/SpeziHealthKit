@@ -18,6 +18,7 @@ public enum WrappedSampleType: Hashable, Identifiable, Sendable {
     case quantity(SampleType<HKQuantitySample>)
     case correlation(SampleType<HKCorrelation>)
     case category(SampleType<HKCategorySample>)
+    @available(watchOS, unavailable)
     case clinical(SampleType<HKClinicalRecord>)
     case electrocardiogram(SampleType<HKElectrocardiogram>)
     case audiogram(SampleType<HKAudiogramSample>)
