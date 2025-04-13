@@ -68,6 +68,12 @@ public struct HealthKitStatisticsQuery: DynamicProperty { // swiftlint:disable:t
     
     
     public struct AggregationInterval: Hashable, Sendable {
+        public static let hour = Self(.init(hour: 1))
+        public static let day = Self(.init(day: 1))
+        public static let week = Self(.init(day: 7))
+        public static let month = Self(.init(month: 1))
+        public static let year = Self(.init(year: 1))
+        
         /// The components defining the interval.
         /// See [here](https://developer.apple.com/documentation/healthkit/queries/executing_statistics_collection_queries) for some more documentation.
         fileprivate let intervalComponents: DateComponents
@@ -75,12 +81,6 @@ public struct HealthKitStatisticsQuery: DynamicProperty { // swiftlint:disable:t
         public init(_ components: DateComponents) {
             self.intervalComponents = components
         }
-        
-        public static let hour = Self(.init(hour: 1))
-        public static let day = Self(.init(day: 1))
-        public static let week = Self(.init(day: 7))
-        public static let month = Self(.init(month: 1))
-        public static let year = Self(.init(year: 1))
     }
     
     
