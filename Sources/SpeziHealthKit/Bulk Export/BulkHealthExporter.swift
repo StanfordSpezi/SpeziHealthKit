@@ -11,7 +11,6 @@ import HealthKit
 import Spezi
 import SpeziLocalStorage
 import SwiftUI
-import HealthKitOnFHIR
 
 
 public final class BulkHealthExporter: Module, EnvironmentAccessible, @unchecked Sendable {
@@ -38,6 +37,7 @@ extension BulkHealthExporter {
         try await startOrResumeSession(id, for: exportSampleTypes, using: format, batchHandler: { _ in })
     }
     
+    @discardableResult
     @MainActor
     public func startOrResumeSession<Format: BulkHealthExporter.ExportFormat>(
         _ id: String,
@@ -66,7 +66,6 @@ extension BulkHealthExporter {
         }
     }
 }
-
 
 
 extension BulkHealthExporter {
@@ -226,34 +225,5 @@ extension SampleType {
     init(_ typeErased: any AnySampleType<Sample>) {
         // SAFETY: SampleType is the only type conforming to `AnySampleType`.
         self = typeErased as! Self // swiftlint:disable:this force_cast
-    }
-}
-
-
-public struct JSONFileExportFormat: BulkHealthExporter.ExportFormat {
-    public typealias Output = URL
-    
-    private let compressUsingZlib: Bool
-    
-    fileprivate init(compressUsingZlib: Bool) {
-        self.compressUsingZlib = compressUsingZlib
-    }
-    
-    public func process<Sample>(_ samples: consuming [Sample], of sampleType: SampleType<Sample>) async throws -> URL {
-        let resources = try samples.mapIntoResourceProxies()
-        let encoded = try JSONEncoder().encode(resources)
-        let url = URL(filePath: NSTemporaryDirectory() + UUID().uuidString + ".json")
-        try encoded.write(to: url)
-        if compressUsingZlib {
-            // TODO compress!!!
-        }
-        return url
-    }
-}
-
-
-extension BulkHealthExporter.ExportFormat where Self == JSONFileExportFormat {
-    public static func jsonFile(compressUsingZlib: Bool) -> some BulkHealthExporter.ExportFormat<URL> {
-        JSONFileExportFormat(compressUsingZlib: compressUsingZlib)
     }
 }

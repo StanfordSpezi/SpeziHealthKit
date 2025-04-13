@@ -29,7 +29,6 @@ let package = Package(
         .package(url: "https://github.com/StanfordSpezi/Spezi.git", from: "1.8.0"),
         .package(url: "https://github.com/StanfordSpezi/SpeziFoundation.git", from: "2.1.0"),
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage.git", from: "2.0.1"),
-        .package(url: "https://github.com/StanfordBDHG/HealthKitOnFHIR.git", branch: "lukas/performance"),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.17.7")
     ] + swiftLintPackage(),
     targets: [
@@ -38,8 +37,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Spezi", package: "Spezi"),
                 .product(name: "SpeziFoundation", package: "SpeziFoundation"),
-                .product(name: "SpeziLocalStorage", package: "SpeziStorage"),
-                .product(name: "HealthKitOnFHIR", package: "HealthKitOnFHIR")
+                .product(name: "SpeziLocalStorage", package: "SpeziStorage")
             ],
             exclude: ["Sample Types/SampleTypes.swift.gyb"],
             resources: [.process("Resources")],

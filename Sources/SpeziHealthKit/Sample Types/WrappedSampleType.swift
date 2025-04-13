@@ -18,8 +18,9 @@ public enum WrappedSampleType: Hashable, Identifiable, Sendable {
     case quantity(SampleType<HKQuantitySample>)
     case correlation(SampleType<HKCorrelation>)
     case category(SampleType<HKCategorySample>)
-    @available(watchOS, unavailable)
+    #if !os(watchOS)
     case clinical(SampleType<HKClinicalRecord>)
+    #endif
     case electrocardiogram(SampleType<HKElectrocardiogram>)
     case audiogram(SampleType<HKAudiogramSample>)
     case workout(SampleType<HKWorkout>)
@@ -33,8 +34,10 @@ public enum WrappedSampleType: Hashable, Identifiable, Sendable {
             sampleType
         case .category(let sampleType):
             sampleType
+        #if !os(watchOS)
         case .clinical(let sampleType):
             sampleType
+        #endif
         case .electrocardiogram(let sampleType):
             sampleType
         case .audiogram(let sampleType):
@@ -56,8 +59,6 @@ public enum WrappedSampleType: Hashable, Identifiable, Sendable {
             self = .correlation(sampleType)
         } else if let sampleType = sampleType as? SampleType<HKCategorySample> {
             self = .category(sampleType)
-        } else if let sampleType = sampleType as? SampleType<HKClinicalRecord> {
-            self = .clinical(sampleType)
         } else if let sampleType = sampleType as? SampleType<HKElectrocardiogram> {
             self = .electrocardiogram(sampleType)
         } else if let sampleType = sampleType as? SampleType<HKAudiogramSample> {
@@ -65,6 +66,11 @@ public enum WrappedSampleType: Hashable, Identifiable, Sendable {
         } else if let sampleType = sampleType as? SampleType<HKWorkout> {
             self = .workout(sampleType)
         } else {
+            #if !os(watchOS)
+            if let sampleType = sampleType as? SampleType<HKClinicalRecord> {
+                self = .clinical(sampleType)
+            }
+            #endif
             return nil
         }
     }
@@ -106,8 +112,10 @@ extension WrappedSampleType: Codable {
             self = .correlation(try tryInit(SampleType<HKCorrelation>.init(_:)))
         case is HKCategoryType.Type:
             self = .category(try tryInit(SampleType<HKCategorySample>.init(_:)))
+        #if !os(watchOS)
         case is HKClinicalType.Type:
             self = .clinical(try tryInit(SampleType<HKClinicalRecord>.init(_:)))
+        #endif
         case is HKElectrocardiogramType.Type:
             self = .electrocardiogram(.electrocardiogram)
         case is HKAudiogramSampleType.Type:
