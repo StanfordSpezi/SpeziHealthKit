@@ -15,7 +15,8 @@ import SwiftUI
 import Testing
 
 
-extension SpeziHealthKitTests {
+@Suite("SpeziHealthKitUITests")
+struct SpeziHealthKitUITests {
 #if os(iOS)
     @MainActor
     @Test("Simple HealthChart View Snapshot")

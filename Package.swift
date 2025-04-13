@@ -25,7 +25,7 @@ let package = Package(
         .library(name: "SpeziHealthKitUI", targets: ["SpeziHealthKitUI"])
     ],
     dependencies: [
-        .package(url: "https://github.com/StanfordSpezi/Spezi.git", from: "1.8.0"),
+        .package(url: "https://github.com/StanfordSpezi/Spezi.git", from: "1.8.1"),
         .package(url: "https://github.com/StanfordSpezi/SpeziFoundation.git", from: "2.1.0"),
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage.git", from: "2.0.1"),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.17.7")
