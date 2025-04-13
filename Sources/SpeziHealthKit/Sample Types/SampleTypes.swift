@@ -851,7 +851,7 @@ extension SampleType where Sample == HKQuantitySample {
         )
     }
     /// A quantity sample that records breathing disturbances during sleep.
-    @available(iOS 18.0, macOS 15.0, watchOS 11.0, *)
+    @available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
     @inlinable public static var appleSleepingBreathingDisturbances: SampleType<HKQuantitySample> {
         .quantity(
             .appleSleepingBreathingDisturbances,
@@ -860,7 +860,7 @@ extension SampleType where Sample == HKQuantitySample {
         )
     }
     /// A quantity sample that records cross-country skiing speed.
-    @available(iOS 18.0, macOS 15.0, watchOS 11.0, *)
+    @available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
     @inlinable public static var crossCountrySkiingSpeed: SampleType<HKQuantitySample> {
         .quantity(
             .crossCountrySkiingSpeed,
@@ -901,7 +901,7 @@ extension SampleType where Sample == HKQuantitySample {
         )
     }
     /// A quantity sample that records cross-country skiing distance.
-    @available(iOS 18.0, macOS 15.0, watchOS 11.0, *)
+    @available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
     @inlinable public static var distanceCrossCountrySkiing: SampleType<HKQuantitySample> {
         .quantity(
             .distanceCrossCountrySkiing,
@@ -910,7 +910,7 @@ extension SampleType where Sample == HKQuantitySample {
         )
     }
     /// A quantity sample that records paddle sports distance.
-    @available(iOS 18.0, macOS 15.0, watchOS 11.0, *)
+    @available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
     @inlinable public static var distancePaddleSports: SampleType<HKQuantitySample> {
         .quantity(
             .distancePaddleSports,
@@ -919,7 +919,7 @@ extension SampleType where Sample == HKQuantitySample {
         )
     }
     /// A quantity sample that records rowing distance.
-    @available(iOS 18.0, macOS 15.0, watchOS 11.0, *)
+    @available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
     @inlinable public static var distanceRowing: SampleType<HKQuantitySample> {
         .quantity(
             .distanceRowing,
@@ -928,7 +928,7 @@ extension SampleType where Sample == HKQuantitySample {
         )
     }
     /// A quantity sample that records skating sports distance.
-    @available(iOS 18.0, macOS 15.0, watchOS 11.0, *)
+    @available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
     @inlinable public static var distanceSkatingSports: SampleType<HKQuantitySample> {
         .quantity(
             .distanceSkatingSports,
@@ -945,7 +945,7 @@ extension SampleType where Sample == HKQuantitySample {
         )
     }
     /// A quantity sample that records estimated physical effort during workouts.
-    @available(iOS 18.0, macOS 15.0, watchOS 11.0, *)
+    @available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
     @inlinable public static var estimatedWorkoutEffortScore: SampleType<HKQuantitySample> {
         .quantity(
             .estimatedWorkoutEffortScore,
@@ -954,7 +954,7 @@ extension SampleType where Sample == HKQuantitySample {
         )
     }
     /// A quantity sample that records paddle sports speed.
-    @available(iOS 18.0, macOS 15.0, watchOS 11.0, *)
+    @available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
     @inlinable public static var paddleSportsSpeed: SampleType<HKQuantitySample> {
         .quantity(
             .paddleSportsSpeed,
@@ -971,7 +971,7 @@ extension SampleType where Sample == HKQuantitySample {
         )
     }
     /// A quantity sample that records rowing speed.
-    @available(iOS 18.0, macOS 15.0, watchOS 11.0, *)
+    @available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
     @inlinable public static var rowingSpeed: SampleType<HKQuantitySample> {
         .quantity(
             .rowingSpeed,
@@ -988,7 +988,7 @@ extension SampleType where Sample == HKQuantitySample {
         )
     }
     /// A quantity sample that records workout effort.
-    @available(iOS 18.0, macOS 15.0, watchOS 11.0, *)
+    @available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
     @inlinable public static var workoutEffortScore: SampleType<HKQuantitySample> {
         .quantity(
             .workoutEffortScore,
@@ -1203,9 +1203,9 @@ extension SampleType where Sample == HKQuantitySample {
             self = .underwaterDepth
         } else if identifier == .waterTemperature {
             self = .waterTemperature
-        } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, *), identifier == .appleSleepingBreathingDisturbances {
+        } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *), identifier == .appleSleepingBreathingDisturbances {
             self = .appleSleepingBreathingDisturbances
-        } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, *), identifier == .crossCountrySkiingSpeed {
+        } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *), identifier == .crossCountrySkiingSpeed {
             self = .crossCountrySkiingSpeed
         } else if identifier == .cyclingCadence {
             self = .cyclingCadence
@@ -1215,27 +1215,27 @@ extension SampleType where Sample == HKQuantitySample {
             self = .cyclingPower
         } else if identifier == .cyclingSpeed {
             self = .cyclingSpeed
-        } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, *), identifier == .distanceCrossCountrySkiing {
+        } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *), identifier == .distanceCrossCountrySkiing {
             self = .distanceCrossCountrySkiing
-        } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, *), identifier == .distancePaddleSports {
+        } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *), identifier == .distancePaddleSports {
             self = .distancePaddleSports
-        } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, *), identifier == .distanceRowing {
+        } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *), identifier == .distanceRowing {
             self = .distanceRowing
-        } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, *), identifier == .distanceSkatingSports {
+        } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *), identifier == .distanceSkatingSports {
             self = .distanceSkatingSports
         } else if identifier == .environmentalSoundReduction {
             self = .environmentalSoundReduction
-        } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, *), identifier == .estimatedWorkoutEffortScore {
+        } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *), identifier == .estimatedWorkoutEffortScore {
             self = .estimatedWorkoutEffortScore
-        } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, *), identifier == .paddleSportsSpeed {
+        } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *), identifier == .paddleSportsSpeed {
             self = .paddleSportsSpeed
         } else if identifier == .physicalEffort {
             self = .physicalEffort
-        } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, *), identifier == .rowingSpeed {
+        } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *), identifier == .rowingSpeed {
             self = .rowingSpeed
         } else if identifier == .timeInDaylight {
             self = .timeInDaylight
-        } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, *), identifier == .workoutEffortScore {
+        } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *), identifier == .workoutEffortScore {
             self = .workoutEffortScore
         } else {
             return nil
@@ -1356,41 +1356,41 @@ extension HKQuantityTypeIdentifier {
         identifiers.insert(Self.uvExposure)
         identifiers.insert(Self.underwaterDepth)
         identifiers.insert(Self.waterTemperature)
-        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, *) {
+        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
             identifiers.insert(Self.appleSleepingBreathingDisturbances)
         }
-        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, *) {
+        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
             identifiers.insert(Self.crossCountrySkiingSpeed)
         }
         identifiers.insert(Self.cyclingCadence)
         identifiers.insert(Self.cyclingFunctionalThresholdPower)
         identifiers.insert(Self.cyclingPower)
         identifiers.insert(Self.cyclingSpeed)
-        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, *) {
+        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
             identifiers.insert(Self.distanceCrossCountrySkiing)
         }
-        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, *) {
+        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
             identifiers.insert(Self.distancePaddleSports)
         }
-        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, *) {
+        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
             identifiers.insert(Self.distanceRowing)
         }
-        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, *) {
+        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
             identifiers.insert(Self.distanceSkatingSports)
         }
         identifiers.insert(Self.environmentalSoundReduction)
-        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, *) {
+        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
             identifiers.insert(Self.estimatedWorkoutEffortScore)
         }
-        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, *) {
+        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
             identifiers.insert(Self.paddleSportsSpeed)
         }
         identifiers.insert(Self.physicalEffort)
-        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, *) {
+        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
             identifiers.insert(Self.rowingSpeed)
         }
         identifiers.insert(Self.timeInDaylight)
-        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, *) {
+        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
             identifiers.insert(Self.workoutEffortScore)
         }
         return identifiers
@@ -1814,7 +1814,7 @@ extension SampleType where Sample == HKCategorySample {
         )
     }
     /// A category type that records bleeding during pregnancy as a symptom.
-    @available(iOS 18.0, macOS 15.0, watchOS 11.0, *)
+    @available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
     @inlinable public static var bleedingDuringPregnancy: SampleType<HKCategorySample> {
         .category(
             .bleedingDuringPregnancy,
@@ -1822,7 +1822,7 @@ extension SampleType where Sample == HKCategorySample {
         )
     }
     /// A category type that records bleeding after pregnancy as a symptom.
-    @available(iOS 18.0, macOS 15.0, watchOS 11.0, *)
+    @available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
     @inlinable public static var bleedingAfterPregnancy: SampleType<HKCategorySample> {
         .category(
             .bleedingAfterPregnancy,
@@ -1865,7 +1865,7 @@ extension SampleType where Sample == HKCategorySample {
         )
     }
     /// A category type that records sleep apnea as a symptom.
-    @available(iOS 18.0, macOS 15.0, watchOS 11.0, *)
+    @available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
     @inlinable public static var sleepApneaEvent: SampleType<HKCategorySample> {
         .category(
             .sleepApneaEvent,
@@ -2000,9 +2000,9 @@ extension SampleType where Sample == HKCategorySample {
             self = .pelvicPain
         } else if identifier == .vaginalDryness {
             self = .vaginalDryness
-        } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, *), identifier == .bleedingDuringPregnancy {
+        } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *), identifier == .bleedingDuringPregnancy {
             self = .bleedingDuringPregnancy
-        } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, *), identifier == .bleedingAfterPregnancy {
+        } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *), identifier == .bleedingAfterPregnancy {
             self = .bleedingAfterPregnancy
         } else if identifier == .acne {
             self = .acne
@@ -2014,7 +2014,7 @@ extension SampleType where Sample == HKCategorySample {
             self = .nightSweats
         } else if identifier == .sleepChanges {
             self = .sleepChanges
-        } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, *), identifier == .sleepApneaEvent {
+        } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *), identifier == .sleepApneaEvent {
             self = .sleepApneaEvent
         } else if identifier == .bladderIncontinence {
             self = .bladderIncontinence
@@ -2094,10 +2094,10 @@ extension HKCategoryTypeIdentifier {
         identifiers.insert(Self.breastPain)
         identifiers.insert(Self.pelvicPain)
         identifiers.insert(Self.vaginalDryness)
-        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, *) {
+        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
             identifiers.insert(Self.bleedingDuringPregnancy)
         }
-        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, *) {
+        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
             identifiers.insert(Self.bleedingAfterPregnancy)
         }
         identifiers.insert(Self.acne)
@@ -2105,7 +2105,7 @@ extension HKCategoryTypeIdentifier {
         identifiers.insert(Self.hairLoss)
         identifiers.insert(Self.nightSweats)
         identifiers.insert(Self.sleepChanges)
-        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, *) {
+        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
             identifiers.insert(Self.sleepApneaEvent)
         }
         identifiers.insert(Self.bladderIncontinence)

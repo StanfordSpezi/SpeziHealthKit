@@ -162,8 +162,8 @@ final class HealthKitTests: XCTestCase {
         XCTAssert(app.buttons["Characteristics"].waitForExistence(timeout: 2))
         app.buttons["Characteristics"].tap()
         
-        func assertTableRow(_ title: String, _ value: String, file: StaticString = #filePath, line: UInt = #line) {
-            let predicate = NSPredicate(format: "label MATCHES %@", "\(title).*\(value)")
+        func assertTableRow(_ title: String, _ pattern: String, file: StaticString = #filePath, line: UInt = #line) {
+            let predicate = NSPredicate(format: "label MATCHES %@", "\(title).*\(pattern)")
             XCTAssert(
                 app.staticTexts.matching(predicate).element.waitForExistence(timeout: 2),
                 "Unable to find element '\(predicate)'",
