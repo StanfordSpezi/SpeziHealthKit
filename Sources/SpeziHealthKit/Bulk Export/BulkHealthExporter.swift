@@ -8,16 +8,20 @@
 
 import Foundation
 import HealthKit
+import os
 import Spezi
+import SpeziFoundation
 import SpeziLocalStorage
 import SwiftUI
 
 
 public final class BulkHealthExporter: Module, EnvironmentAccessible, @unchecked Sendable {
+    @Application(\.logger) fileprivate var logger
     @Dependency(HealthKit.self) private var healthKit
     @Dependency(LocalStorage.self) private var localStorage
     
-    @MainActor private var activeSessions: [any ExportSessionProtocol] = []
+    /// All export sessions currently known to the Bulk Exporter.
+    @MainActor private var registeredSessions: [any ExportSessionProtocol] = []
     
     nonisolated public init() {}
 }
@@ -28,48 +32,72 @@ extension BulkHealthExporter {
         case conflictingSessionAlreadyExists
     }
     
+    /// Creates or restores a previously-created Health Bulk Export Session, as identified by `id`.
     @MainActor
-    public func startOrResumeSession<Format: BulkHealthExporter.ExportFormat>(
+    public func session<Processor: BatchProcessor>(
         _ id: String,
         for exportSampleTypes: Set<WrappedSampleType>,
-        using format: Format
-    ) async throws -> Session<Format> where Format.Output == Void {
-        try await startOrResumeSession(id, for: exportSampleTypes, using: format, batchHandler: { _ in })
+        startAutomatically: Bool = true,
+        using batchProcessor: Processor
+    ) async throws -> Session<Processor> where Processor.Output == Void {
+        try await session(
+            id,
+            for: exportSampleTypes,
+            using: batchProcessor,
+            startAutomatically: startAutomatically,
+            batchResultHandler: { _ in true }
+        )
     }
     
-    @discardableResult
+    /// Creates or restores a previously-created Health Bulk Export Session, as identified by `id`.
     @MainActor
-    public func startOrResumeSession<Format: BulkHealthExporter.ExportFormat>(
+    public func session<Processor: BatchProcessor>(
         _ id: String,
         for exportSampleTypes: Set<WrappedSampleType>,
-        using format: Format,
-        batchHandler: @Sendable @escaping (Format.Output) async throws -> Void
-    ) async throws -> Session<Format> {
-        if let session = activeSessions.first(where: { $0.sessionId == id }) {
-            guard let session = session as? Session<Format> else {
+        using batchProcessor: Processor,
+        startAutomatically: Bool = true,
+        batchResultHandler: @Sendable @escaping (Processor.Output) async -> Bool
+    ) async throws -> Session<Processor> {
+        if let session = registeredSessions.first(where: { $0.sessionId == id }) {
+            guard let session = session as? Session<Processor> else {
                 // we found an already-running session with the same id, but a different type
                 throw SessionError.conflictingSessionAlreadyExists
             }
             return session
         } else {
-            let session = try await Session<Format>(
+            let session = try await Session<Processor>(
                 sessionId: id,
+                bulkExporter: self,
                 healthKit: healthKit,
-                exportFormat: format,
                 sampleTypes: exportSampleTypes,
                 localStorage: localStorage,
-                batchHandler: batchHandler
+                batchProcessor: batchProcessor,
+                batchResultHandler: batchResultHandler
             )
-            session.start()
-            activeSessions.append(session)
+            registeredSessions.append(session)
+            if startAutomatically {
+                session.start()
+            }
             return session
         }
+    }
+    
+    @MainActor func deleteSession(_ id: String) throws {
+        let fakeKey = LocalStorageKey<Never>(Self.localStorageKey(forSessionId: id))
+        try localStorage.delete(fakeKey)
     }
 }
 
 
 extension BulkHealthExporter {
-    public protocol ExportFormat<Output>: Sendable {
+    private static func localStorageKey(forSessionId id: String) -> String {
+        "edu.stanford.spezi.HealthKit.BulkExport.\(id)"
+    }
+}
+
+
+extension BulkHealthExporter {
+    public protocol BatchProcessor<Output>: Sendable {
         associatedtype Output
         func process<Sample>(_ samples: consuming [Sample], of sampleType: SampleType<Sample>) async throws -> Output
     }
@@ -79,6 +107,15 @@ extension BulkHealthExporter {
         struct ExportBatch: Codable {
             let sampleType: WrappedSampleType
             let timeRange: Range<Date>
+            var numRemainingRetries: UInt8
+            var shouldSkip: Bool
+            
+            init(sampleType: WrappedSampleType, timeRange: Range<Date>) {
+                self.sampleType = sampleType
+                self.timeRange = timeRange
+                self.numRemainingRetries = 7
+                self.shouldSkip = false
+            }
         }
         
         let sessionId: String
@@ -86,118 +123,205 @@ extension BulkHealthExporter {
         var pendingBatches: [ExportBatch]
         var completedSampleTypes: [WrappedSampleType]
         
-        init(sessionId: String, exportStartDate: Date, exportEndDate: Date, sampleTypes: Set<WrappedSampleType>) {
+        init(sessionId: String, exportEndDate: Date, sampleTypes: Set<WrappedSampleType>, using healthKit: HealthKit) async {
             self.sessionId = sessionId
             self.exportEndDate = exportEndDate
             self.completedSampleTypes = []
-            let cal = Calendar.current
-            let yearRanges = sequence(first: cal.startOfYear(for: exportStartDate)) {
-                $0 >= exportEndDate ? nil : cal.startOfNextYear(for: $0)
+            self.pendingBatches = []
+            for sampleType in sampleTypes {
+                await add(sampleType: sampleType, healthKit: healthKit)
             }
-            self.pendingBatches = sampleTypes.flatMap { sampleType -> [ExportBatch] in
-                yearRanges.map { ExportBatch(sampleType: sampleType, timeRange: cal.rangeOfYear(for: $0)) }
+        }
+        
+        mutating func add(sampleType: WrappedSampleType, healthKit: HealthKit) async {
+            guard !(completedSampleTypes.contains(sampleType) || pendingBatches.contains { $0.sampleType == sampleType }) else {
+                // we've either already marked the sample type as completed, or have it already scheduled
+                // --> nothing to be done
+                return
             }
+            let cal = Calendar(identifier: .gregorian)
+            let endDate = self.exportEndDate
+            let startDate: Date = (try? await sampleType.oldestSampleDate(in: healthKit)) ?? {
+                cal.date(from: .init(year: 2014, month: 6, day: 2))! // swiftlint:disable:this force_unwrapping
+            }()
+            let yearRanges = sequence(first: cal.rangeOfYear(for: startDate)) {
+                $0.contains(endDate) || $0.lowerBound >= endDate ? nil : cal.rangeOfYear(for: cal.startOfNextYear(for: $0.lowerBound))
+            }
+            pendingBatches.append(contentsOf: yearRanges.map { year in
+                ExportBatch(sampleType: sampleType, timeRange: year)
+            })
         }
     }
     
     
-    private protocol ExportSessionProtocol {
+    public enum ExportSessionState: Hashable, Sendable {
+        /// The session hasn't yet been started.
+        case scheduled
+        /// The session is currently running.
+        case running
+        /// The session is currently paused.
+        case paused
+        /// The session has completed its work, and has nothing else left to do.
+        case done
+    }
+    
+    public protocol ExportSessionProtocol {
         var sessionId: String { get }
+        /// The current state of the export session.
+        @MainActor var state: ExportSessionState { get }
+        /// Starts the session, unless it is already running
+        @MainActor func start()
+        /// Pauses the session at the next possible point in time.
+        ///
+        /// This operation won't necessarily cause the session to get paused immediately.
+        /// The session will complete its current block of work, and will only see the `pause()` call before starting the next work block.
+        @MainActor func pause()
     }
     
     
     @Observable
-    public final class Session<Format: ExportFormat>: Sendable, ExportSessionProtocol {
-        typealias BatchResultHandler = @Sendable (Format.Output) async throws -> Void
+    public final class Session<Processor: BatchProcessor>: Sendable, ExportSessionProtocol {
+        typealias BatchResultHandler = @Sendable (Processor.Output) async -> Bool
         
-        let sessionId: String
+        public let sessionId: String
+        private unowned let bulkExporter: BulkHealthExporter
         private unowned let healthKit: HealthKit
-        private let format: Format
+        private let batchProcessor: Processor
         private let localStorage: LocalStorage
         private let localStorageKey: LocalStorageKey<ExportSessionDescriptor>
-        private let batchHandler: BatchResultHandler
-        @MainActor private var descriptor: ExportSessionDescriptor
+        private let batchResultHandler: BatchResultHandler
+        @MainActor private var descriptor: ExportSessionDescriptor {
+            didSet {
+                try? localStorage.store(descriptor, for: localStorageKey)
+            }
+        }
         @MainActor private var task: Task<Void, Never>?
+        @MainActor public private(set) var state: BulkHealthExporter.ExportSessionState = .scheduled
         
         @MainActor
         fileprivate init(
             sessionId: String,
+            bulkExporter: BulkHealthExporter,
             healthKit: HealthKit,
-            exportFormat: Format,
             sampleTypes: Set<WrappedSampleType>,
             localStorage: LocalStorage,
-            batchHandler: @escaping BatchResultHandler
+            batchProcessor: Processor,
+            batchResultHandler: @escaping BatchResultHandler
         ) async throws {
             self.sessionId = sessionId
+            self.bulkExporter = bulkExporter
             self.healthKit = healthKit
-            self.format = exportFormat
-            self.batchHandler = batchHandler
+            self.batchProcessor = batchProcessor
+            self.batchResultHandler = batchResultHandler
             self.localStorage = localStorage
-            self.localStorageKey = LocalStorageKey("edu.stanford.spezi.HealthKit.BulkExport.\(sessionId)")
+            self.localStorageKey = LocalStorageKey(BulkHealthExporter.localStorageKey(forSessionId: sessionId))
             if let descriptor = try localStorage.load(localStorageKey) {
                 self.descriptor = descriptor
             } else {
-                let cal = Calendar(identifier: .gregorian)
-                let fallbackStartDate = cal.date(from: .init(year: 2014, month: 6, day: 2))! // swiftlint:disable:this force_unwrapping
-                var startDate: Date?
-                for sampleType in sampleTypes {
-                    guard let date = try? await sampleType.oldestSampleDate(in: healthKit) else {
-                        continue
-                    }
-                    if let _startDate = startDate {
-                        startDate = min(_startDate, date)
-                    } else {
-                        startDate = date
-                    }
-                }
-                self.descriptor = ExportSessionDescriptor(
+                self.descriptor = await ExportSessionDescriptor(
                     sessionId: sessionId,
-                    exportStartDate: startDate ?? fallbackStartDate,
                     exportEndDate: Date(),
-                    sampleTypes: sampleTypes
+                    sampleTypes: sampleTypes,
+                    using: healthKit
                 )
             }
         }
         
         @MainActor
-        func start() {
+        public func start() {
+            let logger = self.bulkExporter.logger
             let healthKit = self.healthKit
-            let format = self.format
-            let batchHandler = self.batchHandler
-            
-            guard task == nil else {
+            let batchProcessor = self.batchProcessor
+            let batchResultHandler = self.batchResultHandler
+            guard task == nil || task?.isCancelled == true else {
                 // is already running
                 return
             }
             task = Task.detached {
-                while let batch = await self.descriptor.pendingBatches.first {
+                let popBatchAndScheduleForRetry = { @MainActor in
+                    var batch = self.descriptor.pendingBatches.removeFirst()
+                    batch.shouldSkip = true
+                    if batch.numRemainingRetries >= 1 {
+                        batch.numRemainingRetries -= 1
+                    }
+                    self.descriptor.pendingBatches.append(batch)
+                }
+                loop: while let batch = await self.descriptor.pendingBatches.first {
                     guard !Task.isCancelled else {
-                        return
+                        break loop
                     }
-                    let result: Format.Output
+                    guard !batch.shouldSkip, batch.numRemainingRetries > 0 else {
+                        if let idx = await self.descriptor.pendingBatches.firstIndex(where: { !$0.shouldSkip && $0.numRemainingRetries > 0 }) {
+                            await MainActor.run {
+                                self.descriptor.pendingBatches.swapAt(idx, self.descriptor.pendingBatches.startIndex)
+                            }
+                            continue loop
+                        } else {
+                            break loop
+                        }
+                    }
+                    let result: Processor.Output
                     do {
-                        result = try await batch.sampleType.queryAndProcess(timeRange: batch.timeRange, in: healthKit, using: format)
+                        result = try await batch.sampleType.queryAndProcess(timeRange: batch.timeRange, in: healthKit, using: batchProcessor)
+                    } catch let error as WrappedSampleType.QueryAndProcessError {
+                        logger.error("Failed to query and process batch \(String(describing: batch)): \(String(describing: error))")
+                        await popBatchAndScheduleForRetry()
+                        continue loop
                     } catch {
-                        fatalError() // ???
+                        fatalError()
                     }
-                    do {
-                        try await batchHandler(result)
+                    if await batchResultHandler(result) {
                         await MainActor.run {
                             _ = self.descriptor.pendingBatches.removeFirst()
                         }
-                    } catch {
-                        // TODO how to deal with this?
-                        // if we remove it from pending, we'll just forget about it and not retry
-                        // but if we keep it, we'll retry it forever (even if we move the batch eg to the back)
-                        fatalError()
+                    } else {
+                        // failed
+                        await popBatchAndScheduleForRetry()
                     }
                 }
+                await MainActor.run {
+                    self.task = nil
+                }
             }
+        }
+        
+        @MainActor
+        public func pause() {
+            switch state {
+            case .scheduled, .paused, .done:
+                return
+            case .running:
+                break
+            }
+            task?.cancel()
         }
     }
 }
 
+
+extension BulkHealthExporter.ExportSessionProtocol {
+    /// Whether the session is currently running.
+    ///
+    /// Note that this property being `false` does not mean that the session hasn't done anything
+    @MainActor public var isRunning: Bool {
+        switch state {
+        case .running:
+            true
+        case .scheduled, .paused, .done:
+            false
+        }
+    }
+}
+
+
+// MARK: Utils
+
 extension WrappedSampleType {
+    fileprivate enum QueryAndProcessError: Error {
+        case query(any Error)
+        case process(any Error)
+    }
+    
     fileprivate func oldestSampleDate(in healthKit: HealthKit) async throws -> Date? {
         func imp<Sample>(_ sampleType: some AnySampleType<Sample>) async throws -> Date? {
             let sampleType = SampleType(sampleType)
@@ -206,24 +330,44 @@ extension WrappedSampleType {
         return try await imp(self.underlyingSampleType)
     }
     
-    fileprivate func queryAndProcess<Format: BulkHealthExporter.ExportFormat>(
+    fileprivate func queryAndProcess<Processor: BulkHealthExporter.BatchProcessor>(
         timeRange: Range<Date>,
         in healthKit: HealthKit,
-        using exportFormat: borrowing Format
-    ) async throws -> Format.Output {
-        func imp<Sample>(_ sampleType: some AnySampleType<Sample>) async throws -> Format.Output {
+        using batchProcessor: borrowing Processor
+    ) async throws(QueryAndProcessError) -> Processor.Output {
+        func imp<Sample>(_ sampleType: some AnySampleType<Sample>) async throws(QueryAndProcessError) -> Processor.Output {
             let sampleType = SampleType(sampleType)
-            let samples = try await healthKit.query(sampleType, timeRange: .init(timeRange))
-            return try await exportFormat.process(samples, of: sampleType)
+            let samples: [Sample]
+            do {
+                samples = try await healthKit.query(sampleType, timeRange: .init(timeRange))
+            } catch {
+                throw .query(error)
+            }
+            do {
+                return try await batchProcessor.process(samples, of: sampleType)
+            } catch {
+                throw .process(error)
+            }
         }
         return try await imp(self.underlyingSampleType)
     }
 }
 
 
-extension SampleType {
-    init(_ typeErased: any AnySampleType<Sample>) {
-        // SAFETY: SampleType is the only type conforming to `AnySampleType`.
-        self = typeErased as! Self // swiftlint:disable:this force_cast
+// MARK: Batch Processors
+
+public struct IdentityBatchProcessor: BulkHealthExporter.BatchProcessor {
+    public typealias Output = [HKSample]
+    
+    public func process<Sample>(_ samples: consuming [Sample], of sampleType: SampleType<Sample>) -> [HKSample] {
+        samples
+    }
+}
+
+
+extension BulkHealthExporter.BatchProcessor where Self == IdentityBatchProcessor {
+    /// A Batch Processor that simply returns the unprocessed samples.
+    public static var identity: some BulkHealthExporter.BatchProcessor<[HKSample]> {
+        IdentityBatchProcessor()
     }
 }
