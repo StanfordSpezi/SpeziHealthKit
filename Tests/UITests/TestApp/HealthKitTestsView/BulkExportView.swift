@@ -38,41 +38,7 @@ struct BulkExportView: View {
     var body: some View {
         Form {
             Section {
-                AsyncButton("Request full access", state: $viewState) {
-                    try await healthKit.askForAuthorization(for: .init(
-                        read: HKQuantityType.allKnownQuantities
-                    ))
-                }
-                AsyncButton("Add Historical Samples", state: $viewState) {
-                    try await addHistoricalSamples()
-                }
-                if let progress = addHistoricalSamplesProgress {
-                    HStack {
-                        ProgressView(value: Double(progress.currentIdx) / Double(progress.numTotal))
-                            .progressViewStyle(.linear)
-                        Text("\(progress.currentIdx) of \(progress.numTotal)")
-                            .monospacedDigit()
-                    }
-                }
-                AsyncButton("Start Bulk Export", state: $viewState) {
-                    try await bulkExporter.session(
-                        "testSession",
-                        for: [.quantity(.heartRate)],
-                        using: .jsonFile(compressUsingZlib: false),
-                        startAutomatically: false
-                    ) { url in
-                        do {
-                            print("DID CREATE EXPORT: \(url)")
-                            let data = try Data(contentsOf: url)
-                            let resources = try JSONDecoder().decode([ResourceProxy].self, from: data)
-                            print("#resources: \(resources.count)")
-                            return true
-                        } catch {
-                            print("ERROR: \(error)")
-                            return false
-                        }
-                    }
-                }
+                actionsSectionContent
             }
             Section {
                 EmptyView()
@@ -80,14 +46,52 @@ struct BulkExportView: View {
         }
     }
     
-    private nonisolated func addHistoricalSamples() async throws {
+    @ViewBuilder private var actionsSectionContent: some View {
+        AsyncButton("Request full access", state: $viewState) {
+            try await healthKit.askForAuthorization(for: .init(
+                read: HKQuantityType.allKnownQuantities
+            ))
+        }
+        AsyncButton("Add Historical Samples", state: $viewState) {
+            try await addHistoricalSamples()
+        }
+        if let progress = addHistoricalSamplesProgress {
+            HStack {
+                ProgressView(value: Double(progress.currentIdx) / Double(progress.numTotal))
+                    .progressViewStyle(.linear)
+                Text("\(progress.currentIdx) of \(progress.numTotal)")
+                    .monospacedDigit()
+            }
+        }
+        AsyncButton("Start Bulk Export", state: $viewState) {
+            try await bulkExporter.session(
+                "testSession",
+                for: [.quantity(.heartRate)],
+                using: .jsonFile(compressUsingZlib: false),
+                startAutomatically: false
+            ) { url in
+                do {
+                    print("DID CREATE EXPORT: \(url)")
+                    let data = try Data(contentsOf: url)
+                    let resources = try JSONDecoder().decode([ResourceProxy].self, from: data)
+                    print("#resources: \(resources.count)")
+                    return true
+                } catch {
+                    print("ERROR: \(error)")
+                    return false
+                }
+            }
+        }
+    }
+    
+    private nonisolated func addHistoricalSamples() async throws { // swiftlint:disable:this function_body_length
         let cal = await self.cal
         let sampleTypes = await self.sampleTypes
         try await healthKit.askForAuthorization(for: .init(
             write: sampleTypes.map(\.hkSampleType)
         ))
         
-        let startDate = cal.startOfYear(for: cal.date(from: .init(year: 2020, month: 1, day: 1))!)
+        let startDate = cal.startOfYear(for: cal.date(from: .init(year: 2020, month: 1, day: 1))!) // swiftlint:disable:this force_unwrapping
         let endDate = Date.now
         let totalRange = startDate..<endDate
         
@@ -126,7 +130,7 @@ struct BulkExportView: View {
                 try await healthKit.healthStore.save(sample)
                 prevSample = sample
                 await MainActor.run {
-                    self.addHistoricalSamplesProgress!.currentIdx += 1
+                    self.addHistoricalSamplesProgress!.currentIdx += 1 // swiftlint:disable:this force_unwrapping
                 }
             }
         }
@@ -148,7 +152,7 @@ struct BulkExportView: View {
             }
         }
         
-        try await withThrowingTaskGroup(of: Void.self) { taskGroup -> Void in
+        try await withThrowingTaskGroup(of: Void.self) { taskGroup in
             for sampleType in sampleTypes {
                 taskGroup.addTask {
                     try await imp2(sampleType)

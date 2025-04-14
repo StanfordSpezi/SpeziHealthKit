@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+// swiftlint:disable file_types_order
+
 import Foundation
 import HealthKit
 import os
@@ -37,8 +39,8 @@ extension BulkHealthExporter {
     public func session<Processor: BatchProcessor>(
         _ id: String,
         for exportSampleTypes: Set<WrappedSampleType>,
-        startAutomatically: Bool = true,
-        using batchProcessor: Processor
+        using batchProcessor: Processor,
+        startAutomatically: Bool = true
     ) async throws -> Session<Processor> where Processor.Output == Void {
         try await session(
             id,
@@ -165,7 +167,10 @@ extension BulkHealthExporter {
         case done
     }
     
+    
+    /// Protocol modeling a type-erased ``Session``
     public protocol ExportSessionProtocol {
+        /// The session's unique identifier
         var sessionId: String { get }
         /// The current state of the export session.
         @MainActor var state: ExportSessionState { get }
@@ -228,7 +233,7 @@ extension BulkHealthExporter {
         }
         
         @MainActor
-        public func start() {
+        public func start() { // swiftlint:disable:this function_body_length
             let logger = self.bulkExporter.logger
             let healthKit = self.healthKit
             let batchProcessor = self.batchProcessor
@@ -237,7 +242,7 @@ extension BulkHealthExporter {
                 // is already running
                 return
             }
-            task = Task.detached {
+            task = Task.detached { // swiftlint:disable:this closure_body_length
                 let popBatchAndScheduleForRetry = { @MainActor in
                     var batch = self.descriptor.pendingBatches.removeFirst()
                     batch.shouldSkip = true
@@ -268,7 +273,7 @@ extension BulkHealthExporter {
                         await popBatchAndScheduleForRetry()
                         continue loop
                     } catch {
-                        fatalError()
+                        fatalError("unreachable")
                     }
                     if await batchResultHandler(result) {
                         await MainActor.run {
