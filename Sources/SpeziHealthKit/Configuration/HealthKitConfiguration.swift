@@ -38,6 +38,11 @@ extension HealthKit {
         /// request when the app calls ``HealthKit-swift.class/askForAuthorization()``
         public let write: Set<HKSampleType>
         
+        /// Whether the data access requirements is empty
+        public var isEmpty: Bool {
+            read.isEmpty && write.isEmpty
+        }
+        
         /// Creates a new instance, with the specified read and write sample types.
         public init(read: some Sequence<HKObjectType> = [], write: some Sequence<HKSampleType> = []) {
             self.read = Set(read)
@@ -55,11 +60,6 @@ extension HealthKit {
         /// Merges another set of data access requirements into the current one.
         public mutating func merge(with other: Self) {
             self = self.merging(with: other)
-        }
-        
-        /// Whether the data access requirements is empty
-        public var isEmpty: Bool {
-            read.isEmpty && write.isEmpty
         }
     }
 }
