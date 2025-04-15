@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		2F61BDC329DD02D600D71D33 /* SpeziHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 2F61BDC229DD02D600D71D33 /* SpeziHealthKit */; };
 		2FE33CB92B9B815B00BD886D /* SpeziViews in Frameworks */ = {isa = PBXBuildFile; productRef = 2FE33CB82B9B815B00BD886D /* SpeziViews */; };
-		803D29EA2DAC6AF2003D723D /* HealthKitOnFHIR in Frameworks */ = {isa = PBXBuildFile; productRef = 803D29E92DAC6AF2003D723D /* HealthKitOnFHIR */; };
 		8059BF032D464B2E007CDAFD /* XCTHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8059BF022D464B2E007CDAFD /* XCTHealthKit */; };
 		8059BF0B2D4699CB007CDAFD /* XCTHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8059BF0A2D4699CB007CDAFD /* XCTHealthKit */; };
 		808EB0282D452800009D9AB2 /* SpeziHealthKitUI in Frameworks */ = {isa = PBXBuildFile; productRef = 808EB0272D452800009D9AB2 /* SpeziHealthKitUI */; };
@@ -49,7 +48,6 @@
 				808EB0282D452800009D9AB2 /* SpeziHealthKitUI in Frameworks */,
 				2F61BDC329DD02D600D71D33 /* SpeziHealthKit in Frameworks */,
 				2FE33CB92B9B815B00BD886D /* SpeziViews in Frameworks */,
-				803D29EA2DAC6AF2003D723D /* HealthKitOnFHIR in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -121,7 +119,6 @@
 				2F61BDC229DD02D600D71D33 /* SpeziHealthKit */,
 				2FE33CB82B9B815B00BD886D /* SpeziViews */,
 				808EB0272D452800009D9AB2 /* SpeziHealthKitUI */,
-				803D29E92DAC6AF2003D723D /* HealthKitOnFHIR */,
 			);
 			productName = Example;
 			productReference = 2F6D139228F5F384007C25D6 /* TestApp.app */;
@@ -188,7 +185,6 @@
 				2FE33CB72B9B815B00BD886D /* XCRemoteSwiftPackageReference "SpeziViews" */,
 				8042D7962D3D5B8F00807498 /* XCRemoteSwiftPackageReference "XCTestExtensions" */,
 				80ABDD0B2D47D4C100231ADF /* XCRemoteSwiftPackageReference "XCTHealthKit" */,
-				803D29E82DAC6AF2003D723D /* XCRemoteSwiftPackageReference "HealthKitOnFHIR" */,
 			);
 			productRefGroup = 2F6D139328F5F384007C25D6 /* Products */;
 			projectDirPath = "";
@@ -650,14 +646,6 @@
 				minimumVersion = 1.10.1;
 			};
 		};
-		803D29E82DAC6AF2003D723D /* XCRemoteSwiftPackageReference "HealthKitOnFHIR" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/StanfordBDHG/HealthKitOnFHIR.git";
-			requirement = {
-				branch = lukas/performance;
-				kind = branch;
-			};
-		};
 		8042D7962D3D5B8F00807498 /* XCRemoteSwiftPackageReference "XCTestExtensions" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/StanfordBDHG/XCTestExtensions";
@@ -685,11 +673,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2FE33CB72B9B815B00BD886D /* XCRemoteSwiftPackageReference "SpeziViews" */;
 			productName = SpeziViews;
-		};
-		803D29E92DAC6AF2003D723D /* HealthKitOnFHIR */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 803D29E82DAC6AF2003D723D /* XCRemoteSwiftPackageReference "HealthKitOnFHIR" */;
-			productName = HealthKitOnFHIR;
 		};
 		8059BF022D464B2E007CDAFD /* XCTHealthKit */ = {
 			isa = XCSwiftPackageProductDependency;
