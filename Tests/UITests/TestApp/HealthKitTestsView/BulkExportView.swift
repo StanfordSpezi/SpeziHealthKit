@@ -179,15 +179,15 @@ private struct AddHistoricalSamplesSection: View {
             write: sampleTypes.map(\.hkSampleType)
         ))
         
-        let hours = Array(sequence(first: cal.rangeOfHour(for: timeRange.lowerBound)) { hour in
-            let next = cal.rangeOfHour(for: cal.startOfNextHour(for: hour.lowerBound))
+        let days = Array(sequence(first: cal.rangeOfDay(for: timeRange.lowerBound)) { day in
+            let next = cal.rangeOfDay(for: cal.startOfNextDay(for: day.lowerBound))
             return next.overlaps(timeRange) ? next.clamped(to: timeRange) : nil
         })
         
         await MainActor.run {
             self.addHistoricalSamplesProgress = 0
         }
-        let expectedNumTotalSamples = sampleTypes.count * cal.countDistinctHours(from: timeRange.lowerBound, to: timeRange.upperBound)
+        let expectedNumTotalSamples = sampleTypes.count * cal.countDistinctDays(from: timeRange.lowerBound, to: timeRange.upperBound)
         var numSamplesAddedSoFar = 0
         
         @Sendable nonisolated func imp(
@@ -195,12 +195,12 @@ private struct AddHistoricalSamplesSection: View {
             makeQuantity: (_ lastQuantity: HKQuantity?) -> HKQuantity
         ) async throws {
             var prevSample: HKQuantitySample?
-            for hour in hours {
+            for day in days {
                 let sample = HKQuantitySample(
                     type: sampleType.hkSampleType,
                     quantity: makeQuantity(prevSample?.quantity),
-                    start: hour.lowerBound,
-                    end: hour.lowerBound.addingTimeInterval(60 * 30),
+                    start: day.lowerBound,
+                    end: day.lowerBound.addingTimeInterval(60 * 30),
                     metadata: [
                         "edu.stanford.spezi.healthkit.isTestingData": "YES"
                     ]
