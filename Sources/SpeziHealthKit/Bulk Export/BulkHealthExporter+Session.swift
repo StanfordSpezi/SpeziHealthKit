@@ -193,6 +193,7 @@ extension BulkHealthExporter.Session {
             // is already running
             return
         }
+        state = .running
         task = Task.detached { // swiftlint:disable:this closure_body_length
             var numTotalBatches = await self.descriptor.pendingBatches.count(where: { !$0.shouldSkipUntilNextLaunch })
             var numCompletedBatches = 0
@@ -204,6 +205,9 @@ extension BulkHealthExporter.Session {
             }
             loop: while let batch = await self.descriptor.pendingBatches.first {
                 guard !Task.isCancelled else {
+                    await MainActor.run {
+                        self.state = .paused
+                    }
                     break loop
                 }
                 guard !batch.shouldSkipUntilNextLaunch else {
@@ -246,6 +250,9 @@ extension BulkHealthExporter.Session {
             }
             await MainActor.run {
                 self.task = nil
+                if self.state != .paused {
+                    self.state = .done
+                }
             }
         }
     }
