@@ -103,7 +103,7 @@ struct BulkExportView: View {
         }
         
         AsyncButton("Start Bulk Export", state: $viewState) {
-            if false {
+            if true {
                 session = try await bulkExporter.session(
                     "testSession",
                     for: sampleTypes.mapIntoSet { .quantity($0) },
