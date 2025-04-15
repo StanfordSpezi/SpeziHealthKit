@@ -10,15 +10,17 @@ import HealthKit
 import SnapshotTesting
 @testable import SpeziHealthKit
 @testable import SpeziHealthKitUI
+import SpeziTesting
 import SwiftUI
-import XCTest
-import XCTSpezi
+import Testing
 
 
-final class HealthChartTests: XCTestCase {
+@Suite("SpeziHealthKitUITests")
+struct SpeziHealthKitUITests {
 #if os(iOS)
     @MainActor
-    func testSimpleHealthChartView() throws {
+    @Test("Simple HealthChart View Snapshot")
+    func simpleHealthChartViewSnapshot() throws {
         var heartRateSamplesProvider = FakeSamplesProvider(
             sampleType: .heartRate,
             values: [97 as Double, 95, 91, 89, 89, 92, 117, 119, 118, 95, 85, 87].makeLoopingIterator(),
@@ -46,7 +48,8 @@ final class HealthChartTests: XCTestCase {
     
     
     @MainActor
-    func testMultiEntryHealthChartView() throws {
+    @Test("Multi Entry HealthChart View Snapshot")
+    func multiEntryHealthChartViewSnapshot() throws {
         var heartRateSamplesProvider = FakeSamplesProvider(
             sampleType: .heartRate,
             values: [97 as Double, 95, 91, 89, 89, 92, 117, 119, 118, 95, 85, 87].makeLoopingIterator(),
@@ -92,7 +95,8 @@ final class HealthChartTests: XCTestCase {
     
     
     @MainActor
-    func testEmptyHealthChartNoEntries() {
+    @Test("Empty HealthChart No Entries Snapshot")
+    func emptyHealthChartNoEntriesSnapshot() {
         let healthChart = HealthChart {
             // nothing in here
         }
@@ -103,7 +107,8 @@ final class HealthChartTests: XCTestCase {
     }
     
     @MainActor
-    func testEmptyHealthChartEntriesButNoData() throws {
+    @Test("Empty HealthChart Entries But No Data Snapshot")
+    func emptyHealthChartEntriesButNoDataSnapshot() throws {
         let data = MockQueryResults(sampleType: .heartRate, timeRange: .currentWeek, samples: [])
         let healthChart = HealthChart {
             HealthChartEntry(data, drawingConfig: .init(mode: .bar, color: .red))
@@ -116,7 +121,8 @@ final class HealthChartTests: XCTestCase {
     
     
     @MainActor
-    func testConditionalHealthChartContent() throws {
+    @Test("Conditional HealthChart Content Snapshot")
+    func conditionalHealthChartContentSnapshot() throws {
         var heartRateSamplesProvider = FakeSamplesProvider(
             sampleType: .heartRate,
             values: [97 as Double, 95, 91, 89, 89, 92, 117, 119, 118, 95, 85, 87].makeLoopingIterator(),
