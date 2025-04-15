@@ -36,13 +36,13 @@ extension BulkHealthExporter {
         public fileprivate(set) var currentBatchDescription: String
     }
     
+    
     /// Protocol modeling a type-erased ``Session``
     public protocol ExportSessionProtocol {
         /// The session's unique identifier
         var sessionId: String { get }
-        
+        /// The current progress of the session, if it is currently running.
         @MainActor var progress: ExportSessionProgress? { get }
-        
         /// The current state of the export session.
         @MainActor var state: ExportSessionState { get }
         /// Starts the session, unless it is already running
@@ -141,7 +141,7 @@ extension BulkHealthExporter {
         @ObservationIgnored private let batchResultHandler: BatchResultHandler
         @ObservationIgnored @MainActor private var descriptor: ExportSessionDescriptor {
             didSet {
-//                try? localStorage.store(descriptor, for: localStorageKey)
+                try? localStorage.store(descriptor, for: localStorageKey)
             }
         }
         @ObservationIgnored @MainActor private var task: Task<Void, Never>?
@@ -184,7 +184,7 @@ extension BulkHealthExporter {
 
 extension BulkHealthExporter.Session {
     @MainActor
-    public func start() { // swiftlint:disable:this function_body_length
+    public func start() { // swiftlint:disable:this function_body_length missing_docs
         let logger = self.bulkExporter.logger
         let healthKit = self.healthKit
         let batchProcessor = self.batchProcessor
@@ -257,8 +257,9 @@ extension BulkHealthExporter.Session {
         }
     }
     
+    
     @MainActor
-    public func pause() {
+    public func pause() { // swiftlint:disable:this missing_docs
         switch state {
         case .scheduled, .paused, .done:
             return

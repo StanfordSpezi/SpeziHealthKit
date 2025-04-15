@@ -174,7 +174,7 @@ private struct AddHistoricalSamplesSection: View {
     }
     
     
-    private func addHistoricalSamples() async throws {
+    private func addHistoricalSamples() async throws { // swiftlint:disable:this function_body_length
         try await healthKit.askForAuthorization(for: .init(
             write: sampleTypes.map(\.hkSampleType)
         ))

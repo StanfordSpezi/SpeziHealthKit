@@ -59,6 +59,6 @@ final class BulkExporterTests: XCTestCase {
         app.buttons["Start Bulk Export"].tap()
         XCTAssert(app.staticTexts["State, done"].waitForExistence(timeout: 15))
         
-        XCTAssertEqual(try! XCTUnwrap(numExportedSamples), try! XCTUnwrap(numTestingSamples))
+        XCTAssertEqual(try XCTUnwrap(numExportedSamples), try XCTUnwrap(numTestingSamples))
     }
 }

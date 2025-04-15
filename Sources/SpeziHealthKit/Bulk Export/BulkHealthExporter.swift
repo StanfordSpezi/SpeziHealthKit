@@ -6,8 +6,6 @@
 // SPDX-License-Identifier: MIT
 //
 
-// swiftlint:disable file_types_order
-
 import Foundation
 import HealthKit
 import os
