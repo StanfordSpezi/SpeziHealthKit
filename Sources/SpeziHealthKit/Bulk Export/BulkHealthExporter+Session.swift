@@ -30,9 +30,15 @@ extension BulkHealthExporter {
     }
     
     
+    /// Information about the current progress of a ``Session``.
     public struct ExportSessionProgress: Sendable {
+        /// The index of the batch currently being uploaded.
+        ///
+        /// - Note: Since this value is intended for usage in user-visible contexts, it is 1-based, i.e., the first batch will have index `1`, the second `2`, and so on.
         public fileprivate(set) var currentBatchIdx: Int
+        /// The expected total number of batches, across all sample types that will be processed as part of the current run of the session.
         public fileprivate(set) var numTotalBatches: Int
+        /// A textual description of the current batch. This included information such as the batch's sample type and its time range, if applicable.
         public fileprivate(set) var currentBatchDescription: String
     }
     
@@ -67,6 +73,10 @@ extension BulkHealthExporter {
     }
     
     
+    /// The ``ExportSessionDescriptor`` serves as the `Codable` representation of a ``Session``, and is used to restore a previously-created session's state across multiple app launches.
+    ///
+    /// It keeps track of the session's identity, and the stores the individual batches that need to be processed as part of the session.
+    /// It also keeps track of the already-completed sample types, to prevent
     private struct ExportSessionDescriptor: Codable {
         struct ExportBatch: Codable {
             let sampleType: WrappedSampleType
@@ -81,7 +91,7 @@ extension BulkHealthExporter {
                     desc += " (\(cal.component(.year, from: timeRange.lowerBound)))"
                 } else {
                     let start = DateFormatter.localizedString(from: timeRange.lowerBound, dateStyle: .short, timeStyle: .none)
-                    let end = DateFormatter.localizedString(from: timeRange.upperBound, dateStyle: .short, timeStyle: .none)
+                    let end = DateFormatter.localizedString(from: timeRange.upperBound.advanced(by: -1), dateStyle: .short, timeStyle: .none)
                     desc += "(\(start) – \(end))"
                 }
                 return desc
@@ -143,7 +153,7 @@ extension BulkHealthExporter {
     /// - ``state``
     /// - ``progress``
     @Observable
-    public final class Session<Processor: BatchProcessor>: Sendable, ExportSessionProtocol {
+    public final class ExportSession<Processor: BatchProcessor>: Sendable, ExportSessionProtocol {
         typealias BatchResultHandler = @Sendable (Processor.Output) async -> Bool
         
         public let sessionId: String
@@ -196,7 +206,7 @@ extension BulkHealthExporter {
     }
 }
 
-extension BulkHealthExporter.Session {
+extension BulkHealthExporter.ExportSession {
     @MainActor
     public func start() { // swiftlint:disable:this function_body_length missing_docs
         let logger = self.bulkExporter.logger

@@ -12,13 +12,26 @@ Export large amounts of historical Health data
 
 ## Overview
 
-The ``BulkHealthExporter`` enables and coordinates large-scale support of historical HealthKit data, via a
+The ``BulkHealthExporter`` enables and coordinates large-scale support of historical HealthKit data.
 
-The Bulk Exporter manages ``BulkHealthExporter/Session``s, which then handle the actual health data processing and exporting.
-Each session
+The Bulk Export API is built around the concept of a Export Sessions (``BulkHealthExporter/Session``), which implement and handle the actual Health data export processing. 
+Sessions keep track of their pending and already-completed work, even across multiple app launches, ensuring that even for sample types with a very high number of samples a previously-started export can continue without issues if the app is terminated during the export.
 
+Export Sessions are created using ``BulkHealthExporter/session(_:for:using:startAutomatically:batchResultHandler:)``, and consist of the following components:
+- A stable identifier, which will be used to keep track of the session, persist its state, and restore it across app launches.
+- A set of to-be-exported sample types.
+- A ``BulkHealthExporter/BatchProcessor``, which allows the app process the individual batches of fetched samples.
+- An optional "batch result handler" closure, which will be called by the Session to inform the app about the results of the individual batch processing operations.
+This structure allows the Bulk Export API to be used in a variety of ways, for different kinds of export operations. (See below for an example.)
 
-Your app creates a
+An app wishing to perform a Health data export should simply call the ``BulkHealthExporter/session(_:for:using:startAutomatically:batchResultHandler:)`` function once at some point after the app's launch; this will either:
+- create and start a new session, if no matching session (based on the identifier) exists, or
+- restore and continue an existing session (e.g., from a previous launch of the app).
+
+It is safe to call this function multiple times and with the same input, even if a previously-created upload has already been completed.
+The session will internally keep track of its creation date, and will only ever export samples up to that date.
+This allows an app to e.g. use the ``CollectSample`` API to continuously fetch and collect new Health samples, and use the ``BulkHealthExporter`` to do a one-time export operation of historical Health data.
+
 
 ### Example: Bulk-Upload of Historical Health Data to Firebase
 
@@ -70,8 +83,15 @@ In some cases, the Bulk Exporter may decide to process a sample type at an even 
 ### Creating a Bulk Exporter
 - ``BulkHealthExporter/init()``
 
-### Export Sessions
+### Creating and Managing Export Sessions
+- ``BulkHealthExporter/sessions``
 - ``BulkHealthExporter/session(_:for:using:startAutomatically:batchResultHandler:)``
 - ``BulkHealthExporter/session(_:for:using:startAutomatically:)``
-- ``BulkHealthExporter/Session``
+- ``BulkHealthExporter/deleteSessionRestorationInfo(for:)``
+
+### Export Session Types
+- ``BulkHealthExporter/ExportSession``
+- ``BulkHealthExporter/BatchProcessor``
+- ``BulkHealthExporter/ExportSessionState``
 - ``BulkHealthExporter/ExportSessionProtocol``
+- ``BulkHealthExporter/SessionError``

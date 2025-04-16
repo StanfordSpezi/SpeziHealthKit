@@ -18,6 +18,7 @@ extension HealthKit {
     /// - parameter sampleType: The ``SampleType`` you want to fetch samples for
     /// - parameter timeRange: The time range you want to fetch samples for.
     /// - parameter limit: The number of objects that should be fetched. `nil` indicates that no limit should be applied.
+    /// - parameter sortDescriptors: The sort descriptors used to sort the fetched samples. Defaults to a sorting the samples by their start date, in ascending order.
     /// - parameter filterPredicate: Optional refining predicate that allows you to filter which samples should be fetched.
     public func query<Sample>(
         _ sampleType: SampleType<Sample>,

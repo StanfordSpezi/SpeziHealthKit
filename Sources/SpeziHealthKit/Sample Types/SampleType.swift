@@ -35,12 +35,15 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType {
     @usableFromInline let variant: Variant
     
     /// Creates a ``SampleType`` from a type-erased ``AnySampleType``.
+    ///
+    /// Since ``SampleType`` is the only type allowed to conform to ``AnySampleType``, this is guaranteed to always succeed.
     @inlinable public init(_ typeErased: any AnySampleType<Sample>) {
-        // SAFETY: SampleType is the only type conforming to `AnySampleType`.
+        // SAFETY: `SampleType` is the only type allowed to conform to `AnySampleType`.
         self = typeErased as! Self // swiftlint:disable:this force_cast
     }
     
     /// Creates a new ``SampleType``.
+    ///
     /// Use this initializer only if the sample type you want to work with isn't already defined by SpeziHealthKit, and only if none of the static factory methods are suitable.
     /// - parameter hkSampleType: The sample type's underlying `HKSampleType`
     /// - parameter displayTitle: The localized string which should be used when displaying this sample type's title in a user-visible context.
