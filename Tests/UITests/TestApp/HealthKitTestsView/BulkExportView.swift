@@ -228,7 +228,7 @@ private struct AddHistoricalSamplesSection: View {
                             try await addQuantitySample(sampleType)
                         }
                     default:
-                        fatalError()
+                        print("ERROR: unhandled sample type: \(sampleType)")
                     }
                 }
             }

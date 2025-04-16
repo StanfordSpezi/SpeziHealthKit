@@ -78,7 +78,7 @@ extension BulkHealthExporter {
     /// It also keeps track of the already-completed sample types, to prevent unnecessary duplicates when exporting.
     private struct ExportSessionDescriptor: Codable {
         struct ExportBatch: Codable {
-            private enum CodingKeys: CodingKey {
+            private enum CodingKeys: CodingKey { // swiftlint:disable:this nesting
                 case sampleType
                 case timeRange
                 case shouldSkipUntilNextLaunch
@@ -247,7 +247,7 @@ extension BulkHealthExporter.ExportSession {
             return
         }
         state = .running
-        task = Task.detached { [unowned self] in // swiftlint:disable:this closure_body_length
+        task = Task.detached { // swiftlint:disable:this closure_body_length
             var numTotalBatches = await self.descriptor.pendingBatches.count(where: { !$0.shouldSkipUntilNextLaunch })
             var numCompletedBatches = 0
             let popBatchAndScheduleForRetry = { @MainActor in

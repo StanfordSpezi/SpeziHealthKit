@@ -10,27 +10,32 @@ import Foundation
 import HealthKit
 
 
-/// A collection of type-erased ``SampleType``s.
+/// A collection of type-erased ``SampleType``s
 public struct SampleTypesCollection: Hashable, Sendable, Codable {
     public typealias Storage = Set<WrappedSampleType>
     private var storage: Storage
     
+    /// Creates a new, empty `SampleTypesCollection`.
     public init() {
         storage = []
     }
     
+    /// Creates a new `SampleTypesCollection`, from the specified sample types
     public init(_ sampleTypes: some Collection<WrappedSampleType>) {
         storage = Set(sampleTypes)
     }
     
+    /// Creates a new `SampleTypesCollection`, from the specified sample types
     public init(_ sampleTypes: some Collection<any AnySampleType>) {
         self.init(sampleTypes.lazy.map { WrappedSampleType($0) })
     }
     
+    /// Creates a new `SampleTypesCollection`, from the specified sample types
     public init(_ sampleTypes: some Collection<some AnySampleType>) {
         self.init(sampleTypes.lazy.map { WrappedSampleType($0) })
     }
     
+    /// Creates a new `SampleTypesCollection`, from the specified sample types
     public init(
         quantity quantityTypes: some Collection<SampleType<HKQuantitySample>> = [],
         correlation correlationTypes: some Collection<SampleType<HKCorrelation>> = [],
@@ -66,34 +71,49 @@ extension SampleTypesCollection {
 // MARK: Mutations
 
 extension SampleTypesCollection {
+    /// Inserts a sample type into the collection.
+    ///
+    /// - returns: a boolean value indicating whether the sample type was inserted.
     @discardableResult
     public mutating func insert(_ sampleType: some AnySampleType) -> Bool {
         storage.insert(WrappedSampleType(sampleType)).inserted
     }
     
+    /// Inserts a sample type into the collection.
+    ///
+    /// - returns: a boolean value indicating whether the sample type was inserted.
     @discardableResult
     public mutating func insert(_ sampleType: WrappedSampleType) -> Bool {
         storage.insert(sampleType).inserted
     }
     
+    /// Inserts the sample types in the other collection into this collection.
+    ///
+    /// - Note: any sample types in `other` that are already contained in `self` will not be inserted.
     public mutating func insert(contentsOf other: some Collection<some AnySampleType>) {
         insert(contentsOf: other.lazy.map { $0 as any AnySampleType })
     }
     
+    /// Inserts the sample types in the other collection into this collection.
+    ///
+    /// - Note: any sample types in `other` that are already contained in `self` will not be inserted.
     public mutating func insert(contentsOf other: some Collection<any AnySampleType>) {
         for sampleType in other {
             insert(sampleType)
         }
     }
     
+    /// Removes the specified sample type from the collection, if it is a member.
     public mutating func remove(_ sampleType: some AnySampleType) {
         storage.remove(WrappedSampleType(sampleType))
     }
     
+    /// Determines whether the specified sample type is a member of the collection.
     public func contains(_ sampleType: some AnySampleType) -> Bool {
         storage.contains(WrappedSampleType(sampleType))
     }
     
+    /// Determines whether the specified sample type is a member of the collection.
     public func contains(_ sampleType: WrappedSampleType) -> Bool {
         storage.contains(sampleType)
     }
@@ -122,12 +142,12 @@ extension SampleTypesCollection: Collection {
         storage.count
     }
     
-    public subscript(position: Storage.Index) -> any AnySampleType {
-        storage[position].underlyingSampleType
-    }
-    
     public func index(after idx: Storage.Index) -> Storage.Index {
         storage.index(after: idx)
+    }
+    
+    public subscript(position: Storage.Index) -> any AnySampleType {
+        storage[position].underlyingSampleType
     }
 }
 
