@@ -129,6 +129,9 @@ extension BulkHealthExporter {
             let cal = Calendar(identifier: .gregorian)
             let endDate = self.exportEndDate
             let startDate: Date = (try? await sampleType.oldestSampleDate(in: healthKit)) ?? {
+                // if we can't determine the oldest sample date, we use the day HealthKit was introduced as our fallback
+                // Note: it could be that there's no oldest sample date because there are no samples for the sample type,
+                // but it could also be the case that the fetch itself simply failed.
                 cal.date(from: .init(year: 2014, month: 6, day: 2))! // swiftlint:disable:this force_unwrapping
             }()
             let yearRanges = sequence(first: cal.rangeOfYear(for: startDate)) {
@@ -190,10 +193,15 @@ extension BulkHealthExporter {
             self.localStorageKey = LocalStorageKey(BulkHealthExporter.localStorageKey(forSessionId: sessionId))
             if let descriptor = try localStorage.load(localStorageKey) {
                 self.descriptor = descriptor
+                // when restoring a previously-persisted session, we want to disable all requested skips, so that everything is processed again.
+                // this is fine, because we only end up in here (in the ExportSession init) once per session per app lifecycle.
+                // (once the session has been created, any further calls to BulkExporter.session() will return the previously-created Session.)
                 for idx in self.descriptor.pendingBatches.indices {
                     self.descriptor.pendingBatches[idx].shouldSkipUntilNextLaunch = false
                 }
             } else {
+                // if there's no persisted state for this session identifier, we create a new descriptor,
+                // which will operate on all samples created up until right now.
                 self.descriptor = await ExportSessionDescriptor(
                     sessionId: sessionId,
                     exportEndDate: Date(),
@@ -204,6 +212,7 @@ extension BulkHealthExporter {
         }
     }
 }
+
 
 extension BulkHealthExporter.ExportSession {
     @MainActor
@@ -248,7 +257,7 @@ extension BulkHealthExporter.ExportSession {
                 do {
                     await MainActor.run {
                         self.progress = .init(
-                            currentBatchIdx: numCompletedBatches + 1,
+                            currentBatchIdx: numCompletedBatches + 1, // +1 bc we want it to be user-displayable, ie starting at 1.
                             numTotalBatches: numTotalBatches,
                             currentBatchDescription: batch.userDisplayedDescription
                         )
@@ -261,6 +270,7 @@ extension BulkHealthExporter.ExportSession {
                     await popBatchAndScheduleForRetry()
                     continue loop
                 } catch {
+                    // SAFETY: this is in fact unreachable: the `queryAndProcess` call above has a typed throw, but the compiler doesn't seem to understand this.
                     fatalError("unreachable")
                 }
                 await batchResultHandler(result)
@@ -346,8 +356,14 @@ extension WrappedSampleType {
     }
 }
 
+extension Calendar {
+    func isWholeYear(_ range: Range<Date>) -> Bool {
+        rangeOfYear(for: range.lowerBound) == range
+    }
+}
 
-// MARK: Batch Processors
+
+// MARK: Default Batch Processors
 
 /// Batch Processor that simply passes through the unchanged samples.
 public struct IdentityBatchProcessor: BulkHealthExporter.BatchProcessor {
@@ -362,14 +378,5 @@ extension BulkHealthExporter.BatchProcessor where Self == IdentityBatchProcessor
     /// A Batch Processor that simply returns the unprocessed samples.
     public static var identity: some BulkHealthExporter.BatchProcessor<[HKSample]> {
         IdentityBatchProcessor()
-    }
-}
-
-
-// MARK: Utils
-
-extension Calendar {
-    func isWholeYear(_ range: Range<Date>) -> Bool {
-        rangeOfYear(for: range.lowerBound) == range
     }
 }
