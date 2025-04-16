@@ -14,17 +14,18 @@ Export large amounts of historical Health data
 
 The ``BulkHealthExporter`` enables and coordinates large-scale support of historical HealthKit data.
 
-The Bulk Export API is built around the concept of a Export Sessions (``BulkHealthExporter/ExportSession``), which implement and handle the actual Health data export processing. 
-Sessions keep track of their pending and already-completed work, even across multiple app launches, ensuring that even for sample types with a very high number of samples a previously-started export can continue without issues if the app is terminated during the export.
+The Bulk Export API is built around the concept of Export Sessions (``BulkHealthExporter/ExportSession``), which implement and handle the Health data export processing. 
+Sessions keep track of their pending and already-completed work, including across multiple app launches, ensuring that even for sample types with a very high number of samples a previously-started export can continue without issues if the app is terminated during the export.
 
 Export Sessions are created using ``BulkHealthExporter/session(_:for:using:startAutomatically:batchResultHandler:)``, and consist of the following components:
-- A stable identifier, which will be used to keep track of the session, persist its state, and restore it across app launches.
+- A stable identifier, which is used to keep track of the session, persist its state, and restore it across app launches.
 - A set of to-be-exported sample types.
-- A ``BulkHealthExporter/BatchProcessor``, which allows the app process the individual batches of fetched samples.
-- An optional "batch result handler" closure, which will be called by the Session to inform the app about the results of the individual batch processing operations.
+- A ``BulkHealthExporter/BatchProcessor``, which allows the app to process the individual batches of fetched samples.
+- An optional "batch result handler" closure, which is called by the Session to inform the app about the results of the individual batch processing operations.
+
 This structure allows the Bulk Export API to be used in a variety of ways, for different kinds of export operations. (See below for an example.)
 
-An app wishing to perform a Health data export should simply call the ``BulkHealthExporter/session(_:for:using:startAutomatically:batchResultHandler:)`` function once at some point after the app's launch; this will either:
+In order to perform a Health data export, an app simply calls the ``BulkHealthExporter/session(_:for:using:startAutomatically:batchResultHandler:)`` function once at some point after the app's launch; this will either:
 - create and start a new session, if no matching session (based on the identifier) exists, or
 - restore and continue an existing session (e.g., from a previous launch of the app).
 
@@ -39,8 +40,8 @@ It is possible to ``BulkHealthExporter/ExportSession/pause()`` an export session
 
 ### Example: Bulk-Upload of Historical Health Data to Firebase
 
-Firstly, you define a custom ``BulkHealthExporter/BatchProcessor``, which will receive collections of HealthKit samples from the ``BulkHealthExporter``, and upload them to Firebase.
-In this case, we implicitly define the Batch Processor's `Output` type as `Void`, since we're just interested in the uploading, and don't want to immediately use the samples for anything else on-device. 
+This example implements a custom ``BulkHealthExporter/BatchProcessor``, which uploads the exported HealthKit samples received from the ``BulkHealthExporter`` into Firebase. 
+In this case, we implicitly define the Batch Processor's `Output` type as `Void`, since we're just interested in the uploading, and don't want to perform any additional on-device operations using the results of the individual batches. 
 
 ```swift
 struct FirebaseUploader: BulkHealthExporter.BatchProcessor {
@@ -55,7 +56,7 @@ struct FirebaseUploader: BulkHealthExporter.BatchProcessor {
 }
 ```
 
-You can then use the batch processor when creating a Bulk Export Session:
+We can then use the batch processor when creating a Bulk Export Session:
 ```swift
 let session = try await bulkExporter.session(
     "my-bulk-export-session",
@@ -70,11 +71,11 @@ This Bulk Export Session will, in the background, go through all historical Heal
 ### Performance Considerations
 
 In order to optimize memory usage when fetching potentially large amounts of HealthKit samples, the ``BulkHealthExporter`` intentionally processes all sample types serially, and will perform multiple, batched fetches per sample type (e.g., by fetching data by year, rather than all at once).
-This allows applications to ensure they stay under the iOS-imposed memory limit when processing bulk exports.
+This ensures that applications will stay under the iOS-enforced memory limit when processing bulk exports.
 
-In some cases, the Bulk Exporter may decide to process a sample type at an even more granular level, e.g., batching by querter rather than by year.
+In some cases, the Bulk Exporter may decide to process a sample type at an even more granular level, e.g., batching by quarter rather than by year.
 
-Even though all operations within a session will run serially, multiple sessions will run in parallel; your app should ideally try to keep the total number of sessions as low as possible, in order to prevent excessive memory and CPU usage.
+Even though all operations within an export session will run serially, multiple sessions will run in parallel; your app should ideally try to keep the total number of sessions as low as possible, in order to prevent excessive memory and CPU usage.
 
 
 ## Topics

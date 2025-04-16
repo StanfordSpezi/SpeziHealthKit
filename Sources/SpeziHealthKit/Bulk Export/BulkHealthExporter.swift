@@ -8,7 +8,6 @@
 
 import Foundation
 import HealthKit
-import os
 import Spezi
 import SpeziFoundation
 import SpeziLocalStorage
