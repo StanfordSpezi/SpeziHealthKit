@@ -32,6 +32,10 @@ It is safe to call this function multiple times and with the same input, even if
 The session will internally keep track of its creation date, and will only ever export samples up to that date.
 This allows an app to e.g. use the ``CollectSample`` API to continuously fetch and collect new Health samples, and use the ``BulkHealthExporter`` to do a one-time export operation of historical Health data.
 
+- Important: Ensure that your app has sufficient HealthKit access permissions before starting bulk export sessions. The session itself will *not* prompt the user for access; instead, it will fail to fetch and process any sample types for which no HealthKit permission is granted.
+
+It is possible to ``BulkHealthExporter/ExportSession/pause()`` an export session, which can then be resumed using the ``BulkHealthExporter/ExportSession/start()`` function.
+
 
 ### Example: Bulk-Upload of Historical Health Data to Firebase
 
@@ -60,14 +64,7 @@ let session = try await bulkExporter.session(
 )
 ```
 
-This Bulk Export Session will now, in the background, go through all historical Health data for the Active Energy, Heart Rate, and Step Count quantity types, fetch the data from HealthKit, and pass it to the Batch Processor, which will then upload it to Firebase.
-
-
-### Persistence
-
-The progress of a Bulk Export Session (i.e., the information which exports are still pending and which have already been successfully completed) is persisted to disk; this allows the bulk export to run across multiple app launches, without missing data.
-
-Bulk Export Sessions are identified uniquely by their id.
+This Bulk Export Session will, in the background, go through all historical Health data for the Active Energy, Heart Rate, and Step Count quantity types, fetch the data from HealthKit, and pass it to the Batch Processor, which will then upload it to Firebase.
 
 
 ### Performance Considerations
@@ -76,6 +73,8 @@ In order to optimize memory usage when fetching potentially large amounts of Hea
 This allows applications to ensure they stay under the iOS-imposed memory limit when processing bulk exports.
 
 In some cases, the Bulk Exporter may decide to process a sample type at an even more granular level, e.g., batching by querter rather than by year.
+
+Even though all operations within a session will run serially, multiple sessions will run in parallel; your app should ideally try to keep the total number of sessions as low as possible, in order to prevent excessive memory and CPU usage.
 
 
 ## Topics

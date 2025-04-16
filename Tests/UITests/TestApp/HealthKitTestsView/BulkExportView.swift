@@ -31,17 +31,6 @@ extension NSPredicate {
 }
 
 
-actor BoxedSet<T: Hashable> {
-    private(set) var storage = Set<T>()
-    
-    init() {}
-    
-    func insert(_ element: T) -> Bool {
-        storage.insert(element).inserted
-    }
-}
- 
-
 struct BulkExportView: View {
     @Environment(HealthKit.self)
     private var healthKit
@@ -103,33 +92,14 @@ struct BulkExportView: View {
         }
         
         AsyncButton("Start Bulk Export", state: $viewState) {
-            if true {
-                session = try await bulkExporter.session(
-                    "testSession",
-                    for: sampleTypes.mapIntoSet { .quantity($0) },
-                    using: SamplesCounter(),
-                    startAutomatically: true
-                ) { numSamples in
-                    await MainActor.run {
-                        self.numExportedSamples += numSamples
-                    }
-                    return true
-                }
-            } else {
-                let seenSamples = BoxedSet<HKSample>()
-                session = try await bulkExporter.session(
-                    "testSession",
-                    for: sampleTypes.mapIntoSet { .quantity($0) },
-                    using: .identity
-                ) { samples in
-                    for sample in samples {
-                        let didInsert = await seenSamples.insert(sample)
-                        precondition(didInsert)
-                    }
-                    await MainActor.run {
-                        self.numExportedSamples += samples.count
-                    }
-                    return true
+            session = try await bulkExporter.session(
+                "testSession",
+                for: sampleTypes.mapIntoSet { .quantity($0) },
+                using: SamplesCounter(),
+                startAutomatically: true
+            ) { numSamples in
+                await MainActor.run {
+                    self.numExportedSamples += numSamples
                 }
             }
         }

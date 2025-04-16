@@ -10,7 +10,6 @@
 
 import Foundation
 import HealthKit
-import os
 import Spezi
 import SpeziFoundation
 import SpeziLocalStorage
@@ -154,7 +153,7 @@ extension BulkHealthExporter {
     /// - ``progress``
     @Observable
     public final class ExportSession<Processor: BatchProcessor>: Sendable, ExportSessionProtocol {
-        typealias BatchResultHandler = @Sendable (Processor.Output) async -> Bool
+        typealias BatchResultHandler = @Sendable (Processor.Output) async -> Void
         
         public let sessionId: String
         private unowned let bulkExporter: BulkHealthExporter
@@ -256,20 +255,18 @@ extension BulkHealthExporter.ExportSession {
                     }
                     result = try await batch.sampleType.queryAndProcess(timeRange: batch.timeRange, in: healthKit, using: batchProcessor)
                 } catch let error as WrappedSampleType.QueryAndProcessError {
-                    logger.error("Failed to query and process batch \(String(describing: batch)): \(String(describing: error))")
+                    logger.error(
+                        "Failed to query and process batch \(String(describing: batch)): \(String(describing: error)). Will schedule for retry on next app launch."
+                    )
                     await popBatchAndScheduleForRetry()
                     continue loop
                 } catch {
                     fatalError("unreachable")
                 }
-                if await batchResultHandler(result) {
-                    await MainActor.run {
-                        _ = self.descriptor.pendingBatches.removeFirst()
-                        numCompletedBatches += 1
-                    }
-                } else {
-                    // failed
-                    await popBatchAndScheduleForRetry()
+                await batchResultHandler(result)
+                await MainActor.run {
+                    _ = self.descriptor.pendingBatches.removeFirst()
+                    numCompletedBatches += 1
                 }
             }
             await MainActor.run {

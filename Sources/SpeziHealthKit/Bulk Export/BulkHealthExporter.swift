@@ -53,7 +53,7 @@ extension BulkHealthExporter {
             for: exportSampleTypes,
             using: batchProcessor,
             startAutomatically: startAutomatically,
-            batchResultHandler: { _ in true }
+            batchResultHandler: { _ in }
         )
     }
     
@@ -66,7 +66,7 @@ extension BulkHealthExporter {
         for exportSampleTypes: Set<WrappedSampleType>,
         using batchProcessor: Processor,
         startAutomatically: Bool = true,
-        batchResultHandler: @Sendable @escaping (Processor.Output) async -> Bool
+        batchResultHandler: @Sendable @escaping (Processor.Output) async -> Void
     ) async throws -> ExportSession<Processor> {
         if let session = sessions.first(where: { $0.sessionId == id }) {
             guard let session = session as? ExportSession<Processor> else {
