@@ -65,7 +65,7 @@ extension BulkHealthExporter {
     /// Component that receives fetched Health data for processing, as part of a ``BulkHealthExporter/ExportSession``.
     public protocol BatchProcessor<Output>: Sendable {
         /// The type of the processor's output. Should be `Void` if the processor simply consumes the samples.
-        associatedtype Output
+        associatedtype Output: Sendable
         
         /// Invoked by a ``BulkHealthExporter/ExportSession``, to process a batch of Health samples.
         func process<Sample>(_ samples: consuming [Sample], of sampleType: SampleType<Sample>) async throws -> Output
@@ -75,17 +75,23 @@ extension BulkHealthExporter {
     /// The ``ExportSessionDescriptor`` serves as the `Codable` representation of a ``ExportSession``, and is used to restore a previously-created session's state across multiple app launches.
     ///
     /// It keeps track of the session's identity, and the stores the individual batches that need to be processed as part of the session.
-    /// It also keeps track of the already-completed sample types, to prevent
+    /// It also keeps track of the already-completed sample types, to prevent unnecessary duplicates when exporting.
     private struct ExportSessionDescriptor: Codable {
         struct ExportBatch: Codable {
-            let sampleType: WrappedSampleType
+            private enum CodingKeys: CodingKey {
+                case sampleType
+                case timeRange
+                case shouldSkipUntilNextLaunch
+            }
+            
+            let sampleType: any AnySampleType
             let timeRange: Range<Date>
             /// Whether this batch should be skipped for the remainder of the current lifetime of the session, i.e. until the next time the app is launched.
             var shouldSkipUntilNextLaunch: Bool
             
             var userDisplayedDescription: String {
                 let cal = Calendar.current
-                var desc = "\(sampleType.underlyingSampleType.displayTitle)"
+                var desc = "\(sampleType.displayTitle)"
                 if cal.isWholeYear(timeRange) {
                     desc += " (\(cal.component(.year, from: timeRange.lowerBound)))"
                 } else {
@@ -96,23 +102,37 @@ extension BulkHealthExporter {
                 return desc
             }
             
-            init(sampleType: WrappedSampleType, timeRange: Range<Date>) {
+            init(sampleType: any AnySampleType, timeRange: Range<Date>) {
                 self.sampleType = sampleType
                 self.timeRange = timeRange
                 self.shouldSkipUntilNextLaunch = false
+            }
+            
+            init(from decoder: any Decoder) throws {
+                let container = try decoder.container(keyedBy: CodingKeys.self)
+                self.sampleType = try container.decode(WrappedSampleType.self, forKey: .sampleType).underlyingSampleType
+                self.timeRange = try container.decode(Range<Date>.self, forKey: .timeRange)
+                self.shouldSkipUntilNextLaunch = try container.decode(Bool.self, forKey: .shouldSkipUntilNextLaunch)
+            }
+            
+            func encode(to encoder: any Encoder) throws {
+                var container = encoder.container(keyedBy: CodingKeys.self)
+                try container.encode(WrappedSampleType(sampleType), forKey: .sampleType)
+                try container.encode(timeRange, forKey: .timeRange)
+                try container.encode(shouldSkipUntilNextLaunch, forKey: .shouldSkipUntilNextLaunch)
             }
         }
         
         let sessionId: String
         let exportEndDate: Date
         var pendingBatches: [ExportBatch]
-        var completedSampleTypes: [WrappedSampleType]
+        var completedSampleTypes: SampleTypesCollection
         var numCompletedExportBatches: Int
         
-        init(sessionId: String, exportEndDate: Date, sampleTypes: Set<WrappedSampleType>, using healthKit: HealthKit) async {
+        init(sessionId: String, exportEndDate: Date, sampleTypes: SampleTypesCollection, using healthKit: HealthKit) async {
             self.sessionId = sessionId
             self.exportEndDate = exportEndDate
-            self.completedSampleTypes = []
+            self.completedSampleTypes = .init()
             self.pendingBatches = []
             self.numCompletedExportBatches = 0
             for sampleType in sampleTypes {
@@ -120,7 +140,8 @@ extension BulkHealthExporter {
             }
         }
         
-        mutating func add(sampleType: WrappedSampleType, healthKit: HealthKit) async {
+        mutating func add<Sample>(sampleType: some AnySampleType<Sample>, healthKit: HealthKit) async {
+            let sampleType = SampleType(sampleType)
             guard !(completedSampleTypes.contains(sampleType) || pendingBatches.contains { $0.sampleType == sampleType }) else {
                 // we've either already marked the sample type as completed, or have it already scheduled
                 // --> nothing to be done
@@ -128,7 +149,7 @@ extension BulkHealthExporter {
             }
             let cal = Calendar(identifier: .gregorian)
             let endDate = self.exportEndDate
-            let startDate: Date = (try? await sampleType.oldestSampleDate(in: healthKit)) ?? {
+            let startDate: Date = (try? await healthKit.oldestSampleDate(for: sampleType)) ?? {
                 // if we can't determine the oldest sample date, we use the day HealthKit was introduced as our fallback
                 // Note: it could be that there's no oldest sample date because there are no samples for the sample type,
                 // but it could also be the case that the fetch itself simply failed.
@@ -142,8 +163,10 @@ extension BulkHealthExporter {
             })
         }
     }
-    
-    
+}
+
+
+extension BulkHealthExporter {
     /// A long-running backgrund exporting task that fetches and processes HealthKit data.
     ///
     /// ## Topics
@@ -179,7 +202,7 @@ extension BulkHealthExporter {
             sessionId: String,
             bulkExporter: BulkHealthExporter,
             healthKit: HealthKit,
-            sampleTypes: Set<WrappedSampleType>,
+            sampleTypes: SampleTypesCollection,
             localStorage: LocalStorage,
             batchProcessor: Processor,
             batchResultHandler: @escaping BatchResultHandler
@@ -218,15 +241,13 @@ extension BulkHealthExporter.ExportSession {
     @MainActor
     public func start() { // swiftlint:disable:this function_body_length missing_docs
         let logger = self.bulkExporter.logger
-        let healthKit = self.healthKit
-        let batchProcessor = self.batchProcessor
         let batchResultHandler = self.batchResultHandler
         guard task == nil || task?.isCancelled == true else {
             // is already running
             return
         }
         state = .running
-        task = Task.detached { // swiftlint:disable:this closure_body_length
+        task = Task.detached { [unowned self] in // swiftlint:disable:this closure_body_length
             var numTotalBatches = await self.descriptor.pendingBatches.count(where: { !$0.shouldSkipUntilNextLaunch })
             var numCompletedBatches = 0
             let popBatchAndScheduleForRetry = { @MainActor in
@@ -262,8 +283,8 @@ extension BulkHealthExporter.ExportSession {
                             currentBatchDescription: batch.userDisplayedDescription
                         )
                     }
-                    result = try await batch.sampleType.queryAndProcess(timeRange: batch.timeRange, in: healthKit, using: batchProcessor)
-                } catch let error as WrappedSampleType.QueryAndProcessError {
+                    result = try await self.queryAndProcess(sampleType: batch.sampleType, for: batch.timeRange)
+                } catch let error as QueryAndProcessError {
                     logger.error(
                         "Failed to query and process batch \(String(describing: batch)): \(String(describing: error)). Will schedule for retry on next app launch."
                     )
@@ -302,6 +323,35 @@ extension BulkHealthExporter.ExportSession {
 }
 
 
+// NOTE: in Swift 6.0.3, we need to place this enum in the global scope, since nesting it in `BulkHealthExporter.ExportSession`
+// (where it belongs) will cause the compiler to crash.
+// Whatever the actual underlying issue here is, it seems to be fixed in Swift 6.1, so we'll hopefully be able to move this type soon.
+private enum QueryAndProcessError: Error, Sendable {
+    case query(any Error)
+    case process(any Error)
+}
+
+extension BulkHealthExporter.ExportSession {
+    private nonisolated func queryAndProcess<Sample: _HKSampleWithSampleType>(
+        sampleType: some AnySampleType<Sample>,
+        for timeRange: Range<Date>
+    ) async throws(QueryAndProcessError) -> Processor.Output {
+        let sampleType = SampleType(sampleType)
+        let samples: [Sample]
+        do {
+            samples = try await healthKit.query(sampleType, timeRange: .init(timeRange))
+        } catch {
+            throw .query(error)
+        }
+        do {
+            return try await batchProcessor.process(samples, of: sampleType)
+        } catch {
+            throw .process(error)
+        }
+    }
+}
+
+
 extension BulkHealthExporter.ExportSessionProtocol {
     /// Whether the session is currently running.
     ///
@@ -318,43 +368,6 @@ extension BulkHealthExporter.ExportSessionProtocol {
 
 
 // MARK: Utils
-
-extension WrappedSampleType {
-    fileprivate enum QueryAndProcessError: Error {
-        case query(any Error)
-        case process(any Error)
-    }
-    
-    fileprivate func oldestSampleDate(in healthKit: HealthKit) async throws -> Date? {
-        func imp<Sample>(_ sampleType: some AnySampleType<Sample>) async throws -> Date? {
-            let sampleType = SampleType(sampleType)
-            return try await healthKit.oldestSampleDate(for: sampleType)
-        }
-        return try await imp(self.underlyingSampleType)
-    }
-    
-    fileprivate func queryAndProcess<Processor: BulkHealthExporter.BatchProcessor>(
-        timeRange: Range<Date>,
-        in healthKit: HealthKit,
-        using batchProcessor: borrowing Processor
-    ) async throws(QueryAndProcessError) -> Processor.Output {
-        func imp<Sample>(_ sampleType: some AnySampleType<Sample>) async throws(QueryAndProcessError) -> Processor.Output {
-            let sampleType = SampleType(sampleType)
-            let samples: [Sample]
-            do {
-                samples = try await healthKit.query(sampleType, timeRange: .init(timeRange))
-            } catch {
-                throw .query(error)
-            }
-            do {
-                return try await batchProcessor.process(samples, of: sampleType)
-            } catch {
-                throw .process(error)
-            }
-        }
-        return try await imp(self.underlyingSampleType)
-    }
-}
 
 extension Calendar {
     func isWholeYear(_ range: Range<Date>) -> Bool {

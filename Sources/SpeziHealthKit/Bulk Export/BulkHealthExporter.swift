@@ -44,7 +44,7 @@ extension BulkHealthExporter {
     @MainActor
     public func session<Processor: BatchProcessor>(
         _ id: String,
-        for exportSampleTypes: Set<WrappedSampleType>,
+        for exportSampleTypes: SampleTypesCollection,
         using batchProcessor: Processor,
         startAutomatically: Bool = true
     ) async throws -> ExportSession<Processor> where Processor.Output == Void {
@@ -63,7 +63,7 @@ extension BulkHealthExporter {
     @MainActor
     public func session<Processor: BatchProcessor>(
         _ id: String,
-        for exportSampleTypes: Set<WrappedSampleType>,
+        for exportSampleTypes: SampleTypesCollection,
         using batchProcessor: Processor,
         startAutomatically: Bool = true,
         batchResultHandler: @Sendable @escaping (Processor.Output) async -> Void

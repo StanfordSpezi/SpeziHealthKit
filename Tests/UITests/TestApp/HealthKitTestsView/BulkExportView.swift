@@ -41,7 +41,10 @@ struct BulkExportView: View {
     
     // NOTE: we are intentionally using these specific sample types here, since they don't overlap with the `CollectSample` definitions.
     // Adding eg a ton of heart rate samples would slow down the app a lot, since they'd trigger the observer mechanism.
-    private let sampleTypes: Set<SampleType<HKQuantitySample>> = [.restingHeartRate, .height, .cyclingSpeed]
+    private let sampleTypes = SampleTypesCollection(
+        quantity: [.restingHeartRate, .height, .cyclingSpeed],
+        correlation: [.bloodPressure]
+    )
     
     private let timeRange: Range<Date> = {
         let cal = Calendar.current
@@ -85,16 +88,17 @@ struct BulkExportView: View {
     
     @ViewBuilder private var actionsSectionContent: some View {
         AsyncButton("Request full access", state: $viewState) {
+            let sampleTypes: [HKSampleType] = self.sampleTypes.effectiveSampleTypesForAuthentication.map { $0.hkSampleType }
             try await healthKit.askForAuthorization(for: .init(
-                read: sampleTypes.map(\.hkSampleType),
-                write: sampleTypes.map(\.hkSampleType)
+                read: sampleTypes,
+                write: sampleTypes
             ))
         }
         
         AsyncButton("Start Bulk Export", state: $viewState) {
             session = try await bulkExporter.session(
                 "testSession",
-                for: sampleTypes.mapIntoSet { .quantity($0) },
+                for: sampleTypes,
                 using: SamplesCounter(),
                 startAutomatically: true
             ) { numSamples in
@@ -106,11 +110,20 @@ struct BulkExportView: View {
     }
     
     private func fetchNumTestingSamples() async {
+        func imp<Sample>(_ sampleType: some AnySampleType<Sample>) async -> Int {
+            let sampleType = SampleType(sampleType)
+            let samples = (try? await healthKit.query(sampleType, timeRange: .init(timeRange), predicate: .isSpeziTestingSample)) ?? []
+            defer {
+                _ = consume samples
+            }
+            return samples.count
+        }
         var numSamples = 0
         for sampleType in sampleTypes {
-            let samples = (try? await healthKit.query(sampleType, timeRange: .init(timeRange), predicate: .isSpeziTestingSample)) ?? []
-            numSamples += samples.count
-            _ = consume samples
+//            let samples = (try? await healthKit.query(sampleType, timeRange: .init(timeRange), predicate: .isSpeziTestingSample)) ?? []
+//            numSamples += samples.count
+//            _ = consume samples
+            numSamples += await imp(sampleType)
         }
         numTestingSamples = numSamples
     }
@@ -122,7 +135,7 @@ private struct AddHistoricalSamplesSection: View {
     @Environment(\.calendar) private var cal
     
     let timeRange: Range<Date>
-    let sampleTypes: Set<SampleType<HKQuantitySample>>
+    let sampleTypes: SampleTypesCollection
     @Binding var viewState: ViewState
     let didAddSamples: @MainActor () async -> Void
     @State private var addHistoricalSamplesProgress: Double?
@@ -136,9 +149,13 @@ private struct AddHistoricalSamplesSection: View {
             ProgressView("Adding Historical Samples…", value: progress)
         }
         AsyncButton("Delete Spezi-created Historical Testing Data", role: .destructive, state: $viewState) {
-            for sampleType in sampleTypes {
+            func imp<Sample>(_ sampleType: some AnySampleType<Sample>) async throws {
+                let sampleType = SampleType(sampleType)
                 let samples = try await healthKit.query(sampleType, timeRange: .ever, predicate: .isSpeziTestingSample)
                 try await healthKit.healthStore.delete(samples)
+            }
+            for sampleType in sampleTypes {
+                try await imp(sampleType)
             }
         }
     }
@@ -146,7 +163,7 @@ private struct AddHistoricalSamplesSection: View {
     
     private func addHistoricalSamples() async throws { // swiftlint:disable:this function_body_length
         try await healthKit.askForAuthorization(for: .init(
-            write: sampleTypes.map(\.hkSampleType)
+            write: sampleTypes.effectiveSampleTypesForAuthentication.map { $0.hkSampleType }
         ))
         
         let days = Array(sequence(first: cal.rangeOfDay(for: timeRange.lowerBound)) { day in
@@ -191,15 +208,27 @@ private struct AddHistoricalSamplesSection: View {
         }
         
         try await withThrowingDiscardingTaskGroup(returning: Void.self) { taskGroup in
+            let addQuantitySample = { @Sendable (sampleType: SampleType<HKQuantitySample>) async throws in
+                let unit = sampleType.displayUnit
+                try await imp(sampleType) { lastQuantity in
+                    if let lastQuantity {
+                        HKQuantity(unit: unit, doubleValue: lastQuantity.doubleValue(for: unit) * .random(in: 0.85...1.15))
+                    } else {
+                        HKQuantity(unit: unit, doubleValue: .random(in: 1...99))
+                    }
+                }
+            }
             for sampleType in sampleTypes {
                 taskGroup.addTask { @Sendable in
-                    let unit = sampleType.displayUnit
-                    try await imp(sampleType) { lastQuantity in
-                        if let lastQuantity {
-                            HKQuantity(unit: unit, doubleValue: lastQuantity.doubleValue(for: unit) * .random(in: 0.85...1.15))
-                        } else {
-                            HKQuantity(unit: unit, doubleValue: .random(in: 1...99))
+                    switch WrappedSampleType(sampleType) {
+                    case .quantity(let sampleType):
+                        try await addQuantitySample(sampleType)
+                    case .correlation(let sampleType):
+                        for sampleType in sampleType.associatedQuantityTypes {
+                            try await addQuantitySample(sampleType)
                         }
+                    default:
+                        fatalError()
                     }
                 }
             }
