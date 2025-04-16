@@ -74,8 +74,8 @@ public enum WrappedSampleType: Hashable, Identifiable, Sendable {
         underlyingSampleType.id
     }
     
-    /// Attempts to wrap a sample type.
-    public init?(_ sampleType: any AnySampleType) {
+    /// Wraps an ``AnySampleType``.
+    public init(_ sampleType: any AnySampleType) {
         switch sampleType {
         case let sampleType as SampleType<HKQuantitySample>:
             self = .quantity(sampleType)
@@ -94,7 +94,7 @@ public enum WrappedSampleType: Hashable, Identifiable, Sendable {
         case let sampleType as SampleType<HKWorkout>:
             self = .workout(sampleType)
         default:
-            return nil
+            preconditionFailure("Unhandled SampleType input: \(type(of: sampleType)) (\(sampleType))")
         }
     }
 }
