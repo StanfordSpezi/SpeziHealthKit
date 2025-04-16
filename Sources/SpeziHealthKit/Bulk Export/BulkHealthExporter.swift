@@ -58,7 +58,6 @@ extension BulkHealthExporter {
         startAutomatically: Bool = true,
         batchResultHandler: @Sendable @escaping (Processor.Output) async -> Bool
     ) async throws -> Session<Processor> {
-        try? deleteSession(id)
         if let session = sessions.first(where: { $0.sessionId == id }) {
             guard let session = session as? Session<Processor> else {
                 // we found an already-running session with the same id, but a different type

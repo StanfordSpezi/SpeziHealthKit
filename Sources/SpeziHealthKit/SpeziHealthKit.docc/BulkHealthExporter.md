@@ -47,7 +47,7 @@ let session = try await bulkExporter.session(
 )
 ```
 
-This Bulk Export Session will now, in the background, go through all historical Health data for the Active Energy, Heart Rate, and Step Count quantity types, fetch the data from HealthKit, and pass it to the Batch Processor. 
+This Bulk Export Session will now, in the background, go through all historical Health data for the Active Energy, Heart Rate, and Step Count quantity types, fetch the data from HealthKit, and pass it to the Batch Processor, which will then upload it to Firebase.
 
 
 ### Persistence

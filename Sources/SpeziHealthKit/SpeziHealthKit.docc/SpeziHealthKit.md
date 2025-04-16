@@ -87,6 +87,9 @@ class ExampleAppDelegate: SpeziAppDelegate {
 - ``SampleType``
 - ``AnySampleType``
 
+### Bulk Exporting of Historical Health Data
+- ``BulkHealthExporter``
+
 ### Working with ECG Data
 - ``HealthKit/HKElectrocardiogram/symptoms(from:)``
 - ``HealthKit/HKElectrocardiogram/voltageMeasurements(from:)``

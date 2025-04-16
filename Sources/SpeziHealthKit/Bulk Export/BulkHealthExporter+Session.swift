@@ -57,8 +57,12 @@ extension BulkHealthExporter {
 
 
 extension BulkHealthExporter {
+    /// Component that receives fetched Health data for processing, as part of a ``BulkHealthExporter/Session``.
     public protocol BatchProcessor<Output>: Sendable {
+        /// The type of the processor's output. Should be `Void` if the processor simply consumes the samples.
         associatedtype Output
+        
+        /// Invoked by a ``BulkHealthExporter/Session``, to process a batch of Health samples.
         func process<Sample>(_ samples: consuming [Sample], of sampleType: SampleType<Sample>) async throws -> Output
     }
     
@@ -128,6 +132,16 @@ extension BulkHealthExporter {
     }
     
     
+    /// A long-running backgrund exporting task that fetches and processes HealthKit data.
+    ///
+    /// ## Topics
+    /// ### Session Lifecycle Management
+    /// - ``start()``
+    /// - ``pause()``
+    /// ### Session State
+    /// - ``isRunning``
+    /// - ``state``
+    /// - ``progress``
     @Observable
     public final class Session<Processor: BatchProcessor>: Sendable, ExportSessionProtocol {
         typealias BatchResultHandler = @Sendable (Processor.Output) async -> Bool
@@ -328,6 +342,7 @@ extension WrappedSampleType {
 
 // MARK: Batch Processors
 
+/// Batch Processor that simply passes through the unchanged samples.
 public struct IdentityBatchProcessor: BulkHealthExporter.BatchProcessor {
     public typealias Output = [HKSample]
     
