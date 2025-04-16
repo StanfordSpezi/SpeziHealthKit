@@ -14,7 +14,7 @@ Export large amounts of historical Health data
 
 The ``BulkHealthExporter`` enables and coordinates large-scale support of historical HealthKit data.
 
-The Bulk Export API is built around the concept of a Export Sessions (``BulkHealthExporter/Session``), which implement and handle the actual Health data export processing. 
+The Bulk Export API is built around the concept of a Export Sessions (``BulkHealthExporter/ExportSession``), which implement and handle the actual Health data export processing. 
 Sessions keep track of their pending and already-completed work, even across multiple app launches, ensuring that even for sample types with a very high number of samples a previously-started export can continue without issues if the app is terminated during the export.
 
 Export Sessions are created using ``BulkHealthExporter/session(_:for:using:startAutomatically:batchResultHandler:)``, and consist of the following components:

@@ -17,7 +17,7 @@ import SpeziLocalStorage
 
 
 extension BulkHealthExporter {
-    /// State of a ``Session``
+    /// State of a ``ExportSession``
     public enum ExportSessionState: Hashable, Sendable {
         /// The session hasn't yet been started.
         case scheduled
@@ -30,7 +30,7 @@ extension BulkHealthExporter {
     }
     
     
-    /// Information about the current progress of a ``Session``.
+    /// Information about the current progress of a ``ExportSession``.
     public struct ExportSessionProgress: Sendable {
         /// The index of the batch currently being uploaded.
         ///
@@ -43,7 +43,7 @@ extension BulkHealthExporter {
     }
     
     
-    /// Protocol modeling a type-erased ``Session``
+    /// Protocol modeling a type-erased ``ExportSession``
     public protocol ExportSessionProtocol {
         /// The session's unique identifier
         var sessionId: String { get }
@@ -63,17 +63,17 @@ extension BulkHealthExporter {
 
 
 extension BulkHealthExporter {
-    /// Component that receives fetched Health data for processing, as part of a ``BulkHealthExporter/Session``.
+    /// Component that receives fetched Health data for processing, as part of a ``BulkHealthExporter/ExportSession``.
     public protocol BatchProcessor<Output>: Sendable {
         /// The type of the processor's output. Should be `Void` if the processor simply consumes the samples.
         associatedtype Output
         
-        /// Invoked by a ``BulkHealthExporter/Session``, to process a batch of Health samples.
+        /// Invoked by a ``BulkHealthExporter/ExportSession``, to process a batch of Health samples.
         func process<Sample>(_ samples: consuming [Sample], of sampleType: SampleType<Sample>) async throws -> Output
     }
     
     
-    /// The ``ExportSessionDescriptor`` serves as the `Codable` representation of a ``Session``, and is used to restore a previously-created session's state across multiple app launches.
+    /// The ``ExportSessionDescriptor`` serves as the `Codable` representation of a ``ExportSession``, and is used to restore a previously-created session's state across multiple app launches.
     ///
     /// It keeps track of the session's identity, and the stores the individual batches that need to be processed as part of the session.
     /// It also keeps track of the already-completed sample types, to prevent

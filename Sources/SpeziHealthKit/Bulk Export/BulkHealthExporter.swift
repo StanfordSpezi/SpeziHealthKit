@@ -29,7 +29,7 @@ public final class BulkHealthExporter: Module, EnvironmentAccessible, @unchecked
 
 
 extension BulkHealthExporter {
-    /// An error that can occur when creating or deleting a ``Session``.
+    /// An error that can occur when creating or deleting a ``ExportSession``.
     public enum SessionError: Error {
         /// The ``BulkHealthExporter`` was unable to obtain a matching session,
         /// since there is already a registered session with the same identifier, but a different ``BatchProcessor``.
