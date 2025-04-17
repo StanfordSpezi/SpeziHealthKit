@@ -11,6 +11,7 @@
 import Foundation
 import HealthKit
 import SpeziHealthKit
+import SpeziHealthKitBulkExport
 import SpeziViews
 import SwiftUI
 
@@ -56,7 +57,7 @@ struct BulkExportView: View {
     @State private var viewState: ViewState = .idle
     @State private var numExportedSamples = 0
     @State private var numTestingSamples = 0
-    @State private var session: (any BulkHealthExporter.ExportSessionProtocol)?
+    @State private var session: (any BulkExportSessionProtocol)?
     
     var body: some View {
         Form {
@@ -237,14 +238,14 @@ private struct AddHistoricalSamplesSection: View {
 }
 
 
-private struct SamplesCounter: BulkHealthExporter.BatchProcessor {
+private struct SamplesCounter: BatchProcessor {
     func process<Sample>(_ samples: consuming [Sample], of sampleType: SampleType<Sample>) async throws -> Int {
         samples.count
     }
 }
 
 
-extension BulkHealthExporter.ExportSessionState {
+extension BulkExportSessionState {
     var description: String {
         switch self {
         case .scheduled:

@@ -23,6 +23,7 @@ let package = Package(
     ],
     products: [
         .library(name: "SpeziHealthKit", targets: ["SpeziHealthKit"]),
+        .library(name: "SpeziHealthKitBulkExport", targets: ["SpeziHealthKitBulkExport"]),
         .library(name: "SpeziHealthKitUI", targets: ["SpeziHealthKitUI"])
     ],
     dependencies: [
@@ -41,6 +42,16 @@ let package = Package(
             ],
             exclude: ["Sample Types/SampleTypes.swift.gyb"],
             resources: [.process("Resources")],
+            swiftSettings: [.enableUpcomingFeature("ExistentialAny")],
+            plugins: [] + swiftLintPlugin()
+        ),
+        .target(
+            name: "SpeziHealthKitBulkExport",
+            dependencies: [
+                .target(name: "SpeziHealthKit"),
+                .product(name: "SpeziFoundation", package: "SpeziFoundation"),
+                .product(name: "SpeziLocalStorage", package: "SpeziStorage")
+            ],
             swiftSettings: [.enableUpcomingFeature("ExistentialAny")],
             plugins: [] + swiftLintPlugin()
         ),

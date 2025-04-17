@@ -303,7 +303,7 @@ extension HealthKit {
     ///
     /// This will only return `true` if the user was asked for authorization for all of the specified object types.
     ///
-    /// - parameter objectTypes: The set of object types the function should check for. Passing in an empty set will result in a `true` return value, since there's nothing to check for.
+    /// - parameter dataAccessRequirements: The set of object types the function should check for. Passing in an empty set will result in a `true` return value, since there's nothing to check for.
     ///
     /// - Note: A `true` return value does **not** imply that the user actually granted access; it just means that the user was asked.
     public func didAskForAuthorization(for dataAccessRequirements: DataAccessRequirements) async -> Bool {

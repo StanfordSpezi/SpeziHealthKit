@@ -8,8 +8,10 @@
 
 import Foundation
 import HealthKit
+import Observation
 import Spezi
 import SpeziFoundation
+import SpeziHealthKit
 import SpeziLocalStorage
 
 
@@ -20,7 +22,7 @@ public final class BulkHealthExporter: Module, EnvironmentAccessible, @unchecked
     @ObservationIgnored @Dependency(LocalStorage.self) private var localStorage
     
     /// All export sessions currently known to the Bulk Exporter.
-    @MainActor public private(set) var sessions: [any ExportSessionProtocol] = []
+    @MainActor public private(set) var sessions: [any BulkExportSessionProtocol] = []
     
     /// Create a new Bulk Health Exporter
     nonisolated public init() {}
@@ -28,7 +30,7 @@ public final class BulkHealthExporter: Module, EnvironmentAccessible, @unchecked
 
 
 extension BulkHealthExporter {
-    /// An error that can occur when creating or deleting a ``ExportSession``.
+    /// An error that can occur when creating or deleting a ``BulkExportSession``.
     public enum SessionError: Error {
         /// The ``BulkHealthExporter`` was unable to obtain a matching session,
         /// since there is already a registered session with the same identifier, but a different ``BatchProcessor``.
@@ -46,7 +48,7 @@ extension BulkHealthExporter {
         for exportSampleTypes: SampleTypesCollection,
         using batchProcessor: Processor,
         startAutomatically: Bool = true
-    ) async throws -> ExportSession<Processor> where Processor.Output == Void {
+    ) async throws -> BulkExportSession<Processor> where Processor.Output == Void {
         try await session(
             id,
             for: exportSampleTypes,
@@ -66,15 +68,15 @@ extension BulkHealthExporter {
         using batchProcessor: Processor,
         startAutomatically: Bool = true,
         batchResultHandler: @Sendable @escaping (Processor.Output) async -> Void
-    ) async throws -> ExportSession<Processor> {
+    ) async throws -> BulkExportSession<Processor> {
         if let session = sessions.first(where: { $0.sessionId == id }) {
-            guard let session = session as? ExportSession<Processor> else {
+            guard let session = session as? BulkExportSession<Processor> else {
                 // we found an already-running session with the same id, but a different type
                 throw SessionError.conflictingSessionAlreadyExists
             }
             return session
         } else {
-            let session = try await ExportSession<Processor>(
+            let session = try await BulkExportSession<Processor>(
                 sessionId: id,
                 bulkExporter: self,
                 healthKit: healthKit,

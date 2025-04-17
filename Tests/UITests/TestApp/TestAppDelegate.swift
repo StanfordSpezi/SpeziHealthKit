@@ -8,6 +8,7 @@
 
 import Spezi
 import SpeziHealthKit
+import SpeziHealthKitBulkExport
 
 
 class TestAppDelegate: SpeziAppDelegate {

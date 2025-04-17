@@ -14,13 +14,13 @@ Export large amounts of historical Health data
 
 The ``BulkHealthExporter`` enables and coordinates large-scale support of historical HealthKit data.
 
-The Bulk Export API is built around the concept of Export Sessions (``BulkHealthExporter/ExportSession``), which implement and handle the Health data export processing. 
+The Bulk Export API is built around the concept of Export Sessions (``BulkExportSession``), which implement and handle the Health data export processing. 
 Sessions keep track of their pending and already-completed work, including across multiple app launches, ensuring that even for sample types with a very high number of samples a previously-started export can continue without issues if the app is terminated during the export.
 
 Export Sessions are created using ``BulkHealthExporter/session(_:for:using:startAutomatically:batchResultHandler:)``, and consist of the following components:
 - A stable identifier, which is used to keep track of the session, persist its state, and restore it across app launches.
 - A set of to-be-exported sample types.
-- A ``BulkHealthExporter/BatchProcessor``, which allows the app to process the individual batches of fetched samples.
+- A ``BatchProcessor``, which allows the app to process the individual batches of fetched samples.
 - An optional "batch result handler" closure, which is called by the Session to inform the app about the results of the individual batch processing operations.
 
 This structure allows the Bulk Export API to be used in a variety of ways, for different kinds of export operations. (See below for an example.)
@@ -31,16 +31,16 @@ In order to perform a Health data export, an app simply calls the ``BulkHealthEx
 
 It is safe to call this function multiple times and with the same input, even if a previously-created upload has already been completed.
 The session will internally keep track of its creation date, and will only ever export samples up to that date.
-This allows an app to e.g. use the ``CollectSample`` API to continuously fetch and collect new Health samples, and use the ``BulkHealthExporter`` to do a one-time export operation of historical Health data.
+This allows an app to e.g. use the `CollectSample` API to continuously fetch and collect new Health samples, and use the ``BulkHealthExporter`` to do a one-time export operation of historical Health data.
 
 - Important: Ensure that your app has sufficient HealthKit access permissions before starting bulk export sessions. The session itself will *not* prompt the user for access; instead, it will fail to fetch and process any sample types for which no HealthKit permission is granted.
 
-It is possible to ``BulkHealthExporter/ExportSession/pause()`` an export session, which can then be resumed using the ``BulkHealthExporter/ExportSession/start()`` function.
+It is possible to ``BulkExportSession/pause()`` an export session, which can then be resumed using the ``BulkExportSession/start()`` function.
 
 
 ### Example: Bulk-Upload of Historical Health Data to Firebase
 
-This example implements a custom ``BulkHealthExporter/BatchProcessor``, which uploads the exported HealthKit samples received from the ``BulkHealthExporter`` into Firebase. 
+This example implements a custom ``BatchProcessor``, which uploads the exported HealthKit samples received from the ``BulkHealthExporter`` into Firebase. 
 In this case, we implicitly define the Batch Processor's `Output` type as `Void`, since we're just interested in the uploading, and don't want to perform any additional on-device operations using the results of the individual batches. 
 
 ```swift
@@ -90,8 +90,8 @@ Even though all operations within an export session will run serially, multiple 
 - ``BulkHealthExporter/deleteSessionRestorationInfo(for:)``
 
 ### Export Session Types
-- ``BulkHealthExporter/ExportSession``
-- ``BulkHealthExporter/BatchProcessor``
-- ``BulkHealthExporter/ExportSessionState``
-- ``BulkHealthExporter/ExportSessionProtocol``
+- ``BulkExportSession``
+- ``BatchProcessor``
+- ``BulkExportSessionState``
+- ``BulkExportSessionProtocol``
 - ``BulkHealthExporter/SessionError``

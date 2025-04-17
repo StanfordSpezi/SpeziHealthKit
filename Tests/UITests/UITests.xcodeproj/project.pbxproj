@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		2F61BDC329DD02D600D71D33 /* SpeziHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 2F61BDC229DD02D600D71D33 /* SpeziHealthKit */; };
 		2FE33CB92B9B815B00BD886D /* SpeziViews in Frameworks */ = {isa = PBXBuildFile; productRef = 2FE33CB82B9B815B00BD886D /* SpeziViews */; };
+		8053AA172DB19E37003B4EA4 /* SpeziHealthKitBulkExport in Frameworks */ = {isa = PBXBuildFile; productRef = 8053AA162DB19E37003B4EA4 /* SpeziHealthKitBulkExport */; };
 		8059BF032D464B2E007CDAFD /* XCTHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8059BF022D464B2E007CDAFD /* XCTHealthKit */; };
 		8059BF0B2D4699CB007CDAFD /* XCTHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8059BF0A2D4699CB007CDAFD /* XCTHealthKit */; };
 		808EB0282D452800009D9AB2 /* SpeziHealthKitUI in Frameworks */ = {isa = PBXBuildFile; productRef = 808EB0272D452800009D9AB2 /* SpeziHealthKitUI */; };
@@ -46,6 +47,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				808EB0282D452800009D9AB2 /* SpeziHealthKitUI in Frameworks */,
+				8053AA172DB19E37003B4EA4 /* SpeziHealthKitBulkExport in Frameworks */,
 				2F61BDC329DD02D600D71D33 /* SpeziHealthKit in Frameworks */,
 				2FE33CB92B9B815B00BD886D /* SpeziViews in Frameworks */,
 			);
@@ -119,6 +121,7 @@
 				2F61BDC229DD02D600D71D33 /* SpeziHealthKit */,
 				2FE33CB82B9B815B00BD886D /* SpeziViews */,
 				808EB0272D452800009D9AB2 /* SpeziHealthKitUI */,
+				8053AA162DB19E37003B4EA4 /* SpeziHealthKitBulkExport */,
 			);
 			productName = Example;
 			productReference = 2F6D139228F5F384007C25D6 /* TestApp.app */;
@@ -673,6 +676,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2FE33CB72B9B815B00BD886D /* XCRemoteSwiftPackageReference "SpeziViews" */;
 			productName = SpeziViews;
+		};
+		8053AA162DB19E37003B4EA4 /* SpeziHealthKitBulkExport */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SpeziHealthKitBulkExport;
 		};
 		8059BF022D464B2E007CDAFD /* XCTHealthKit */ = {
 			isa = XCSwiftPackageProductDependency;
