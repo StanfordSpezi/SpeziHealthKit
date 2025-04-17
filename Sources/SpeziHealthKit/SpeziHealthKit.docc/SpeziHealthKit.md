@@ -86,6 +86,7 @@ class ExampleAppDelegate: SpeziAppDelegate {
 ### HealthKit Sample Types
 - ``SampleType``
 - ``AnySampleType``
+- ``SampleTypesCollection``
 
 ### Bulk Exporting of Historical Health Data
 - ``BulkHealthExporter``
