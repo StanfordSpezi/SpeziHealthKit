@@ -54,7 +54,7 @@ extension HealthKit {
             // For certain sample types, we're not allowed to request direct read/write request;
             // we instead need to map these to their effective underlying sample types.
             // E.g.: HKCorrelationTypeBloodPressure --> HKQuantityTypeBloodPressure{Systolic,Diastolic}
-            self.read = read.flatMapIntoSet { $0.effectiveSampleTypesForAuthentication }
+            self.read = read.flatMapIntoSet { ($0 as? HKSampleType)?.effectiveSampleTypesForAuthentication as Set<HKObjectType>? ?? [$0] }
             self.write = write.flatMapIntoSet { $0.effectiveSampleTypesForAuthentication }
         }
         
@@ -82,8 +82,8 @@ extension HealthKit {
 }
 
 
-extension HKObjectType {
-    var effectiveSampleTypesForAuthentication: Set<HKObjectType> {
+extension HKSampleType {
+    var effectiveSampleTypesForAuthentication: Set<HKSampleType> {
         if let sampleType = self.sampleType {
             sampleType.effectiveSampleTypesForAuthentication.mapIntoSet { $0.hkSampleType }
         } else {
