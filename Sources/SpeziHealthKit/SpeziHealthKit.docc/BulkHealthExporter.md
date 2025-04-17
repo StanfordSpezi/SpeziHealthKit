@@ -60,7 +60,7 @@ We can then use the batch processor when creating a Bulk Export Session:
 ```swift
 let session = try await bulkExporter.session(
     "my-bulk-export-session",
-    for: [.quantity(.activeEnergy), .quantity(.heartRate), .quantity(.stepCount)],
+    for: [SampleType.activeEnergy, SampleType.heartRate, SampleType.stepCount],
     using: FirebaseUploader()
 )
 ```

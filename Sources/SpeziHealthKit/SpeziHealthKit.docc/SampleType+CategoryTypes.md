@@ -32,6 +32,8 @@ Well-known category sample types
 - ``SampleType/pregnancy``
 - ``SampleType/pregnancyTestResult``
 - ``SampleType/lactation``
+- ``SampleType/bleedingAfterPregnancy``
+- ``SampleType/bleedingDuringPregnancy``
 
 ### Hearing
 - ``SampleType/environmentalAudioExposureEvent``
@@ -48,6 +50,7 @@ Well-known category sample types
 ### Mindfulness and Sleep
 - ``SampleType/mindfulSession``
 - ``SampleType/sleepAnalysis``
+- ``SampleType/sleepApneaEvent``
 
 ### Self Care
 - ``SampleType/toothbrushingEvent``
