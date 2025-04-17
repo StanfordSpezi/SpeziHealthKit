@@ -115,6 +115,7 @@ extension AnySampleType {
 
 
 extension HKObjectType {
+    /// The corresponding ``SampleType``, if possible.
     public var sampleType: (any AnySampleType)? {
         switch self {
         case is HKQuantityType:
