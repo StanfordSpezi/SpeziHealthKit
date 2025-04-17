@@ -54,6 +54,7 @@ extension HealthKit {
             // For certain sample types, we're not allowed to request direct read/write request;
             // we instead need to map these to their effective underlying sample types.
             // E.g.: HKCorrelationTypeBloodPressure --> HKQuantityTypeBloodPressure{Systolic,Diastolic}
+            // swiftlint:disable:next discouraged_optional_collection
             self.read = read.flatMapIntoSet { ($0 as? HKSampleType)?.effectiveSampleTypesForAuthentication as Set<HKObjectType>? ?? [$0] }
             self.write = write.flatMapIntoSet { $0.effectiveSampleTypesForAuthentication }
         }
