@@ -43,10 +43,22 @@ extension HealthKit {
             read.isEmpty && write.isEmpty
         }
         
+        /// Creates a new, empty instance.
+        public init() {
+            read = Set()
+            write = Set()
+        }
+        
         /// Creates a new instance, with the specified read and write sample types.
         public init(read: some Sequence<HKObjectType> = [], write: some Sequence<HKSampleType> = []) {
             self.read = Set(read)
             self.write = Set(write)
+        }
+        
+        /// Creates a new instance, with the specified read and write sample types.
+        public init(read: some Sequence<any AnySampleType> = [], write: some Sequence<any AnySampleType> = []) {
+            self.read = read.mapIntoSet { $0.hkSampleType }
+            self.write = write.mapIntoSet { $0.hkSampleType }
         }
         
         /// Creates a new instance, containing the union of the read and write requirements of `self` and `other`.
