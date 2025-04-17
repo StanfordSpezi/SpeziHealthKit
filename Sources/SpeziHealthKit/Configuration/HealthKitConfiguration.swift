@@ -51,8 +51,19 @@ extension HealthKit {
         
         /// Creates a new instance, with the specified read and write sample types.
         public init(read: some Sequence<HKObjectType> = [], write: some Sequence<HKSampleType> = []) {
+            // For certain sample types, we're not allowed to request direct read/write request;
+            // we instead need to map these to their effective underlying sample types.
+            // E.g.: HKCorrelationTypeBloodPressure --> HKQuantityTypeBloodPressure{Systolic,Diastolic}
             self.read = read.flatMapIntoSet { $0.effectiveSampleTypesForAuthentication }
-            self.write = Set(write)
+            self.write = write.flatMapIntoSet { $0.effectiveSampleTypesForAuthentication }
+        }
+        
+        /// Creates a new instance, with the specified read and write sample types.
+        public init(read: some Sequence<any AnySampleType> = [], write: some Sequence<any AnySampleType> = []) {
+            self.init(
+                read: read.mapIntoSet { $0.hkSampleType },
+                write: write.mapIntoSet { $0.hkSampleType }
+            )
         }
         
         /// Creates a new instance, containing the union of the read and write requirements of `self` and `other`.
