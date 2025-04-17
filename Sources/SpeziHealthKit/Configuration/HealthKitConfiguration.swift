@@ -51,14 +51,8 @@ extension HealthKit {
         
         /// Creates a new instance, with the specified read and write sample types.
         public init(read: some Sequence<HKObjectType> = [], write: some Sequence<HKSampleType> = []) {
-            self.read = Set(read)
+            self.read = read.flatMapIntoSet { $0.effectiveSampleTypesForAuthentication }
             self.write = Set(write)
-        }
-        
-        /// Creates a new instance, with the specified read and write sample types.
-        public init(read: some Sequence<any AnySampleType> = [], write: some Sequence<any AnySampleType> = []) {
-            self.read = read.mapIntoSet { $0.hkSampleType }
-            self.write = write.mapIntoSet { $0.hkSampleType }
         }
         
         /// Creates a new instance, containing the union of the read and write requirements of `self` and `other`.
@@ -72,6 +66,17 @@ extension HealthKit {
         /// Merges another set of data access requirements into the current one.
         public mutating func merge(with other: Self) {
             self = self.merging(with: other)
+        }
+    }
+}
+
+
+extension HKObjectType {
+    var effectiveSampleTypesForAuthentication: Set<HKObjectType> {
+        if let sampleType = self.sampleType {
+            sampleType.effectiveSampleTypesForAuthentication.mapIntoSet { $0.hkSampleType }
+        } else {
+            []
         }
     }
 }

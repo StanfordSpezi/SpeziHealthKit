@@ -114,6 +114,26 @@ extension AnySampleType {
 }
 
 
+extension HKObjectType {
+    public var sampleType: (any AnySampleType)? {
+        switch self {
+        case is HKQuantityType:
+            SampleType<HKQuantitySample>(.init(rawValue: self.identifier))
+        case is HKCorrelationType:
+            SampleType<HKCorrelation>(.init(rawValue: self.identifier))
+        case is HKCategoryType:
+            SampleType<HKCategorySample>(.init(rawValue: self.identifier))
+        case is HKWorkoutType:
+            SampleType.workout
+        case is HKCharacteristicType, is HKDocumentType, is HKActivitySummaryType, is HKSeriesType:
+            nil
+        default:
+            nil
+        }
+    }
+}
+
+
 func collectAllUnderyingEffectiveSampleTypes<each S>(
     _ seq: repeat each S
 ) -> Set<HKSampleType> where repeat (each S): Sequence, repeat (each S).Element: AnySampleType {

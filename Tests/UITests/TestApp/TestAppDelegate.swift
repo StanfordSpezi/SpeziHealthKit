@@ -37,10 +37,10 @@ class TestAppDelegate: SpeziAppDelegate {
                 CollectSample(.stairAscentSpeed, continueInBackground: true)
                 CollectSample(.stairDescentSpeed, continueInBackground: false)
                 CollectSample(.workout)
+                CollectSample(.bloodPressure, start: .automatic)
                 
                 RequestReadAccess(
                     quantity: [.bloodOxygen],
-                    correlation: [.bloodPressure],
                     characteristic: [.activityMoveMode, .biologicalSex, .bloodType, .dateOfBirth, .fitzpatrickSkinType, .wheelchairUse],
                     other: [SampleType.workout, SampleType.audiogram]
                 )
