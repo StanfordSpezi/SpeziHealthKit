@@ -40,7 +40,7 @@ extension BulkHealthExporter {
     }
     
     /// The result of obtaining a ``BulkExportSession`` through the ``BulkHealthExporter``.
-    public enum ObtainSessionResult<Processor: BatchProcessor> {
+    public enum ObtainSessionResult<Processor: BatchProcessor>: Sendable {
         /// The ``BulkHealthExporter`` created a new session.
         ///
         /// This case encapsulates both the newly created session, as well as an `AsyncStream` for getting the individual batch processing results.

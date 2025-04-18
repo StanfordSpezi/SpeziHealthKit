@@ -38,7 +38,7 @@ public struct BulkExportSessionProgress: Sendable {
 
 
 /// Protocol modeling a type-erased ``BulkExportSession``
-public protocol BulkExportSessionProtocol<Processor> {
+public protocol BulkExportSessionProtocol<Processor>: AnyObject, Sendable {
     /// The session's ``BatchProcessor``
     associatedtype Processor: BatchProcessor
     

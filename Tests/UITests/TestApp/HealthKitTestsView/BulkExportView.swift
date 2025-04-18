@@ -118,14 +118,17 @@ struct BulkExportView: View {
     @ViewBuilder private var exporterActions: some View {
         let sessionId = BulkExportSessionIdentifier("testSession")
         AsyncButton("Start Bulk Export", state: $viewState) {
-            switch try await bulkExporter.session(
-                sessionId,
-                for: sampleTypes,
-                startDate: .oldestSample,
-                // we intentionally give it a little delay, so that we can test the pause() functionality as part of the UI test.
-                using: SamplesCounter(delay: .seconds(1)),
-                startAutomatically: true
-            ) {
+            let obtainSession = { @MainActor in
+                try await bulkExporter.session(
+                    sessionId,
+                    for: sampleTypes,
+                    startDate: .oldestSample,
+                    // we intentionally give it a little delay, so that we can test the pause() functionality as part of the UI test.
+                    using: SamplesCounter(delay: .seconds(1)),
+                    startAutomatically: true
+                )
+            }
+            switch try await obtainSession() {
             case let .newSession(session, stream):
                 self.session = session
                 Task {
@@ -135,6 +138,12 @@ struct BulkExportView: View {
                 }
             case .existingSession(let session):
                 self.session = session
+            }
+            switch try await obtainSession() {
+            case .existingSession(let session):
+                precondition(session === self.session)
+            case .newSession:
+                fatalError("unexpected result")
             }
         }
         AsyncButton("Reset ExportSession", role: .destructive, state: $viewState) {
