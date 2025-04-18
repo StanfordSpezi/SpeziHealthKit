@@ -13,12 +13,12 @@ import SpeziHealthKit
 
 /// State of a ``BulkExportSession``
 public enum BulkExportSessionState: Hashable, Sendable {
-    /// The session hasn't yet been started.
-    case scheduled
+    /// The session is currently paused.
+    ///
+    /// This is also the initial state for newly created but not yet started sessions.
+    case paused
     /// The session is currently running.
     case running
-    /// The session is currently paused.
-    case paused
     /// The session has completed its work, and has nothing else left to do.
     case done
 }
@@ -48,8 +48,19 @@ public protocol BulkExportSessionProtocol<Processor> {
     @MainActor var progress: BulkExportSessionProgress? { get }
     /// The current state of the export session.
     @MainActor var state: BulkExportSessionState { get }
+    /// The session's pending batches.
+    ///
+    /// If the session is running, this will include the batch currently being processed.
+    @MainActor var pendingBatches: [ExportBatch] { get }
+    /// The session's completed batches.
+    @MainActor var completedBatches: [ExportBatch] { get }
+    /// The session's failed batches.
+    @MainActor var failedBatches: [ExportBatch] { get }
+    /// The total number of batches in the session.
+    @MainActor var numTotalBatches: Int { get }
+    
     /// Starts the session, unless it is already running
-    @MainActor func start()
+    @MainActor func start(retryFailedBatches: Bool)
     /// Pauses the session at the next possible point in time.
     ///
     /// This operation won't necessarily cause the session to get paused immediately.
@@ -66,8 +77,13 @@ extension BulkExportSessionProtocol {
         switch state {
         case .running:
             true
-        case .scheduled, .paused, .done:
+        case .paused, .done:
             false
         }
+    }
+    
+    /// The number of batches the session has already processed, i.e. the combined number of completed and failed batches.
+    @MainActor public var numProcessedBatches: Int {
+        completedBatches.count + failedBatches.count
     }
 }

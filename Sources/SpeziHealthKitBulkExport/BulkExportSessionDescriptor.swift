@@ -21,64 +21,16 @@ import SpeziLocalStorage
 /// It keeps track of the session's identity, and the stores the individual batches that need to be processed as part of the session.
 /// It also keeps track of the already-completed sample types, to prevent unnecessary duplicates when exporting.
 struct ExportSessionDescriptor: Codable {
-    struct ExportBatch: Codable {
-        private enum CodingKeys: CodingKey {
-            case sampleType
-            case timeRange
-            case shouldSkipUntilNextLaunch
-        }
-        
-        let sampleType: any AnySampleType
-        let timeRange: Range<Date>
-        /// Whether this batch should be skipped for the remainder of the current lifetime of the session, i.e. until the next time the app is launched.
-        var shouldSkipUntilNextLaunch: Bool
-        
-        var userDisplayedDescription: String {
-            let cal = Calendar.current
-            var desc = "\(sampleType.displayTitle)"
-            if cal.isWholeYear(timeRange) {
-                desc += " (\(cal.component(.year, from: timeRange.lowerBound)))"
-            } else {
-                let start = DateFormatter.localizedString(from: timeRange.lowerBound, dateStyle: .short, timeStyle: .none)
-                let end = DateFormatter.localizedString(from: timeRange.upperBound.advanced(by: -1), dateStyle: .short, timeStyle: .none)
-                desc += "(\(start) – \(end))"
-            }
-            return desc
-        }
-        
-        init(sampleType: any AnySampleType, timeRange: Range<Date>) {
-            self.sampleType = sampleType
-            self.timeRange = timeRange
-            self.shouldSkipUntilNextLaunch = false
-        }
-        
-        init(from decoder: any Decoder) throws {
-            let container = try decoder.container(keyedBy: CodingKeys.self)
-            self.sampleType = try container.decode(WrappedSampleType.self, forKey: .sampleType).underlyingSampleType
-            self.timeRange = try container.decode(Range<Date>.self, forKey: .timeRange)
-            self.shouldSkipUntilNextLaunch = try container.decode(Bool.self, forKey: .shouldSkipUntilNextLaunch)
-        }
-        
-        func encode(to encoder: any Encoder) throws {
-            var container = encoder.container(keyedBy: CodingKeys.self)
-            try container.encode(WrappedSampleType(sampleType), forKey: .sampleType)
-            try container.encode(timeRange, forKey: .timeRange)
-            try container.encode(shouldSkipUntilNextLaunch, forKey: .shouldSkipUntilNextLaunch)
-        }
-    }
-    
     let sessionId: BulkExportSessionIdentifier
     let exportEndDate: Date
     var pendingBatches: [ExportBatch]
-    var completedSampleTypes: SampleTypesCollection
-    var numCompletedExportBatches: Int
+    var completedBatches: [ExportBatch]
     
     init(sessionId: BulkExportSessionIdentifier, exportEndDate: Date, sampleTypes: SampleTypesCollection, using healthKit: HealthKit) async {
         self.sessionId = sessionId
         self.exportEndDate = exportEndDate
-        self.completedSampleTypes = .init()
+        self.completedBatches = []
         self.pendingBatches = []
-        self.numCompletedExportBatches = 0
         for sampleType in sampleTypes {
             await add(sampleType: sampleType, healthKit: healthKit)
         }
@@ -86,9 +38,9 @@ struct ExportSessionDescriptor: Codable {
     
     mutating func add<Sample>(sampleType: some AnySampleType<Sample>, healthKit: HealthKit) async {
         let sampleType = SampleType(sampleType)
-        guard !(completedSampleTypes.contains(sampleType) || pendingBatches.contains { $0.sampleType == sampleType }) else {
-            // we've either already marked the sample type as completed, or have it already scheduled
-            // --> nothing to be done
+        guard !(pendingBatches + completedBatches).contains(where: { $0.sampleType == sampleType }) else {
+            // we have at least one scheduled or already-completed batch with this sample type
+            // --> nothing to be done; we're already handling it.
             return
         }
         let cal = Calendar(identifier: .gregorian)
@@ -105,6 +57,19 @@ struct ExportSessionDescriptor: Codable {
         pendingBatches.append(contentsOf: yearRanges.map { year in
             ExportBatch(sampleType: sampleType, timeRange: year)
         })
+    }
+    
+    /// Resets the `result` of all failed batches to `nil`, so that they will be retried by the ``BulkExportSession``.
+    mutating func unmarkAllFailedBatches() {
+        assert(completedBatches.allSatisfy { $0.result == .success })
+        assert(pendingBatches.allSatisfy { $0.result == nil || ($0.result?.isFailure == true) })
+        for idx in pendingBatches.indices {
+            var batch = pendingBatches[idx]
+            if let result = batch.result, result.isFailure {
+                batch.result = nil
+            }
+            pendingBatches[idx] = batch
+        }
     }
 }
 

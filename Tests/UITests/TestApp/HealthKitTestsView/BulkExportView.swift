@@ -62,16 +62,28 @@ struct BulkExportView: View {
     var body: some View {
         Form {
             Section {
-                actionsSectionContent
+                healthKitActions
             }
             Section {
-                AddHistoricalSamplesSection(timeRange: timeRange, sampleTypes: sampleTypes, viewState: $viewState) {
-                    await fetchNumTestingSamples()
-                }
+                exporterActions
             }
             Section("Bulk Export Session") {
                 if let session {
                     LabeledContent("State", value: session.state.description)
+                    LabeledContent("Status", value: "Completed \(session.completedBatches.count) of \(session.numTotalBatches) (\(session.failedBatches.count) failed)")
+                    switch session.state {
+                    case .paused, .done:
+                        Button("Start") {
+                            session.start(retryFailedBatches: true)
+                        }
+                    case .running:
+                        ProgressView(value: Double(session.numProcessedBatches) / Double(session.numTotalBatches)) {
+                            Text("Completed \(session.completedBatches.count) of \(session.numTotalBatches) (\(session.failedBatches.count) failed)")
+                            if let desc = session.progress?.currentBatchDescription {
+                                Text("Current batch: \(desc)")
+                            }
+                        }
+                    }
                 } else {
                     Text("No Bulk Export Session")
                         .foregroundStyle(.secondary)
@@ -87,7 +99,7 @@ struct BulkExportView: View {
         }
     }
     
-    @ViewBuilder private var actionsSectionContent: some View {
+    @ViewBuilder private var healthKitActions: some View {
         AsyncButton("Request full access", state: $viewState) {
             let sampleTypes: [HKSampleType] = self.sampleTypes.effectiveSampleTypesForAuthentication.map { $0.hkSampleType }
             try await healthKit.askForAuthorization(for: .init(
@@ -95,10 +107,16 @@ struct BulkExportView: View {
                 write: sampleTypes
             ))
         }
-        
+        AddHistoricalSamplesSection(timeRange: timeRange, sampleTypes: sampleTypes, viewState: $viewState) {
+            await fetchNumTestingSamples()
+        }
+    }
+    
+    @ViewBuilder private var exporterActions: some View {
+        let sessionId = BulkExportSessionIdentifier("testSession")
         AsyncButton("Start Bulk Export", state: $viewState) {
             session = try await bulkExporter.session(
-                .init("testSession"),
+                sessionId,
                 for: sampleTypes,
                 using: SamplesCounter(),
                 startAutomatically: true
@@ -107,6 +125,9 @@ struct BulkExportView: View {
                     self.numExportedSamples += numSamples
                 }
             }
+        }
+        AsyncButton("Reset ExportSession", role: .destructive, state: $viewState) {
+            try bulkExporter.deleteSessionRestorationInfo(for: sessionId)
         }
     }
     
@@ -168,11 +189,13 @@ private struct AddHistoricalSamplesSection: View {
             let next = cal.rangeOfDay(for: cal.startOfNextDay(for: day.lowerBound))
             return next.overlaps(timeRange) ? next.clamped(to: timeRange) : nil
         })
+        let numDays = days.count
+        precondition(numDays == cal.countDistinctDays(from: timeRange.lowerBound, to: timeRange.upperBound) - 1)
         
         await MainActor.run {
             self.addHistoricalSamplesProgress = 0
         }
-        let expectedNumTotalSamples = sampleTypes.count * cal.countDistinctDays(from: timeRange.lowerBound, to: timeRange.upperBound)
+        var expectedNumTotalSamples = 0
         var numSamplesAddedSoFar = 0
         
         @Sendable nonisolated func imp(
@@ -187,7 +210,7 @@ private struct AddHistoricalSamplesSection: View {
                     start: day.lowerBound,
                     end: day.lowerBound.addingTimeInterval(60 * 30),
                     metadata: [
-                        "edu.stanford.spezi.healthkit.isTestingData": "YES"
+                        HKSampleMetadataKeyIsSpeziTestingData: "YES"
                     ]
                 )
                 try await healthKit.healthStore.save(sample)
@@ -220,8 +243,14 @@ private struct AddHistoricalSamplesSection: View {
                 taskGroup.addTask { @Sendable in
                     switch WrappedSampleType(sampleType) {
                     case .quantity(let sampleType):
+                        await MainActor.run {
+                            expectedNumTotalSamples += numDays
+                        }
                         try await addQuantitySample(sampleType)
                     case .correlation(let sampleType):
+                        await MainActor.run {
+                            expectedNumTotalSamples += numDays * sampleType.associatedQuantityTypes.count
+                        }
                         for sampleType in sampleType.associatedQuantityTypes {
                             try await addQuantitySample(sampleType)
                         }
@@ -236,7 +265,7 @@ private struct AddHistoricalSamplesSection: View {
 
 
 private struct SamplesCounter: BatchProcessor {
-    func process<Sample>(_ samples: consuming [Sample], of sampleType: SampleType<Sample>) async throws -> Int {
+    func process<Sample>(_ samples: consuming [Sample], of sampleType: SampleType<Sample>) throws -> Int {
         samples.count
     }
 }
@@ -245,8 +274,6 @@ private struct SamplesCounter: BatchProcessor {
 extension BulkExportSessionState {
     var description: String {
         switch self {
-        case .scheduled:
-            "scheduled"
         case .running:
             "running"
         case .paused:
