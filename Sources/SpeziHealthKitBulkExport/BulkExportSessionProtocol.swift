@@ -38,9 +38,12 @@ public struct BulkExportSessionProgress: Sendable {
 
 
 /// Protocol modeling a type-erased ``BulkExportSession``
-public protocol BulkExportSessionProtocol {
+public protocol BulkExportSessionProtocol<Processor> {
+    /// The session's ``BatchProcessor``
+    associatedtype Processor: BatchProcessor
+    
     /// The session's unique identifier
-    var sessionId: String { get }
+    var sessionId: BulkExportSessionIdentifier { get }
     /// The current progress of the session, if it is currently running.
     @MainActor var progress: BulkExportSessionProgress? { get }
     /// The current state of the export session.

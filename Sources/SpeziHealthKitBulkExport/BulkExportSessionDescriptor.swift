@@ -67,13 +67,13 @@ struct ExportSessionDescriptor: Codable {
         }
     }
     
-    let sessionId: String
+    let sessionId: BulkExportSessionIdentifier
     let exportEndDate: Date
     var pendingBatches: [ExportBatch]
     var completedSampleTypes: SampleTypesCollection
     var numCompletedExportBatches: Int
     
-    init(sessionId: String, exportEndDate: Date, sampleTypes: SampleTypesCollection, using healthKit: HealthKit) async {
+    init(sessionId: BulkExportSessionIdentifier, exportEndDate: Date, sampleTypes: SampleTypesCollection, using healthKit: HealthKit) async {
         self.sessionId = sessionId
         self.exportEndDate = exportEndDate
         self.completedSampleTypes = .init()

@@ -98,7 +98,7 @@ struct BulkExportView: View {
         
         AsyncButton("Start Bulk Export", state: $viewState) {
             session = try await bulkExporter.session(
-                "testSession",
+                .init("testSession"),
                 for: sampleTypes,
                 using: SamplesCounter(),
                 startAutomatically: true
@@ -121,9 +121,6 @@ struct BulkExportView: View {
         }
         var numSamples = 0
         for sampleType in sampleTypes {
-//            let samples = (try? await healthKit.query(sampleType, timeRange: .init(timeRange), predicate: .isSpeziTestingSample)) ?? []
-//            numSamples += samples.count
-//            _ = consume samples
             numSamples += await imp(sampleType)
         }
         numTestingSamples = numSamples
@@ -164,7 +161,7 @@ private struct AddHistoricalSamplesSection: View {
     
     private func addHistoricalSamples() async throws { // swiftlint:disable:this function_body_length
         try await healthKit.askForAuthorization(for: .init(
-            write: sampleTypes.effectiveSampleTypesForAuthentication.map { $0.hkSampleType }
+            write: sampleTypes
         ))
         
         let days = Array(sequence(first: cal.rangeOfDay(for: timeRange.lowerBound)) { day in

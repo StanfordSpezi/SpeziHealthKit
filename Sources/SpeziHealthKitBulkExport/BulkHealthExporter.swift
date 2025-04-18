@@ -44,7 +44,7 @@ extension BulkHealthExporter {
     /// See the ``BulkHealthExporter`` class documentation for more information.
     @MainActor
     public func session<Processor: BatchProcessor>(
-        _ id: String,
+        _ id: BulkExportSessionIdentifier,
         for exportSampleTypes: SampleTypesCollection,
         using batchProcessor: Processor,
         startAutomatically: Bool = true
@@ -63,7 +63,7 @@ extension BulkHealthExporter {
     /// See the ``BulkHealthExporter`` class documentation for more information.
     @MainActor
     public func session<Processor: BatchProcessor>(
-        _ id: String,
+        _ id: BulkExportSessionIdentifier,
         for exportSampleTypes: SampleTypesCollection,
         using batchProcessor: Processor,
         startAutomatically: Bool = true,
@@ -97,7 +97,7 @@ extension BulkHealthExporter {
     ///
     /// - Note: This function can only be used to delete sessions that have not yet been restored during the current lifetime of the app.
     ///     Once a session identifier has been passed to ``session(_:for:using:startAutomatically:batchResultHandler:)``, it cannot be passed to ``deleteSessionRestorationInfo(for:)`` anymore.
-    @MainActor public func deleteSessionRestorationInfo(for id: String) throws {
+    @MainActor public func deleteSessionRestorationInfo(for id: BulkExportSessionIdentifier) throws {
         guard !sessions.contains(where: { $0.sessionId == id }) else {
             throw SessionError.unableToDeleteRegisteredSession
         }
@@ -108,7 +108,7 @@ extension BulkHealthExporter {
 
 
 extension BulkHealthExporter {
-    static func localStorageKey(forSessionId id: String) -> String {
-        "edu.stanford.spezi.HealthKit.BulkExport.\(id)"
+    static func localStorageKey(forSessionId id: BulkExportSessionIdentifier) -> String {
+        "edu.stanford.spezi.HealthKit.BulkExport.\(id.rawValue)"
     }
 }

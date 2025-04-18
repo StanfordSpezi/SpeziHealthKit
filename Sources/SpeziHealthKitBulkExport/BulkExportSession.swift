@@ -27,8 +27,9 @@ import SpeziLocalStorage
 @Observable
 public final class BulkExportSession<Processor: BatchProcessor>: Sendable, BulkExportSessionProtocol {
     typealias BatchResultHandler = @Sendable (Processor.Output) async -> Void
+    public typealias Processor = Processor
     
-    public let sessionId: String
+    public let sessionId: BulkExportSessionIdentifier
     private unowned let bulkExporter: BulkHealthExporter
     private unowned let healthKit: HealthKit
     @ObservationIgnored private let batchProcessor: Processor
@@ -46,7 +47,7 @@ public final class BulkExportSession<Processor: BatchProcessor>: Sendable, BulkE
     
     @MainActor
     internal init(
-        sessionId: String,
+        sessionId: BulkExportSessionIdentifier,
         bulkExporter: BulkHealthExporter,
         healthKit: HealthKit,
         sampleTypes: SampleTypesCollection,
