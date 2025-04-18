@@ -132,8 +132,14 @@ extension BulkExportSession {
                     batch.result = .success
                     self.descriptor.completedBatches.append(batch)
                 case .failure(let error):
-                    batch.result = .failure(errorDescription: error.localizedDescription)
-                    self.descriptor.pendingBatches.append(batch)
+                    if error is CancellationError {
+                        batch.result = .failure(errorDescription: error.localizedDescription)
+                        self.descriptor.pendingBatches.append(batch)
+                    } else {
+                        // If this is a CancellationError, the batch didn't actually fail, but simply got cancelled.
+                        batch.result = nil
+                        self.descriptor.pendingBatches.insert(batch, at: 0)
+                    }
                 }
             }
             loop: while let batch = await self.descriptor.pendingBatches.first {
@@ -173,9 +179,11 @@ extension BulkExportSession {
                         }
                         result = try await self.queryAndProcess(sampleType: batch.sampleType, for: batch.timeRange)
                     } catch let error as QueryAndProcessError {
-                        logger.error(
-                            "Failed to query and process batch \(String(describing: batch)): \(String(describing: error)). Will schedule for retry on next app launch."
-                        )
+                        if !(error.underlyingError is CancellationError && Task.isCancelled) {
+                            logger.error(
+                                "Failed to query and process batch \(String(describing: batch)): \(String(describing: error)). Will schedule for retry on next app launch."
+                            )
+                        }
                         await popBatch(withResult: .failure(error))
                         continue loop
                     } catch {
@@ -218,6 +226,13 @@ extension BulkExportSession {
 private enum QueryAndProcessError: Error, Sendable {
     case query(any Error)
     case process(any Error)
+    
+    var underlyingError: any Error {
+        switch self {
+        case .query(let error), .process(let error):
+            error
+        }
+    }
 }
 
 extension BulkExportSession {

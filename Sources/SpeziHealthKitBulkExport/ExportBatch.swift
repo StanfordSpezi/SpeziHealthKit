@@ -71,9 +71,9 @@ extension ExportBatch {
     /// A textual description of the batch, suitable for user-visible display.
     public var userDisplayedDescription: String {
         let cal = Calendar.current
-        var desc = "\(sampleType.displayTitle)"
+        var desc = "\(sampleType.displayTitle) "
         if cal.isWholeYear(timeRange) {
-            desc += " (\(cal.component(.year, from: timeRange.lowerBound)))"
+            desc += "(\(cal.component(.year, from: timeRange.lowerBound)))"
         } else if cal.isWholeMonth(timeRange) {
             desc += "(\(Self.monthAndYearFormatter.string(from: timeRange.lowerBound)))"
         } else {

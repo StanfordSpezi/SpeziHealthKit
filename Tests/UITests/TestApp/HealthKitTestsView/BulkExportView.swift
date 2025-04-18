@@ -71,17 +71,20 @@ struct BulkExportView: View {
                 if let session {
                     LabeledContent("State", value: session.state.description)
                     LabeledContent("Status", value: "Completed \(session.completedBatches.count) of \(session.numTotalBatches) (\(session.failedBatches.count) failed)")
+                    ProgressView(value: Double(session.numProcessedBatches) / Double(session.numTotalBatches)) {
+                        Text("Completed \(session.completedBatches.count) of \(session.numTotalBatches) (\(session.failedBatches.count) failed)")
+                        if let desc = session.progress?.currentBatchDescription {
+                            Text("Current batch: \(desc)")
+                        }
+                    }
                     switch session.state {
                     case .paused, .done:
                         Button("Start") {
                             session.start(retryFailedBatches: true)
                         }
                     case .running:
-                        ProgressView(value: Double(session.numProcessedBatches) / Double(session.numTotalBatches)) {
-                            Text("Completed \(session.completedBatches.count) of \(session.numTotalBatches) (\(session.failedBatches.count) failed)")
-                            if let desc = session.progress?.currentBatchDescription {
-                                Text("Current batch: \(desc)")
-                            }
+                        Button("Pause") {
+                            session.pause()
                         }
                     }
                 } else {
@@ -119,7 +122,8 @@ struct BulkExportView: View {
                 sessionId,
                 for: sampleTypes,
                 startDate: .oldestSample,
-                using: SamplesCounter(),
+                // we intentionally give it a little delay, so that we can test the pause() functionality as part of the UI test.
+                using: SamplesCounter(delay: .seconds(1)),
                 startAutomatically: true
             ) { numSamples in
                 await MainActor.run {
@@ -266,8 +270,13 @@ private struct AddHistoricalSamplesSection: View {
 
 
 private struct SamplesCounter: BatchProcessor {
-    func process<Sample>(_ samples: consuming [Sample], of sampleType: SampleType<Sample>) throws -> Int {
-        samples.count
+    let delay: Duration?
+    
+    func process<Sample>(_ samples: consuming [Sample], of sampleType: SampleType<Sample>) async throws -> Int {
+        if let delay {
+            try await _Concurrency.Task.sleep(for: delay)
+        }
+        return samples.count
     }
 }
 

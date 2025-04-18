@@ -18,11 +18,6 @@ public enum ExportSessionStartDate: Hashable, Codable, Sendable {
     
     /// The session should, relative to the time it was first created, collect a certain range of past data.
     ///
-    /// This option will identify the first non-nil and non-zero component, starting at `year`,
-    /// and result in a start date that is `exportEndDate - <value of component> * <component>`.
-    ///
-    /// Valid components that will be checked for are `year`, `month`, `weekOfYear`, and `day`.
-    ///
     /// If there is no component with a non-nil and non-zero value, the behaviour will be equivalent to `ExportSessionStartDate.oldestSample`.
     ///
     /// For example:
