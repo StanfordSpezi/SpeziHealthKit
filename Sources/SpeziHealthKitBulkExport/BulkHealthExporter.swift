@@ -39,29 +39,14 @@ extension BulkHealthExporter {
         case unableToDeleteRegisteredSession
     }
     
-    /// Creates or restores a previously-created Health Bulk Export Session, as identified by `id`.
-    ///
-    /// See the ``BulkHealthExporter`` class documentation for more information.
-    @MainActor
-    public func session<Processor: BatchProcessor>(
-        _ id: BulkExportSessionIdentifier,
-        for exportSampleTypes: SampleTypesCollection,
-        startDate: ExportSessionStartDate,
-        endDate: Date = .now,
-        batchSize: ExportSessionBatchSize = .automatic, // swiftlint:disable:this function_default_parameter_at_end
-        using batchProcessor: Processor,
-        startAutomatically: Bool = true
-    ) async throws -> BulkExportSession<Processor> where Processor.Output == Void {
-        try await session(
-            id,
-            for: exportSampleTypes,
-            startDate: startDate,
-            endDate: endDate,
-            batchSize: batchSize,
-            using: batchProcessor,
-            startAutomatically: startAutomatically,
-            batchResultHandler: { _ in }
-        )
+    /// The result of obtaining a ``BulkExportSession`` through the ``BulkHealthExporter``.
+    public enum ObtainSessionResult<Processor: BatchProcessor> {
+        /// The ``BulkHealthExporter`` created a new session.
+        ///
+        /// This case encapsulates both the newly created session, as well as an `AsyncStream` for getting the individual batch processing results.
+        case newSession(BulkExportSession<Processor>, AsyncStream<Processor.Output>)
+        /// The ``BulkHealthExporter`` already had an existing matching session.
+        case existingSession(BulkExportSession<Processor>)
     }
     
     /// Creates or restores a previously-created Health Bulk Export Session, as identified by `id`.
@@ -75,16 +60,16 @@ extension BulkHealthExporter {
         endDate: Date = .now,
         batchSize: ExportSessionBatchSize = .automatic, // swiftlint:disable:this function_default_parameter_at_end
         using batchProcessor: Processor,
-        startAutomatically: Bool = true,
-        batchResultHandler: @Sendable @escaping (Processor.Output) async -> Void
-    ) async throws -> BulkExportSession<Processor> {
+        startAutomatically: Bool = true
+    ) async throws -> ObtainSessionResult<Processor> {
         if let session = sessions.first(where: { $0.sessionId == id }) {
             guard let session = session as? BulkExportSession<Processor> else {
                 // we found an already-running session with the same id, but a different type
                 throw SessionError.conflictingSessionAlreadyExists
             }
-            return session
+            return .existingSession(session)
         } else {
+            let (stream, continuation) = AsyncStream.makeStream(of: Processor.Output.self, bufferingPolicy: .unbounded)
             let session = try await BulkExportSession<Processor>(
                 sessionId: id,
                 bulkExporter: self,
@@ -94,14 +79,15 @@ extension BulkHealthExporter {
                 endDate: endDate,
                 batchSize: batchSize,
                 localStorage: localStorage,
-                batchProcessor: batchProcessor,
-                batchResultHandler: batchResultHandler
-            )
+                batchProcessor: batchProcessor
+            ) { output in
+                continuation.yield(output)
+            }
             sessions.append(session)
             if startAutomatically {
                 session.start()
             }
-            return session
+            return .newSession(session, stream)
         }
     }
     
