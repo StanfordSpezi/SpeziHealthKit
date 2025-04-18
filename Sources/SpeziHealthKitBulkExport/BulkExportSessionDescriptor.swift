@@ -22,13 +22,24 @@ import SpeziLocalStorage
 /// It also keeps track of the already-completed sample types, to prevent unnecessary duplicates when exporting.
 struct ExportSessionDescriptor: Codable {
     let sessionId: BulkExportSessionIdentifier
-    let exportEndDate: Date
+    let startDate: ExportSessionStartDate
+    let endDate: Date
+    let batchSize: ExportSessionBatchSize
     var pendingBatches: [ExportBatch]
     var completedBatches: [ExportBatch]
     
-    init(sessionId: BulkExportSessionIdentifier, exportEndDate: Date, sampleTypes: SampleTypesCollection, using healthKit: HealthKit) async {
+    init(
+        sessionId: BulkExportSessionIdentifier,
+        startDate: ExportSessionStartDate,
+        endDate: Date,
+        batchSize: ExportSessionBatchSize,
+        sampleTypes: SampleTypesCollection,
+        using healthKit: HealthKit
+    ) async {
         self.sessionId = sessionId
-        self.exportEndDate = exportEndDate
+        self.startDate = startDate
+        self.endDate = endDate
+        self.batchSize = batchSize
         self.completedBatches = []
         self.pendingBatches = []
         for sampleType in sampleTypes {
@@ -44,18 +55,22 @@ struct ExportSessionDescriptor: Codable {
             return
         }
         let cal = Calendar(identifier: .gregorian)
-        let endDate = self.exportEndDate
-        let startDate: Date = (try? await healthKit.oldestSampleDate(for: sampleType)) ?? {
+        let startDate: Date = await startDate.startDate(for: sampleType, in: healthKit, relativeTo: self.endDate) ?? {
             // if we can't determine the oldest sample date, we use the day HealthKit was introduced as our fallback
             // Note: it could be that there's no oldest sample date because there are no samples for the sample type,
             // but it could also be the case that the fetch itself simply failed.
             cal.date(from: .init(year: 2014, month: 6, day: 2))! // swiftlint:disable:this force_unwrapping
         }()
-        let yearRanges = sequence(first: cal.rangeOfYear(for: startDate)) {
-            $0.contains(endDate) || $0.lowerBound >= endDate ? nil : cal.rangeOfYear(for: cal.startOfNextYear(for: $0.lowerBound))
+        let batchTimeRanges: [Range<Date>]
+        switch Self.resolveBatchSize(batchSize, for: sampleType) {
+        case .automatic:
+            // guaranteed to be unreachable by resolveBatchSize()
+            fatalError("unreachable")
+        case .calendarComponent(let component):
+            batchTimeRanges = Array(cal.ranges(of: component, startingAt: startDate, in: startDate..<endDate, clampToLimits: true))
         }
-        pendingBatches.append(contentsOf: yearRanges.map { year in
-            ExportBatch(sampleType: sampleType, timeRange: year)
+        pendingBatches.append(contentsOf: batchTimeRanges.map { timeRange in
+            ExportBatch(sampleType: sampleType, timeRange: timeRange)
         })
     }
     
@@ -73,12 +88,35 @@ struct ExportSessionDescriptor: Codable {
     }
 }
 
+extension ExportSessionDescriptor {
+    /// Determines a resolved batch size, based on an input batch size and a sample type.
+    ///
+    /// Guaranteed to not return ``ExportSessionBatchSize/automatic``.
+    private static func resolveBatchSize(_ batchSize: ExportSessionBatchSize, for sampleType: SampleType<some Any>) -> ExportSessionBatchSize {
+        switch batchSize {
+        case .automatic:
+            switch sampleType {
+            case SampleType.activeEnergyBurned:
+                .byMonth
+            default:
+                .byYear
+            }
+        case .calendarComponent(let component):
+            .calendarComponent(component)
+        }
+    }
+}
+
 
 // MARK: Utils
 
 extension Calendar {
     func isWholeYear(_ range: Range<Date>) -> Bool {
         rangeOfYear(for: range.lowerBound) == range
+    }
+    
+    func isWholeMonth(_ range: Range<Date>) -> Bool {
+        rangeOfMonth(for: range.lowerBound) == range
     }
 }
 

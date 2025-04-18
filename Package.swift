@@ -69,6 +69,7 @@ let package = Package(
             dependencies: [
                 .product(name: "XCTSpezi", package: "Spezi"),
                 .target(name: "SpeziHealthKit"),
+                .target(name: "SpeziHealthKitBulkExport"),
                 .target(name: "SpeziHealthKitUI"),
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing")
             ],

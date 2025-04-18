@@ -64,6 +64,9 @@ public final class BulkExportSession<Processor: BatchProcessor>: Sendable, BulkE
         bulkExporter: BulkHealthExporter,
         healthKit: HealthKit,
         sampleTypes: SampleTypesCollection,
+        startDate: ExportSessionStartDate,
+        endDate: Date,
+        batchSize: ExportSessionBatchSize,
         localStorage: LocalStorage,
         batchProcessor: Processor,
         batchResultHandler: @escaping BatchResultHandler
@@ -93,7 +96,9 @@ public final class BulkExportSession<Processor: BatchProcessor>: Sendable, BulkE
             // which will operate on all samples created up until right now.
             self.descriptor = await ExportSessionDescriptor(
                 sessionId: sessionId,
-                exportEndDate: Date(),
+                startDate: startDate,
+                endDate: endDate,
+                batchSize: batchSize,
                 sampleTypes: sampleTypes,
                 using: healthKit
             )

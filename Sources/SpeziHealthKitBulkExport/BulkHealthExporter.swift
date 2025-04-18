@@ -46,12 +46,18 @@ extension BulkHealthExporter {
     public func session<Processor: BatchProcessor>(
         _ id: BulkExportSessionIdentifier,
         for exportSampleTypes: SampleTypesCollection,
+        startDate: ExportSessionStartDate,
+        endDate: Date = .now,
+        batchSize: ExportSessionBatchSize = .automatic, // swiftlint:disable:this function_default_parameter_at_end
         using batchProcessor: Processor,
         startAutomatically: Bool = true
     ) async throws -> BulkExportSession<Processor> where Processor.Output == Void {
         try await session(
             id,
             for: exportSampleTypes,
+            startDate: startDate,
+            endDate: endDate,
+            batchSize: batchSize,
             using: batchProcessor,
             startAutomatically: startAutomatically,
             batchResultHandler: { _ in }
@@ -65,6 +71,9 @@ extension BulkHealthExporter {
     public func session<Processor: BatchProcessor>(
         _ id: BulkExportSessionIdentifier,
         for exportSampleTypes: SampleTypesCollection,
+        startDate: ExportSessionStartDate,
+        endDate: Date = .now,
+        batchSize: ExportSessionBatchSize = .automatic, // swiftlint:disable:this function_default_parameter_at_end
         using batchProcessor: Processor,
         startAutomatically: Bool = true,
         batchResultHandler: @Sendable @escaping (Processor.Output) async -> Void
@@ -81,6 +90,9 @@ extension BulkHealthExporter {
                 bulkExporter: self,
                 healthKit: healthKit,
                 sampleTypes: exportSampleTypes,
+                startDate: startDate,
+                endDate: endDate,
+                batchSize: batchSize,
                 localStorage: localStorage,
                 batchProcessor: batchProcessor,
                 batchResultHandler: batchResultHandler

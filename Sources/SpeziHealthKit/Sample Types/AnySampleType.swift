@@ -82,20 +82,29 @@ extension AnySampleType {
     }
 }
 
-/// Compare two type-erased sample type, based on their identifiers
-@inlinable public func == (lhs: any AnySampleType, rhs: any AnySampleType) -> Bool { // swiftlint:disable:this static_operator
+// swiftlint:disable static_operator
+
+/// Compare two sample types, based on their identifiers
+@inlinable public func == (lhs: any AnySampleType, rhs: any AnySampleType) -> Bool {
     lhs.id == rhs.id
 }
 
-/// Compare two type-erased sample type, based on their identifiers
-@inlinable public func == (lhs: any AnySampleType, rhs: SampleType<some Any>) -> Bool { // swiftlint:disable:this static_operator
+/// Compare two sample types, based on their identifiers
+@inlinable public func == (lhs: any AnySampleType, rhs: SampleType<some Any>) -> Bool {
     lhs.id == rhs.id
 }
 
-/// Compare two type-erased sample type, based on their identifiers
-@inlinable public func == (lhs: SampleType<some Any>, rhs: any AnySampleType) -> Bool { // swiftlint:disable:this static_operator
+/// Compare two sample types, based on their identifiers
+@inlinable public func == (lhs: SampleType<some Any>, rhs: any AnySampleType) -> Bool {
     lhs.id == rhs.id
 }
+
+/// Compare two sample types, based on their identifiers
+@inlinable public func ~= (lhs: any AnySampleType, rhs: SampleType<some Any>) -> Bool {
+    lhs.id == rhs.id
+}
+
+// swiftlint:enable static_operator
 
 
 extension AnySampleType {

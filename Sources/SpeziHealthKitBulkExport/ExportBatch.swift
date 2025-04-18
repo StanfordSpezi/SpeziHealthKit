@@ -62,12 +62,20 @@ public struct ExportBatch: Codable, Sendable {
 
 
 extension ExportBatch {
+    private static let monthAndYearFormatter: DateFormatter = {
+        let fmt = DateFormatter()
+        fmt.dateFormat = "MMMM yyyy"
+        return fmt
+    }()
+    
     /// A textual description of the batch, suitable for user-visible display.
     public var userDisplayedDescription: String {
         let cal = Calendar.current
         var desc = "\(sampleType.displayTitle)"
         if cal.isWholeYear(timeRange) {
             desc += " (\(cal.component(.year, from: timeRange.lowerBound)))"
+        } else if cal.isWholeMonth(timeRange) {
+            desc += "(\(Self.monthAndYearFormatter.string(from: timeRange.lowerBound)))"
         } else {
             let start = DateFormatter.localizedString(from: timeRange.lowerBound, dateStyle: .short, timeStyle: .none)
             let end = DateFormatter.localizedString(from: timeRange.upperBound.advanced(by: -1), dateStyle: .short, timeStyle: .none)

@@ -118,6 +118,7 @@ struct BulkExportView: View {
             session = try await bulkExporter.session(
                 sessionId,
                 for: sampleTypes,
+                startDate: .oldestSample,
                 using: SamplesCounter(),
                 startAutomatically: true
             ) { numSamples in
