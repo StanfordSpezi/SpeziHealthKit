@@ -94,7 +94,7 @@ extension BulkHealthExporter {
     /// Deletes the persisted state restoration info for a session created in during previous launch of the app, based on its identifier.
     ///
     /// - Note: This function can only be used to delete sessions that have not yet been restored during the current lifetime of the app.
-    ///     Once a session identifier has been passed to ``session(_:for:using:startAutomatically:batchResultHandler:)``, it cannot be passed to ``deleteSessionRestorationInfo(for:)`` anymore.
+    ///     Once a session identifier has been passed to ``session(_:for:startDate:endDate:batchSize:using:startAutomatically:)``, it cannot be passed to ``deleteSessionRestorationInfo(for:)`` anymore.
     @MainActor public func deleteSessionRestorationInfo(for id: BulkExportSessionIdentifier) throws {
         guard !sessions.contains(where: { $0.sessionId == id }) else {
             throw SessionError.unableToDeleteRegisteredSession

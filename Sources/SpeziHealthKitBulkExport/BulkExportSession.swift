@@ -18,7 +18,7 @@ import SpeziLocalStorage
 ///
 /// ## Topics
 /// ### Session Lifecycle Management
-/// - ``start()``
+/// - ``start(retryFailedBatches:)``
 /// - ``pause()``
 /// ### Session State
 /// - ``isRunning``
