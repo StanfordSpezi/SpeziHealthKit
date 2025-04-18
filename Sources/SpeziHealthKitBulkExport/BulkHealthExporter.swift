@@ -69,7 +69,7 @@ extension BulkHealthExporter {
             }
             return .existingSession(session)
         } else {
-            let (stream, continuation) = AsyncStream.makeStream(of: Processor.Output.self, bufferingPolicy: .unbounded)
+            let (stream, continuation) = AsyncStream.makeStream(of: Processor.Output.self)
             let session = try await BulkExportSession<Processor>(
                 sessionId: id,
                 bulkExporter: self,
