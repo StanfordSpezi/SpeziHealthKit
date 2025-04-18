@@ -133,12 +133,12 @@ extension BulkExportSession {
                     self.descriptor.completedBatches.append(batch)
                 case .failure(let error):
                     if error is CancellationError {
-                        batch.result = .failure(errorDescription: error.localizedDescription)
-                        self.descriptor.pendingBatches.append(batch)
-                    } else {
                         // If this is a CancellationError, the batch didn't actually fail, but simply got cancelled.
                         batch.result = nil
                         self.descriptor.pendingBatches.insert(batch, at: 0)
+                    } else {
+                        batch.result = .failure(errorDescription: error.localizedDescription)
+                        self.descriptor.pendingBatches.append(batch)
                     }
                 }
             }

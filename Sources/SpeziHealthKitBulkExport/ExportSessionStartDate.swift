@@ -27,14 +27,29 @@ public enum ExportSessionStartDate: Hashable, Codable, Sendable {
     case last(DateComponents)
     
     /// The session should use a specific `Date` as its start date.
-    case custom(Date)
+    case absolute(Date)
 }
 
 
 extension ExportSessionStartDate {
-    /// The session should, relative to the time it was first created, collect the last `numMonths` of historical Health data.
+    /// The session should, relative to the time it was first created, collect the last `numYears` years of historical Health data.
+    public static func last(numYears: Int) -> Self {
+        .last(DateComponents(year: numYears))
+    }
+    
+    /// The session should, relative to the time it was first created, collect the last `numMonths` months of historical Health data.
     public static func last(numMonths: Int) -> Self {
         .last(DateComponents(month: numMonths))
+    }
+    
+    /// The session should, relative to the time it was first created, collect the last `numWeeks` weeks of historical Health data.
+    public static func last(numWeeks: Int) -> Self {
+        .last(DateComponents(weekOfYear: numWeeks))
+    }
+    
+    /// The session should, relative to the time it was first created, collect the last `numDays` days of historical Health data.
+    public static func last(numDays: Int) -> Self {
+        .last(DateComponents(day: numDays))
     }
 }
 
@@ -50,7 +65,7 @@ extension ExportSessionStartDate {
                 return try? await healthKit.oldestSampleDate(for: sampleType)
             }
             return Calendar.current.date(byAdding: dateComponents.negated(), to: endDate)
-        case .custom(let date):
+        case .absolute(let date):
             return date
         }
     }
