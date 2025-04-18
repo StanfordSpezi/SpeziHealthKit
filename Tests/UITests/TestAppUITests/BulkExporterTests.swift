@@ -91,6 +91,43 @@ final class BulkExporterTests: XCTestCase {
         XCTAssert(app.staticTexts["State, done"].waitForExistence(timeout: 30))
         XCTAssertEqual(try XCTUnwrap(app.numExportedSamples) + numExportedSamplesFirstSession, try XCTUnwrap(app.numTestingSamples))
     }
+    
+    
+    @MainActor
+    func testDeleteSessionRestorationInfo() throws {
+        let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
+        try launchAndHandleInitialStuff(app)
+        sleep(1)
+        
+        app.buttons["Bulk Exporter"].tap()
+        
+        app.buttons["Request full access"].tap()
+        try app.handleHealthKitAuthorization()
+        
+        app.buttons["Add Historical Data"].tap()
+        XCTAssert(app.staticTexts["Adding Historical Samples…"].waitForExistence(timeout: 2))
+        XCTAssert(app.staticTexts["Adding Historical Samples…"].waitForNonExistence(timeout: 60))
+        
+        XCTAssertEqual(try XCTUnwrap(app.numExportedSamples), 0)
+        XCTAssertGreaterThan(try XCTUnwrap(app.numTestingSamples), 0)
+        
+        app.buttons["Start Bulk Export"].tap()
+        sleep(7)
+        app.buttons["Pause"].tap()
+        sleep(1)
+        app.terminate()
+        
+        try launchAndHandleInitialStuff(app)
+        app.buttons["Bulk Exporter"].tap()
+        XCTAssertEqual(try XCTUnwrap(app.numExportedSamples), 0)
+        XCTAssertGreaterThan(try XCTUnwrap(app.numTestingSamples), 0)
+        
+        app.buttons["Reset ExportSession"].tap()
+        
+        app.buttons["Start Bulk Export"].tap()
+        XCTAssert(app.staticTexts["State, done"].waitForExistence(timeout: 60))
+        XCTAssertEqual(try XCTUnwrap(app.numExportedSamples), try XCTUnwrap(app.numTestingSamples))
+    }
 }
 
 
