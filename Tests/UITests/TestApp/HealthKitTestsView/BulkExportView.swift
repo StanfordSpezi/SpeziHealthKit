@@ -123,7 +123,9 @@ struct BulkExportView: View {
             ProgressView(value: Double(session.numProcessedBatches) / Double(session.numTotalBatches)) {
                 Text("Completed \(session.completedBatches.count) of \(session.numTotalBatches) (\(session.failedBatches.count) failed)")
                 if let desc = session.currentBatch?.userDisplayedDescription {
-                    Text("Current batch: \(desc)")
+                    Text(desc)
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
                 }
             }
             switch session.state {
@@ -132,6 +134,12 @@ struct BulkExportView: View {
                     @MainActor
                     func imp<P: BatchProcessor>(_ session: some BulkExportSessionProtocol<P>) throws {
                         let results = try session.start(retryFailedBatches: true)
+                        do {
+                            _ = try session.start()
+                            preconditionFailure("Unexpectedly didn't throw an error")
+                        } catch {
+                            precondition(error == StartSessionError.alreadyRunning)
+                        }
                         if let results = results as? AsyncStream<Int> {
                             handleExportSessionBatchResults(results, for: session)
                         }
