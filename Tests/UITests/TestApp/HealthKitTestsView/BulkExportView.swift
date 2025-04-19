@@ -55,9 +55,8 @@ struct BulkExportView: View {
     }()
     
     @State private var viewState: ViewState = .idle
-    @State private var numExportedSamples = 0
     @State private var numTestingSamples = 0
-    @State private var session: (any BulkExportSessionProtocol)?
+    @State private var numExportedSamples = 0
     
     var body: some View {
         Form {
@@ -67,34 +66,14 @@ struct BulkExportView: View {
             Section {
                 exporterActions
             }
-            Section("Bulk Export Session") {
-                if let session {
-                    LabeledContent("State", value: session.state.description)
-                    LabeledContent("Status", value: "Completed \(session.completedBatches.count) of \(session.numTotalBatches) (\(session.failedBatches.count) failed)")
-                    ProgressView(value: Double(session.numProcessedBatches) / Double(session.numTotalBatches)) {
-                        Text("Completed \(session.completedBatches.count) of \(session.numTotalBatches) (\(session.failedBatches.count) failed)")
-                        if let desc = session.progress?.currentBatchDescription {
-                            Text("Current batch: \(desc)")
-                        }
-                    }
-                    switch session.state {
-                    case .paused, .done:
-                        Button("Start") {
-                            session.start(retryFailedBatches: true)
-                        }
-                    case .running:
-                        Button("Pause") {
-                            session.pause()
-                        }
-                    }
-                } else {
-                    Text("No Bulk Export Session")
-                        .foregroundStyle(.secondary)
-                }
-                LabeledContent("# Exported Samples", value: String(numExportedSamples))
-                    .accessibilityValue(String(numExportedSamples))
+            Section {
                 LabeledContent("# Expected Samples", value: String(numTestingSamples))
                     .accessibilityValue(String(numTestingSamples))
+                LabeledContent("# Exported Samples", value: String(numExportedSamples))
+                    .accessibilityValue(String(numExportedSamples))
+            }
+            ForEach(bulkExporter.sessions, id: \.sessionId) { (session: any BulkExportSessionProtocol) in
+                section(for: session)
             }
         }
         .task {
@@ -124,30 +103,48 @@ struct BulkExportView: View {
                     for: sampleTypes,
                     startDate: .oldestSample,
                     // we intentionally give it a little delay, so that we can test the pause() functionality as part of the UI test.
-                    using: SamplesCounter(delay: .seconds(1)),
-                    startAutomatically: true
+                    using: SamplesCounter(delay: .seconds(1))
                 )
             }
-            switch try await obtainSession() {
-            case let .newSession(session, stream):
-                self.session = session
-                Task {
-                    for await numSamples in stream {
-                        self.numExportedSamples += numSamples
-                    }
-                }
-            case .existingSession(let session):
-                self.session = session
-            }
-            switch try await obtainSession() {
-            case .existingSession(let session):
-                precondition(session === self.session)
-            case .newSession:
-                fatalError("unexpected result")
-            }
+            let session1 = try await obtainSession()
+            handleExportSessionBatchResults(try session1.start(), for: session1)
+            let session2 = try await obtainSession()
+            precondition(session1 == session2)
         }
         AsyncButton("Reset ExportSession", role: .destructive, state: $viewState) {
             try bulkExporter.deleteSessionRestorationInfo(for: sessionId)
+        }
+    }
+    
+    @ViewBuilder private func section(for session: any BulkExportSessionProtocol) -> some View {
+        Section("Bulk Export Session") {
+            LabeledContent("State", value: session.state.description)
+            LabeledContent("Status", value: "Completed \(session.completedBatches.count) of \(session.numTotalBatches) (\(session.failedBatches.count) failed)")
+            ProgressView(value: Double(session.numProcessedBatches) / Double(session.numTotalBatches)) {
+                Text("Completed \(session.completedBatches.count) of \(session.numTotalBatches) (\(session.failedBatches.count) failed)")
+                if let desc = session.currentBatch?.userDisplayedDescription {
+                    Text("Current batch: \(desc)")
+                }
+            }
+            switch session.state {
+            case .paused, .completed:
+                AsyncButton("Start", state: $viewState) {
+                    @MainActor
+                    func imp<P: BatchProcessor>(_ session: some BulkExportSessionProtocol<P>) throws {
+                        let results = try session.start(retryFailedBatches: true)
+                        if let results = results as? AsyncStream<Int> {
+                            handleExportSessionBatchResults(results, for: session)
+                        }
+                    }
+                    try imp(session)
+                }
+            case .running:
+                Button("Pause") {
+                    session.pause()
+                }
+            case .terminated:
+                EmptyView()
+            }
         }
     }
     
@@ -165,6 +162,14 @@ struct BulkExportView: View {
             numSamples += await imp(sampleType)
         }
         numTestingSamples = numSamples
+    }
+    
+    private func handleExportSessionBatchResults(_ batchResults: AsyncStream<Int>, for session: any BulkExportSessionProtocol) {
+        Task {
+            for await count in batchResults {
+                numExportedSamples += count
+            }
+        }
     }
 }
 
@@ -299,12 +304,14 @@ private struct SamplesCounter: BatchProcessor {
 extension BulkExportSessionState {
     var description: String {
         switch self {
+        case .terminated:
+            "terminated"
+        case .completed:
+            "completed"
         case .running:
             "running"
         case .paused:
             "paused"
-        case .done:
-            "done"
         }
     }
 }

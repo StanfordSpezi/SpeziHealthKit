@@ -26,6 +26,24 @@ public final class BulkHealthExporter: Module, EnvironmentAccessible, @unchecked
     
     /// Create a new Bulk Health Exporter
     nonisolated public init() {}
+    
+    @MainActor
+    func add(_ session: some BulkExportSessionProtocol) throws {
+        guard !sessions.contains(where: { $0.sessionId == session.sessionId }) else {
+            throw SessionError.conflictingSessionAlreadyExists
+        }
+        sessions.append(session)
+    }
+    
+    @MainActor
+    func remove(_ session: some BulkExportSessionProtocol) {
+        guard session.state == .terminated else {
+            preconditionFailure("Attempted to remove non-terminated session")
+        }
+        if let idx = sessions.firstIndex(where: { $0.sessionId == session.sessionId }) {
+            sessions.remove(at: idx)
+        }
+    }
 }
 
 
@@ -35,18 +53,6 @@ extension BulkHealthExporter {
         /// The ``BulkHealthExporter`` was unable to obtain a matching session,
         /// since there is already a registered session with the same identifier, but a different ``BatchProcessor``.
         case conflictingSessionAlreadyExists
-        /// The ``BulkHealthExporter`` was unable to delete the session, since there is already a matching registered session.
-        case unableToDeleteRegisteredSession
-    }
-    
-    /// The result of obtaining a ``BulkExportSession`` through the ``BulkHealthExporter``.
-    public enum ObtainSessionResult<Processor: BatchProcessor>: Sendable {
-        /// The ``BulkHealthExporter`` created a new session.
-        ///
-        /// This case encapsulates both the newly created session, as well as an `AsyncStream` for getting the individual batch processing results.
-        case newSession(BulkExportSession<Processor>, AsyncStream<Processor.Output>)
-        /// The ``BulkHealthExporter`` already had an existing matching session.
-        case existingSession(BulkExportSession<Processor>)
     }
     
     /// Creates or restores a previously-created Health Bulk Export Session, as identified by `id`.
@@ -59,17 +65,15 @@ extension BulkHealthExporter {
         startDate: ExportSessionStartDate,
         endDate: Date = .now,
         batchSize: ExportSessionBatchSize = .automatic, // swiftlint:disable:this function_default_parameter_at_end
-        using batchProcessor: Processor,
-        startAutomatically: Bool = true
-    ) async throws -> ObtainSessionResult<Processor> {
+        using batchProcessor: Processor
+    ) async throws -> BulkExportSession<Processor> {
         if let session = sessions.first(where: { $0.sessionId == id }) {
             guard let session = session as? BulkExportSession<Processor> else {
                 // we found an already-running session with the same id, but a different type
                 throw SessionError.conflictingSessionAlreadyExists
             }
-            return .existingSession(session)
+            return session
         } else {
-            let (stream, continuation) = AsyncStream.makeStream(of: Processor.Output.self)
             let session = try await BulkExportSession<Processor>(
                 sessionId: id,
                 bulkExporter: self,
@@ -80,24 +84,18 @@ extension BulkHealthExporter {
                 batchSize: batchSize,
                 localStorage: localStorage,
                 batchProcessor: batchProcessor
-            ) { output in
-                continuation.yield(output)
-            }
-            sessions.append(session)
-            if startAutomatically {
-                session.start()
-            }
-            return .newSession(session, stream)
+            )
+            try add(session)
+            return session
         }
     }
     
     /// Deletes the persisted state restoration info for a session created in during previous launch of the app, based on its identifier.
     ///
-    /// - Note: This function can only be used to delete sessions that have not yet been restored during the current lifetime of the app.
-    ///     Once a session identifier has been passed to ``session(_:for:startDate:endDate:batchSize:using:startAutomatically:)``, it cannot be passed to ``deleteSessionRestorationInfo(for:)`` anymore.
+    /// Calling this function with an identifier matching an existing session will result in that session getting terminated.
     @MainActor public func deleteSessionRestorationInfo(for id: BulkExportSessionIdentifier) throws {
-        guard !sessions.contains(where: { $0.sessionId == id }) else {
-            throw SessionError.unableToDeleteRegisteredSession
+        if let session = sessions.first(where: { $0.sessionId == id }) {
+            session._terminate()
         }
         let fakeKey = LocalStorageKey<Never>(Self.localStorageKey(forSessionId: id))
         try localStorage.delete(fakeKey)

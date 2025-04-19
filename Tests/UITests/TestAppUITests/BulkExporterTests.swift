@@ -52,7 +52,7 @@ final class BulkExporterTests: XCTestCase {
         app.buttons["Pause"].tap()
         sleep(2)
         app.buttons["Start"].tap()
-        XCTAssert(app.staticTexts["State, done"].waitForExistence(timeout: 30))
+        XCTAssert(app.staticTexts["State, completed"].waitForExistence(timeout: 30))
         XCTAssertEqual(try XCTUnwrap(app.numExportedSamples), try XCTUnwrap(app.numTestingSamples))
     }
     
@@ -88,7 +88,7 @@ final class BulkExporterTests: XCTestCase {
         XCTAssertGreaterThan(try XCTUnwrap(app.numTestingSamples), 0)
         
         app.buttons["Start Bulk Export"].tap()
-        XCTAssert(app.staticTexts["State, done"].waitForExistence(timeout: 30))
+        XCTAssert(app.staticTexts["State, completed"].waitForExistence(timeout: 30))
         XCTAssertEqual(try XCTUnwrap(app.numExportedSamples) + numExportedSamplesFirstSession, try XCTUnwrap(app.numTestingSamples))
     }
     
@@ -125,7 +125,7 @@ final class BulkExporterTests: XCTestCase {
         app.buttons["Reset ExportSession"].tap()
         
         app.buttons["Start Bulk Export"].tap()
-        XCTAssert(app.staticTexts["State, done"].waitForExistence(timeout: 60))
+        XCTAssert(app.staticTexts["State, completed"].waitForExistence(timeout: 60))
         XCTAssertEqual(try XCTUnwrap(app.numExportedSamples), try XCTUnwrap(app.numTestingSamples))
     }
 }

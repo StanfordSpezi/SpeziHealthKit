@@ -84,3 +84,16 @@ extension ExportBatch {
         return desc
     }
 }
+
+
+extension ExportBatch: Hashable {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.sampleType == rhs.sampleType && lhs.timeRange == rhs.timeRange && lhs.result == rhs.result
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        sampleType.hash(into: &hasher)
+        hasher.combine(timeRange)
+        hasher.combine(result)
+    }
+}
