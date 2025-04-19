@@ -135,10 +135,12 @@ struct BulkExportView: View {
                     func imp<P: BatchProcessor>(_ session: some BulkExportSessionProtocol<P>) throws {
                         let results = try session.start(retryFailedBatches: true)
                         do {
-                            _ = try session.start()
+                            let _: AsyncStream<_> = try session.start()
                             preconditionFailure("Unexpectedly didn't throw an error")
-                        } catch {
+                        } catch error as StartSessionError {
                             precondition(error == StartSessionError.alreadyRunning)
+                        } catch {
+                            fatalError("unreachable")
                         }
                         if let results = results as? AsyncStream<Int> {
                             handleExportSessionBatchResults(results, for: session)
