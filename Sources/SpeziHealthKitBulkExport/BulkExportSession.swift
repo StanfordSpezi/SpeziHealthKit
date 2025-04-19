@@ -69,7 +69,7 @@ public final class BulkExportSession<Processor: BatchProcessor>: Sendable, BulkE
     @MainActor public var numTotalBatches: Int {
         descriptor.pendingBatches.count + descriptor.completedBatches.count
     }
-    @MainActor private var actualCurrentBatch: ExportBatch?
+    @ObservationIgnored @MainActor private var actualCurrentBatch: ExportBatch?
     @MainActor public var currentBatch: ExportBatch? {
         let result = isRunning ? pendingBatches.first : nil
         precondition(result == actualCurrentBatch)
