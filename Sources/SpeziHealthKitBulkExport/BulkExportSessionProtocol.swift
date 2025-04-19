@@ -40,6 +40,23 @@ public enum StartSessionError: Error {
 
 
 /// Protocol modeling a type-erased ``BulkExportSession``
+///
+/// ## Topics
+/// ### Instance Properties
+/// - ``sessionId``
+/// - ``state``
+/// - ``pendingBatches``
+/// - ``completedBatches``
+/// - ``failedBatches``
+/// - ``numTotalBatches``
+/// - ``numProcessedBatches``
+/// - ``currentBatch``
+/// ### Instance Methods
+/// - ``start(retryFailedBatches:)-8jsxv``
+/// - ``start(retryFailedBatches:)-571v3``
+/// - ``pause()``
+/// ### Other
+/// - ``SpeziHealthKitBulkExport/==(_:_:)``
 public protocol BulkExportSessionProtocol<Processor>: AnyObject, Hashable, Sendable {
     /// The session's ``BatchProcessor``
     associatedtype Processor: BatchProcessor
@@ -67,6 +84,8 @@ public protocol BulkExportSessionProtocol<Processor>: AnyObject, Hashable, Senda
     /// Starts the session.
     ///
     /// Attempting to start a session that is already running will result in a ``StartSessionError/alreadyRunning`` error.
+    ///
+    /// - returns: an `AsyncStream` that can be used to access the individual batch results resulting from processing the export session.
     @MainActor func start(retryFailedBatches: Bool) throws(StartSessionError) -> AsyncStream<Processor.Output>
     
     /// Pauses the session at the next possible point in time.
@@ -118,4 +137,9 @@ extension BulkExportSessionProtocol {
     public func hash(into hasher: inout Hasher) {
         hasher.combine(ObjectIdentifier(self))
     }
+}
+
+/// Compares two Bulk Export Sessions for equality.
+public func == (lhs: any BulkExportSessionProtocol, rhs: any BulkExportSessionProtocol) -> Bool { // swiftlint:disable:this static_operator
+    ObjectIdentifier(lhs) == ObjectIdentifier(rhs)
 }

@@ -6,8 +6,12 @@
 // SPDX-License-Identifier: MIT
 //
 
+// swiftlint:disable file_types_order
+
+import Spezi
 @testable import SpeziHealthKit
 @testable import SpeziHealthKitBulkExport
+import SpeziTesting
 import Testing
 
 
@@ -50,5 +54,42 @@ struct BulkExporterAPITests {
             let expected = try #require(cal.date(from: .init(year: 2022, month: 10, day: 11)))
             #expect(startDate == expected)
         }
+    }
+    
+    
+    @Test
+    func sessionMgmt() async throws {
+        let module = BulkHealthExporter()
+        await withDependencyResolution(standard: TestStandard()) {
+            module
+        }
+        #expect(await module.sessions.isEmpty)
+        
+        let sessionId = BulkExportSessionIdentifier("testId")
+        let session = try await module.session(sessionId, for: [], startDate: .oldestSample, using: .identity)
+        
+        let sessionsInModule: [any BulkExportSessionProtocol] = await module.sessions
+        let ourSession: [any BulkExportSessionProtocol] = [session]
+        #expect(sessionsInModule.elementsEqual(ourSession, by: { $0 == $1 }))
+        let results = try await session.start()
+        for await _ in results { }
+        try await Task.sleep(for: .seconds(0.5))
+        #expect(await session.state == .completed)
+        #expect(await module.sessions.count == 1)
+        #expect(await module.sessions.contains(where: { $0 == session }))
+        try await module.deleteSessionRestorationInfo(for: sessionId)
+        #expect(await session.state == .terminated)
+        #expect(await module.sessions.isEmpty)
+    }
+}
+
+
+private actor TestStandard: Standard, HealthKitConstraint {
+    func handleNewSamples<Sample>(_ addedSamples: some Collection<Sample>, ofType sampleType: SampleType<Sample>) {
+        // ...
+    }
+    
+    func handleDeletedObjects<Sample>(_ deletedObjects: some Collection<HKDeletedObject>, ofType sampleType: SampleType<Sample>) {
+        // ...
     }
 }

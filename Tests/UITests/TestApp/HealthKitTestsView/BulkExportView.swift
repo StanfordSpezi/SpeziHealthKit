@@ -266,7 +266,7 @@ private struct AddHistoricalSamplesSection: View {
             }
             for sampleType in sampleTypes {
                 taskGroup.addTask { @Sendable in
-                    switch WrappedSampleType(sampleType) {
+                    switch SampleTypeProxy(sampleType) {
                     case .quantity(let sampleType):
                         await MainActor.run {
                             expectedNumTotalSamples += numDays

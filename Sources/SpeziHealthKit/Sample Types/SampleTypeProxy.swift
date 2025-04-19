@@ -15,10 +15,10 @@ import HealthKit
 /// This utility type is useful for APIs which operate on heterogeneous collections of ``SampleType``s,
 /// and in contexts where generics aren't easily available, e.g. when using ``SampleType``s as `Codable` properties.
 ///
-/// You can turn a ``WrappedSampleType`` back into a proper fully-typed ``SampleType`` by means of the ``underlyingSampleType`` property and ``SampleType/init(_:)-6kzr1``:
+/// You can turn a ``SampleTypeProxy`` back into a proper fully-typed ``SampleType`` by means of the ``underlyingSampleType`` property and ``SampleType/init(_:)-6kzr1``:
 ///
 /// ```swift
-/// func doSomething(_ sampleType: WrappedSampleType) -> Result {
+/// func doSomething(_ sampleType: SampleTypeProxy) -> Result {
 ///     func imp<Sample>(_ sampleType: some AnySampleType<Sample>) -> Result {
 ///         let sampleType = SampleType(sampleType)
 ///         // actual implementation, using the `sampleType` variable, which now has type `SampleType<Sample>`
@@ -26,7 +26,7 @@ import HealthKit
 ///     return imp(sampleType.underlyingSampleType)
 /// }
 /// ```
-public enum WrappedSampleType: Hashable, Identifiable, Sendable {
+public enum SampleTypeProxy: Hashable, Identifiable, Sendable {
     case quantity(SampleType<HKQuantitySample>)
     case correlation(SampleType<HKCorrelation>)
     case category(SampleType<HKCategorySample>)
@@ -39,9 +39,9 @@ public enum WrappedSampleType: Hashable, Identifiable, Sendable {
     
     /// The type-erased underlying ``AnySampleType``.
     ///
-    /// You can use this property to obtain a proper fully-typed ``SampleType`` from a ``WrappedSampleType``, via ``SampleType/init(_:)-6kzr1``:
+    /// You can use this property to obtain a proper fully-typed ``SampleType`` from a ``SampleTypeProxy``, via ``SampleType/init(_:)-6kzr1``:
     /// ```swift
-    /// func doSomething(_ sampleType: WrappedSampleType) -> Result {
+    /// func doSomething(_ sampleType: SampleTypeProxy) -> Result {
     ///     func imp<Sample>(_ sampleType: some AnySampleType<Sample>) -> Result {
     ///         let sampleType = SampleType(sampleType)
     ///         // actual implementation, using the `sampleType` variable, which now has type `SampleType<Sample>`
@@ -74,6 +74,11 @@ public enum WrappedSampleType: Hashable, Identifiable, Sendable {
         underlyingSampleType.id
     }
     
+    @_disfavoredOverload
+    public init(_ sampleType: SampleType<some Any>) {
+        self.init(sampleType)
+    }
+    
     /// Wraps an ``AnySampleType``.
     public init(_ sampleType: any AnySampleType) {
         switch sampleType {
@@ -100,8 +105,8 @@ public enum WrappedSampleType: Hashable, Identifiable, Sendable {
 }
 
 
-extension WrappedSampleType: Codable {
-    /// An error that can occur when decoding a ``WrappedSampleType``.
+extension SampleTypeProxy: Codable {
+    /// An error that can occur when decoding a ``SampleTypeProxy``.
     public enum SampleTypeDecodingError: Error {
         case unknownSampleTypeClassname(String)
         case unknownSampleTypeIdentifier(String)

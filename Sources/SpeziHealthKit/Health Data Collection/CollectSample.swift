@@ -54,7 +54,7 @@ public struct CollectSample<Sample: _HKSampleWithSampleType>: HealthKitConfigura
     private let predicate: NSPredicate?
     
     public var dataAccessRequirements: HealthKit.DataAccessRequirements {
-        .init(read: [sampleType.hkSampleType])
+        .init(read: [sampleType])
     }
     
     

@@ -47,14 +47,14 @@ public struct ExportBatch: Codable, Sendable {
     
     public init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.sampleType = try container.decode(WrappedSampleType.self, forKey: .sampleType).underlyingSampleType
+        self.sampleType = try container.decode(SampleTypeProxy.self, forKey: .sampleType).underlyingSampleType
         self.timeRange = try container.decode(Range<Date>.self, forKey: .timeRange)
         self.result = try container.decode(Result?.self, forKey: .result)
     }
     
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(WrappedSampleType(sampleType), forKey: .sampleType)
+        try container.encode(SampleTypeProxy(sampleType), forKey: .sampleType)
         try container.encode(timeRange, forKey: .timeRange)
         try container.encode(result, forKey: .result)
     }

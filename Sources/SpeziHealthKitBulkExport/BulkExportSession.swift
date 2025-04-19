@@ -23,7 +23,6 @@ import SpeziLocalStorage
 /// ### Session State
 /// - ``isRunning``
 /// - ``state``
-/// - ``progress``
 @Observable
 public final class BulkExportSession<Processor: BatchProcessor>: Sendable, BulkExportSessionProtocol {
     public typealias Processor = Processor

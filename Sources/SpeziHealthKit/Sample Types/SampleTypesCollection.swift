@@ -26,7 +26,7 @@ import HealthKit
 /// }
 /// ```
 public struct SampleTypesCollection: Hashable, Sendable, Codable {
-    public typealias Storage = Set<WrappedSampleType>
+    public typealias Storage = Set<SampleTypeProxy>
     private var storage: Storage
     
     /// Creates a new, empty `SampleTypesCollection`.
@@ -35,18 +35,24 @@ public struct SampleTypesCollection: Hashable, Sendable, Codable {
     }
     
     /// Creates a new `SampleTypesCollection`, from the specified sample types
-    public init(_ sampleTypes: some Collection<WrappedSampleType>) {
-        storage = Set(sampleTypes)
+    public init(_ sampleTypes: some Collection<some AnySampleType>) {
+        self.init(sampleTypes.lazy.map { SampleTypeProxy($0) })
     }
     
     /// Creates a new `SampleTypesCollection`, from the specified sample types
     public init(_ sampleTypes: some Collection<any AnySampleType>) {
-        self.init(sampleTypes.lazy.map { WrappedSampleType($0) })
+        self.init(sampleTypes.lazy.map { SampleTypeProxy($0) })
     }
     
     /// Creates a new `SampleTypesCollection`, from the specified sample types
-    public init(_ sampleTypes: some Collection<some AnySampleType>) {
-        self.init(sampleTypes.lazy.map { WrappedSampleType($0) })
+    @_disfavoredOverload
+    public init(_ sampleTypes: [any AnySampleType]) {
+        self.init(sampleTypes)
+    }
+    
+    /// Creates a new `SampleTypesCollection`, from the specified sample types
+    public init(_ sampleTypes: some Collection<SampleTypeProxy>) {
+        storage = Set(sampleTypes)
     }
     
     /// Creates a new `SampleTypesCollection`, from the specified sample types
@@ -67,7 +73,17 @@ public struct SampleTypesCollection: Hashable, Sendable, Codable {
 
 extension SampleTypesCollection {
     /// The contained quantity types
-    public var quantityTypes: some Collection<SampleType<HKQuantitySample>> {
+    public var quantityTypes: [SampleType<HKQuantitySample>] {
+        storage.compactMap { $0.underlyingSampleType as? SampleType<_> }
+    }
+    
+    /// The contained correlation types
+    public var correlationTypes: [SampleType<HKCorrelation>] {
+        storage.compactMap { $0.underlyingSampleType as? SampleType<_> }
+    }
+    
+    /// The contained category types
+    public var categoryTypes: [SampleType<HKCategorySample>] {
         storage.compactMap { $0.underlyingSampleType as? SampleType<_> }
     }
     
@@ -89,15 +105,15 @@ extension SampleTypesCollection {
     ///
     /// - returns: a boolean value indicating whether the sample type was inserted.
     @discardableResult
-    public mutating func insert(_ sampleType: some AnySampleType) -> Bool {
-        storage.insert(WrappedSampleType(sampleType)).inserted
+    @inlinable public mutating func insert(_ sampleType: some AnySampleType) -> Bool {
+        insert(SampleTypeProxy(sampleType))
     }
     
     /// Inserts a sample type into the collection.
     ///
     /// - returns: a boolean value indicating whether the sample type was inserted.
     @discardableResult
-    public mutating func insert(_ sampleType: WrappedSampleType) -> Bool {
+    public mutating func insert(_ sampleType: SampleTypeProxy) -> Bool {
         storage.insert(sampleType).inserted
     }
     
@@ -117,18 +133,27 @@ extension SampleTypesCollection {
         }
     }
     
+    /// Inserts the sample types in the other collection into this collection.
+    ///
+    /// - Note: any sample types in `other` that are already contained in `self` will not be inserted.
+    public mutating func insert(contentsOf other: some Collection<SampleTypeProxy>) {
+        for sampleType in other {
+            insert(sampleType)
+        }
+    }
+    
     /// Removes the specified sample type from the collection, if it is a member.
     public mutating func remove(_ sampleType: some AnySampleType) {
-        storage.remove(WrappedSampleType(sampleType))
+        storage.remove(SampleTypeProxy(sampleType))
     }
     
     /// Determines whether the specified sample type is a member of the collection.
     public func contains(_ sampleType: some AnySampleType) -> Bool {
-        storage.contains(WrappedSampleType(sampleType))
+        storage.contains(SampleTypeProxy(sampleType))
     }
     
     /// Determines whether the specified sample type is a member of the collection.
-    public func contains(_ sampleType: WrappedSampleType) -> Bool {
+    public func contains(_ sampleType: SampleTypeProxy) -> Bool {
         storage.contains(sampleType)
     }
 }

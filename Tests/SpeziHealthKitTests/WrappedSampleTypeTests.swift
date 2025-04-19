@@ -11,7 +11,7 @@ import Testing
 
 
 @Suite
-struct WrappedSampleTypeTests {
+struct SampleTypeProxyTests {
     @Test
     func coding() throws {
         let sampleTypes: [any AnySampleType] = [
@@ -21,9 +21,9 @@ struct WrappedSampleTypeTests {
             SampleType.workout, SampleType.electrocardiogram, SampleType.audiogram
         ]
         for sampleType in sampleTypes {
-            let wrapped = try #require(WrappedSampleType(sampleType))
+            let wrapped = try #require(SampleTypeProxy(sampleType))
             let encoded = try JSONEncoder().encode(wrapped)
-            let decoded = try JSONDecoder().decode(WrappedSampleType.self, from: encoded)
+            let decoded = try JSONDecoder().decode(SampleTypeProxy.self, from: encoded)
             #expect(decoded == wrapped)
         }
     }
