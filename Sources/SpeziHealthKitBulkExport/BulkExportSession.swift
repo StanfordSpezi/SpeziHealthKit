@@ -69,11 +69,8 @@ public final class BulkExportSession<Processor: BatchProcessor>: Sendable, BulkE
     @MainActor public var numTotalBatches: Int {
         descriptor.pendingBatches.count + descriptor.completedBatches.count
     }
-    @ObservationIgnored @MainActor private var actualCurrentBatch: ExportBatch?
     @MainActor public var currentBatch: ExportBatch? {
-        let result = isRunning ? pendingBatches.first : nil
-        precondition(result == actualCurrentBatch)
-        return result
+        isRunning ? pendingBatches.first : nil
     }
     
     @MainActor
@@ -150,7 +147,6 @@ extension BulkExportSession {
             }
             @MainActor func popBatch(withResult result: Result<Void, any Error>) {
                 var batch = self.descriptor.pendingBatches.removeFirst()
-                self.actualCurrentBatch = nil
                 switch result {
                 case .success:
                     batch.result = .success
@@ -167,9 +163,6 @@ extension BulkExportSession {
                 }
             }
             loop: while let batch = await self.descriptor.pendingBatches.first {
-                await MainActor.run {
-                    self.actualCurrentBatch = batch
-                }
                 guard !Task.isCancelled else {
                     await MainActor.run {
                         switch self.pendingStateChangeRequest {
