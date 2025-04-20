@@ -9,18 +9,35 @@
 import HealthKit
 
 
-/// A ahcracteristic as defined by HealthKit.
+/// A characteristic as defined by HealthKit.
 public protocol HealthKitCharacteristicProtocol<Value>: Hashable, Sendable {
+    /// The type of the characteristic's value
     associatedtype Value
+    
+    /// The underlying `HKCharacteristicType`
     var hkType: HKCharacteristicType { get }
+    /// The characteristic's title, suitable for user-visible display.
     var displayTitle: String { get }
     
+    /// Fetches the characteristic's value from a `HKHealthStore`.
     @_spi(Internal)
     func value(in healthStore: HKHealthStore) throws -> Value
 }
 
 
-/// A type-safe wrapper around `HKCharacteristicType`.
+/// A type-safe wrapper around `HKCharacteristicType`, usable for reading data from HealthKit.
+///
+/// ## Topics
+/// ### Instance Properties
+/// - ``displayTitle``
+/// - ``hkType``
+/// ### Characteristic Types
+/// - ``activityMoveMode``
+/// - ``biologicalSex``
+/// - ``bloodType``
+/// - ``dateOfBirth``
+/// - ``fitzpatrickSkinType``
+/// - ``wheelchairUse``
 public struct HealthKitCharacteristic<Value>: HealthKitCharacteristicProtocol, Sendable {
     public let hkType: HKCharacteristicType
     public let displayTitle: String
@@ -28,11 +45,11 @@ public struct HealthKitCharacteristic<Value>: HealthKitCharacteristicProtocol, S
     
     fileprivate init(
         _ identifier: HKCharacteristicTypeIdentifier,
-        displayTitle: String,
+        displayTitle: LocalizedStringResource,
         accessor: @escaping @Sendable (HKHealthStore) throws -> Value
     ) {
         self.hkType = .init(identifier)
-        self.displayTitle = displayTitle
+        self.displayTitle = String(localized: displayTitle)
         self.accessor = accessor
     }
     
@@ -63,36 +80,35 @@ extension HealthKitCharacteristicProtocol {
 
 extension HealthKitCharacteristicProtocol where Self == HealthKitCharacteristic<HKActivityMoveMode> {
     /// The activity move mode characteristic.
-    public static var activityMoveMode: Self {
-        .init(
-            .activityMoveMode,
-            displayTitle: "Activity Move Mode",
-            accessor: { try $0.activityMoveMode().activityMoveMode }
-        )
+    public static var activityMoveMode: HealthKitCharacteristic<HKActivityMoveMode> {
+        Self(.activityMoveMode, displayTitle: "Activity Move Mode") { healthStore in
+            try healthStore.activityMoveMode().activityMoveMode
+        }
     }
 }
-
 
 extension HealthKitCharacteristicProtocol where Self == HealthKitCharacteristic<HKBiologicalSex> {
     /// The characteristic representing the user's biological sex.
-    public static var biologicalSex: Self {
-        .init(.biologicalSex, displayTitle: "Biological Sex", accessor: { try $0.biologicalSex().biologicalSex })
+    public static var biologicalSex: HealthKitCharacteristic<HKBiologicalSex> {
+        Self(.biologicalSex, displayTitle: "Biological Sex") { healthStore in
+            try healthStore.biologicalSex().biologicalSex
+        }
     }
 }
-
 
 extension HealthKitCharacteristicProtocol where Self == HealthKitCharacteristic<HKBloodType> {
     /// The characteristic representing the user's blood type.
-    public static var bloodType: Self {
-        .init(.bloodType, displayTitle: "Blood Type", accessor: { try $0.bloodType().bloodType })
+    public static var bloodType: HealthKitCharacteristic<HKBloodType> {
+        Self(.bloodType, displayTitle: "Blood Type") { healthStore in
+            try healthStore.bloodType().bloodType
+        }
     }
 }
 
-
 extension HealthKitCharacteristicProtocol where Self == HealthKitCharacteristic<Date> {
     /// The characteristic representing the user's date of birth.
-    public static var dateOfBirth: Self {
-        .init(.dateOfBirth, displayTitle: "Date of Birth") { healthStore in
+    public static var dateOfBirth: HealthKitCharacteristic<Date> {
+        Self(.dateOfBirth, displayTitle: "Date of Birth") { healthStore in
             let components = try healthStore.dateOfBirthComponents()
             if let date = Calendar.current.date(from: components) {
                 // Question: Do we need to take time zones into account here?
@@ -106,18 +122,20 @@ extension HealthKitCharacteristicProtocol where Self == HealthKitCharacteristic<
     }
 }
 
-
 extension HealthKitCharacteristicProtocol where Self == HealthKitCharacteristic<HKFitzpatrickSkinType> {
     /// The characteristic representing the user's skin type.
-    public static var fitzpatrickSkinType: Self {
-        .init(.fitzpatrickSkinType, displayTitle: "Fitzpatrick Skin Type", accessor: { try $0.fitzpatrickSkinType().skinType })
+    public static var fitzpatrickSkinType: HealthKitCharacteristic<HKFitzpatrickSkinType> {
+        Self(.fitzpatrickSkinType, displayTitle: "Fitzpatrick Skin Type") { healthStore in
+            try healthStore.fitzpatrickSkinType().skinType
+        }
     }
 }
 
-
 extension HealthKitCharacteristicProtocol where Self == HealthKitCharacteristic<HKWheelchairUse> {
     /// The characteristic representing the user's wheelchair use status.
-    public static var wheelchairUse: Self {
-        .init(.wheelchairUse, displayTitle: "Wheelchain Use", accessor: { try $0.wheelchairUse().wheelchairUse })
+    public static var wheelchairUse: HealthKitCharacteristic<HKWheelchairUse> {
+        Self(.wheelchairUse, displayTitle: "Wheelchain Use") { healthStore in
+            try healthStore.wheelchairUse().wheelchairUse
+        }
     }
 }

@@ -14,25 +14,20 @@ import SpeziHealthKit
 import SpeziLocalStorage
 
 
+@available(*, deprecated, renamed: "BulkExportSessionImpl")
+typealias BulkExportSession = BulkExportSessionImpl
+
 /// A long-running backgrund exporting task that fetches and processes HealthKit data.
-///
-/// ## Topics
-/// ### Session Lifecycle Management
-/// - ``start(retryFailedBatches:)``
-/// - ``pause()``
-/// ### Session State
-/// - ``isRunning``
-/// - ``state``
 @Observable
-public final class BulkExportSession<Processor: BatchProcessor>: Sendable, BulkExportSessionProtocol {
-    public typealias Processor = Processor
+final class BulkExportSessionImpl<Processor: BatchProcessor>: Sendable, BulkExportSessionProtocol {
+    typealias Processor = Processor
     
     private enum PendingStateChangeRequest {
         case pause
         case terminate
     }
     
-    public let sessionId: BulkExportSessionIdentifier
+    let sessionId: BulkExportSessionIdentifier
     private unowned let bulkExporter: BulkHealthExporter
     private unowned let healthKit: HealthKit
     @ObservationIgnored private let batchProcessor: Processor
@@ -45,10 +40,16 @@ public final class BulkExportSession<Processor: BatchProcessor>: Sendable, BulkE
             if state != .terminated {
                 try? localStorage.store(descriptor, for: localStorageKey)
             }
+            if let progress {
+                progress.totalUnitCount = Int64(numTotalBatches)
+                progress.completedUnitCount = Int64(completedBatches.count)
+                let desc: LocalizedStringResource = "Completed \(completedBatches.count) of \(numTotalBatches) (\(failedBatches.count) failed)"
+                progress.localizedDescription = String(localized: desc)
+            }
         }
     }
     @ObservationIgnored @MainActor private var task: Task<Void, Never>?
-    @MainActor public private(set) var state: BulkExportSessionState = .paused {
+    @MainActor private(set) var state: BulkExportSessionState = .paused {
         willSet {
             if state == .terminated && newValue != .terminated {
                 preconditionFailure("Attempted to move already-terminated session back into non-terminated state")
@@ -56,21 +57,23 @@ public final class BulkExportSession<Processor: BatchProcessor>: Sendable, BulkE
         }
     }
     
-    @MainActor public var pendingBatches: [ExportBatch] {
+    @MainActor var pendingBatches: [ExportBatch] {
         descriptor.pendingBatches.filter { $0.result?.isFailure != true }
     }
-    @MainActor public var completedBatches: [ExportBatch] {
+    @MainActor var completedBatches: [ExportBatch] {
         descriptor.completedBatches
     }
-    @MainActor public var failedBatches: [ExportBatch] {
+    @MainActor var failedBatches: [ExportBatch] {
         descriptor.pendingBatches.filter { $0.result?.isFailure == true }
     }
-    @MainActor public var numTotalBatches: Int {
+    @MainActor var numTotalBatches: Int {
         descriptor.pendingBatches.count + descriptor.completedBatches.count
     }
-    @MainActor public var currentBatch: ExportBatch? {
-        isRunning ? pendingBatches.first : nil
+    @MainActor var currentBatch: ExportBatch? {
+        state == .running ? pendingBatches.first : nil
     }
+    
+    @MainActor private(set) var progress: Progress?
     
     @MainActor
     internal init(
@@ -119,10 +122,10 @@ public final class BulkExportSession<Processor: BatchProcessor>: Sendable, BulkE
 }
 
 
-extension BulkExportSession {
+extension BulkExportSessionImpl {
     @MainActor
-    public func start(retryFailedBatches: Bool = false) throws(StartSessionError) -> AsyncStream<Processor.Output> {
-        // swiftlint:disable:previous function_body_length missing_docs cyclomatic_complexity
+    func start(retryFailedBatches: Bool = false) throws(StartSessionError) -> AsyncStream<Processor.Output> {
+        // swiftlint:disable:previous function_body_length cyclomatic_complexity
         switch state {
         case .running:
             throw .alreadyRunning
@@ -138,6 +141,9 @@ extension BulkExportSession {
         }
         state = .running
         let (stream, continuation) = AsyncStream.makeStream(of: Processor.Output.self)
+        if progress == nil {
+            progress = .discreteProgress(totalUnitCount: Int64(numTotalBatches))
+        }
         task = Task.detached { // swiftlint:disable:this closure_body_length
             if retryFailedBatches {
                 await MainActor.run {
@@ -197,6 +203,9 @@ extension BulkExportSession {
                     // the batch hasn't run yet. we simply continue with the code below
                     let result: Processor.Output
                     do {
+                        await MainActor.run {
+                            self.progress?.localizedAdditionalDescription = batch.userDisplayedDescription
+                        }
                         result = try await self.queryAndProcess(sampleType: batch.sampleType, for: batch.timeRange)
                     } catch let error as QueryAndProcessError {
                         if !(error.underlyingError is CancellationError && Task.isCancelled) {
@@ -216,6 +225,7 @@ extension BulkExportSession {
             }
             await MainActor.run {
                 self.task = nil
+                self.progress?.localizedAdditionalDescription = nil
                 if !(self.state == .paused || self.state == .terminated) {
                     // if we end up in here (ie, outside of the while loop), and we haven't manually paused or terminated the session,
                     // it reached its end normally and we simply want to complete it.
@@ -229,7 +239,7 @@ extension BulkExportSession {
     
     
     @MainActor
-    public func pause() { // swiftlint:disable:this missing_docs
+    func pause() {
         switch (state, pendingStateChangeRequest) {
         case (.paused, _), (.completed, _), (.terminated, _):
             return
@@ -251,7 +261,7 @@ extension BulkExportSession {
     
     
     @MainActor
-    public func _terminate() { // swiftlint:disable:this missing_docs identifier_name
+    func _terminate() { // swiftlint:disable:this identifier_name
         pendingStateChangeRequest = .terminate
         state = .terminated
         task?.cancel()
@@ -272,7 +282,7 @@ private enum QueryAndProcessError: Error, Sendable {
     }
 }
 
-extension BulkExportSession {
+extension BulkExportSessionImpl {
     private nonisolated func queryAndProcess<Sample: _HKSampleWithSampleType>(
         sampleType: some AnySampleType<Sample>,
         for timeRange: Range<Date>

@@ -53,7 +53,6 @@ You can choose the timing of this call in a way that best suits your app: for ex
 - ``HealthKitConstraint``
 
 ### Module Configuration
-
 - ``HealthKitConfigurationComponent``
 - ``HealthKit-swift.class/DataAccessRequirements``
 - ``RequestReadAccess``

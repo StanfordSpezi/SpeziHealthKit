@@ -12,22 +12,22 @@ import Spezi
 
 /// Collects a specified ``SampleType``  via the ``HealthKit-class`` module.
 ///
-/// This structure define what and how the ``HealthKit-class`` samples are collected.
-/// By default, all samples of the provided ``SampleType`` will be collected; you an optionally provide a filter predicate.
+/// This structure enables real-time Health data collection using the ``HealthKit-swift.class`` module, and allows defining when and how the collection should take place.
+/// By default, all new samples of the provided ``SampleType`` will be collected; you an optionally provide a filter predicate.
 ///
-/// Sample collection, by default is started automatically (i.e., once the ``HealthKit-swift.class`` module has requested read access to the queried sample type).
+/// Sample collection, unless specified otherwise, is started automatically (i.e., once the ``HealthKit-swift.class`` module has requested read access to the queried sample type).
 /// This can be configured, allowing an app to delay starting of the sample collection until a moment of its choosing.
 ///
 /// Sample collection optionally can be configured to continue in the background, i.e. even when the app is closed.
 /// This is turned off by default, and can be enabled using the `continueInBackground` parameter.
 ///
-/// Your can specify an `NSPredicate` to filter which samples should be collected.
-/// For example, you can define a predicate to only collect the data collected at a time within the given start and end date.
-/// Below is an example to create a `NSPredicate` restricting the data collected in the previous month.
+/// Your app can specify an `NSPredicate` to filter which samples should be collected.
+/// For example, you can use a predicate to only collect the data collected at a time within the given start and end date.
+/// Below is an example to create a `NSPredicate` restricting the data collection to only the previous month.
 /// ```swift
 /// private var predicateOneMonth: NSPredicate {
-///     // Define the start and end time for the predicate. In this example,
-///     // we want to collect the samples in the previous month.
+///     // Define the start and end time for the predicate.
+///     // In this example, we want to collect the samples in the previous month.
 ///     let calendar = Calendar(identifier: .gregorian)
 ///     let today = calendar.startOfDay(for: Date())
 ///     // We want the end date to be tomorrow so that we can collect all the samples today.

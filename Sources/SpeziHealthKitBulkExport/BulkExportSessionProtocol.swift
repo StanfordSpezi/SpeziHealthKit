@@ -51,13 +51,14 @@ public enum StartSessionError: Error {
 /// - ``numTotalBatches``
 /// - ``numProcessedBatches``
 /// - ``currentBatch``
+/// - ``progress``
 /// ### Instance Methods
 /// - ``start(retryFailedBatches:)-8jsxv``
 /// - ``start(retryFailedBatches:)-571v3``
 /// - ``pause()``
 /// ### Other
 /// - ``SpeziHealthKitBulkExport/==(_:_:)``
-public protocol BulkExportSessionProtocol<Processor>: AnyObject, Hashable, Sendable {
+public protocol BulkExportSessionProtocol<Processor>: AnyObject, Hashable, Sendable, Observable {
     /// The session's ``BatchProcessor``
     associatedtype Processor: BatchProcessor
     
@@ -81,6 +82,10 @@ public protocol BulkExportSessionProtocol<Processor>: AnyObject, Hashable, Senda
     /// This can be used to obtain a user-displayable description of a running session's current work: `session.currentBatch?.userDisplayedDescription`.
     @MainActor var currentBatch: ExportBatch? { get }
     
+    /// A `Progress` object representing the session's current progress, relative to the total number of batches
+    /// (including failed ones that will be retried at some point in the future). `nil` if the session hasn't yet been started or is terminated.
+    @MainActor var progress: Progress? { get }
+    
     /// Starts the session.
     ///
     /// Attempting to start a session that is already running will result in a ``StartSessionError/alreadyRunning`` error.
@@ -100,21 +105,17 @@ public protocol BulkExportSessionProtocol<Processor>: AnyObject, Hashable, Senda
 
 
 extension BulkExportSessionProtocol {
-    /// Whether the session is currently running.
-    ///
-    /// Note that this property being `false` does not mean that the session hasn't done anything
-    @MainActor public var isRunning: Bool {
-        switch state {
-        case .running:
-            true
-        case .paused, .completed, .terminated:
-            false
-        }
-    }
-    
     /// The number of batches the session has already processed, i.e. the combined number of completed and failed batches.
     @MainActor public var numProcessedBatches: Int {
         completedBatches.count + failedBatches.count
+    }
+    
+    /// Starts the session.
+    ///
+    /// Attempting to start a session that is already running will result in a ``StartSessionError/alreadyRunning`` error.
+    @MainActor
+    public func start() throws(StartSessionError) -> AsyncStream<Processor.Output> {
+        try start(retryFailedBatches: false)
     }
     
     /// Starts the session.

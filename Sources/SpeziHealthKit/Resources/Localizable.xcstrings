@@ -21,6 +21,9 @@
         }
       }
     },
+    "Activity Move Mode" : {
+
+    },
     "Alcohol Consumption" : {
 
     },
@@ -44,6 +47,9 @@
       }
     },
     "Basal Body Temperature" : {
+
+    },
+    "Biological Sex" : {
 
     },
     "Biotin" : {
@@ -91,6 +97,9 @@
 
     },
     "Blood Pressure (Systolic)" : {
+
+    },
+    "Blood Type" : {
 
     },
     "Body Fat Percentage" : {
@@ -180,6 +189,9 @@
     "Cycling Speed" : {
 
     },
+    "Date of Birth" : {
+
+    },
     "Diarrhea" : {
 
     },
@@ -236,6 +248,9 @@
 
     },
     "Fiber" : {
+
+    },
+    "Fitzpatrick Skin Type" : {
 
     },
     "Flights Climbed" : {
@@ -662,6 +677,9 @@
 
     },
     "Water Temperature" : {
+
+    },
+    "Wheelchain Use" : {
 
     },
     "Wheelchair Distance" : {

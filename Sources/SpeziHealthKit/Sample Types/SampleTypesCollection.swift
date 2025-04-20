@@ -10,9 +10,10 @@ import Foundation
 import HealthKit
 
 
-/// A non-ordered collection o funique type-erased ``SampleType``s
+/// A non-ordered collection of unique, type-erased ``SampleType``s
 ///
 /// ``SampleTypesCollection`` conforms to Swift's `Collection` protocol, with an `Element` type of `any` ``AnySampleType``.
+///
 /// When working with a ``SampleTypesCollection``, you can obtain fully-typed ``SampleType`` instances using the following pattern:
 /// ```swift
 /// func processSampleTypes(_ sampleTypes: SampleTypesCollection) {
@@ -27,6 +28,7 @@ import HealthKit
 /// ```
 public struct SampleTypesCollection: Hashable, Sendable, Codable {
     public typealias Storage = Set<SampleTypeProxy>
+    
     private var storage: Storage
     
     /// Creates a new, empty `SampleTypesCollection`.

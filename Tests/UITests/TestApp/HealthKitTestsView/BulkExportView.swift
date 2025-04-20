@@ -99,7 +99,7 @@ struct BulkExportView: View {
         AsyncButton("Start Bulk Export", state: $viewState) {
             let obtainSession = { @MainActor in
                 try await bulkExporter.session(
-                    sessionId,
+                    withId: sessionId,
                     for: sampleTypes,
                     startDate: .oldestSample,
                     // we intentionally give it a little delay, so that we can test the pause() functionality as part of the UI test.
@@ -120,13 +120,8 @@ struct BulkExportView: View {
         Section("Bulk Export Session") {
             LabeledContent("State", value: session.state.description)
             LabeledContent("Status", value: "Completed \(session.completedBatches.count) of \(session.numTotalBatches) (\(session.failedBatches.count) failed)")
-            ProgressView(value: Double(session.numProcessedBatches) / Double(session.numTotalBatches)) {
-                Text("Completed \(session.completedBatches.count) of \(session.numTotalBatches) (\(session.failedBatches.count) failed)")
-                if let desc = session.currentBatch?.userDisplayedDescription {
-                    Text(desc)
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
-                }
+            if let progress = session.progress {
+                ProgressView(progress)
             }
             switch session.state {
             case .paused, .completed:

@@ -60,21 +60,21 @@ extension BulkHealthExporter {
     /// See the ``BulkHealthExporter`` class documentation for more information.
     @MainActor
     public func session<Processor: BatchProcessor>(
-        _ id: BulkExportSessionIdentifier,
+        withId id: BulkExportSessionIdentifier,
         for exportSampleTypes: SampleTypesCollection,
         startDate: ExportSessionStartDate,
         endDate: Date = .now,
         batchSize: ExportSessionBatchSize = .automatic, // swiftlint:disable:this function_default_parameter_at_end
         using batchProcessor: Processor
-    ) async throws -> BulkExportSession<Processor> {
+    ) async throws -> some BulkExportSessionProtocol<Processor> {
         if let session = sessions.first(where: { $0.sessionId == id }) {
-            guard let session = session as? BulkExportSession<Processor> else {
+            guard let session = session as? BulkExportSessionImpl<Processor> else {
                 // we found an already-running session with the same id, but a different type
                 throw SessionError.conflictingSessionAlreadyExists
             }
             return session
         } else {
-            let session = try await BulkExportSession<Processor>(
+            let session = try await BulkExportSessionImpl<Processor>(
                 sessionId: id,
                 bulkExporter: self,
                 healthKit: healthKit,

@@ -29,7 +29,7 @@ import SwiftUI
 /// - ``configurationState``
 /// - ``ConfigState``
 ///
-/// ### Adding Data Collectors
+/// ### Registering Data Collectors
 /// - ``addHealthDataCollector(_:)-1sq79``
 /// - ``addHealthDataCollector(_:)-10bp6``
 /// - ``triggerDataSourceCollection()``
