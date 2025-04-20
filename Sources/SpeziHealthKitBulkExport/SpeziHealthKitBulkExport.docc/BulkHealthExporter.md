@@ -143,5 +143,4 @@ Even though all operations within an export session will run serially, multiple 
 - ``BulkExportSession``
 - ``BatchProcessor``
 - ``BulkExportSessionState``
-- ``BulkExportSessionProtocol``
 - ``BulkHealthExporter/SessionError``

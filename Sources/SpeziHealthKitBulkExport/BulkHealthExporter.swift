@@ -22,13 +22,13 @@ public final class BulkHealthExporter: Module, EnvironmentAccessible, @unchecked
     @ObservationIgnored @Dependency(LocalStorage.self) private var localStorage
     
     /// All export sessions currently known to the Bulk Exporter.
-    @MainActor public private(set) var sessions: [any BulkExportSessionProtocol] = []
+    @MainActor public private(set) var sessions: [any BulkExportSession] = []
     
     /// Create a new Bulk Health Exporter
     nonisolated public init() {}
     
     @MainActor
-    func add(_ session: some BulkExportSessionProtocol) throws {
+    func add(_ session: some BulkExportSession) throws {
         guard !sessions.contains(where: { $0.sessionId == session.sessionId }) else {
             throw SessionError.conflictingSessionAlreadyExists
         }
@@ -36,7 +36,7 @@ public final class BulkHealthExporter: Module, EnvironmentAccessible, @unchecked
     }
     
     @MainActor
-    func remove(_ session: some BulkExportSessionProtocol) {
+    func remove(_ session: some BulkExportSession) {
         guard session.state == .terminated else {
             preconditionFailure("Attempted to remove non-terminated session")
         }
@@ -66,7 +66,7 @@ extension BulkHealthExporter {
         endDate: Date = .now,
         batchSize: ExportSessionBatchSize = .automatic, // swiftlint:disable:this function_default_parameter_at_end
         using batchProcessor: Processor
-    ) async throws -> some BulkExportSessionProtocol<Processor> {
+    ) async throws -> some BulkExportSession<Processor> {
         if let session = sessions.first(where: { $0.sessionId == id }) {
             guard let session = session as? BulkExportSessionImpl<Processor> else {
                 // we found an already-running session with the same id, but a different type

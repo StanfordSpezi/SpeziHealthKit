@@ -66,10 +66,10 @@ struct BulkExporterAPITests {
         #expect(await module.sessions.isEmpty)
         
         let sessionId = BulkExportSessionIdentifier("testId")
-        let session = try await module.session(sessionId, for: [], startDate: .oldestSample, using: .identity)
+        let session = try await module.session(withId: sessionId, for: [], startDate: .oldestSample, using: .identity)
         
-        let sessionsInModule: [any BulkExportSessionProtocol] = await module.sessions
-        let ourSession: [any BulkExportSessionProtocol] = [session]
+        let sessionsInModule: [any BulkExportSession] = await module.sessions
+        let ourSession: [any BulkExportSession] = [session]
         #expect(sessionsInModule.elementsEqual(ourSession, by: { $0 == $1 }))
         let results = try await session.start()
         for await _ in results { }

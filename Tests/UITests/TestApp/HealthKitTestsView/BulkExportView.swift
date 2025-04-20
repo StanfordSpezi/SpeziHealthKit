@@ -72,7 +72,7 @@ struct BulkExportView: View {
                 LabeledContent("# Exported Samples", value: String(numExportedSamples))
                     .accessibilityValue(String(numExportedSamples))
             }
-            ForEach(bulkExporter.sessions, id: \.sessionId) { (session: any BulkExportSessionProtocol) in
+            ForEach(bulkExporter.sessions, id: \.sessionId) { (session: any BulkExportSession) in
                 section(for: session)
             }
         }
@@ -116,7 +116,7 @@ struct BulkExportView: View {
         }
     }
     
-    @ViewBuilder private func section(for session: any BulkExportSessionProtocol) -> some View {
+    @ViewBuilder private func section(for session: any BulkExportSession) -> some View {
         Section("Bulk Export Session") {
             LabeledContent("State", value: session.state.description)
             LabeledContent("Status", value: "Completed \(session.completedBatches.count) of \(session.numTotalBatches) (\(session.failedBatches.count) failed)")
@@ -127,7 +127,7 @@ struct BulkExportView: View {
             case .paused, .completed:
                 AsyncButton("Start", state: $viewState) {
                     @MainActor
-                    func imp<P: BatchProcessor>(_ session: some BulkExportSessionProtocol<P>) throws {
+                    func imp<P: BatchProcessor>(_ session: some BulkExportSession<P>) throws {
                         let results = try session.start(retryFailedBatches: true)
                         do {
                             let _: AsyncStream<_> = try session.start(retryFailedBatches: true)
@@ -167,7 +167,7 @@ struct BulkExportView: View {
         numTestingSamples = numSamples
     }
     
-    private func handleExportSessionBatchResults(_ batchResults: AsyncStream<Int>, for session: any BulkExportSessionProtocol) {
+    private func handleExportSessionBatchResults(_ batchResults: AsyncStream<Int>, for session: any BulkExportSession) {
         Task {
             for await count in batchResults {
                 numExportedSamples += count
