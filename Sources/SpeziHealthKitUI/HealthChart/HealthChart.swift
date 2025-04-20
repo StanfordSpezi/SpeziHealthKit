@@ -173,8 +173,7 @@ extension HealthChart {
             let timeZone = self.timeZone
             let calendar = self.calendar
             AxisMarks(values: .stride(by: config.strideComponent, count: config.strideCount)) { value in
-                if let date = value.as(Date.self) {
-    //                let component = Calendar.current.component(strideConfig.component, from: date)
+                if value.as(Date.self) != nil {
                     AxisValueLabel(format: config.valueFormat.locale(locale).timeZone(timeZone).calendar(calendar))
                 }
                 AxisGridLine()
