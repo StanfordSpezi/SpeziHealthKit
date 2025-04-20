@@ -12,6 +12,11 @@ public struct BulkExportSessionIdentifier: Hashable, Sendable, RawRepresentable,
     public let rawValue: String
     
     /// Creates a new Session Identifier
+    public init(_ rawValue: String) {
+        self.init(rawValue: rawValue)
+    }
+    
+    /// Creates a new Session Identifier
     public init(rawValue: String) {
         self.rawValue = rawValue
     }
