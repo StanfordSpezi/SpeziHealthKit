@@ -8,11 +8,11 @@
 
 
 /// Uniquely identifies a ``BulkExportSession``
-public struct BulkExportSessionIdentifier: Hashable, Sendable, Codable {
-    let rawValue: String
+public struct BulkExportSessionIdentifier: Hashable, Sendable, RawRepresentable, Codable {
+    public let rawValue: String
     
     /// Creates a new Session Identifier
-    public init(_ rawValue: String) {
+    public init(rawValue: String) {
         self.rawValue = rawValue
     }
     
