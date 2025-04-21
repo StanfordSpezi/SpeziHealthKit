@@ -20,8 +20,8 @@ final class BulkExportSessionImpl<Processor: BatchProcessor>: Sendable, BulkExpo
     typealias Processor = Processor
     
     private enum PendingStateChangeRequest {
-        case pause
-        case terminate
+        case pause(_ completionHandner: () -> Void)
+        case terminate(_ completionHandner: () -> Void)
     }
     
     let sessionId: BulkExportSessionIdentifier
@@ -37,12 +37,7 @@ final class BulkExportSessionImpl<Processor: BatchProcessor>: Sendable, BulkExpo
             if state != .terminated {
                 try? localStorage.store(descriptor, for: localStorageKey)
             }
-            if let progress {
-                progress.totalUnitCount = Int64(numTotalBatches)
-                progress.completedUnitCount = Int64(completedBatches.count)
-                let desc: LocalizedStringResource = "Completed \(completedBatches.count) of \(numTotalBatches) (\(failedBatches.count) failed)"
-                progress.localizedDescription = String(localized: desc)
-            }
+            updateProgress()
         }
     }
     @ObservationIgnored @MainActor private var task: Task<Void, Never>?
@@ -121,6 +116,18 @@ final class BulkExportSessionImpl<Processor: BatchProcessor>: Sendable, BulkExpo
 
 extension BulkExportSessionImpl {
     @MainActor
+    private func updateProgress() {
+        guard let progress else {
+            return
+        }
+        progress.totalUnitCount = Int64(numTotalBatches)
+        progress.completedUnitCount = Int64(completedBatches.count)
+        progress.localizedDescription = String(
+            localized: "Completed \(completedBatches.count) of \(numTotalBatches) (\(failedBatches.count) failed)"
+        )
+    }
+    
+    @MainActor
     func start(retryFailedBatches: Bool = false) throws(StartSessionError) -> AsyncStream<Processor.Output> {
         // swiftlint:disable:previous function_body_length cyclomatic_complexity
         switch state {
@@ -140,6 +147,7 @@ extension BulkExportSessionImpl {
         let (stream, continuation) = AsyncStream.makeStream(of: Processor.Output.self)
         if progress == nil {
             progress = .discreteProgress(totalUnitCount: Int64(numTotalBatches))
+            updateProgress()
         }
         task = Task.detached { // swiftlint:disable:this closure_body_length
             if retryFailedBatches {
@@ -168,11 +176,16 @@ extension BulkExportSessionImpl {
                 guard !Task.isCancelled else {
                     await MainActor.run {
                         switch self.pendingStateChangeRequest {
-                        case nil, .pause:
+                        case nil:
+                            break
+                        case .pause((let completionHandler)):
                             self.state = .paused
-                        case .terminate:
+                            completionHandler()
+                        case .terminate(let completionHandler):
                             self.state = .terminated
+                            completionHandler()
                         }
+                        self.pendingStateChangeRequest = nil
                     }
                     // intentionally not a return (here and everywhere else in the Task),
                     // bc we still want to end up in he block at the bottom, after the task
@@ -236,15 +249,19 @@ extension BulkExportSessionImpl {
     
     
     @MainActor
-    func pause() {
+    func pause() async {
         switch (state, pendingStateChangeRequest) {
         case (.paused, _), (.completed, _), (.terminated, _):
             return
         case (.running, nil):
             // the session is running, and there is no pending request to change its state
             // --> pause it
-            pendingStateChangeRequest = .pause
-            task?.cancel()
+            await withCheckedContinuation { continuation in
+                pendingStateChangeRequest = .pause {
+                    continuation.resume()
+                }
+                task?.cancel()
+            }
         case (.running, .pause):
             // we already have a pending pause request
             // --> nothing to be done
@@ -258,10 +275,14 @@ extension BulkExportSessionImpl {
     
     
     @MainActor
-    func _terminate() { // swiftlint:disable:this identifier_name
-        pendingStateChangeRequest = .terminate
-        state = .terminated
-        task?.cancel()
+    func _terminate() async { // swiftlint:disable:this identifier_name
+        await withCheckedContinuation { continuation in
+            pendingStateChangeRequest = .terminate {
+                continuation.resume()
+            }
+            state = .terminated
+            task?.cancel()
+        }
         bulkExporter.remove(self)
     }
 }
