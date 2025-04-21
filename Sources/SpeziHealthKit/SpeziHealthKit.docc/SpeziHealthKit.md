@@ -76,6 +76,7 @@ class ExampleAppDelegate: SpeziAppDelegate {
 ## Topics
 
 ### Module
+- ``HealthKit-swift.class``
 - <doc:ModuleConfiguration>
 
 ### Health Data Collection
@@ -86,6 +87,11 @@ class ExampleAppDelegate: SpeziAppDelegate {
 ### HealthKit Sample Types
 - ``SampleType``
 - ``AnySampleType``
+- ``SampleTypesCollection``
+
+### Characteristics
+- ``HealthKitCharacteristic``
+- ``HealthKitCharacteristicProtocol``
 
 ### Working with ECG Data
 - ``HealthKit/HKElectrocardiogram/symptoms(from:)``

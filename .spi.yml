@@ -12,4 +12,5 @@ builder:
     - platform: ios
       documentation_targets:
       - SpeziHealthKit
+      - SpeziHealthKitBulkExport
       - SpeziHealthKitUI

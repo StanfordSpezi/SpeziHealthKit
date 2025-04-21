@@ -182,9 +182,9 @@ final class HealthKitTests: XCTestCase {
 }
 
 
-extension HealthKitTests {
+extension XCTestCase {
     @MainActor
-    private func launchAndHandleInitialStuff(_ app: XCUIApplication) throws {
+    func launchAndHandleInitialStuff(_ app: XCUIApplication) throws {
         app.launch()
         if app.alerts["“TestApp” Would Like to Send You Notifications"].waitForExistence(timeout: 5) {
             app.alerts["“TestApp” Would Like to Send You Notifications"].buttons["Allow"].tap()
@@ -196,8 +196,10 @@ extension HealthKitTests {
             try app.handleHealthKitAuthorization()
         }
     }
-    
-    
+}
+
+
+extension HealthKitTests {
     @MainActor
     private func addSample(_ sampleType: SampleType<HKQuantitySample>, in app: XCUIApplication) throws {
         let menuButton = app.navigationBars.images["plus"]

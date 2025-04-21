@@ -7,7 +7,7 @@
 //
 
 
-/// Determines the data delivery settings for any ``HealthDataCollector`` used in the HealthKit module.
+/// Defines the data delivery settings for any ``HealthDataCollector`` used in the HealthKit module.
 public struct HealthDataCollectorDeliverySetting: Hashable, Sendable {
     /// When the data collection should start.
     public let startSetting: Start
@@ -17,7 +17,7 @@ public struct HealthDataCollectorDeliverySetting: Hashable, Sendable {
 
 
 extension HealthDataCollectorDeliverySetting {
-    /// Determines when a ``HealthDataCollector`` is started.
+    /// Defines when a ``HealthDataCollector`` is started.
     public enum Start: Hashable, Sendable {
         /// The delivery is started the first time the ``HealthKit/triggerDataSourceCollection()`` function is called.
         case manual

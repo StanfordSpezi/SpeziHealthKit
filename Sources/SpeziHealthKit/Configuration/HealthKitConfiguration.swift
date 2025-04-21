@@ -43,10 +43,28 @@ extension HealthKit {
             read.isEmpty && write.isEmpty
         }
         
+        /// Creates a new, empty instance.
+        public init() {
+            read = Set()
+            write = Set()
+        }
+        
         /// Creates a new instance, with the specified read and write sample types.
         public init(read: some Sequence<HKObjectType> = [], write: some Sequence<HKSampleType> = []) {
-            self.read = Set(read)
-            self.write = Set(write)
+            // For certain sample types, we're not allowed to request direct read/write request;
+            // we instead need to map these to their effective underlying sample types.
+            // E.g.: HKCorrelationTypeBloodPressure --> HKQuantityTypeBloodPressure{Systolic,Diastolic}
+            // swiftlint:disable:next discouraged_optional_collection
+            self.read = read.flatMapIntoSet { ($0 as? HKSampleType)?.effectiveSampleTypesForAuthentication as Set<HKObjectType>? ?? [$0] }
+            self.write = write.flatMapIntoSet { $0.effectiveSampleTypesForAuthentication }
+        }
+        
+        /// Creates a new instance, with the specified read and write sample types.
+        public init(read: some Sequence<any AnySampleType> = [], write: some Sequence<any AnySampleType> = []) {
+            self.init(
+                read: read.mapIntoSet { $0.hkSampleType },
+                write: write.mapIntoSet { $0.hkSampleType }
+            )
         }
         
         /// Creates a new instance, containing the union of the read and write requirements of `self` and `other`.
@@ -60,6 +78,17 @@ extension HealthKit {
         /// Merges another set of data access requirements into the current one.
         public mutating func merge(with other: Self) {
             self = self.merging(with: other)
+        }
+    }
+}
+
+
+extension HKSampleType {
+    var effectiveSampleTypesForAuthentication: Set<HKSampleType> {
+        if let sampleType = self.sampleType {
+            sampleType.effectiveSampleTypesForAuthentication.mapIntoSet { $0.hkSampleType }
+        } else {
+            []
         }
     }
 }

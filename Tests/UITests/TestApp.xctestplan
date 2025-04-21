@@ -20,6 +20,11 @@
           "containerPath" : "container:..\/..",
           "identifier" : "SpeziHealthKitUI",
           "name" : "SpeziHealthKitUI"
+        },
+        {
+          "containerPath" : "container:..\/..",
+          "identifier" : "SpeziHealthKitBulkExport",
+          "name" : "SpeziHealthKitBulkExport"
         }
       ]
     },

@@ -11,6 +11,8 @@ import HealthKit
 
 /// Type-erased version of a ``SampleType``
 ///
+/// - Important: The ``AnySampleType`` protocol is public, but your application should not declare any new conformances to it; ``SampleType`` is the only type allowed to conform to ``AnySampleType``.
+///
 /// ## Topics
 /// ### Instance Properties
 /// - ``hkSampleType``
@@ -20,7 +22,8 @@ import HealthKit
 /// - ``==(_:_:)-4zjyo``
 /// - ``==(_:_:)-5dq7``
 /// - ``==(_:_:)-80mw5``
-public protocol AnySampleType: Hashable, Identifiable, Sendable where ID == String {
+/// - ``~=(_:_:)``
+public protocol AnySampleType<Sample>: Hashable, Identifiable, Sendable where ID == String {
     /// The type of the sample type's underlying samples.
     ///
     /// E.g., for a sample type representing quantity samples, this would be `HKQuantitySample`.
@@ -80,20 +83,29 @@ extension AnySampleType {
     }
 }
 
-/// Compare two type-erased sample type, based on their identifiers
-@inlinable public func == (lhs: any AnySampleType, rhs: any AnySampleType) -> Bool { // swiftlint:disable:this static_operator
+// swiftlint:disable static_operator
+
+/// Compare two sample types, based on their identifiers
+@inlinable public func == (lhs: any AnySampleType, rhs: any AnySampleType) -> Bool {
     lhs.id == rhs.id
 }
 
-/// Compare two type-erased sample type, based on their identifiers
-@inlinable public func == (lhs: any AnySampleType, rhs: SampleType<some Any>) -> Bool { // swiftlint:disable:this static_operator
+/// Compare two sample types, based on their identifiers
+@inlinable public func == (lhs: any AnySampleType, rhs: SampleType<some Any>) -> Bool {
     lhs.id == rhs.id
 }
 
-/// Compare two type-erased sample type, based on their identifiers
-@inlinable public func == (lhs: SampleType<some Any>, rhs: any AnySampleType) -> Bool { // swiftlint:disable:this static_operator
+/// Compare two sample types, based on their identifiers
+@inlinable public func == (lhs: SampleType<some Any>, rhs: any AnySampleType) -> Bool {
     lhs.id == rhs.id
 }
+
+/// Compare two sample types, based on their identifiers
+@inlinable public func ~= (lhs: any AnySampleType, rhs: SampleType<some Any>) -> Bool {
+    lhs.id == rhs.id
+}
+
+// swiftlint:enable static_operator
 
 
 extension AnySampleType {
@@ -107,6 +119,27 @@ extension AnySampleType {
             Array(self.associatedQuantityTypes)
         } else {
             [self]
+        }
+    }
+}
+
+
+extension HKObjectType {
+    /// The corresponding ``SampleType``, if possible.
+    public var sampleType: (any AnySampleType)? {
+        switch self {
+        case is HKQuantityType:
+            SampleType<HKQuantitySample>(.init(rawValue: self.identifier))
+        case is HKCorrelationType:
+            SampleType<HKCorrelation>(.init(rawValue: self.identifier))
+        case is HKCategoryType:
+            SampleType<HKCategorySample>(.init(rawValue: self.identifier))
+        case is HKWorkoutType:
+            SampleType.workout
+        case is HKCharacteristicType, is HKDocumentType, is HKActivitySummaryType, is HKSeriesType:
+            nil
+        default:
+            nil
         }
     }
 }

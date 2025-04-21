@@ -8,6 +8,7 @@
 
 import Spezi
 import SpeziHealthKit
+import SpeziHealthKitBulkExport
 
 
 class TestAppDelegate: SpeziAppDelegate {
@@ -37,10 +38,10 @@ class TestAppDelegate: SpeziAppDelegate {
                 CollectSample(.stairAscentSpeed, continueInBackground: true)
                 CollectSample(.stairDescentSpeed, continueInBackground: false)
                 CollectSample(.workout)
+                CollectSample(.bloodPressure, start: .automatic)
                 
                 RequestReadAccess(
                     quantity: [.bloodOxygen],
-                    correlation: [.bloodPressure],
                     characteristic: [.activityMoveMode, .biologicalSex, .bloodType, .dateOfBirth, .fitzpatrickSkinType, .wheelchairUse],
                     other: [SampleType.workout, SampleType.audiogram]
                 )
@@ -49,6 +50,8 @@ class TestAppDelegate: SpeziAppDelegate {
                     quantity: [.heartRate, .bloodOxygen, .stepCount, .height, .activeEnergyBurned]
                 )
             }
+            
+            BulkHealthExporter()
         }
     }
 }

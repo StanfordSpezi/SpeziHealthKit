@@ -34,6 +34,7 @@ Well-known quantity sample types
 - ``SampleType/appleMoveTime``
 - ``SampleType/appleStandTime``
 - ``SampleType/vo2Max``
+- ``SampleType/timeInDaylight``
 
 ### Body Measurements
 - ``SampleType/height``
@@ -43,6 +44,7 @@ Well-known quantity sample types
 - ``SampleType/bodyFatPercentage``
 - ``SampleType/waistCircumference``
 - ``SampleType/appleSleepingWristTemperature``
+- ``SampleType/appleSleepingBreathingDisturbances``
 
 ### Reproductive Health
 - ``SampleType/basalBodyTemperature``
@@ -50,6 +52,7 @@ Well-known quantity sample types
 ### Hearing
 - ``SampleType/environmentalAudioExposure``
 - ``SampleType/headphoneAudioExposure``
+- ``SampleType/environmentalSoundReduction``
 
 ### Vital Signs
 - ``SampleType/heartRate``
@@ -133,6 +136,20 @@ Well-known quantity sample types
 ### UV Exposure
 - ``SampleType/uvExposure``
 
-### Diving
+### Exercise Activities
 - ``SampleType/underwaterDepth``
 - ``SampleType/waterTemperature``
+- ``SampleType/crossCountrySkiingSpeed``
+- ``SampleType/distanceCrossCountrySkiing``
+- ``SampleType/cyclingCadence``
+- ``SampleType/cyclingFunctionalThresholdPower``
+- ``SampleType/cyclingPower``
+- ``SampleType/cyclingSpeed``
+- ``SampleType/paddleSportsSpeed``
+- ``SampleType/distancePaddleSports``
+- ``SampleType/rowingSpeed``
+- ``SampleType/distanceRowing``
+- ``SampleType/distanceSkatingSports``
+- ``SampleType/estimatedWorkoutEffortScore``
+- ``SampleType/physicalEffort``
+- ``SampleType/workoutEffortScore``

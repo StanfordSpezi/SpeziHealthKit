@@ -46,7 +46,7 @@ For example, the sample type representing heart rate samples (``SampleType/heart
 - ``SampleType/electrocardiogram``
 - ``SampleType/workout``
 
-### Creating new SampleType
+### Creating new SampleTypes
 - ``SampleType/quantity(_:displayTitle:displayUnit:expectedValuesRange:)``
 - ``SampleType/correlation(_:displayTitle:associatedQuantityTypes:)``
 - ``SampleType/category(_:displayTitle:)``
@@ -60,4 +60,6 @@ For example, the sample type representing heart rate samples (``SampleType/heart
 ### AnySampleType
 
 The ``AnySampleType`` protocol allows ``SampleType``s to be used in a type-erased manner.
+
+- ``SampleType/init(_:)-6kzr1``
 
