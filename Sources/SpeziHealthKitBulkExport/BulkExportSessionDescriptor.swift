@@ -96,7 +96,7 @@ extension ExportSessionDescriptor {
         switch batchSize {
         case .automatic:
             switch sampleType {
-            case SampleType.activeEnergyBurned:
+            case SampleType.activeEnergyBurned, SampleType.stepCount, SampleType.heartRate:
                 .byMonth
             default:
                 .byYear
