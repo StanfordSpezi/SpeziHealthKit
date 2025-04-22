@@ -93,9 +93,14 @@ extension BulkHealthExporter {
     /// Deletes the persisted state restoration info for a session created in during previous launch of the app, based on its identifier.
     ///
     /// Calling this function with an identifier matching an existing session will result in that session getting terminated.
-    @MainActor public func deleteSessionRestorationInfo(for id: BulkExportSessionIdentifier) throws {
+    ///
+    /// - Note: If the to-be-deleted session is currently running, this is an asyncronous operation.
+    ///     The call will return once the termination request has been processed, which may take a little bit, e.g. if a ``BatchProcessor`` is performing a long-running operation.
+    ///     Place the call inside a `Task` if you don't want to wait for this.
+    @MainActor
+    public func deleteSessionRestorationInfo(for id: BulkExportSessionIdentifier) async throws {
         if let session = sessions.first(where: { $0.sessionId == id }) {
-            session._terminate()
+            await session._terminate()
         }
         let fakeKey = LocalStorageKey<Never>(Self.localStorageKey(forSessionId: id))
         try localStorage.delete(fakeKey)
