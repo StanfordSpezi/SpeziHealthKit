@@ -19,9 +19,8 @@ import SpeziLocalStorage
 final class BulkExportSessionImpl<Processor: BatchProcessor>: Sendable, BulkExportSession {
     typealias Processor = Processor
     
-    private enum PendingStateChangeRequest {
-        case pause(_ completionHandner: () -> Void)
-        case terminate(_ completionHandner: () -> Void)
+    private enum StateChangeRequest {
+        case paused, terminated
     }
     
     let sessionId: BulkExportSessionIdentifier
@@ -30,7 +29,7 @@ final class BulkExportSessionImpl<Processor: BatchProcessor>: Sendable, BulkExpo
     @ObservationIgnored private let batchProcessor: Processor
     @ObservationIgnored private let localStorage: LocalStorage
     @ObservationIgnored private let localStorageKey: LocalStorageKey<ExportSessionDescriptor>
-    @ObservationIgnored @MainActor private var pendingStateChangeRequest: PendingStateChangeRequest?
+    @ObservationIgnored @MainActor private var pendingStateChangeRequest: StateChangeRequest?
     
     @MainActor private var descriptor: ExportSessionDescriptor {
         didSet {
@@ -144,7 +143,7 @@ extension BulkExportSessionImpl {
             throw .alreadyRunning
         }
         state = .running
-        let (stream, continuation) = AsyncStream.makeStream(of: Processor.Output.self)
+        let (batchResults, batchResultsContinuation) = AsyncStream.makeStream(of: Processor.Output.self)
         if progress == nil {
             progress = .discreteProgress(totalUnitCount: Int64(numTotalBatches))
             updateProgress()
@@ -178,12 +177,10 @@ extension BulkExportSessionImpl {
                         switch self.pendingStateChangeRequest {
                         case nil:
                             break
-                        case .pause((let completionHandler)):
+                        case .paused:
                             self.state = .paused
-                            completionHandler()
-                        case .terminate(let completionHandler):
+                        case .terminated:
                             self.state = .terminated
-                            completionHandler()
                         }
                         self.pendingStateChangeRequest = nil
                     }
@@ -229,7 +226,7 @@ extension BulkExportSessionImpl {
                         // SAFETY: this is in fact unreachable: the `queryAndProcess` call above has a typed throw, but the compiler doesn't seem to understand this.
                         fatalError("unreachable")
                     }
-                    continuation.yield(result)
+                    batchResultsContinuation.yield(result)
                     await popBatch(withResult: .success(()))
                 }
             }
@@ -241,49 +238,48 @@ extension BulkExportSessionImpl {
                     // it reached its end normally and we simply want to complete it.
                     self.state = .completed
                 }
-                continuation.finish()
+                batchResultsContinuation.finish()
             }
         }
-        return stream
+        return batchResults
     }
     
     
     @MainActor
     func pause() async {
-        switch (state, pendingStateChangeRequest) {
-        case (.paused, _), (.completed, _), (.terminated, _):
+        guard let task else {
             return
-        case (.running, nil):
-            // the session is running, and there is no pending request to change its state
-            // --> pause it
-            await withCheckedContinuation { continuation in
-                pendingStateChangeRequest = .pause {
-                    continuation.resume()
-                }
-                task?.cancel()
-            }
-        case (.running, .pause):
-            // we already have a pending pause request
-            // --> nothing to be done
+        }
+        switch state {
+        case .paused, .completed, .terminated:
             return
-        case (.running, .terminate):
-            // we have a pending termination request, which takes precedence over the pause request
-            // --> nothing to be done
-            return
+        case .running:
+            pendingStateChangeRequest = .paused
+            task.cancel()
+            _ = await task.result
         }
     }
     
     
     @MainActor
     func _terminate() async { // swiftlint:disable:this identifier_name
-        await withCheckedContinuation { continuation in
-            pendingStateChangeRequest = .terminate {
-                continuation.resume()
-            }
-            state = .terminated
-            task?.cancel()
+        defer {
+            bulkExporter.remove(self)
         }
-        bulkExporter.remove(self)
+        guard let task else {
+            state = .terminated
+            return
+        }
+        switch state {
+        case .terminated, .completed:
+            return
+        case .paused:
+            state = .terminated
+        case .running:
+            pendingStateChangeRequest = .terminated
+            task.cancel()
+            _ = await task.result
+        }
     }
 }
 
