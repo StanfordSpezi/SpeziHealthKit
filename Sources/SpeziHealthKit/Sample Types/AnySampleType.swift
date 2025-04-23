@@ -136,6 +136,10 @@ extension HKObjectType {
             SampleType<HKCategorySample>(.init(rawValue: self.identifier))
         case is HKWorkoutType:
             SampleType.workout
+        case is HKElectrocardiogramType:
+            SampleType.electrocardiogram
+        case is HKAudiogramSampleType
+            SampleType.audiogram
         case is HKCharacteristicType, is HKDocumentType, is HKActivitySummaryType, is HKSeriesType:
             nil
         default:
