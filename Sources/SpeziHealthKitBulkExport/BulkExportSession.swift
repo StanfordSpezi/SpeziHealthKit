@@ -53,8 +53,8 @@ public enum StartSessionError: Error {
 /// - ``currentBatch``
 /// - ``progress``
 /// ### Instance Methods
-/// - ``start(retryFailedBatches:)-8jsxv``
-/// - ``start(retryFailedBatches:)-571v3``
+/// - ``start(retryFailedBatches:)-23rws``
+/// - ``start(retryFailedBatches:)-9dmk0``
 /// - ``pause()``
 /// ### Other
 /// - ``SpeziHealthKitBulkExport/==(_:_:)``
@@ -97,10 +97,18 @@ public protocol BulkExportSession<Processor>: AnyObject, Hashable, Sendable, Obs
     ///
     /// This operation won't necessarily cause the session to get paused immediately.
     /// The session will complete its current block of work, and will only see the `pause()` call before starting the next work block.
-    @MainActor func pause()
+    ///
+    /// - Note: This is an asyncronous operation. The call will return once the pause request has been processed,
+    ///     which may take a little bit, e.g. if a ``BatchProcessor`` is performing a long-running operation.
+    ///     Place the call inside a `Task` if you don't want to wait for this.
+    @MainActor func pause() async
     
     /// Irrevocably terminates the session and detaches it from the ``BulkHealthExporter``.
-    @MainActor func _terminate() // swiftlint:disable:this identifier_name
+    ///
+    /// - Note: This is an asyncronous operation. The call will return once the termination request has been processed,
+    ///     which may take a little bit, e.g. if a ``BatchProcessor`` is performing a long-running operation.
+    ///     Place the call inside a `Task` if you don't want to wait for this.
+    @MainActor func _terminate() async // swiftlint:disable:this identifier_name
 }
 
 

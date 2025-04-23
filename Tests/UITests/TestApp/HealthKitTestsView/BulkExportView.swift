@@ -112,7 +112,7 @@ struct BulkExportView: View {
             precondition(session1 == session2)
         }
         AsyncButton("Reset ExportSession", role: .destructive, state: $viewState) {
-            try bulkExporter.deleteSessionRestorationInfo(for: sessionId)
+            try await bulkExporter.deleteSessionRestorationInfo(for: sessionId)
         }
     }
     
@@ -142,8 +142,8 @@ struct BulkExportView: View {
                     try imp(session)
                 }
             case .running:
-                Button("Pause") {
-                    session.pause()
+                AsyncButton("Pause", state: $viewState) {
+                    await session.pause()
                 }
             case .terminated:
                 EmptyView()

@@ -19,9 +19,8 @@ import SpeziLocalStorage
 final class BulkExportSessionImpl<Processor: BatchProcessor>: Sendable, BulkExportSession {
     typealias Processor = Processor
     
-    private enum PendingStateChangeRequest {
-        case pause
-        case terminate
+    private enum StateChangeRequest {
+        case paused, terminated
     }
     
     let sessionId: BulkExportSessionIdentifier
@@ -30,19 +29,14 @@ final class BulkExportSessionImpl<Processor: BatchProcessor>: Sendable, BulkExpo
     @ObservationIgnored private let batchProcessor: Processor
     @ObservationIgnored private let localStorage: LocalStorage
     @ObservationIgnored private let localStorageKey: LocalStorageKey<ExportSessionDescriptor>
-    @ObservationIgnored @MainActor private var pendingStateChangeRequest: PendingStateChangeRequest?
+    @ObservationIgnored @MainActor private var pendingStateChangeRequest: StateChangeRequest?
     
     @MainActor private var descriptor: ExportSessionDescriptor {
         didSet {
             if state != .terminated {
                 try? localStorage.store(descriptor, for: localStorageKey)
             }
-            if let progress {
-                progress.totalUnitCount = Int64(numTotalBatches)
-                progress.completedUnitCount = Int64(completedBatches.count)
-                let desc: LocalizedStringResource = "Completed \(completedBatches.count) of \(numTotalBatches) (\(failedBatches.count) failed)"
-                progress.localizedDescription = String(localized: desc)
-            }
+            updateProgress()
         }
     }
     @ObservationIgnored @MainActor private var task: Task<Void, Never>?
@@ -121,6 +115,18 @@ final class BulkExportSessionImpl<Processor: BatchProcessor>: Sendable, BulkExpo
 
 extension BulkExportSessionImpl {
     @MainActor
+    private func updateProgress() {
+        guard let progress else {
+            return
+        }
+        progress.totalUnitCount = Int64(numTotalBatches)
+        progress.completedUnitCount = Int64(completedBatches.count)
+        progress.localizedDescription = String(
+            localized: "Completed \(completedBatches.count) of \(numTotalBatches) (\(failedBatches.count) failed)"
+        )
+    }
+    
+    @MainActor
     func start(retryFailedBatches: Bool = false) throws(StartSessionError) -> AsyncStream<Processor.Output> {
         // swiftlint:disable:previous function_body_length cyclomatic_complexity
         switch state {
@@ -137,9 +143,10 @@ extension BulkExportSessionImpl {
             throw .alreadyRunning
         }
         state = .running
-        let (stream, continuation) = AsyncStream.makeStream(of: Processor.Output.self)
+        let (batchResults, batchResultsContinuation) = AsyncStream.makeStream(of: Processor.Output.self)
         if progress == nil {
             progress = .discreteProgress(totalUnitCount: Int64(numTotalBatches))
+            updateProgress()
         }
         task = Task.detached { // swiftlint:disable:this closure_body_length
             if retryFailedBatches {
@@ -168,11 +175,14 @@ extension BulkExportSessionImpl {
                 guard !Task.isCancelled else {
                     await MainActor.run {
                         switch self.pendingStateChangeRequest {
-                        case nil, .pause:
+                        case nil:
+                            break
+                        case .paused:
                             self.state = .paused
-                        case .terminate:
+                        case .terminated:
                             self.state = .terminated
                         }
+                        self.pendingStateChangeRequest = nil
                     }
                     // intentionally not a return (here and everywhere else in the Task),
                     // bc we still want to end up in he block at the bottom, after the task
@@ -216,7 +226,7 @@ extension BulkExportSessionImpl {
                         // SAFETY: this is in fact unreachable: the `queryAndProcess` call above has a typed throw, but the compiler doesn't seem to understand this.
                         fatalError("unreachable")
                     }
-                    continuation.yield(result)
+                    batchResultsContinuation.yield(result)
                     await popBatch(withResult: .success(()))
                 }
             }
@@ -228,41 +238,48 @@ extension BulkExportSessionImpl {
                     // it reached its end normally and we simply want to complete it.
                     self.state = .completed
                 }
-                continuation.finish()
+                batchResultsContinuation.finish()
             }
         }
-        return stream
+        return batchResults
     }
     
     
     @MainActor
-    func pause() {
-        switch (state, pendingStateChangeRequest) {
-        case (.paused, _), (.completed, _), (.terminated, _):
+    func pause() async {
+        guard let task else {
             return
-        case (.running, nil):
-            // the session is running, and there is no pending request to change its state
-            // --> pause it
-            pendingStateChangeRequest = .pause
-            task?.cancel()
-        case (.running, .pause):
-            // we already have a pending pause request
-            // --> nothing to be done
+        }
+        switch state {
+        case .paused, .completed, .terminated:
             return
-        case (.running, .terminate):
-            // we have a pending termination request, which takes precedence over the pause request
-            // --> nothing to be done
-            return
+        case .running:
+            pendingStateChangeRequest = .paused
+            task.cancel()
+            _ = await task.result
         }
     }
     
     
     @MainActor
-    func _terminate() { // swiftlint:disable:this identifier_name
-        pendingStateChangeRequest = .terminate
-        state = .terminated
-        task?.cancel()
-        bulkExporter.remove(self)
+    func _terminate() async { // swiftlint:disable:this identifier_name
+        defer {
+            bulkExporter.remove(self)
+        }
+        guard let task else {
+            state = .terminated
+            return
+        }
+        switch state {
+        case .terminated, .completed:
+            return
+        case .paused:
+            state = .terminated
+        case .running:
+            pendingStateChangeRequest = .terminated
+            task.cancel()
+            _ = await task.result
+        }
     }
 }
 
