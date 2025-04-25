@@ -257,7 +257,7 @@ quantity_types = [
     SampleType.quantity_type(
         identifier='vo2Max',
         display_title='VO₂ max',
-        display_unit='.literUnit(with: .milli) / (.gramUnit(with: .kilo) / .minute())',
+        display_unit='.literUnit(with: .milli) / (.gramUnit(with: .kilo) * .minute())',
         doc='A quantity sample that measures the maximal oxygen consumption during exercise.'
     ),
     # Body Measurements

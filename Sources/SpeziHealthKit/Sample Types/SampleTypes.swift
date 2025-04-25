@@ -189,7 +189,7 @@ extension SampleType where Sample == HKQuantitySample {
         .quantity(
             .vo2Max,
             displayTitle: "VO₂ max",
-            displayUnit: .literUnit(with: .milli) / (.gramUnit(with: .kilo) / .minute())
+            displayUnit: .literUnit(with: .milli) / (.gramUnit(with: .kilo) * .minute())
         )
     }
     /// A quantity sample type that measures the user’s height.
