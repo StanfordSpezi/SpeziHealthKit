@@ -15,8 +15,9 @@ import SpeziFoundation
 ///
 /// ## Topics
 /// ### Initializers
-/// - ``init(_:)``
-/// - ``init(_:)``
+/// - ``init(_:)-(ClosedRange<Date>)``
+/// - ``init(_:)-(Range<Date>)``
+/// - ``init(_:)-(PartialRangeFrom<Date>)``
 /// ### Instance Properties
 /// - ``range``
 /// - ``duration``
