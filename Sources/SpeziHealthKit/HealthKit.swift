@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+// swiftlint:disable file_length
+
 import HealthKit
 import OSLog
 import Spezi
@@ -33,6 +35,7 @@ import SwiftUI
 /// - ``addHealthDataCollector(_:)-1sq79``
 /// - ``addHealthDataCollector(_:)-10bp6``
 /// - ``triggerDataSourceCollection()``
+/// - ``resetSampleCollection(for:)``
 ///
 /// ### Fetching Health Data
 /// - ``query(_:timeRange:limit:sortedBy:predicate:)``
@@ -365,12 +368,37 @@ extension HealthKit {
         )
     }
     
-    var sampleCollectorPredicateStartDates: SampleTypeScopedLocalStorage<Date> {
+    /// Keeps track of the first time a ``SampleType`` was registered for collection using ``CollectSample``.
+    var sampleCollectionStartDates: SampleTypeScopedLocalStorage<Date> {
         SampleTypeScopedLocalStorage(
             localStorage: localStorage,
-            storageKeyPrefix: "edu.stanford.Spezi.SpeziHealthKit.sampleCollectorStartDate",
+            storageKeyPrefix: "edu.stanford.Spezi.SpeziHealthKit.sampleCollectionStartDates",
             storageSetting: .unencrypted(excludeFromBackup: false)
         )
+    }
+    
+    /// Resets the internal state associated with a sample type's collection via ``CollectSample``.
+    ///
+    /// Use this function if you want to reset ``CollectSample`` to restart .
+    @MainActor
+    public func resetSampleCollection<Sample>(for sampleType: SampleType<Sample>) async throws {
+        defer {
+            queryAnchors[sampleType] = nil
+            sampleCollectionStartDates[sampleType] = nil
+        }
+        // we need to also stop the sample collector (and in fact we need to do so before resetting the query anchor and the start date),
+        // since otherwise (were we to just reset the anchor and start date), the collection would continue to run and the next
+        // query update would end up restoring the just-reset anchor.
+        for (idx, collector) in registeredDataCollectors.enumerated().reversed() {
+            guard let collector = collector as? HealthKitSampleCollector<Sample>,
+                  collector.source == .collectSample,
+                  collector.typeErasedSampleType == sampleType else {
+                continue
+            }
+            await collector.stopDataCollection()
+            registeredDataCollectors.remove(at: idx)
+            return
+        }
     }
     
     /// Adds a new ``CollectSample`` definition to the module.

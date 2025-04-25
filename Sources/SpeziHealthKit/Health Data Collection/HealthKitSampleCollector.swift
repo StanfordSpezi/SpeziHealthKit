@@ -13,16 +13,29 @@ import SwiftUI
 
 
 final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDataCollector {
+    /// How this ``HealthKitSampleCollector`` was created, i.e. what it was created for.
+    ///
+    /// The reason why this type exists is that in the case of the ``CollectSample`` API specifically,
+    /// we want to offer the ability to reset the underlying anchor and start date, which requires us to have the ability to stop a collector.
+    /// Should SpeziHealthKit, at some point in the future, start registering additional sample collectors, we'd end up accidentally disabling those as well
+    /// when we really just want to disable the ``CollectSample``-associated ones.
+    enum Source {
+        /// This instance of the ``HealthKitSampleCollector`` was created by a ``CollectSample`` instance.
+        case collectSample
+    }
+    
     private enum QueryVariant {
         case anchorQuery(Task<Void, any Error>)
         case backgroundDelivery(HKHealthStore.BackgroundObserverQueryInvalidator)
     }
     
+    let source: Source
     // This needs to be unowned since the HealthKit module will establish a strong reference to the data source.
     private unowned let healthKit: HealthKit
     private let standard: any HealthKitConstraint
     
     let sampleType: SampleType<Sample>
+    private let timeRange: HealthKitQueryTimeRange
     private let predicate: NSPredicate?
     let deliverySetting: HealthDataCollectorDeliverySetting
     @MainActor private(set) var isActive = false
@@ -37,43 +50,21 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
     
 
     required init(
+        source: Source,
         healthKit: HealthKit,
         standard: any HealthKitConstraint,
         sampleType: SampleType<Sample>,
-        predicate: NSPredicate? = nil, // swiftlint:disable:this function_default_parameter_at_end
+        timeRange: HealthKitQueryTimeRange,
+        predicate: NSPredicate?,
         deliverySetting: HealthDataCollectorDeliverySetting
     ) {
+        self.source = source
         self.healthKit = healthKit
         self.standard = standard
         self.sampleType = sampleType
         self.deliverySetting = deliverySetting
-
-        if let predicate {
-            self.predicate = predicate
-        } else {
-            self.predicate = HKQuery.predicateForSamples(
-                withStart: Self.loadDefaultQueryDate(for: sampleType, in: healthKit),
-                end: nil,
-                options: .strictEndDate
-            )
-        }
-    }
-    
-    
-    private static func loadDefaultQueryDate(for sampleType: SampleType<Sample>, in healthKit: HealthKit) -> Date {
-        if let date = healthKit.sampleCollectorPredicateStartDates[sampleType] {
-            return date
-        } else {
-            // We start date collection at the previous full minute mark to make the
-            // data collection deterministic to manually entered data in HealthKit.
-            let cal = Calendar.current
-            var components = cal.dateComponents(in: .current, from: .now)
-            components.setValue(0, for: .second)
-            components.setValue(0, for: .nanosecond)
-            let defaultQueryDate = cal.date(from: components) ?? .now
-            healthKit.sampleCollectorPredicateStartDates[sampleType] = defaultQueryDate
-            return defaultQueryDate
-        }
+        self.timeRange = timeRange.adjustedToWholeMinute()
+        self.predicate = predicate
     }
     
 
@@ -152,7 +143,7 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
         nonisolated(unsafe) let predicate = self.predicate
         let (added, deleted) = try await healthKit.query(
             sampleType,
-            timeRange: .ever,
+            timeRange: timeRange,
             anchor: &anchor,
             predicate: predicate
         )
@@ -163,8 +154,11 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
     
     @MainActor
     private func anchoredContinuousObjectQuery() async throws {
+        let samplePredicate = sampleType._makeSamplePredicate(
+            filter: NSCompoundPredicate(andPredicateWithSubpredicates: [timeRange.predicate, predicate].compactMap(\.self))
+        )
         let queryDescriptor = HKAnchoredObjectQueryDescriptor(
-            predicates: [sampleType._makeSamplePredicate(filter: predicate)],
+            predicates: [samplePredicate],
             anchor: anchor.hkAnchor
         )
         let updateQueue = queryDescriptor.results(for: healthStore)
@@ -189,5 +183,30 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
         if !added.isEmpty {
             await standard.handleNewSamples(added, ofType: sampleType)
         }
+    }
+}
+
+
+extension HealthKitQueryTimeRange {
+    /// Returns a new ``HealthKitQueryTimeRange``, with all components from the second down set to 0, and the minute rounded away from the current date.
+    ///
+    /// The purpose here is that we want to start the data collection at the previous full minute mark,
+    /// to make it deterministic to manually entered data in HealthKit.
+    func adjustedToWholeMinute() -> Self {
+        let cal = Calendar(identifier: .gregorian)
+        func imp(_ date: Date) -> Date {
+            var components = cal.dateComponents(in: .current, from: date)
+            components.second = 0
+            components.nanosecond = 0
+            if date > .now {
+                components.minute = (components.minute ?? 0) + 1
+            }
+            if let date = cal.date(from: components) {
+                return date
+            } else {
+                preconditionFailure("Unable to compute date")
+            }
+        }
+        return Self(imp(range.lowerBound)...imp(range.upperBound))
     }
 }

@@ -21,68 +21,78 @@ import Spezi
 /// Sample collection optionally can be configured to continue in the background, i.e. even when the app is closed.
 /// This is turned off by default, and can be enabled using the `continueInBackground` parameter.
 ///
+/// Your app can optionally specify a ``CollectSample/TimeRange``, to control how far back the sample collection should go.
+/// By default, ``CollectSample`` will use an open-ended time range starting at the point in time ``CollectSample`` was first registered for this specific sample type.
+///
 /// Your app can specify an `NSPredicate` to filter which samples should be collected.
-/// For example, you can use a predicate to only collect the data collected at a time within the given start and end date.
-/// Below is an example to create a `NSPredicate` restricting the data collection to only the previous month.
-/// ```swift
-/// private var predicateOneMonth: NSPredicate {
-///     // Define the start and end time for the predicate.
-///     // In this example, we want to collect the samples in the previous month.
-///     let calendar = Calendar(identifier: .gregorian)
-///     let today = calendar.startOfDay(for: Date())
-///     // We want the end date to be tomorrow so that we can collect all the samples today.
-///     guard let endDate = calendar.date(byAdding: .day, value: 1, to: today) else {
-///         fatalError("*** Unable to calculate the end time ***")
-///     }
-///     // Define the start date to one month before.
-///     guard let startDate = calendar.date(byAdding: .month, value: -1, to: today) else {
-///         fatalError("*** Unable to calculate the start time ***")
-///     }
-///     // Initialize the NSPredicate with our start and end dates.
-///     return HKQuery.predicateForSamples(withStart: startDate, end: endDate)
-/// }
-/// ```
-///
-/// Then, you just need to configure `predicate` with the  `predicateOneMonth` you defined as above during your initialization of ``CollectSample`` to only collect data samples in the previous month.
-///
-/// ```swift
-/// CollectSample(.stepCount, predicate: predicateOneMonth)
-/// ```
+/// For example, you could use this to limit your app's collection to only those samples whose values fall into a certain range,
+/// or only those with a specific metadata key present.
 public struct CollectSample<Sample: _HKSampleWithSampleType>: HealthKitConfigurationComponent {
+    /// The time range for which new and deleted HealthKit samples should be collected.
+    public enum TimeRange {
+        /// Sample collection should cover all new samples, i.e., at the point in time the ``CollectSample`` instance is first registered with the ``HealthKit-swift.class`` module.
+        ///
+        /// The ``HealthKit-swift.class`` module maintains an internal record keeping track of the first time each ``SampleType`` was registered for collection using the ``CollectSample`` API.
+        /// As a result, all subsequent app launches will be notified about any sample changes since the last launch, and so on.
+        case newSamples
+        /// Sample collection should start at the specified `Date`.
+        case startingAt(Date)
+    }
     private let sampleType: SampleType<Sample>
     private let deliverySetting: HealthDataCollectorDeliverySetting
+    private let timeRange: TimeRange
     private let predicate: NSPredicate?
     
     public var dataAccessRequirements: HealthKit.DataAccessRequirements {
         .init(read: [sampleType])
     }
     
-    
     /// Creates a `CollectSample` instance that collects health samples and delivers them to the app's standard.
     /// - Parameters:
     ///   - sampleType: The ``SampleType`` that should be collected
     ///   - start: How the sample collection should be started.
     ///   - continueInBackground: Whether the sample collection should continue in the background, i.e., even when the app is no longer running.
+    ///   - timeRange: The time range for which samples should be collected. Defaults to a range collecting all new samples. Make sure to use an open-ended range here.
     ///   - predicate: A custom predicate that should be passed to the HealthKit query.
-    ///                The default predicate collects all samples that have been collected from the first time that the user
-    ///                provided the application authorization to collect the samples.
+    ///                This predicate should **not** be used for time-based filtering; use the `timeRange` parameter for that.
     public init(
         _ sampleType: SampleType<Sample>,
         start: HealthDataCollectorDeliverySetting.Start = .automatic,
         continueInBackground: Bool = false,
+        timeRange: TimeRange = .newSamples,
         predicate: NSPredicate? = nil
     ) {
         self.sampleType = sampleType
         self.deliverySetting = .init(startSetting: start, continueInBackground: continueInBackground)
+        self.timeRange = timeRange
         self.predicate = predicate
     }
     
-    
     public func configure(for healthKit: HealthKit, on standard: any HealthKitConstraint) async {
+        let timeRange: HealthKitQueryTimeRange = switch timeRange {
+        case .newSamples:
+            if let startDate = healthKit.sampleCollectionStartDates[sampleType] {
+                .startingAt(startDate)
+            } else {
+                { () -> HealthKitQueryTimeRange in
+                    let cal = Calendar.current
+                    var components = cal.dateComponents(in: .current, from: .now)
+                    components.setValue(0, for: .second)
+                    components.setValue(0, for: .nanosecond)
+                    let defaultQueryDate = cal.date(from: components) ?? .now
+                    healthKit.sampleCollectionStartDates[sampleType] = defaultQueryDate
+                    return .init(defaultQueryDate...)
+                }()
+            }
+        case .startingAt(let date):
+            .init(date...)
+        }
         let collector = HealthKitSampleCollector(
+            source: .collectSample,
             healthKit: healthKit,
             standard: standard,
             sampleType: sampleType,
+            timeRange: timeRange,
             predicate: predicate,
             deliverySetting: deliverySetting
         )

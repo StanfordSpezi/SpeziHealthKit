@@ -22,6 +22,7 @@ import SwiftUI
 /// which will exist for the entire lifetime of the application.
 public protocol HealthDataCollector: AnyObject {
     associatedtype Sample: _HKSampleWithSampleType
+    
     /// The data collector's sample type
     var sampleType: SampleType<Sample> { get }
     

@@ -12,6 +12,28 @@ import SpeziFoundation
 
 
 /// The time range for which data should be fetched from the health store.
+///
+/// ## Topics
+/// ### Initializers
+/// - ``init(_:)``
+/// - ``init(_:)``
+/// ### Instance Properties
+/// - ``range``
+/// - ``duration``
+/// - ``predicate``
+/// ### Creating Time Ranges
+/// - ``startingAt(_:)``
+/// -  ``currentHour``
+/// -  ``today``
+/// -  ``currentWeek``
+/// -  ``currentMonth``
+/// -  ``currentYear``
+/// - ``ever``
+/// - ``last(hours:)``
+/// - ``last(days:)``
+/// - ``last(weeks:)``
+/// - ``last(months:)``
+/// - ``last(years:)``
 public struct HealthKitQueryTimeRange: Sendable {
     public let range: ClosedRange<Date>
     
@@ -24,12 +46,29 @@ public struct HealthKitQueryTimeRange: Sendable {
     }
     
     public init(_ range: Range<Date>) {
-        self.init(range.lowerBound...range.upperBound.addingTimeInterval(-1))
+        if range.upperBound == .distantFuture {
+            // if the input range extends all the way to `Date.distantFuture`, we want to keep it that way,
+            // since this is checked for in some other places, and treated as an open-ended time range.
+            self.init(range.lowerBound...range.upperBound)
+        } else {
+            self.init(range.lowerBound...range.upperBound.addingTimeInterval(-1))
+        }
+    }
+    
+    public init(_ range: PartialRangeFrom<Date>) {
+        self.init(range.lowerBound...(.distantFuture))
     }
 }
 
 
 extension HealthKitQueryTimeRange {
+    /// `true` iff the range does not have an end date.
+    ///
+    /// The range is interpreted as not having an end date if its upper bound is equal to `Date.distantFuture`.
+    public var isOpenEnded: Bool {
+        range.upperBound == .distantFuture
+    }
+    
     /// An `NSPredicate` that matches all samples which fall into the time range.
     ///
     /// - Note: A `nil` value means that no predicate is needed. This would be equivalent to a predicate that always returns `true`.
@@ -38,8 +77,8 @@ extension HealthKitQueryTimeRange {
             nil
         } else {
             HKQuery.predicateForSamples(
-                withStart: range.lowerBound,
-                end: range.upperBound,
+                withStart: range.lowerBound == .distantPast ? nil : range.lowerBound,
+                end: range.upperBound == .distantFuture ? nil : range.upperBound,
                 options: [.strictStartDate, .strictEndDate]
             )
         }
@@ -61,6 +100,14 @@ extension HealthKitQueryTimeRange: Hashable {
 extension HealthKitQueryTimeRange: Comparable {
     public static func < (lhs: Self, rhs: Self) -> Bool {
         lhs.duration < rhs.duration
+    }
+}
+
+
+extension HealthKitQueryTimeRange {
+    /// An open-ended time range which starts at a specified point in time
+    public static func startingAt(_ date: Date) -> Self {
+        .init(date...)
     }
 }
 
@@ -92,7 +139,7 @@ extension HealthKitQueryTimeRange {
     
     /// The time range encompassing all of time.
     public static var ever: Self {
-        .init(Date.distantPast..<Date.distantFuture)
+        .init(Date.distantPast...Date.distantFuture)
     }
     
     /// The time range encompassing the last `N` hours, starting at the end of the current hour.
