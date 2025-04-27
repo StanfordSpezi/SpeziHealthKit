@@ -58,6 +58,9 @@ struct HealthKitTestsView: View {
                     CharacteristicsView()
                 }
             }
+            NavigationLink("Scored Assessments") {
+                ScoredAssessmentsView()
+            }
             Section("Collected Samples Since App Launch") {
                 ForEach(fakeHealthStore.samples, id: \.self) { element in
                     Text(element.sampleType.identifier)

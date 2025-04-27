@@ -13,7 +13,7 @@ import SpeziHealthKitBulkExport
 
 class TestAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
-        Configuration(standard: HealthKitTestAppStandard()) {
+        Configuration(standard: HealthKitTestAppStandard()) { // swiftlint:disable:this closure_body_length
             HealthKit {
                 CollectSample(
                     .electrocardiogram,
@@ -42,12 +42,14 @@ class TestAppDelegate: SpeziAppDelegate {
                 
                 RequestReadAccess(
                     quantity: [.bloodOxygen],
+                    category: [.sleepAnalysis],
                     characteristic: [.activityMoveMode, .biologicalSex, .bloodType, .dateOfBirth, .fitzpatrickSkinType, .wheelchairUse],
-                    other: [SampleType.workout, SampleType.audiogram]
+                    other: [SampleType.workout, SampleType.audiogram, SampleType.gad7, SampleType.phq9]
                 )
                 
                 RequestWriteAccess(
-                    quantity: [.heartRate, .bloodOxygen, .stepCount, .height, .activeEnergyBurned]
+                    quantity: [.heartRate, .bloodOxygen, .stepCount, .height, .activeEnergyBurned],
+                    other: [SampleType.gad7, SampleType.phq9]
                 )
             }
             
