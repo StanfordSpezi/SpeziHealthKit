@@ -35,17 +35,12 @@ struct HealthKitTestsView: View {
                     await healthKit.triggerDataSourceCollection()
                     try await Task.sleep(until: start + .seconds(2)) // pretend that the data source triggering takes at least 2 seconds.
                 }
-                AsyncButton("Register additional CollectSample instances") {
+                AsyncButton("Register more CollectSample instances") {
                     // we have matching ones for these in the AppDelegate, and we now add the resp reverse, to check the subsumption.
                     await healthKit.addHealthDataCollector(CollectSample(.stairAscentSpeed, continueInBackground: false))
                     await healthKit.addHealthDataCollector(CollectSample(.stairDescentSpeed, continueInBackground: true))
                 }
                 LabeledContent("isFullyAuthorized", value: "\(healthKit.isFullyAuthorized)")
-            }
-            Section {
-                NavigationLink("Bulk Exporter") {
-                    BulkExportView()
-                }
             }
             Section {
                 NavigationLink("Samples Query") {
@@ -57,10 +52,26 @@ struct HealthKitTestsView: View {
                 NavigationLink("Characteristics") {
                     CharacteristicsView()
                 }
+                NavigationLink("Scored Assessments") {
+                    ScoredAssessmentsView()
+                }
+                NavigationLink("Bulk Exporter") {
+                    BulkExportView()
+                }
             }
             Section("Collected Samples Since App Launch") {
-                ForEach(fakeHealthStore.samples, id: \.self) { element in
-                    Text(element.sampleType.identifier)
+                let samplesBySampleType = fakeHealthStore.samples.grouped(by: \.sampleType.identifier)
+                ForEach(samplesBySampleType.sorted(using: KeyPathComparator(\.key)), id: \.key) { (entry: (String, [HKSample])) in
+                    let (sampleTypeIdentifier, samples) = entry
+                    HStack {
+                        Text(sampleTypeIdentifier)
+                            .accessibilityLabel("")
+                        Spacer()
+                        Text(String(samples.count))
+                            .accessibilityLabel("")
+                    }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("\(sampleTypeIdentifier), \(samples.count)" as String)
                 }
             }.accessibilityIdentifier("CollectedSamples")
             if !FakeHealthStore.collectedSamplesOnly {

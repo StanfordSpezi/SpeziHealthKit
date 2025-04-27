@@ -53,10 +53,11 @@ extension HealthKit {
         public init(read: some Sequence<HKObjectType> = [], write: some Sequence<HKSampleType> = []) {
             // For certain sample types, we're not allowed to request direct read/write request;
             // we instead need to map these to their effective underlying sample types.
-            // E.g.: HKCorrelationTypeBloodPressure --> HKQuantityTypeBloodPressure{Systolic,Diastolic}
-            // swiftlint:disable:next discouraged_optional_collection
-            self.read = read.flatMapIntoSet { ($0 as? HKSampleType)?.effectiveSampleTypesForAuthentication as Set<HKObjectType>? ?? [$0] }
-            self.write = write.flatMapIntoSet { $0.effectiveSampleTypesForAuthentication }
+            // E.g.:
+            // - HKCorrelationTypeBloodPressure --> HKQuantityTypeBloodPressure{Systolic,Diastolic}
+            // - HKDataTypeIdentifierHeartbeatSeries implies that we also need to request HKQuantityTypeIdentifierHeartRateVariabilitySDNN
+            self.read = read.flatMapIntoSet { $0.effectiveObjectTypesForAuthentication }
+            self.write = write.flatMapIntoSet { $0.effectiveObjectTypesForAuthentication.compactMap { $0 as? HKSampleType } }
         }
         
         /// Creates a new instance, with the specified read and write sample types.
@@ -83,12 +84,12 @@ extension HealthKit {
 }
 
 
-extension HKSampleType {
-    var effectiveSampleTypesForAuthentication: Set<HKSampleType> {
+extension HKObjectType {
+    var effectiveObjectTypesForAuthentication: Set<HKObjectType> {
         if let sampleType = self.sampleType {
             sampleType.effectiveSampleTypesForAuthentication.mapIntoSet { $0.hkSampleType }
         } else {
-            []
+            [self]
         }
     }
 }

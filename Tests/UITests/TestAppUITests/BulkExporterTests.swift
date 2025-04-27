@@ -7,29 +7,10 @@
 //
 
 import Foundation
-import HealthKit
-import SpeziHealthKit
 import XCTest
-import XCTestExtensions
-import XCTHealthKit
 
 
-final class BulkExporterTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
-        continueAfterFailure = false
-    }
-    
-    override func tearDown() {
-        super.tearDown()
-        MainActor.assumeIsolated {
-            // After each test, we want the app to get fully reset.
-            let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-            app.terminate()
-            app.delete(app: "TestApp")
-        }
-    }
-    
+final class BulkExporterTests: SpeziHealthKitTests {
     @MainActor
     func testBulkExport() throws {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])

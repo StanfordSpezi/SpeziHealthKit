@@ -167,29 +167,3 @@ extension SampleType {
         .init(HKClinicalType(identifier), displayTitle: displayTitle, variant: .other)
     }
 }
-
-
-// MARK: Other sample types
-
-extension SampleType where Sample == HKElectrocardiogram {
-    /// The electrocardiogram sample type
-    @inlinable public static var electrocardiogram: SampleType<HKElectrocardiogram> {
-        .init(HKSampleType.electrocardiogramType(), displayTitle: "ECG", variant: .other)
-    }
-}
-
-
-extension SampleType where Sample == HKAudiogramSample {
-    /// The audiogram sample type
-    @inlinable public static var audiogram: SampleType<HKAudiogramSample> {
-        .init(HKSampleType.audiogramSampleType(), displayTitle: "Audiogram", variant: .other)
-    }
-}
-
-
-extension SampleType where Sample == HKWorkout {
-    /// The workout sample type
-    @inlinable public static var workout: SampleType<HKWorkout> {
-        .init(HKSampleType.workoutType(), displayTitle: "Workout", variant: .other)
-    }
-}

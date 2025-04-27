@@ -101,4 +101,73 @@ extension HKClinicalRecord: _HKSampleWithSampleType {
     }
 }
 
+extension HKVisionPrescription: _HKSampleWithSampleType {
+    public typealias _SampleType = HKPrescriptionType
+    
+    public static func _makeSamplePredicateInternal(
+        type sampleType: HKPrescriptionType,
+        filter filterPredicate: NSPredicate?
+    ) -> HKSamplePredicate<HKVisionPrescription> {
+        .visionPrescription(filterPredicate)
+    }
+}
+
+@available(iOS 18.0, watchOS 11.0, macOS 15.0, visionOS 2.0, *)
+extension HKStateOfMind: _HKSampleWithSampleType {
+    public typealias _SampleType = HKStateOfMindType
+    
+    public static func _makeSamplePredicateInternal(
+        type sampleType: HKStateOfMindType,
+        filter filterPredicate: NSPredicate?
+    ) -> HKSamplePredicate<HKStateOfMind> {
+        .stateOfMind(filterPredicate)
+    }
+}
+
+extension HKHeartbeatSeriesSample: _HKSampleWithSampleType {
+    public typealias _SampleType = HKSeriesType
+    
+    public static func _makeSamplePredicateInternal(
+        type sampleType: HKSeriesType,
+        filter filterPredicate: NSPredicate?
+    ) -> HKSamplePredicate<HKHeartbeatSeriesSample> {
+        .heartbeatSeries(filterPredicate)
+    }
+}
+
+extension HKWorkoutRoute: _HKSampleWithSampleType {
+    public typealias _SampleType = HKSeriesType
+    
+    public static func _makeSamplePredicateInternal(
+        type sampleType: HKSeriesType,
+        filter filterPredicate: NSPredicate?
+    ) -> HKSamplePredicate<HKWorkoutRoute> {
+        .workoutRoute(filterPredicate)
+    }
+}
+
+@available(iOS 18.0, watchOS 11.0, macOS 15.0, visionOS 2.0, *)
+extension HKGAD7Assessment: _HKSampleWithSampleType {
+    public typealias _SampleType = HKScoredAssessmentType
+    
+    public static func _makeSamplePredicateInternal(
+        type sampleType: HKScoredAssessmentType,
+        filter filterPredicate: NSPredicate?
+    ) -> HKSamplePredicate<HKGAD7Assessment> {
+        .gad7Assessment(filterPredicate)
+    }
+}
+
+@available(iOS 18.0, watchOS 11.0, macOS 15.0, visionOS 2.0, *)
+extension HKPHQ9Assessment: _HKSampleWithSampleType {
+    public typealias _SampleType = HKScoredAssessmentType
+    
+    public static func _makeSamplePredicateInternal(
+        type sampleType: HKScoredAssessmentType,
+        filter filterPredicate: NSPredicate?
+    ) -> HKSamplePredicate<HKPHQ9Assessment> {
+        .phq9Assessment(filterPredicate)
+    }
+}
+
 // swiftlint:enable type_name

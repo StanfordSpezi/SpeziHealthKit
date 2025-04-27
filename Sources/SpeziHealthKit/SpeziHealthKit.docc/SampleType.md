@@ -45,6 +45,12 @@ For example, the sample type representing heart rate samples (``SampleType/heart
 - ``SampleType/audiogram``
 - ``SampleType/electrocardiogram``
 - ``SampleType/workout``
+- ``SampleType/visionPrescription``
+- ``SampleType/stateOfMind``
+- ``SampleType/heartbeatSeries``
+- ``SampleType/workoutRoute``
+- ``SampleType/gad7``
+- ``SampleType/phq9``
 
 ### Creating new SampleTypes
 - ``SampleType/quantity(_:displayTitle:displayUnit:expectedValuesRange:)``
