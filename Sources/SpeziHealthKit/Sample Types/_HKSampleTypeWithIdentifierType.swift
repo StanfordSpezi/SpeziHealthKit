@@ -20,6 +20,7 @@ extension HKQuantityTypeIdentifier: _HKSampleTypeIdentifierType {} // swiftlint:
 extension HKCorrelationTypeIdentifier: _HKSampleTypeIdentifierType {} // swiftlint:disable:this file_types_order
 extension HKCategoryTypeIdentifier: _HKSampleTypeIdentifierType {} // swiftlint:disable:this file_types_order
 extension HKClinicalTypeIdentifier: _HKSampleTypeIdentifierType {} // swiftlint:disable:this file_types_order
+extension HKScoredAssessmentTypeIdentifier: _HKSampleTypeIdentifierType {} // swiftlint:disable:this file_types_order
 
 
 /// Associates a `HKSampleType` subclass with its corresponding identifier type.
@@ -42,6 +43,11 @@ extension HKCategoryType: _HKSampleTypeWithIdentifierType {
 
 extension HKClinicalType: _HKSampleTypeWithIdentifierType {
     public typealias _Identifier = HKClinicalTypeIdentifier
+}
+
+@available(iOS 18.0, watchOS 11.0, macOS 15.0, visionOS 2.0, *)
+extension HKScoredAssessmentType: _HKSampleTypeWithIdentifierType {
+    public typealias _Identifier = HKScoredAssessmentTypeIdentifier
 }
 
 // swiftlint:enable type_name

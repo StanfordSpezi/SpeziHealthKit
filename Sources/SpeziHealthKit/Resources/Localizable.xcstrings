@@ -30,6 +30,9 @@
     "Allergy Record" : {
 
     },
+    "Anxiety Risk (GAD-7)" : {
+
+    },
     "Appetite Changes" : {
 
     },
@@ -192,6 +195,9 @@
     "Date of Birth" : {
 
     },
+    "Depression Risk (PHQ-9)" : {
+
+    },
     "Diarrhea" : {
 
     },
@@ -308,6 +314,9 @@
           }
         }
       }
+    },
+    "Heartbeat Series" : {
+
     },
     "Heartburn" : {
 
@@ -576,6 +585,9 @@
     "Stand Hours" : {
 
     },
+    "State of Mind" : {
+
+    },
     "Step Count" : {
       "localizations" : {
         "de" : {
@@ -617,6 +629,9 @@
 
     },
     "Vertical Oscillation" : {
+
+    },
+    "Vision Prescription" : {
 
     },
     "Vital Sign Record" : {
@@ -703,6 +718,9 @@
 
     },
     "Workout Effort Score" : {
+
+    },
+    "Workout Route" : {
 
     },
     "Wrist Temperature" : {

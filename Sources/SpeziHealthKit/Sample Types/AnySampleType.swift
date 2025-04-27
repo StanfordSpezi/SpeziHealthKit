@@ -115,9 +115,14 @@ extension AnySampleType {
     /// instead of requesting read/write access to "blood pressure", apps need to request read/write access to each of the correlation's contained types,
     /// (eg:, in the case of blood pressure, systolic and diastolic blood pressure).
     var effectiveSampleTypesForAuthentication: [any AnySampleType] {
-        if let self = self as? SampleType<HKCorrelation> {
+        switch self {
+        case let self as SampleType<HKCorrelation>:
             Array(self.associatedQuantityTypes)
-        } else {
+        case let self as SampleType<HKHeartbeatSeriesSample>:
+            [self, SampleType.heartRateVariabilitySDNN]
+        case let self as SampleType<HKWorkoutRoute>:
+            [self, SampleType.workout]
+        default:
             [self]
         }
     }
@@ -140,10 +145,29 @@ extension HKObjectType {
             SampleType.electrocardiogram
         case is HKAudiogramSampleType:
             SampleType.audiogram
-        case is HKCharacteristicType, is HKDocumentType, is HKActivitySummaryType, is HKSeriesType:
+        case HKSeriesType.heartbeat():
+            SampleType.heartbeatSeries
+        case HKSeriesType.workoutRoute():
+            SampleType.workoutRoute
+        case HKPrescriptionType.visionPrescriptionType():
+            SampleType.visionPrescription
+        case is HKCharacteristicType, is HKDocumentType, is HKActivitySummaryType:
             nil
         default:
-            nil
+            if #available(iOS 18.0, watchOS 11.0, macOS 15.0, visionOS 2.0, *) {
+                switch self {
+                case is HKStateOfMindType:
+                    SampleType.stateOfMind
+                case HKScoredAssessmentType(.GAD7):
+                    SampleType.gad7
+                case HKScoredAssessmentType(.PHQ9):
+                    SampleType.phq9
+                default:
+                    nil
+                }
+            } else {
+                nil
+            }
         }
     }
 }

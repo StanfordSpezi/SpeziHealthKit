@@ -253,6 +253,7 @@ extension HealthKit {
         guard !objectTypes.isEmpty else {
             return true
         }
+        let objectTypes = objectTypes.flatMapIntoSet { $0.effectiveObjectTypesForAuthentication }
         do {
             // status: whether the user would be presented with an authorization request sheet, were we to request access
             let status = try await healthStore.statusForAuthorizationRequest(toShare: [], read: objectTypes)
