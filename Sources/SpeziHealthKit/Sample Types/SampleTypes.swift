@@ -2291,3 +2291,95 @@ extension HKObjectType {
         return types
     }()
 }
+
+
+// MARK: Other Sample Types
+
+extension SampleType where Sample == HKElectrocardiogram {
+    /// The electrocardiogram sample type
+    @inlinable public static var electrocardiogram: SampleType<HKElectrocardiogram> {
+        .init(HKSampleType.electrocardiogramType(), displayTitle: "ECG", variant: .other)
+    }
+}
+
+extension SampleType where Sample == HKAudiogramSample {
+    /// The audiogram sample type
+    @inlinable public static var audiogram: SampleType<HKAudiogramSample> {
+        .init(HKSampleType.audiogramSampleType(), displayTitle: "Audiogram", variant: .other)
+    }
+}
+
+extension SampleType where Sample == HKWorkout {
+    /// The workout sample type
+    @inlinable public static var workout: SampleType<HKWorkout> {
+        .init(HKSampleType.workoutType(), displayTitle: "Workout", variant: .other)
+    }
+}
+
+extension SampleType where Sample == HKVisionPrescription {
+    /// The vision prescription sample type
+    @inlinable public static var visionPrescription: SampleType<HKVisionPrescription> {
+        .init(HKSampleType.visionPrescriptionType(), displayTitle: "Vision Prescription", variant: .other)
+    }
+}
+
+@available(iOS 18.0, watchOS 11.0, macOS 15.0, visionOS 2.0, *)
+extension SampleType where Sample == HKStateOfMind {
+    /// The state of mind sample type
+    @inlinable public static var stateOfMind: SampleType<HKStateOfMind> {
+        .init(HKSampleType.stateOfMindType(), displayTitle: "State of Mind", variant: .other)
+    }
+}
+
+extension SampleType where Sample == HKHeartbeatSeriesSample {
+    /// The heartbeat series sample type
+    @inlinable public static var heartbeatSeries: SampleType<HKHeartbeatSeriesSample> {
+        .init(HKSeriesType.heartbeat(), displayTitle: "Heartbeat Series", variant: .other)
+    }
+}
+
+extension SampleType where Sample == HKWorkoutRoute {
+    /// The workout route sample type
+    @inlinable public static var workoutRoute: SampleType<HKWorkoutRoute> {
+        .init(HKSeriesType.workoutRoute(), displayTitle: "Workout Route", variant: .other)
+    }
+}
+
+@available(iOS 18.0, watchOS 11.0, macOS 15.0, visionOS 2.0, *)
+extension SampleType where Sample == HKGAD7Assessment {
+    /// The GAD-7 (generalized anxiery disorder 7) score type
+    @inlinable public static var gad7: SampleType<HKGAD7Assessment> {
+        .init(HKScoredAssessmentType(.GAD7), displayTitle: "Anxiety Risk (GAD-7)", variant: .other)
+    }
+}
+
+@available(iOS 18.0, watchOS 11.0, macOS 15.0, visionOS 2.0, *)
+extension SampleType where Sample == HKPHQ9Assessment {
+    /// The PHQ-9 (nine-item Patient Health Questionnaire) score type
+    @inlinable public static var phq9: SampleType<HKPHQ9Assessment> {
+        .init(HKScoredAssessmentType(.PHQ9), displayTitle: "Depression Risk (PHQ-9)", variant: .other)
+    }
+}
+
+
+extension SampleType {
+    /// All currently-known "other" sample types, which are not quantity, correlation, category, or clinical samples.
+    ///
+    /// - Note: `SampleType<T>.otherSampleTypes` will always return the same value, regardless of the concrete sample type chosen for `T`.
+    public static var otherSampleTypes: [any AnySampleType] {
+        var retval: [any AnySampleType] = [
+            SpeziHealthKit.SampleType.electrocardiogram,
+            SpeziHealthKit.SampleType.audiogram,
+            SpeziHealthKit.SampleType.workout,
+            SpeziHealthKit.SampleType.visionPrescription,
+            SpeziHealthKit.SampleType.heartbeatSeries,
+            SpeziHealthKit.SampleType.workoutRoute
+        ]
+        if #available(iOS 18.0, watchOS 11.0, macOS 15.0, visionOS 2.0, *) {
+            retval.append(SpeziHealthKit.SampleType.stateOfMind)
+            retval.append(SpeziHealthKit.SampleType.gad7)
+            retval.append(SpeziHealthKit.SampleType.phq9)
+        }
+        return retval
+    }
+}
