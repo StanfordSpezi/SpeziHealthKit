@@ -73,7 +73,7 @@ final class CollectSampleTests: SpeziHealthKitTests {
             .stepCount: 1
         ])
         
-        app.buttons["Register additional CollectSample instances"].tap()
+        app.buttons["Register more CollectSample instances"].tap()
         sleep(1) // give it some time to handle this.
     }
 }
