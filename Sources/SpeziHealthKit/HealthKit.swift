@@ -379,9 +379,12 @@ extension HealthKit {
     
     /// Resets the internal state associated with a sample type's collection via ``CollectSample``.
     ///
-    /// Use this function if you want to reset ``CollectSample`` to restart .
+    /// Use this function if you want to reset ``CollectSample``, so that the next time a ``CollectSample`` instance is registered with the ``HealthKit-swift.class`` module,
+    /// its behaviour will be as if it were being registered for the first time.
+    ///
+    /// - Note: Calling this function will stop currently-active sample collection for the specified `sampleType`.
     @MainActor
-    public func resetSampleCollection<Sample>(for sampleType: SampleType<Sample>) async throws {
+    public func resetSampleCollection<Sample>(for sampleType: SampleType<Sample>) async {
         defer {
             queryAnchors[sampleType] = nil
             sampleCollectionStartDates[sampleType] = nil
