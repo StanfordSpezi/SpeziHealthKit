@@ -75,6 +75,7 @@ extension SpeziHealthKitTests {
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
+        let expected = Dictionary(uniqueKeysWithValues: expectedNumSamplesBySampleType.map { ($0.hkSampleType.identifier, $1) })
         func imp(try: Int) {
             // swiftlint:disable:next empty_count
             let staticTexts = app.staticTexts.count > 0
@@ -89,11 +90,14 @@ extension SpeziHealthKitTests {
                 imp(try: `try` - 1)
                 return
             }
-            let actual = staticTexts
-                .filter { $0.wholeMatch(of: /HK[a-zA-Z]*/) != nil }
-                .grouped(by: \.self)
-                .mapValues(\.count)
-            let expected = Dictionary(uniqueKeysWithValues: expectedNumSamplesBySampleType.map { ($0.hkSampleType.identifier, $1) })
+            let actual: [String: Int] = Dictionary(uniqueKeysWithValues: staticTexts.compactMap { text in
+                let pattern = /(?<type>HK[a-zA-Z]+), (?<count>[0-9]+)/
+                guard let match = text.wholeMatch(of: pattern),
+                      let count = Int(match.output.count) else {
+                    return nil
+                }
+                return (String(match.output.type), count)
+            })
             if expected != actual, `try` > 1 {
                 // try again
                 sleep(2)

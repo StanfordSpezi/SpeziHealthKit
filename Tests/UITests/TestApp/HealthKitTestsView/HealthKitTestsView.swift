@@ -60,8 +60,18 @@ struct HealthKitTestsView: View {
                 }
             }
             Section("Collected Samples Since App Launch") {
-                ForEach(fakeHealthStore.samples, id: \.self) { element in
-                    Text(element.sampleType.identifier)
+                let samplesBySampleType = fakeHealthStore.samples.grouped(by: \.sampleType.identifier)
+                ForEach(samplesBySampleType.sorted(using: KeyPathComparator(\.key)), id: \.key) { (entry: (String, [HKSample])) in
+                    let (sampleTypeIdentifier, samples) = entry
+                    HStack {
+                        Text(sampleTypeIdentifier)
+                            .accessibilityLabel("")
+                        Spacer()
+                        Text(String(samples.count))
+                            .accessibilityLabel("")
+                    }
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel("\(sampleTypeIdentifier), \(samples.count)" as String)
                 }
             }.accessibilityIdentifier("CollectedSamples")
             if !FakeHealthStore.collectedSamplesOnly {
