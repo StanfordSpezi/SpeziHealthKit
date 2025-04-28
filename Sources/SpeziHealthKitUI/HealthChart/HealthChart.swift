@@ -159,11 +159,17 @@ public struct HealthChart: View {
 // MARK: HealthChart XAxis
 
 extension HealthChart {
-    // Ideally, this would be nested in the `xAxisContent()` function, but the compiler currently doesn't allow this.
-    private struct XAxisMarksConfig {
-        let strideComponent: Calendar.Component
-        let strideCount: Int
-        let valueFormat: Date.FormatStyle
+    /// Configuration for X-axis marks
+    public struct XAxisMarksConfig {
+        public let strideComponent: Calendar.Component
+        public let strideCount: Int
+        public let valueFormat: Date.FormatStyle
+        
+        public init(strideComponent: Calendar.Component, strideCount: Int, valueFormat: Date.FormatStyle) {
+            self.strideComponent = strideComponent
+            self.strideCount = strideCount
+            self.valueFormat = valueFormat
+        }
     }
     
     @AxisContentBuilder
@@ -185,6 +191,28 @@ extension HealthChart {
         }
     }
     
+    /// Generates appropriate X-axis content for the given entries.
+    /// 
+    /// This is a utility function that can be used by other chart implementations.
+    /// 
+    /// - Parameter entries: The chart entries to base the axis configuration on
+    /// - Returns: The configured axis content
+    @AxisContentBuilder
+    public static func xAxisContent(for entries: [any HealthChartEntryProtocol]) -> some AxisContent {
+        if let maxTimeRange = maxTimeRange(for: entries), let config = xAxisMarksConfig(for: maxTimeRange) {
+            AxisMarks(values: .stride(by: config.strideComponent, count: config.strideCount)) { value in
+                if let date = value.as(Date.self) {
+                    AxisValueLabel(format: config.valueFormat)
+                }
+                AxisGridLine()
+                AxisTick()
+            }
+        } else {
+            // the chart is empty (i.e., has no entries), or we weren't able to come up w/ a good config.
+            AxisMarks(values: .automatic)
+        }
+    }
+    
     private func maxTimeRange() -> HealthKitQueryTimeRange? {
         var maxTimeRange: HealthKitQueryTimeRange?
         for entry in entries {
@@ -193,7 +221,35 @@ extension HealthChart {
         return maxTimeRange
     }
     
+    /// Find the maximum time range across all entries
+    public static func maxTimeRange(for entries: [any HealthChartEntryProtocol]) -> HealthKitQueryTimeRange? {
+        var maxTimeRange: HealthKitQueryTimeRange?
+        for entry in entries {
+            maxTimeRange = maxTimeRange.map { max($0, entry.resultsTimeRange) } ?? entry.resultsTimeRange
+        }
+        return maxTimeRange
+    }
+    
     private func xAxisMarksConfig(for maxTimeRange: HealthKitQueryTimeRange) -> XAxisMarksConfig? {
+        let duration = maxTimeRange.duration
+        if duration <= TimeConstants.hour {
+            return .init(strideComponent: .minute, strideCount: 10, valueFormat: .dateTime.minute())
+        } else if duration <= TimeConstants.day / 2 {
+            return .init(strideComponent: .hour, strideCount: 1, valueFormat: .dateTime.hour())
+        } else if duration <= TimeConstants.day {
+            return .init(strideComponent: .hour, strideCount: 3, valueFormat: .dateTime.hour())
+        } else if duration <= TimeConstants.week {
+            return .init(strideComponent: .day, strideCount: 1, valueFormat: .dateTime.month(.abbreviated).day())
+        } else if duration <= TimeConstants.month {
+            return .init(strideComponent: .weekOfMonth, strideCount: 1, valueFormat: .dateTime.day())
+        } else {
+            // we just give up at this point...
+            return nil
+        }
+    }
+    
+    /// Generate appropriate X-axis configuration based on a time range
+    public static func xAxisMarksConfig(for maxTimeRange: HealthKitQueryTimeRange) -> XAxisMarksConfig? {
         let duration = maxTimeRange.duration
         if duration <= TimeConstants.hour {
             return .init(strideComponent: .minute, strideCount: 10, valueFormat: .dateTime.minute())
