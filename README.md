@@ -34,35 +34,7 @@ You need to add the Spezi HealthKit Swift package to
 
 ### Health Data Collection
 
-Before you configure the [`HealthKit`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkit-swift.class)  module, make sure your `Standard` in your Spezi Application conforms to the [`HealthKitConstraint`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkitconstraint) protocol to receive HealthKit data.
-
-> [!TIP]
-> The [`Standard`](https://swiftpackageindex.com/stanfordspezi/spezi/main/documentation/spezi/standard) is a Spezi module in your app that orchestrates data flow by meeting requirements defined by modules. There is an [example](https://github.com/StanfordSpezi/SpeziTemplateApplication/blob/main/TemplateApplication/TemplateApplicationStandard.swift) in the [SpeziTemplateApplication](https://github.com/StanfordSpezi/SpeziTemplateApplication).
-
-The [`HealthKitConstraint/handleNewSamples(_:ofType:)`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkitconstraint/handleNewSamples(_:ofType:)) function is called once for every batch of newly collected HealthKit samples, and the [`HealthKitConstraint/handleDeletedObjects(_:ofType:)`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkitconstraint/handleDeletedObjects(_:ofType:)) function is called once for every batch of deleted HealthKit objects.
-
-```swift
-actor ExampleStandard: Standard, HealthKitConstraint {
-    // Add the newly collected HealthKit samples to your application.
-    func handleNewSamples<Sample>(
-        _ addedSamples: some Collection<Sample>,
-        ofType sampleType: SampleType<Sample>
-    ) async {
-        // ...
-    }
-
-    // Remove the deleted HealthKit objects from your application.
-    func handleDeletedObjects<Sample>(
-        _ deletedObjects: some Collection<HKDeletedObject>,
-        ofType sampleType: SampleType<Sample>
-    ) async {
-        // ...
-    }
-}
-```
-
-
-Then, you can configure the [`HealthKit`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkit-swift.class) module in the configuration section of your `SpeziAppDelegate`.
+You can configure the [`SpeziHealthKit`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkit-swift.class) module to collect HealthKit samples in the configuration section of your `SpeziAppDelegate`.
 
 There are several built-in configurations you can use:
 
@@ -96,6 +68,37 @@ You can also set data collection to be started manually by changing the `start` 
 
 > [!TIP]
 > See [`SampleType`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/sampletype) for a complete list of supported HealthKit sample types.
+
+Once you've configured the [`SpeziHealthKit`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkit-swift.class)  module, the next step is to update the `Standard` in your Spezi Application in order to conform to the [`HealthKitConstraint`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkitconstraint) protocol to receive HealthKit data.
+
+> [!TIP]
+> The [`Standard`](https://swiftpackageindex.com/stanfordspezi/spezi/main/documentation/spezi/standard) is a Spezi module in your app that orchestrates data flow by meeting requirements defined by modules. The [`SpeziHealthKit`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkit-swift.class) module requires the Standard to have two functions that will handle data you collect, which are described below.
+
+The [`HealthKitConstraint/handleNewSamples(_:ofType:)`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkitconstraint/handleNewSamples(_:ofType:)) function is called once for every batch of newly collected HealthKit samples, and the [`HealthKitConstraint/handleDeletedObjects(_:ofType:)`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkitconstraint/handleDeletedObjects(_:ofType:)) function is called once for every batch of deleted HealthKit objects.
+
+Below is an example of the two functions implemented in a `Standard`. In the function body, you can add any logic you wish to handle the HealthKit samples that are collected or deleted.
+
+You may wish to refer to the [example](https://github.com/StanfordSpezi/SpeziTemplateApplication/blob/main/TemplateApplication/TemplateApplicationStandard.swift) in the [SpeziTemplateApplication](https://github.com/StanfordSpezi/SpeziTemplateApplication) which serializes HealthKit samples into FHIR and inserts them into a database.
+
+```swift
+actor ExampleStandard: Standard, HealthKitConstraint {
+    // Add the newly collected HealthKit samples to your application.
+    func handleNewSamples<Sample>(
+        _ addedSamples: some Collection<Sample>,
+        ofType sampleType: SampleType<Sample>
+    ) async {
+        // ...
+    }
+
+    // Remove the deleted HealthKit objects from your application.
+    func handleDeletedObjects<Sample>(
+        _ deletedObjects: some Collection<HKDeletedObject>,
+        ofType sampleType: SampleType<Sample>
+    ) async {
+        // ...
+    }
+}
+```
 
 
 ### Querying Health Data in SwiftUI
