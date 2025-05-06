@@ -35,7 +35,12 @@ You need to add the Spezi HealthKit Swift package to
 ### Health Data Collection
 
 Before you configure the [`HealthKit`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkit-swift.class)  module, make sure your `Standard` in your Spezi Application conforms to the [`HealthKitConstraint`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkitconstraint) protocol to receive HealthKit data.
+
+> [!TIP]
+> The [`Standard`](https://swiftpackageindex.com/stanfordspezi/spezi/main/documentation/spezi/standard) is a Spezi module in your app that orchestrates data flow by meeting requirements defined by modules. There is an [example](https://github.com/StanfordSpezi/SpeziTemplateApplication/blob/main/TemplateApplication/TemplateApplicationStandard.swift) in the [SpeziTemplateApplication](https://github.com/StanfordSpezi/SpeziTemplateApplication).
+
 The [`HealthKitConstraint/handleNewSamples(_:ofType:)`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkitconstraint/handleNewSamples(_:ofType:)) function is called once for every batch of newly collected HealthKit samples, and the [`HealthKitConstraint/handleDeletedObjects(_:ofType:)`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkitconstraint/handleDeletedObjects(_:ofType:)) function is called once for every batch of deleted HealthKit objects.
+
 ```swift
 actor ExampleStandard: Standard, HealthKitConstraint {
     // Add the newly collected HealthKit samples to your application.
@@ -58,7 +63,16 @@ actor ExampleStandard: Standard, HealthKitConstraint {
 
 
 Then, you can configure the [`HealthKit`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkit-swift.class) module in the configuration section of your `SpeziAppDelegate`.
-You can, e.g., use [`CollectSample`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/collectsample) to collect a wide variety of HealthKit data types:
+
+There are several built-in configurations you can use:
+
+- [`CollectSample`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/collectsample) sets up data collection of HealthKit samples and delivers them to the functions defined in your app's `Standard` (as described above).
+- [`RequestReadAccess`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/requestreadaccess) defines which HealthKit sample types your app requires read access to, but does not set up data collection.
+- [`RequestWriteAccess`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/requestwriteaccess) defines which HealthKit sample types your app requires write access to.
+
+The example below sets up automated data collection for active energy burned, step count, push count, heart rate, and electrocardiograms. It also requests read access to the blood oxygen, which will prompt the user for authorization, but not handle automated collection of the data, which will need to be queried elsewhere in your code (see *Querying Health Data* below).
+
+
 ```swift
 class ExampleAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
@@ -76,8 +90,12 @@ class ExampleAppDelegate: SpeziAppDelegate {
 }
 ```
 
+By default, [`CollectSample`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/collectsample) starts collecting and delivering samples automatically when the app launches and after the user has given consent. The `continueInBackground` property defines whether the sample collection should continue in the background when the app is no longer running, and is set to `false` by default. In the example above, active energy burned and heart rate will be collected and delivered automatically. Heart rate will also be collected and delivered in the background.
+
+You can also set data collection to be started manually by changing the `start` property to `.manual` as shown in the step count, push count, and electrocardiogram configurations above. In this case, automatic data collection will be set up but not begin until the first time that the [`triggerDataSourceCollection()`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/1.1.3/documentation/spezihealthkit/healthkit-swift.class/triggerdatasourcecollection()) function is called. In the example above, step count, push count, and electrocardiogram are set up in this manner.
+
 > [!TIP]
-> See [`SampleType`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/sampletype) for a complete list of supported sample types.
+> See [`SampleType`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/sampletype) for a complete list of supported HealthKit sample types.
 
 
 ### Querying Health Data in SwiftUI
