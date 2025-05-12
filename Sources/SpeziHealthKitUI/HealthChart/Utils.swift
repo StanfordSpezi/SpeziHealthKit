@@ -33,17 +33,6 @@ enum TimeConstants {
 }
 
 
-extension KeyValuePairs {
-    /// Creates a `KeyValuePairs` object, using the elements of a `Sequence`.
-    /// - parameter seq: The Sequence whose key-value pairs should be used as the values of the `KeyValuePairs` instance.
-    @_documentation(visibility: internal)
-    @inlinable public init<S: Sequence>(_ seq: S) where S.Element == (Key, Value) {
-        let initFn = unsafeBitCast(Self.init(dictionaryLiteral:), to: (([S.Element]) -> Self).self)
-        self = initFn(Array(seq))
-    }
-}
-
-
 extension ClosedRange where Bound == Date {
     /// The middle value of the range.
     var middle: Date {
