@@ -91,6 +91,17 @@ extension Collection where Element == HKCategorySample {
 
 
 private struct SleepSessionsBuilder {
+    // swiftlint:disable:next type_contents_order
+    static func run(threshold: TimeInterval, samples: some Collection<HKCategorySample>) -> [SleepSession] {
+        var builder = Self(threshold: threshold)
+        for sample in samples {
+            builder.process(sample)
+        }
+        assert(builder.sessions.adjacentPairs().allSatisfy { $1.timeRange.lowerBound.timeIntervalSince($0.timeRange.upperBound) > threshold })
+        return builder.sessions.map { SleepSession($0.samples)! } // swiftlint:disable:this force_unwrapping
+    }
+    
+    
     private struct SimpleSleepSession {
         private(set) var samples = OrderedArray<HKCategorySample> {
             switch $0.startDate.compare($1.startDate) {
@@ -111,7 +122,7 @@ private struct SleepSessionsBuilder {
         }
         var lastSample: HKCategorySample {
             // SAFETY: it's guaranteed that `samples` will always contain at least one sample.
-            samples[unsafe: samples.endIndex-1]
+            samples[unsafe: samples.endIndex - 1]
         }
         
         init(initialSample sample: HKCategorySample) {
@@ -152,7 +163,7 @@ private struct SleepSessionsBuilder {
                     sessions.remove(at: sessionIdx + 1)
                 }
                 if canMergeWithPrev {
-                    sessions[unsafe: sessionIdx-1].formUnion(sessions[sessionIdx])
+                    sessions[unsafe: sessionIdx - 1].formUnion(sessions[sessionIdx])
                     sessions.remove(at: sessionIdx)
                 }
             }
@@ -180,15 +191,6 @@ private struct SleepSessionsBuilder {
             let session = SimpleSleepSession(initialSample: sample)
             sessions.unsafelyInsert(session, at: idx)
         }
-    }
-    
-    static func run(threshold: TimeInterval, samples: some Collection<HKCategorySample>) -> [SleepSession] {
-        var builder = Self(threshold: threshold)
-        for sample in samples {
-            builder.process(sample)
-        }
-        assert(builder.sessions.adjacentPairs().allSatisfy { $1.timeRange.lowerBound.timeIntervalSince($0.timeRange.upperBound) > threshold })
-        return builder.sessions.map { SleepSession($0.samples)! }
     }
 }
 
