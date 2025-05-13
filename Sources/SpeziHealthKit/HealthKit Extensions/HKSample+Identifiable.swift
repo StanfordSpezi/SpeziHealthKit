@@ -15,3 +15,11 @@ extension HKSample: @retroactive Identifiable {
         uuid
     }
 }
+
+
+extension HKSample {
+    /// The sample's time range.
+    public var timeRange: ClosedRange<Date> {
+        startDate...endDate
+    }
+}
