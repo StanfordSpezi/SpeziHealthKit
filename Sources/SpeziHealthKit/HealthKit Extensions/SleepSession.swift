@@ -45,13 +45,9 @@ public struct SleepSession: Hashable, Sendable {
         trackedTimeBySleepPhase[.awake] ?? 0
     }
     public var totalTimeAsleep: TimeInterval {
-        var total: TimeInterval = 0
-        for (phase, time) in trackedTimeBySleepPhase {
-            if SleepPhase.allAsleepValues.contains(phase) {
-                total += time
-            }
-        }
-        return total
+        trackedTimeBySleepPhase.lazy
+            .compactMap { SleepPhase.allAsleepValues.contains($0) ? $1 : nil }
+            .reduce(0, +)
     }
     
     init?(_ samples: some Collection<HKCategorySample>) {

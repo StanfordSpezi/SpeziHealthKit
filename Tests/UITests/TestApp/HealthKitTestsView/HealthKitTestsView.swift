@@ -19,9 +19,6 @@ struct HealthKitTestsView: View {
     @State private var allInitialSampleTypesAreAuthorized = false
     @State private var viewState: ViewState = .idle
     
-    @HealthKitQuery(.bloodOxygen, timeRange: .today)
-    private var bloodOxygenSamples
-    
     var body: some View {
         Form { // swiftlint:disable:this closure_body_length
             Section {
