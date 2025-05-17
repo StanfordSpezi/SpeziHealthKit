@@ -41,6 +41,18 @@ public struct SleepSession: Hashable, Sendable {
     public let totalTimeTracked: TimeInterval
     /// The total amount of time tracked for each sleep phase.
     public let trackedTimeBySleepPhase: [SleepPhase: TimeInterval]
+    public var totalTimeAwake: TimeInterval {
+        trackedTimeBySleepPhase[.awake] ?? 0
+    }
+    public var totalTimeAsleep: TimeInterval {
+        var total: TimeInterval = 0
+        for (phase, time) in trackedTimeBySleepPhase {
+            if SleepPhase.allAsleepValues.contains(phase) {
+                total += time
+            }
+        }
+        return total
+    }
     
     init?(_ samples: some Collection<HKCategorySample>) {
         guard !samples.isEmpty && samples.allSatisfy({ $0.is(.sleepAnalysis) }) else {
