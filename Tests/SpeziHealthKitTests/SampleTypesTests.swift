@@ -30,9 +30,9 @@ struct SampleTypesTests {
             start: .now,
             end: .now
         )
-        #expect(quantitySample.is(.sleepAnalysis))
-        #expect(!quantitySample.is(.activeEnergyBurned))
-        #expect(!quantitySample.is(.bloodPressure))
+        #expect(categorySample.is(.sleepAnalysis))
+        #expect(!categorySample.is(.activeEnergyBurned))
+        #expect(!categorySample.is(.bloodPressure))
         
         let correlation = HKCorrelation(
             type: HKCorrelationType(.bloodPressure),
