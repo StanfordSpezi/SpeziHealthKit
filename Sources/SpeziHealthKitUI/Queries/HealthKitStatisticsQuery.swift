@@ -229,10 +229,8 @@ public final class StatisticsQueryResults: @unchecked Sendable {
     @MainActor
     private func startQuery() {
         guard let healthStore, let input else {
-            print("[\(Self.self) -update]: healthStore and/or input missing")
             return
         }
-        print("[\(self.self) -update]")
         self.isCurrentlyPerformingInitialFetch = true
         let sampleType = input.sampleType.hkSampleType
         let predicate: NSPredicate?
@@ -247,7 +245,7 @@ public final class StatisticsQueryResults: @unchecked Sendable {
         let queryDesc = HKStatisticsCollectionQueryDescriptor(
             predicate: HKSamplePredicate<HKQuantitySample>.quantitySample(type: sampleType, predicate: predicate),
             options: input.options,
-            anchorDate: input.timeRange.range.upperBound,
+            anchorDate: input.timeRange.range.lowerBound,
             intervalComponents: input.aggInterval.intervalComponents
         )
         
