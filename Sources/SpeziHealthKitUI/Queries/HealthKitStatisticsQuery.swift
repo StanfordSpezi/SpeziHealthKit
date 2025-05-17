@@ -76,7 +76,7 @@ public struct HealthKitStatisticsQuery: DynamicProperty { // swiftlint:disable:t
         
         /// The components defining the interval.
         /// See [here](https://developer.apple.com/documentation/healthkit/queries/executing_statistics_collection_queries) for some more documentation.
-        fileprivate let intervalComponents: DateComponents
+        public let intervalComponents: DateComponents
         
         public init(_ components: DateComponents) {
             self.intervalComponents = components

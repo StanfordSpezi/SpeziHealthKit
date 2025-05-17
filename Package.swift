@@ -30,6 +30,7 @@ let package = Package(
         .package(url: "https://github.com/StanfordSpezi/Spezi.git", from: "1.8.1"),
         .package(url: "https://github.com/StanfordSpezi/SpeziFoundation.git", branch: "lukas/orderedarray-unsafe-operations"),
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage.git", from: "2.0.1"),
+        .package(url: "https://github.com/apple/swift-algorithms.git", from:"1.2.1"),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.17.7")
     ] + swiftLintPackage(),
     targets: [
@@ -38,7 +39,8 @@ let package = Package(
             dependencies: [
                 .product(name: "Spezi", package: "Spezi"),
                 .product(name: "SpeziFoundation", package: "SpeziFoundation"),
-                .product(name: "SpeziLocalStorage", package: "SpeziStorage")
+                .product(name: "SpeziLocalStorage", package: "SpeziStorage"),
+                .product(name: "Algorithms", package: "swift-algorithms")
             ],
             exclude: ["Sample Types/SampleTypes.swift.gyb"],
             resources: [.process("Resources")],
