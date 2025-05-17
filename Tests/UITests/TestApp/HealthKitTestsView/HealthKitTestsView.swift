@@ -49,6 +49,9 @@ struct HealthKitTestsView: View {
                 NavigationLink("Characteristics") {
                     CharacteristicsView()
                 }
+                NavigationLink("Sleep Sessions") {
+                    SleepSessionsView()
+                }
                 NavigationLink("Scored Assessments") {
                     ScoredAssessmentsView()
                 }
