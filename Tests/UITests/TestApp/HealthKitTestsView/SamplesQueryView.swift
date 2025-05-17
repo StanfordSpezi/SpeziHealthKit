@@ -23,18 +23,32 @@ struct SamplesQueryView: View {
     @HealthKitQuery(.bloodOxygen, timeRange: .today)
     private var bloodOxygenSamples
     
+    @HealthKitQuery(.sleepAnalysis, timeRange: .ever)
+    private var sleepAnalysisSamples
+    
     var body: some View {
         Form {
             Section {
                 HealthChart {
-                    HealthChartEntry($heartRateSamples, drawingConfig: .init(mode: .line, color: .red))
-                    HealthChartEntry($bloodOxygenSamples, drawingConfig: .init(mode: .line, color: .blue))
+                    HealthChartEntry($heartRateSamples, drawingConfig: .init(chartType: .line, color: .red))
+                    HealthChartEntry($bloodOxygenSamples, drawingConfig: .init(chartType: .line, color: .blue))
                 }
                 .frame(height: 270)
             }
             makeSection(for: $stepSamples)
+            sleepSamplesSection
         }
         .navigationTitle("Samples Query")
+    }
+    
+    @ViewBuilder private var sleepSamplesSection: some View {
+        let sessions = (try? sleepAnalysisSamples.splitIntoSleepSessions()) ?? []
+        ForEach(sessions, id: \.self) { session in
+            Section {
+                LabeledContent("TimeRange", value: "\(session.startDate.ISO8601Format()) – \(session.endDate.ISO8601Format())")
+                LabeledContent("totalTimeTracked", value: Duration.seconds(session.totalTimeTracked).formatted())
+            }
+        }
     }
     
     @ViewBuilder
