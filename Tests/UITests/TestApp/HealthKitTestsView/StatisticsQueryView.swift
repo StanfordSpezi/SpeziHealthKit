@@ -53,7 +53,7 @@ struct StatisticsQueryView: View {
 }
 
 
-extension ClosedRange where Bound == Date {
+extension Range where Bound == Date {
     var middle: Date {
         lowerBound.addingTimeInterval(lowerBound.distance(to: upperBound) / 2)
     }

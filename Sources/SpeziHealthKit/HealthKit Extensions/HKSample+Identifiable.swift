@@ -19,7 +19,7 @@ extension HKSample: @retroactive Identifiable {
 
 extension HKSample {
     /// The sample's time range.
-    public var timeRange: ClosedRange<Date> {
-        startDate...endDate
+    public var timeRange: Range<Date> {
+        startDate..<endDate
     }
 }

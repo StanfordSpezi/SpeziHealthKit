@@ -33,7 +33,7 @@ enum TimeConstants {
 }
 
 
-extension ClosedRange where Bound == Date {
+extension Range where Bound == Date {
     /// The middle value of the range.
     var middle: Date {
         let diff = upperBound.timeIntervalSinceReferenceDate - lowerBound.timeIntervalSinceReferenceDate

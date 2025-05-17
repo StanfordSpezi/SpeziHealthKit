@@ -33,6 +33,10 @@ public struct SleepSession: Hashable, Sendable {
         samples.last!.endDate // swiftlint:disable:this force_unwrapping
     }
     
+    public var timeRange: Range<Date> {
+        startDate..<endDate
+    }
+    
     /// The session's total amount of tracked time, including both asleep and awake periods.
     public let totalTimeTracked: TimeInterval
     /// The total amount of time tracked for each sleep phase.
@@ -113,8 +117,8 @@ private struct SleepSessionsBuilder {
                 $0.uuid < $1.uuid
             }
         }
-        var timeRange: ClosedRange<Date> {
-            firstSample.startDate...lastSample.endDate
+        var timeRange: Range<Date> {
+            firstSample.startDate..<lastSample.endDate
         }
         var firstSample: HKCategorySample {
             // SAFETY: it's guaranteed that `samples` will always contain at least one sample.
@@ -195,18 +199,18 @@ private struct SleepSessionsBuilder {
 }
 
 
-extension ClosedRange {
+extension Range {
     func contains(_ element: Bound, threshold: Bound.Stride) -> Bool where Bound: Strideable {
-        lowerBound.advanced(by: -threshold) <= element && element <= upperBound.advanced(by: threshold)
+        lowerBound.advanced(by: -threshold) <= element && element < upperBound.advanced(by: threshold)
     }
     
     /// Determines whether the range overlaps with the other range, or falls within `threshold` of it.
-    func overlaps(_ other: ClosedRange<Bound>, threshold: Bound.Stride) -> Bool where Bound: Strideable {
-        other.overlaps(lowerBound.advanced(by: -threshold)...upperBound.advanced(by: threshold))
+    func overlaps(_ other: Range<Bound>, threshold: Bound.Stride) -> Bool where Bound: Strideable {
+        other.overlaps(lowerBound.advanced(by: -threshold)..<upperBound.advanced(by: threshold))
     }
     
-    func union(with other: ClosedRange<Bound>) -> ClosedRange<Bound> {
-        Swift.min(lowerBound, other.lowerBound)...Swift.max(upperBound, other.upperBound)
+    func union(with other: Range<Bound>) -> Range<Bound> {
+        Swift.min(lowerBound, other.lowerBound)..<Swift.max(upperBound, other.upperBound)
     }
 }
 

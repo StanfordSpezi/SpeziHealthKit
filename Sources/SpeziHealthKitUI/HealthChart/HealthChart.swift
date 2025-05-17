@@ -239,7 +239,7 @@ extension HealthChart {
         public static var year: Self { .custom(TimeConstants.year) }
         
         /// The chart's visible x axis time range should cover the width of the specified range.
-        public static func range(_ range: ClosedRange<Date>) -> Self {
+        public static func range(_ range: Range<Date>) -> Self {
             .custom(range.lowerBound.distance(to: range.upperBound))
         }
     }
