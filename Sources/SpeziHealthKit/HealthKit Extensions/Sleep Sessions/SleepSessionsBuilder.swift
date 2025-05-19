@@ -14,102 +14,37 @@ import HealthKit
 import SpeziFoundation
 
 
-/// A `SleepSession` represents a continuous series of individual ``SampleType/sleepAnalysis`` `HKCategorySample`s.
-public struct SleepSession: Hashable, Sendable {
-    public typealias Samples = [HKCategorySample]
-    public typealias SleepPhase = HKCategoryValueSleepAnalysis
-    
-    /// The individual `HKCategorySample`s belonging to this sleep session.
-    ///
-    /// It is guaranteed that there is at least one sample in the session.
-    public let samples: Samples
-    
-    /// The session's overall start date
-    public var startDate: Date {
-        samples.first!.startDate // swiftlint:disable:this force_unwrapping
-    }
-    /// The session's overall end date
-    public var endDate: Date {
-        samples.last!.endDate // swiftlint:disable:this force_unwrapping
-    }
-    
-    public var timeRange: Range<Date> {
-        startDate..<endDate
-    }
-    
-    /// The session's total amount of tracked time, including both asleep and awake periods.
-    public let totalTimeTracked: TimeInterval
-    /// The total amount of time tracked for each sleep phase.
-    public let trackedTimeBySleepPhase: [SleepPhase: TimeInterval]
-    public var totalTimeAwake: TimeInterval {
-        trackedTimeBySleepPhase[.awake] ?? 0
-    }
-    public var totalTimeAsleep: TimeInterval {
-        trackedTimeBySleepPhase.lazy
-            .compactMap { SleepPhase.allAsleepValues.contains($0) ? $1 : nil }
-            .reduce(0, +)
-    }
-    
-    init?(_ samples: some Collection<HKCategorySample>) {
-        guard !samples.isEmpty && samples.allSatisfy({ $0.is(.sleepAnalysis) }) else {
-            return nil
-        }
-        self.samples = Array(samples)
-        assert(samples.allSatisfy { $0.startDate <= $0.endDate })
-        assert(samples.adjacentPairs().allSatisfy { $0.startDate <= $1.startDate })
-        trackedTimeBySleepPhase = samples.reduce(into: [:]) { results, sample in
-            if let sleepPhase = sample.sleepPhase {
-                results[sleepPhase, default: 0] += sample.endDate.timeIntervalSince(sample.startDate)
-            }
-        }
-        totalTimeTracked = trackedTimeBySleepPhase.values.reduce(0, +)
-    }
-}
-
-
-extension SleepSession: RandomAccessCollection {
-    public var startIndex: Samples.Index {
-        samples.startIndex
-    }
-    public var endIndex: Samples.Index {
-        samples.endIndex
-    }
-    public subscript(position: Int) -> Samples.Element {
-        samples[position]
-    }
-}
-
-
 /// An error that can occur when processing Sleep Analysis samples.
 public enum SleepSessionConversionError: Error {
     /// The input data wasn't sleep analysis samples
     case invalidSampleType
 }
 
+
 extension Collection where Element == HKCategorySample {
     /// Splits the collection's individual samples into ``SleepSession``s.
     ///
-    /// - throws: if the collection doens't contain sleep analysis samples
+    /// - parameter maxAllowedDistance: The maximum allowed distance between two samples for them to still be considered as bslonging to the same sleep session
+    /// - throws: if the collection doens't exclusively consist of sleep analysis samples
     ///
     /// ## Topics
     /// - ``SleepSessionConversionError``
-    public func splitIntoSleepSessions(threshold: TimeInterval = 60 * 15) throws -> [SleepSession] {
+    public func splitIntoSleepSessions(threshold maxAllowedDistance: Duration = .minutes(60)) throws(SleepSessionConversionError) -> [SleepSession] {
         guard allSatisfy({ $0.is(.sleepAnalysis) }) else {
             throw SleepSessionConversionError.invalidSampleType
         }
-        return SleepSessionsBuilder.run(threshold: threshold, samples: self)
+        return SleepSessionsBuilder.run(maxAllowedDistance: maxAllowedDistance.timeInterval, samples: self)
     }
 }
 
 
 private struct SleepSessionsBuilder {
     // swiftlint:disable:next type_contents_order
-    static func run(threshold: TimeInterval, samples: some Collection<HKCategorySample>) -> [SleepSession] {
-        var builder = Self(threshold: threshold)
+    static func run(maxAllowedDistance: TimeInterval, samples: some Collection<HKCategorySample>) -> [SleepSession] {
+        var builder = Self(maxAllowedDistance: maxAllowedDistance)
         for sample in samples {
             builder.process(sample)
         }
-        assert(builder.sessions.adjacentPairs().allSatisfy { $1.timeRange.lowerBound.timeIntervalSince($0.timeRange.upperBound) > threshold })
         return builder.sessions.map { SleepSession($0.samples)! } // swiftlint:disable:this force_unwrapping
     }
     
@@ -150,7 +85,7 @@ private struct SleepSessionsBuilder {
     
     
     /// The maximum amount of time we allow to exist between two samples, to still consider them as belonging to the same sleep session.
-    private let threshold: TimeInterval
+    private let maxAllowedDistance: TimeInterval
     
     private var sessions = OrderedArray<SimpleSleepSession> {
         $0.firstSample.startDate < $1.lastSample.startDate
@@ -161,8 +96,8 @@ private struct SleepSessionsBuilder {
         sessionIdx: OrderedArray<SimpleSleepSession>.Index
     ) {
         let newSessionTimeRange = sessions[sessionIdx].timeRange.union(with: sample.timeRange)
-        let canMergeWithPrev = sessions[safe: sessionIdx - 1]?.timeRange.overlaps(newSessionTimeRange, threshold: threshold) ?? false
-        let canMergeWithNext = sessions[safe: sessionIdx + 1]?.timeRange.overlaps(newSessionTimeRange, threshold: threshold) ?? false
+        let canMergeWithPrev = sessions[safe: sessionIdx - 1]?.timeRange.overlaps(newSessionTimeRange, threshold: maxAllowedDistance) ?? false
+        let canMergeWithNext = sessions[safe: sessionIdx + 1]?.timeRange.overlaps(newSessionTimeRange, threshold: maxAllowedDistance) ?? false
         
         if !canMergeWithPrev && !canMergeWithNext {
             sessions[unsafe: sessionIdx].insert(sample: sample)
@@ -184,7 +119,7 @@ private struct SleepSessionsBuilder {
     
     private mutating func process(_ sample: HKCategorySample) {
         let binarySearchResult = sessions.binarySearchFirstIndex(where: { session in
-            if session.timeRange.overlaps(sample.timeRange, threshold: threshold) {
+            if session.timeRange.overlaps(sample.timeRange, threshold: maxAllowedDistance) {
                 .orderedSame
             } else if sample.timeRange.upperBound < session.timeRange.lowerBound {
                 .orderedAscending
@@ -219,33 +154,5 @@ extension Range {
     
     func union(with other: Range<Bound>) -> Range<Bound> {
         Swift.min(lowerBound, other.lowerBound)..<Swift.max(upperBound, other.upperBound)
-    }
-}
-
-
-extension HKCategorySample {
-    /// The sample's sleep phase, if applicable.
-    public var sleepPhase: HKCategoryValueSleepAnalysis? {
-        guard categoryType == SampleType.sleepAnalysis.hkSampleType else {
-            return nil
-        }
-        return .init(rawValue: value)
-    }
-}
-
-
-extension Collection {
-    subscript(safe index: Index) -> Element? {
-        indices.contains(index) ? self[index] : nil
-    }
-}
-
-
-extension Array {
-    subscript(unsafe position: Int) -> Element {
-        @_transparent
-        get {
-            withUnsafeBufferPointer { $0[position] }
-        }
     }
 }

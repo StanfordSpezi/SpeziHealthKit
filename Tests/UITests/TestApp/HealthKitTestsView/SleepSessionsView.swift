@@ -27,25 +27,24 @@ struct SleepSessionsView: View {
     
     @State private var viewState: ViewState = .idle
     
-    
     var body: some View {
         Form {
             if let sleepSession {
                 Section {
-                    LabeledContent("Tracked Time", value: Duration.seconds(sleepSession.totalTimeTracked).formatted())
+                    LabeledContent("Tracked Time", value: sleepSession.timeRange, format: .timeDuration)
                     LabeledContent("Time Awake", value: Duration.seconds(sleepSession.totalTimeAwake).formatted())
                     LabeledContent("Time Asleep", value: Duration.seconds(sleepSession.totalTimeAsleep).formatted())
                     LabeledContent("#Samples", value: sleepSession.count, format: .number)
                     ForEach([SleepSession.SleepPhase.asleepCore, .asleepDeep, .asleepREM], id: \.self) { phase in
-                        let duration = sleepSession.trackedTimeBySleepPhase[phase] ?? 0
-                        LabeledContent("Time \(phase.displayTitle)", value: Duration.seconds(duration).formatted())
+                        let duration = sleepSession.timeTracked(for: phase)
+                        LabeledContent("Time: \(phase.displayTitle)", value: Duration.seconds(duration).formatted())
                     }
                 }
                 Section {
                     Chart {
                         let phases = [SleepSession.SleepPhase.inBed, .awake, .asleepREM, .asleepCore, .asleepDeep]
                         ForEach(phases, id: \.self) { phase in
-                            ForEach(sleepSession.samples.filter { $0.sleepPhase == phase }) { sample in
+                            ForEach(sleepSession.samples(for: phase)) { sample in
                                 RuleMark(
                                     xStart: .value("Start Date", sample.startDate),
                                     xEnd: .value("End Date", sample.endDate),
@@ -54,6 +53,13 @@ struct SleepSessionsView: View {
                             }
                         }
                     }
+                }
+            } else {
+                HStack {
+                    Spacer()
+                    Text("No Sleep Data")
+                        .foregroundStyle(.secondary)
+                    Spacer()
                 }
             }
         }

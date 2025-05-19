@@ -118,15 +118,19 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
         try await Task.sleep(for: .seconds(0.5)) // we need to wait a little so that the permissions sheet is properly dismissed
         app.buttons["Sleep Sessions"].tap()
         
-        app.navigationBars.buttons["Add Samples"].tap()
+        try await Task.sleep(for: .seconds(2)) // give it a bit to fetch and process the data
+        
+        if app.staticTexts["No Sleep Samples"].waitForExistence(timeout: 1) {
+            app.navigationBars.buttons["Add Samples"].tap()
+        }
         XCTAssert(app.staticTexts["Tracked Time"].waitForExistence(timeout: 2))
         
         XCTAssert(app.staticTexts["Tracked Time, 7:35:30"].waitForExistence(timeout: 1))
         XCTAssert(app.staticTexts["Time Awake, 0:19:00"].waitForExistence(timeout: 1))
         XCTAssert(app.staticTexts["Time Asleep, 7:16:30"].waitForExistence(timeout: 1))
         XCTAssert(app.staticTexts["#Samples, 31"].waitForExistence(timeout: 1))
-        XCTAssert(app.staticTexts["Time Core Sleep, 4:42:30"].waitForExistence(timeout: 1))
-        XCTAssert(app.staticTexts["Time Deep Sleep, 1:02:00"].waitForExistence(timeout: 1))
-        XCTAssert(app.staticTexts["Time REM Sleep, 1:32:00"].waitForExistence(timeout: 1))
+        XCTAssert(app.staticTexts["Time: Core Sleep, 4:42:30"].waitForExistence(timeout: 1))
+        XCTAssert(app.staticTexts["Time: Deep Sleep, 1:02:00"].waitForExistence(timeout: 1))
+        XCTAssert(app.staticTexts["Time: REM Sleep, 1:32:00"].waitForExistence(timeout: 1))
     }
 }
