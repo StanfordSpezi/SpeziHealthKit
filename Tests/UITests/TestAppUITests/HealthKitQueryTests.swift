@@ -120,7 +120,7 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
         
         try await Task.sleep(for: .seconds(2)) // give it a bit to fetch and process the data
         
-        if app.staticTexts["No Sleep Samples"].waitForExistence(timeout: 1) {
+        if app.staticTexts["No Sleep Data"].waitForExistence(timeout: 1) {
             app.navigationBars.buttons["Add Samples"].tap()
         }
         XCTAssert(app.staticTexts["Tracked Time"].waitForExistence(timeout: 2))
