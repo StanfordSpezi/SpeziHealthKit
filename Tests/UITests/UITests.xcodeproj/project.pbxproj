@@ -10,12 +10,9 @@
 		2F61BDC329DD02D600D71D33 /* SpeziHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 2F61BDC229DD02D600D71D33 /* SpeziHealthKit */; };
 		2FE33CB92B9B815B00BD886D /* SpeziViews in Frameworks */ = {isa = PBXBuildFile; productRef = 2FE33CB82B9B815B00BD886D /* SpeziViews */; };
 		8053AA172DB19E37003B4EA4 /* SpeziHealthKitBulkExport in Frameworks */ = {isa = PBXBuildFile; productRef = 8053AA162DB19E37003B4EA4 /* SpeziHealthKitBulkExport */; };
-		8059BF032D464B2E007CDAFD /* XCTHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8059BF022D464B2E007CDAFD /* XCTHealthKit */; };
-		8059BF0B2D4699CB007CDAFD /* XCTHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8059BF0A2D4699CB007CDAFD /* XCTHealthKit */; };
+		808537712DDB487F00E95213 /* XCTHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 808537702DDB487F00E95213 /* XCTHealthKit */; };
 		808EB0282D452800009D9AB2 /* SpeziHealthKitUI in Frameworks */ = {isa = PBXBuildFile; productRef = 808EB0272D452800009D9AB2 /* SpeziHealthKitUI */; };
-		80ABDD0D2D47D4C100231ADF /* XCTHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 80ABDD0C2D47D4C100231ADF /* XCTHealthKit */; };
 		80BDC0BA2D417897007A5B68 /* SpeziHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 80BDC0B92D417897007A5B68 /* SpeziHealthKit */; };
-		80E3C19D2D371B8B00A1F6A3 /* XCTHealthKit in Frameworks */ = {isa = PBXBuildFile; productRef = 80E3C19C2D371B8B00A1F6A3 /* XCTHealthKit */; };
 		80E3C1DE2D382EDA00A1F6A3 /* XCTestExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = 80E3C1DD2D382EDA00A1F6A3 /* XCTestExtensions */; };
 /* End PBXBuildFile section */
 
@@ -57,12 +54,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				80E3C19D2D371B8B00A1F6A3 /* XCTHealthKit in Frameworks */,
-				8059BF032D464B2E007CDAFD /* XCTHealthKit in Frameworks */,
 				80BDC0BA2D417897007A5B68 /* SpeziHealthKit in Frameworks */,
-				8059BF0B2D4699CB007CDAFD /* XCTHealthKit in Frameworks */,
 				80E3C1DE2D382EDA00A1F6A3 /* XCTestExtensions in Frameworks */,
-				80ABDD0D2D47D4C100231ADF /* XCTHealthKit in Frameworks */,
+				808537712DDB487F00E95213 /* XCTHealthKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -145,12 +139,9 @@
 			);
 			name = TestAppUITests;
 			packageProductDependencies = (
-				80E3C19C2D371B8B00A1F6A3 /* XCTHealthKit */,
 				80E3C1DD2D382EDA00A1F6A3 /* XCTestExtensions */,
 				80BDC0B92D417897007A5B68 /* SpeziHealthKit */,
-				8059BF022D464B2E007CDAFD /* XCTHealthKit */,
-				8059BF0A2D4699CB007CDAFD /* XCTHealthKit */,
-				80ABDD0C2D47D4C100231ADF /* XCTHealthKit */,
+				808537702DDB487F00E95213 /* XCTHealthKit */,
 			);
 			productName = ExampleUITests;
 			productReference = 2F6D13AC28F5F386007C25D6 /* TestAppUITests.xctest */;
@@ -187,7 +178,7 @@
 			packageReferences = (
 				2FE33CB72B9B815B00BD886D /* XCRemoteSwiftPackageReference "SpeziViews" */,
 				8042D7962D3D5B8F00807498 /* XCRemoteSwiftPackageReference "XCTestExtensions" */,
-				80ABDD0B2D47D4C100231ADF /* XCRemoteSwiftPackageReference "XCTHealthKit" */,
+				8085376F2DDB487F00E95213 /* XCRemoteSwiftPackageReference "XCTHealthKit" */,
 			);
 			productRefGroup = 2F6D139328F5F384007C25D6 /* Products */;
 			projectDirPath = "";
@@ -657,12 +648,12 @@
 				minimumVersion = 1.1.1;
 			};
 		};
-		80ABDD0B2D47D4C100231ADF /* XCRemoteSwiftPackageReference "XCTHealthKit" */ = {
+		8085376F2DDB487F00E95213 /* XCRemoteSwiftPackageReference "XCTHealthKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/StanfordBDHG/XCTHealthKit";
+			repositoryURL = "https://github.com/StanfordBDHG/XCTHealthKit.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.1.1;
+				minimumVersion = 1.1.2;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -681,30 +672,18 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = SpeziHealthKitBulkExport;
 		};
-		8059BF022D464B2E007CDAFD /* XCTHealthKit */ = {
+		808537702DDB487F00E95213 /* XCTHealthKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = XCTHealthKit;
-		};
-		8059BF0A2D4699CB007CDAFD /* XCTHealthKit */ = {
-			isa = XCSwiftPackageProductDependency;
+			package = 8085376F2DDB487F00E95213 /* XCRemoteSwiftPackageReference "XCTHealthKit" */;
 			productName = XCTHealthKit;
 		};
 		808EB0272D452800009D9AB2 /* SpeziHealthKitUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SpeziHealthKitUI;
 		};
-		80ABDD0C2D47D4C100231ADF /* XCTHealthKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 80ABDD0B2D47D4C100231ADF /* XCRemoteSwiftPackageReference "XCTHealthKit" */;
-			productName = XCTHealthKit;
-		};
 		80BDC0B92D417897007A5B68 /* SpeziHealthKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SpeziHealthKit;
-		};
-		80E3C19C2D371B8B00A1F6A3 /* XCTHealthKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = XCTHealthKit;
 		};
 		80E3C1DD2D382EDA00A1F6A3 /* XCTestExtensions */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -23,6 +23,14 @@ public protocol _HKSampleWithSampleType: HKSample {
 }
 
 
+extension _HKSampleWithSampleType {
+    /// Checks whether the sample is of the specified ``SampleType``.
+    @inlinable public func `is`(_ sampleType: SampleType<some Any>) -> Bool {
+        self.sampleType == sampleType.hkSampleType
+    }
+}
+
+
 extension HKQuantitySample: _HKSampleWithSampleType {
     public typealias _SampleType = HKQuantityType
     

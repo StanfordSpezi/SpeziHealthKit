@@ -76,11 +76,11 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
     
     
     @MainActor
-    func testScoredAssessments() throws {
+    func testScoredAssessments() async throws {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
         try launchAndHandleInitialStuff(app)
         
-        usleep(500_000) // we need to wait a little so that the permissions sheet is properly dismissed
+        try await Task.sleep(for: .seconds(0.5)) // we need to wait a little so that the permissions sheet is properly dismissed
         app.buttons["Scored Assessments"].tap()
         
         XCTAssert(app.staticTexts["No GAD-7 Assessments"].waitForExistence(timeout: 2))
@@ -107,5 +107,30 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
         app.assertTableRow("Date", "2025-04-27")
         app.assertTableRow("Risk", "3")
         app.assertTableRow("Answers", "2;3;0;1;1;0;2;3;1")
+    }
+    
+    
+    @MainActor
+    func testSleepSession() async throws {
+        let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
+        try launchAndHandleInitialStuff(app)
+        
+        try await Task.sleep(for: .seconds(0.5)) // we need to wait a little so that the permissions sheet is properly dismissed
+        app.buttons["Sleep Sessions"].tap()
+        
+        try await Task.sleep(for: .seconds(2)) // give it a bit to fetch and process the data
+        
+        if app.staticTexts["No Sleep Data"].waitForExistence(timeout: 1) {
+            app.navigationBars.buttons["Add Samples"].tap()
+        }
+        XCTAssert(app.staticTexts["Tracked Time"].waitForExistence(timeout: 2))
+        
+        XCTAssert(app.staticTexts["Tracked Time, 7:35:30"].waitForExistence(timeout: 1))
+        XCTAssert(app.staticTexts["Time Awake, 0:19:00"].waitForExistence(timeout: 1))
+        XCTAssert(app.staticTexts["Time Asleep, 7:16:30"].waitForExistence(timeout: 1))
+        XCTAssert(app.staticTexts["#Samples, 31"].waitForExistence(timeout: 1))
+        XCTAssert(app.staticTexts["Time: Core Sleep, 4:42:30"].waitForExistence(timeout: 1))
+        XCTAssert(app.staticTexts["Time: Deep Sleep, 1:02:00"].waitForExistence(timeout: 1))
+        XCTAssert(app.staticTexts["Time: REM Sleep, 1:32:00"].waitForExistence(timeout: 1))
     }
 }

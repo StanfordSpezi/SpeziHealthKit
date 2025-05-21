@@ -197,7 +197,7 @@ extension SampleType where Sample == HKQuantitySample {
         .quantity(
             .height,
             displayTitle: "Height",
-            displayUnit: localeDependentUnit(us: .foot(), metric: .meter())
+            displayUnit: localeDependentUnit(us: .foot(), metric: .meterUnit(with: .centi))
         )
     }
     /// A quantity sample type that measures the user’s weight.
