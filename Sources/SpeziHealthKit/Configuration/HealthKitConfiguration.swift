@@ -60,6 +60,14 @@ extension HealthKit {
             self.write = write.flatMapIntoSet { $0.effectiveObjectTypesForAuthentication.compactMap { $0 as? HKSampleType } }
         }
         
+        /// Creates a new instance, specifying read and write access to the same set of sample types.
+        public init(readAndWrite sampleTypes: some Sequence<HKSampleType>) {
+            self.init(
+                read: sampleTypes.lazy.map { $0 },
+                write: sampleTypes
+            )
+        }
+        
         /// Creates a new instance, with the specified read and write sample types.
         public init(read: some Sequence<any AnySampleType> = [], write: some Sequence<any AnySampleType> = []) {
             self.init(
