@@ -63,7 +63,7 @@ extension HealthKit {
         /// Creates a new instance, specifying read and write access to the same set of sample types.
         public init(readAndWrite sampleTypes: some Sequence<HKSampleType>) {
             self.init(
-                read: sampleTypes.lazy.map { $0 },
+                read: sampleTypes.lazy.map { $0 }, // swiftlint:disable:this array_init
                 write: sampleTypes
             )
         }
