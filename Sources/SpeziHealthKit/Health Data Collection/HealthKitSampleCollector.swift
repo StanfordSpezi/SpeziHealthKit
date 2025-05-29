@@ -99,7 +99,6 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
                         }
                         do {
                             try await self.anchoredSingleObjectQuery()
-                            self.healthKit.logger.debug("Successfully processed background update for \(self.sampleType.hkSampleType)")
                         } catch {
                             self.healthKit.logger.error("Could not query samples in a background update for \(self.sampleType.hkSampleType): \(error)")
                         }
