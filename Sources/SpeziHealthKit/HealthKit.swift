@@ -475,7 +475,6 @@ extension HealthKit {
         if !collector.isActive,
            collector.deliverySetting.startSetting == .automatic,
            await didAskForAuthorization(toRead: collector.sampleType) {
-            logger.notice("Telling health data collector \(String(describing: collector)) to start its data collection")
             await collector.startDataCollection()
         }
     }
@@ -486,7 +485,6 @@ extension HealthKit {
         await withTaskGroup(of: Void.self) { group in
             for collector in registeredDataCollectors where collector.deliverySetting.startSetting == .manual {
                 group.addTask { @MainActor @Sendable in
-                    self.logger.notice("Telling health data collector \(String(describing: collector)) to start its data collection")
                     await collector.startDataCollection()
                 }
             }

@@ -108,7 +108,6 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
                 queryVariant = .backgroundDelivery(queryInvalidator)
             } else {
                 // set up a non-background query
-                healthKit.logger.notice("Starting anchor query")
                 try await anchoredContinuousObjectQuery()
                 isActive = true
             }
