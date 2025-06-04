@@ -36,28 +36,28 @@ import SpeziFoundation
 /// - ``last(months:)``
 /// - ``last(years:)``
 public struct HealthKitQueryTimeRange: Sendable {
-    public let range: ClosedRange<Date>
+    public let range: Range<Date>
     
     public var duration: TimeInterval {
         range.lowerBound.distance(to: range.upperBound)
     }
     
-    public init(_ range: ClosedRange<Date>) {
+    public init(_ range: Range<Date>) {
         self.range = range
     }
     
-    public init(_ range: Range<Date>) {
+    public init(_ range: ClosedRange<Date>) {
         if range.upperBound == .distantFuture {
             // if the input range extends all the way to `Date.distantFuture`, we want to keep it that way,
             // since this is checked for in some other places, and treated as an open-ended time range.
-            self.init(range.lowerBound...range.upperBound)
+            self.init(range.lowerBound..<range.upperBound)
         } else {
-            self.init(range.lowerBound...range.upperBound.addingTimeInterval(-1))
+            self.init(range.lowerBound..<range.upperBound.addingTimeInterval(1))
         }
     }
     
     public init(_ range: PartialRangeFrom<Date>) {
-        self.init(range.lowerBound...(.distantFuture))
+        self.init(range.lowerBound..<(.distantFuture))
     }
 }
 

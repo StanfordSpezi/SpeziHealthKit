@@ -48,6 +48,7 @@ import SwiftUI
 @propertyWrapper @MainActor
 public struct HealthKitQuery<Sample: _HKSampleWithSampleType>: DynamicProperty { // swiftlint:disable:this file_types_order
     private let input: SamplesQueryResults<Sample>.Input
+    private let limit: Int?
     
     @Environment(HealthKit.self)
     private var healthKit
@@ -56,14 +57,21 @@ public struct HealthKitQuery<Sample: _HKSampleWithSampleType>: DynamicProperty {
     private var results = SamplesQueryResults<Sample>()
     
     /// The individual query results.
-    public var wrappedValue: OrderedArray<Sample> {
-        // until https://github.com/swiftlang/swift/issues/78405 is fixed, we can't return `some RandomAccessCollection<Sample>` here,
+    ///
+    /// - Note: This property is a `RandomAccessCollection<Sample>`; the specific type is an implementation detail and may change.
+    public var wrappedValue: Slice<OrderedArray<Sample>> {
+        // until https://github.com/swiftlang/swift/issues/78405, https://github.com/swiftlang/swift/issues/81560,
+        // and https://github.com/swiftlang/swift/issues/81561 are fixed, we can't return `some RandomAccessCollection<Sample>` here,
         // which would arguably be vastly preferable, and sadly need to expose the `OrderedArray` implementation detail :/
         
         // Note that we're intentionally not returning `results` directly here (even though it also is a RandomAccessCollection),
         // the reason being that it would be auto-updating, which might be unexpected since it's not communicated via the return
         // type. Instead, we return `results.dataPoints`, i.e. essentially a snapshot of the current state of the results object.
-        results.samples
+        if let limit, limit > 0 {
+            results.samples.suffix(limit)
+        } else {
+            results.samples[...]
+        }
     }
     
     /// The query's underlying auto-updating results object.
@@ -78,16 +86,20 @@ public struct HealthKitQuery<Sample: _HKSampleWithSampleType>: DynamicProperty {
     ///     Any new samples added to or removed from the health store that fall into this time range will be considered by the query.
     /// - parameter filterPredicate: An optional refining predicate for filtering the queried-for samples.
     ///     This predicate should be created using the utility methods on the `HKQuery` type: https://developer.apple.com/documentation/healthkit/hkquery#1664362
+    /// - parameter limit: Optional. The maximum number of samples the query should return. If set to a value `N > 0`, the query will return the `N` most recent samples.
+    ///     The limit is applied after the `timeRange` and `filterPredicate`.
     public init(
         _ sampleType: SampleType<Sample>,
         timeRange: HealthKitQueryTimeRange,
-        filter filterPredicate: NSPredicate? = nil
+        filter filterPredicate: NSPredicate? = nil,
+        limit: Int? = nil
     ) {
-        input = .init(
+        self.input = .init(
             sampleType: sampleType,
             timeRange: timeRange,
             filterPredicate: filterPredicate
         )
+        self.limit = limit
     }
     
     @_documentation(visibility: internal)

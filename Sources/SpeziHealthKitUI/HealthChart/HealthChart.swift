@@ -141,7 +141,7 @@ public struct HealthChart: View {
             let xVal: PlottableValue = .value("Date", dataPoint.date)
             let yVal: PlottableValue = .value(name, dataPoint.value * (entry.resultsSampleType == SampleType<HKQuantitySample>.bloodOxygen ? 100 : 1))
             SomeChartContent {
-                switch entry.drawingConfig.mode {
+                switch entry.drawingConfig.chartType {
                 case .line:
                     LineMark(x: xVal, y: yVal)
                 case .bar:
@@ -239,7 +239,7 @@ extension HealthChart {
         public static var year: Self { .custom(TimeConstants.year) }
         
         /// The chart's visible x axis time range should cover the width of the specified range.
-        public static func range(_ range: ClosedRange<Date>) -> Self {
+        public static func range(_ range: Range<Date>) -> Self {
             .custom(range.lowerBound.distance(to: range.upperBound))
         }
     }

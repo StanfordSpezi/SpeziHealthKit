@@ -13,9 +13,9 @@ import struct SwiftUI.Color
 
 
 /// How a ``HealthChartEntry`` should be plotted in a Health Chart.
-public struct HealthChartDrawingConfig: Sendable {
+public struct HealthChartDrawingConfig: Hashable, Sendable {
     /// A chart type.
-    public enum Mode: Sendable {
+    public enum ChartType: Hashable, Sendable {
         /// The entry is drawn as a line chart, i.e. a line that moves from data point to data point
         case line
         /// bar chart
@@ -24,12 +24,12 @@ public struct HealthChartDrawingConfig: Sendable {
         case point
     }
     
-    let mode: Mode
-    let color: Color
+    public let chartType: ChartType
+    public let color: Color
     
     /// Creates a new drawing config for an entry in a health chart.
-    public init(mode: Mode, color: Color) {
-        self.mode = mode
+    public init(chartType: ChartType, color: Color) {
+        self.chartType = chartType
         self.color = color
     }
 }

@@ -27,21 +27,21 @@ struct StatisticsQueryView: View {
         Form {
             Section {
                 HealthChart {
-                    HealthChartEntry($heartRateSamples, drawingConfig: .init(mode: .line, color: .red))
+                    HealthChartEntry($heartRateSamples, drawingConfig: .init(chartType: .line, color: .red))
                 }
                 .frame(height: 300)
             }
             Section {
                 HealthChart {
-                    HealthChartEntry($hourlyHeartRateState, aggregationOption: .max, drawingConfig: .init(mode: .line, color: .red))
-                    HealthChartEntry($hourlyHeartRateState, aggregationOption: .avg, drawingConfig: .init(mode: .line, color: .orange))
-                    HealthChartEntry($hourlyHeartRateState, aggregationOption: .min, drawingConfig: .init(mode: .line, color: .yellow))
+                    HealthChartEntry($hourlyHeartRateState, aggregationOption: .max, drawingConfig: .init(chartType: .line, color: .red))
+                    HealthChartEntry($hourlyHeartRateState, aggregationOption: .avg, drawingConfig: .init(chartType: .line, color: .orange))
+                    HealthChartEntry($hourlyHeartRateState, aggregationOption: .min, drawingConfig: .init(chartType: .line, color: .yellow))
                 }
             }
             ForEach(dailyStepCountStats.reversed()) { statistics in
                 if let numSteps = statistics.sumQuantity()?.doubleValue(for: .count()) {
                     HStack {
-                        Text("Steps on \((statistics.startDate...statistics.endDate).middle.formatted(.iso8601))")
+                        Text("Steps on \((statistics.startDate..<statistics.endDate).middle.formatted(.iso8601))")
                         Spacer()
                         Text("\(Int(numSteps))").monospaced()
                     }
@@ -53,7 +53,7 @@ struct StatisticsQueryView: View {
 }
 
 
-extension ClosedRange where Bound == Date {
+extension Range where Bound == Date {
     var middle: Date {
         lowerBound.addingTimeInterval(lowerBound.distance(to: upperBound) / 2)
     }
