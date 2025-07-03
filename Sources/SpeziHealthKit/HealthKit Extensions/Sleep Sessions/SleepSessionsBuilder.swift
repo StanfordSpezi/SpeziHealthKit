@@ -29,11 +29,18 @@ extension Collection where Element == HKCategorySample {
     ///
     /// ## Topics
     /// - ``SleepSessionConversionError``
-    public func splitIntoSleepSessions(threshold maxAllowedDistance: Duration = .minutes(60)) throws(SleepSessionConversionError) -> [SleepSession] {
+    public func splitIntoSleepSessions(
+        threshold maxAllowedDistance: Duration = .minutes(60),
+    ) throws(SleepSessionConversionError) -> [SleepSession] {
         guard allSatisfy({ $0.is(.sleepAnalysis) }) else {
             throw SleepSessionConversionError.invalidSampleType
         }
-        return SleepSessionsBuilder.run(maxAllowedDistance: maxAllowedDistance.timeInterval, samples: self)
+        return self
+            // We need to process the samples separately by each source,
+            // in order to avoid incorrect results when there's e.g. 2 apps
+            // performing sleep tracking simultaneously. (E.g.: Apple Watch and AutoSleep.)
+            .grouped(by: \.sourceRevision.source)
+            .flatMap { SleepSessionsBuilder.run(maxAllowedDistance: maxAllowedDistance.timeInterval, samples: $0.value) }
     }
 }
 
