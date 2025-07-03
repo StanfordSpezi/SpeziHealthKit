@@ -23,10 +23,8 @@ struct SleepSessionsView: View {
     
     @HealthKitQuery(.sleepAnalysis, timeRange: .init({ () -> Range<Date> in
         let cal = Calendar.current
-//        let start = cal.date(from: .init(year: 2025, month: 2, day: 19))! // swiftlint:disable:this force_unwrapping
-//        let end = start.addingTimeInterval(60 * 60 * 24 * 2) // add 2 days, so that we fetch the entirety of the 19th and 20th
-        let start = cal.date(from: .init(year: 2025, month: 7, day: 3))! // swiftlint:disable:this force_unwrapping
-        let end = start.addingTimeInterval(60 * 60 * 24 * 1)
+        let start = cal.date(from: .init(year: 2025, month: 2, day: 19))! // swiftlint:disable:this force_unwrapping
+        let end = start.addingTimeInterval(60 * 60 * 24 * 2) // add 2 days, so that we fetch the entirety of the 19th and 20th
         return start..<end
     }()))
     private var sleepAnalysisSamples
