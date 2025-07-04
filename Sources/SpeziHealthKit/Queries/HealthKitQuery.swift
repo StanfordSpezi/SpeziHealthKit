@@ -48,7 +48,7 @@ extension HealthKit {
             variant = .predicate(nsPredicate)
         }
         
-        func evaluate(against source: HKSource) -> Bool {
+        func matches(_ source: HKSource) -> Bool {
             switch variant {
             case .any:
                 true
@@ -70,7 +70,7 @@ extension HealthKit.SourceFilter {
     public static let currentApp = Self(variant: .currentApp)
     
     /// A source filter matching the iOS Health App.
-    public static let healthApp = Self.bundleId("com.apple.Health")
+    public static let healthApp = Self.bundleId("com.apple.health")
     
     /// A source filter matching all `HKSource`s whose name matches `name`.
     public static func named(_ name: String) -> Self {
@@ -79,7 +79,7 @@ extension HealthKit.SourceFilter {
     
     /// A source filter matching all `HKSource`s whose name begins with `name`.
     public static func name(beginsWith name: String) -> Self {
-        .init(NSPredicate(format: "%K BEGINSSWITH %@", #keyPath(HKSource.name), name))
+        .init(NSPredicate(format: "%K BEGINSWITH %@", #keyPath(HKSource.name), name))
     }
     
     /// A source filter matching all `HKSource`s whose name ends with `name`.
@@ -89,12 +89,12 @@ extension HealthKit.SourceFilter {
     
     /// A source filter matching all `HKSource`s whose bundle identifier matches `bundleId`.
     public static func bundleId(_ bundleId: String) -> Self {
-        .init(NSPredicate(format: "%K = %@", #keyPath(HKSource.bundleIdentifier), bundleId))
+        .init(NSPredicate(format: "%K =[c] %@", #keyPath(HKSource.bundleIdentifier), bundleId))
     }
     
     /// A source filter matching all `HKSource`s whose bundle identifier begins with `bundleId`.
     public static func bundleId(beginsWith bundleId: String) -> Self {
-        .init(NSPredicate(format: "%K BEGINSSWITH %@", #keyPath(HKSource.bundleIdentifier), bundleId))
+        .init(NSPredicate(format: "%K BEGINSWITH[c] %@", #keyPath(HKSource.bundleIdentifier), bundleId))
     }
 }
 
@@ -228,7 +228,7 @@ extension HealthKit {
         } else {
             let descriptor = HKSourceQueryDescriptor(predicate: predicate)
             let allSources = try await descriptor.result(for: healthStore)
-            let matchingSources = allSources.filter { sourceFilter.evaluate(against: $0) }
+            let matchingSources = allSources.filter { sourceFilter.matches($0) }
             return HKQuery.predicateForObjects(from: Set(matchingSources))
         }
     }
