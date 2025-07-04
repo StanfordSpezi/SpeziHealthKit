@@ -58,6 +58,9 @@ struct HealthKitTestsView: View {
                 NavigationLink("Bulk Exporter") {
                     BulkExportView()
                 }
+                NavigationLink("Source Filtering") {
+                    SourceFilteredQueryView()
+                }
             }
             Section("Collected Samples Since App Launch") {
                 let samplesBySampleType = fakeHealthStore.samples.grouped(by: \.sampleType.identifier)

@@ -21,7 +21,7 @@ struct SampleTypeProxyTests {
             SampleType.workout, SampleType.electrocardiogram, SampleType.audiogram
         ]
         for sampleType in sampleTypes {
-            let wrapped = try #require(SampleTypeProxy(sampleType))
+            let wrapped = SampleTypeProxy(sampleType)
             let encoded = try JSONEncoder().encode(wrapped)
             let decoded = try JSONDecoder().decode(SampleTypeProxy.self, from: encoded)
             #expect(decoded == wrapped)

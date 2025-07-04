@@ -91,12 +91,14 @@ public struct HealthKitQuery<Sample: _HKSampleWithSampleType>: DynamicProperty {
     public init(
         _ sampleType: SampleType<Sample>,
         timeRange: HealthKitQueryTimeRange,
+        source sourceFilter: HealthKit.SourceFilter = .any,
         filter filterPredicate: NSPredicate? = nil,
         limit: Int? = nil
     ) {
         self.input = .init(
             sampleType: sampleType,
             timeRange: timeRange,
+            sourceFilter: sourceFilter,
             filterPredicate: filterPredicate
         )
         self.limit = limit
@@ -123,6 +125,7 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
     struct Input: Hashable, @unchecked Sendable {
         let sampleType: SampleType<Sample>
         let timeRange: HealthKitQueryTimeRange
+        let sourceFilter: HealthKit.SourceFilter
         let filterPredicate: NSPredicate?
     }
     
@@ -184,14 +187,15 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
         self.isCurrentlyPerformingInitialFetch = true
         queryTask?.cancel()
         queryTask = Task.detached { [weak self] in
-            let query = healthKit.continuousQuery(
-                input.sampleType,
-                timeRange: input.timeRange,
-                anchor: QueryAnchor(),
-                limit: nil,
-                predicate: input.filterPredicate
-            )
             do {
+                let query = try await healthKit.continuousQuery(
+                    input.sampleType,
+                    timeRange: input.timeRange,
+                    anchor: QueryAnchor(),
+                    source: input.sourceFilter,
+                    limit: nil,
+                    predicate: input.filterPredicate
+                )
                 for try await update in query {
                     guard let self = self else {
                         break

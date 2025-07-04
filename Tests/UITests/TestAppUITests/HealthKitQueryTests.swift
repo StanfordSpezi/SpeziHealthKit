@@ -133,4 +133,21 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
         XCTAssert(app.staticTexts["Time: Deep Sleep, 1:02:00"].waitForExistence(timeout: 1))
         XCTAssert(app.staticTexts["Time: REM Sleep, 1:32:00"].waitForExistence(timeout: 1))
     }
+    @MainActor
+    func testSourceFiltering() async throws {
+        try launchAndAddSamples(healthApp: .healthApp, [
+            .steps()
+        ])
+        
+        let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
+        try launchAndHandleInitialStuff(app)
+        try await Task.sleep(for: .seconds(0.5)) // we need to wait a little so that the permissions sheet is properly dismissed
+        
+        app.buttons["Source Filtering"].tap()
+        try await Task.sleep(for: .seconds(2))
+        XCTAssert(app.staticTexts["Sample Counts Add Up, true"].waitForExistence(timeout: 1))
+        XCTAssert(app.staticTexts["# All Samples"].waitForExistence(timeout: 1))
+        XCTAssert(app.staticTexts["# Our Samples"].waitForExistence(timeout: 1))
+        XCTAssert(app.staticTexts["# Health.app Samples"].waitForExistence(timeout: 1))
+    }
 }

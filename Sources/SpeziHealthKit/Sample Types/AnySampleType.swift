@@ -48,7 +48,7 @@ extension AnySampleType {
     }
     
     // swiftlint:disable:next identifier_name
-    func _makeSamplePredicate(filter filterPredicate: NSPredicate?) -> HKSamplePredicate<Sample> {
+    package func _makeSamplePredicate(filter filterPredicate: NSPredicate?) -> HKSamplePredicate<Sample> {
         let predicate = _makeSamplePredicateInternal(filter: filterPredicate)
         guard let predicate = predicate as? HKSamplePredicate<Sample> else {
             preconditionFailure("HKSamplePredicate has invalid type. Expected '\(HKSamplePredicate<Sample>.self)'; got '\(type(of: predicate))'")
