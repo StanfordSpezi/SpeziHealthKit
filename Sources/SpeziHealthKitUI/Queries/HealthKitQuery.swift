@@ -106,7 +106,7 @@ public struct HealthKitQuery<Sample: _HKSampleWithSampleType>: DynamicProperty {
     
     @_documentation(visibility: internal)
     public nonisolated func update() {
-        runOrScheduleOnMainActor {
+        MainActor.assumeIsolated {
             results.initializeSwiftUIManagedQuery(
                 healthKit: healthKit,
                 input: input

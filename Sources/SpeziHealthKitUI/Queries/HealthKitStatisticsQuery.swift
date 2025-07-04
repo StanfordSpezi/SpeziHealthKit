@@ -124,7 +124,7 @@ public struct HealthKitStatisticsQuery: DynamicProperty { // swiftlint:disable:t
     
     @_documentation(visibility: internal)
     public nonisolated func update() {
-        runOrScheduleOnMainActor {
+        MainActor.assumeIsolated {
             results.initializeSwiftUIManagedQuery(
                 healthKit: healthKit,
                 input: input
