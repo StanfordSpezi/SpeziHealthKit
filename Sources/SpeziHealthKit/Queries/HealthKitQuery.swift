@@ -27,36 +27,61 @@ extension HealthKit {
         // SAFETY: this is @unchecked Sendable, bc of the NSPredicate,
         // but we (ie, this type) control which predicates get passed in,
         // and we only ever pass non-block-based predicates into the enum.
-        private enum Variant: Hashable, @unchecked Sendable {
+        private indirect enum Predicate: Hashable, @unchecked Sendable {
             case any
             case currentApp
-            case predicate(NSPredicate)
+            case nsPredicate(NSPredicate)
+            case and([Predicate])
+            case or([Predicate])
+            
+            var isAny: Bool {
+                switch self {
+                case .any:
+                    true
+                case .currentApp:
+                    false
+                case .nsPredicate(let predicate):
+                    predicate == NSPredicate(value: true)
+                case .and(let predicates):
+                    predicates.allSatisfy(\.isAny)
+                case .or(let predicates):
+                    predicates.contains(where: \.isAny)
+                }
+            }
+            
+            func evaluate(_ source: HKSource) -> Bool {
+                switch self {
+                case .any:
+                    true
+                case .currentApp:
+                    source == .default()
+                case .nsPredicate(let predicate):
+                    predicate.evaluate(with: source)
+                case .and(let predicates):
+                    predicates.allSatisfy { $0.evaluate(source) }
+                case .or(let predicates):
+                    predicates.contains { $0.evaluate(source) }
+                }
+            }
         }
         
-        private let variant: Variant
+        private let predicate: Predicate
         
         /// Whether this is the filter that always matches every `HKSource`.
         public var isAny: Bool {
-            variant == .any
+            predicate.isAny
         }
         
-        private init(variant: Variant) {
-            self.variant = variant
+        private init(predicate: Predicate) {
+            self.predicate = predicate
         }
         
-        private init(_ predicate: NSPredicate) {
-            variant = .predicate(predicate)
+        private init(_ nsPredicate: NSPredicate) {
+            predicate = .nsPredicate(nsPredicate)
         }
         
         func evaluate(against source: HKSource) -> Bool {
-            switch variant {
-            case .any:
-                true
-            case .currentApp:
-                source == .default()
-            case .predicate(let predicate):
-                predicate.evaluate(with: source)
-            }
+            predicate.evaluate(source)
         }
     }
 }
@@ -64,10 +89,10 @@ extension HealthKit {
 
 extension HealthKit.SourceFilter {
     /// A source filter that always matches every `HKSource`.
-    public static let any = Self(variant: .any)
+    public static let any = Self(predicate: .any)
     
     /// A source filter that always matches the `HKSource` representing the current app.
-    public static let currentApp = Self(variant: .currentApp)
+    public static let currentApp = Self(predicate: .currentApp)
     
     /// A source filter matching the iOS Health App.
     public static let healthApp = Self.bundleId("com.apple.Health")
