@@ -51,11 +51,11 @@ struct SleepSessionsView: View {
             if let sleepSession {
                 Section {
                     LabeledContent("Tracked Time", value: sleepSession.timeRange, format: .timeDuration)
-                    LabeledContent("Time Awake", value: Duration.seconds(sleepSession.totalTimeAwake).formatted())
-                    LabeledContent("Time Asleep", value: Duration.seconds(sleepSession.totalTimeAsleep).formatted())
+                    LabeledContent("Time Awake", value: Duration.seconds(sleepSession.totalTimeSpentAwake).formatted())
+                    LabeledContent("Time Asleep", value: Duration.seconds(sleepSession.totalTimeSpentAsleep).formatted())
                     LabeledContent("#Samples", value: sleepSession.count, format: .number)
                     ForEach([SleepSession.SleepPhase.asleepCore, .asleepDeep, .asleepREM], id: \.self) { phase in
-                        let duration = sleepSession.timeTracked(for: phase)
+                        let duration = sleepSession.timeSpent(in: phase)
                         LabeledContent("Time: \(phase.displayTitle)", value: Duration.seconds(duration).formatted())
                     }
                 }

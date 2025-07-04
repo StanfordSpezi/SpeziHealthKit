@@ -38,6 +38,9 @@ struct HealthKitTestsView: View {
                     await healthKit.addHealthDataCollector(CollectSample(.stairDescentSpeed, continueInBackground: true))
                 }
                 LabeledContent("isFullyAuthorized", value: "\(healthKit.isFullyAuthorized)")
+                NavigationLink("Sleep Tests") {
+                    SleepSessionTestsView()
+                }
             }
             Section {
                 NavigationLink("Samples Query") {
