@@ -60,7 +60,7 @@ public struct HealthKitQuery<Sample: _HKSampleWithSampleType>: DynamicProperty {
     ///
     /// - Note: This property is a `RandomAccessCollection<Sample>`; the specific type is an implementation detail and may change.
     public var wrappedValue: Slice<OrderedArray<Sample>> {
-        // until https://github.com/swiftlang/swift/issues/78405, https://github.com/swiftlang/swift/issues/81560,
+        // until https://github.com/swiftlang/swift/issues/78405 https://github.com/swiftlang/swift/issues/81560
         // and https://github.com/swiftlang/swift/issues/81561 are fixed, we can't return `some RandomAccessCollection<Sample>` here,
         // which would arguably be vastly preferable, and sadly need to expose the `OrderedArray` implementation detail :/
         

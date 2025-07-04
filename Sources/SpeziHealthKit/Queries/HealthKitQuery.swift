@@ -14,7 +14,10 @@ extension HealthKit {
     public enum SourceFilter: Hashable, Sendable {
         case any
         case named(String)
-        case withBundleId(String)
+        case bundleId(String)
+        
+        /// The Source representing the iOS Health.app
+        static public let healthApp = Self.bundleId("com.apple.Health")
         
         func matches(_ source: HKSource) -> Bool {
             switch self {
@@ -22,7 +25,7 @@ extension HealthKit {
                 true
             case .named(let name):
                 source.name == name
-            case .withBundleId(let bundleId):
+            case .bundleId(let bundleId):
                 source.bundleIdentifier == bundleId
             }
         }
@@ -155,7 +158,7 @@ extension HealthKit {
         switch sourceFilter {
         case .any:
             return nil
-        case .named, .withBundleId:
+        case .named, .bundleId:
             let descriptor = HKSourceQueryDescriptor(predicate: predicate)
             let allSources = try await descriptor.result(for: healthStore)
             let matchingSources = allSources.filter { sourceFilter.matches($0) }
