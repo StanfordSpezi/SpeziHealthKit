@@ -11,27 +11,95 @@ import HealthKit
 
 
 extension HealthKit {
-    public enum SourceFilter: Hashable, Sendable {
-        case any
-        case named(String)
-        case bundleId(String)
+    /// A filter that allows querying `HKSample`s based on their underlying `HKSource`.
+    ///
+    /// ## Topics
+    /// ### Creating a SourceFilter
+    /// - ``any``
+    /// - ``currentApp``
+    /// - ``healthApp``
+    /// - ``bundleId(_:)``
+    /// - ``named(_:)``
+    /// - ``bundleId(beginsWith:)``
+    /// - ``name(beginsWith:)``
+    /// - ``name(endsWith:)``
+    public struct SourceFilter: Hashable, Sendable {
+        // SAFETY: this is @unchecked Sendable, bc of the NSPredicate,
+        // but we (ie, this type) control which predicates get passed in,
+        // and we only ever pass non-block-based predicates into the enum.
+        private enum Variant: Hashable, @unchecked Sendable {
+            case any
+            case currentApp
+            case predicate(NSPredicate)
+        }
         
-        /// The Source representing the iOS Health.app
-        static public let healthApp = Self.bundleId("com.apple.Health")
+        private let variant: Variant
         
-        func matches(_ source: HKSource) -> Bool {
-            switch self {
+        /// Whether this is the filter that always matches every `HKSource`.
+        public var isAny: Bool {
+            variant == .any
+        }
+        
+        private init(variant: Variant) {
+            self.variant = variant
+        }
+        
+        private init(_ predicate: NSPredicate) {
+            variant = .predicate(predicate)
+        }
+        
+        func evaluate(against source: HKSource) -> Bool {
+            switch variant {
             case .any:
                 true
-            case .named(let name):
-                source.name == name
-            case .bundleId(let bundleId):
-                source.bundleIdentifier == bundleId
+            case .currentApp:
+                source == .default()
+            case .predicate(let predicate):
+                predicate.evaluate(with: source)
             }
         }
     }
+}
+
+
+extension HealthKit.SourceFilter {
+    /// A source filter that always matches every `HKSource`.
+    public static let any = Self(variant: .any)
     
+    /// A source filter that always matches the `HKSource` representing the current app.
+    public static let currentApp = Self(variant: .currentApp)
     
+    /// A source filter matching the iOS Health App.
+    public static let healthApp = Self.bundleId("com.apple.Health")
+    
+    /// A source filter matching all `HKSource`s whose name matches `name`.
+    public static func named(_ name: String) -> Self {
+        .init(NSPredicate(format: "%K = %@", #keyPath(HKSource.name), name))
+    }
+    
+    /// A source filter matching all `HKSource`s whose name begins with `name`.
+    public static func name(beginsWith name: String) -> Self {
+        .init(NSPredicate(format: "%K BEGINSSWITH %@", #keyPath(HKSource.name), name))
+    }
+    
+    /// A source filter matching all `HKSource`s whose name ends with `name`.
+    public static func name(endsWith name: String) -> Self {
+        .init(NSPredicate(format: "%K ENDSWITH %@", #keyPath(HKSource.name), name))
+    }
+    
+    /// A source filter matching all `HKSource`s whose bundle identifier matches `bundleId`.
+    public static func bundleId(_ bundleId: String) -> Self {
+        .init(NSPredicate(format: "%K = %@", #keyPath(HKSource.bundleIdentifier), bundleId))
+    }
+    
+    /// A source filter matching all `HKSource`s whose bundle identifier begins with `bundleId`.
+    public static func bundleId(beginsWith bundleId: String) -> Self {
+        .init(NSPredicate(format: "%K BEGINSSWITH %@", #keyPath(HKSource.bundleIdentifier), bundleId))
+    }
+}
+
+
+extension HealthKit {
     /// Run a one-off query.
     ///
     /// Use this function to perform a simple query of HealthKit samples.
@@ -155,13 +223,12 @@ extension HealthKit {
     
     
     package func sourcePredicate<Sample>(for sourceFilter: SourceFilter, predicate: HKSamplePredicate<Sample>) async throws -> NSPredicate? {
-        switch sourceFilter {
-        case .any:
+        if sourceFilter.isAny {
             return nil
-        case .named, .bundleId:
+        } else {
             let descriptor = HKSourceQueryDescriptor(predicate: predicate)
             let allSources = try await descriptor.result(for: healthStore)
-            let matchingSources = allSources.filter { sourceFilter.matches($0) }
+            let matchingSources = allSources.filter { sourceFilter.evaluate(against: $0) }
             return HKQuery.predicateForObjects(from: Set(matchingSources))
         }
     }
