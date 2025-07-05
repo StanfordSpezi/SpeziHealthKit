@@ -112,7 +112,6 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
     
     @MainActor
     func testSleepSession() async throws {
-        throw XCTSkip()
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
         try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         
@@ -138,7 +137,6 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
     
     @MainActor
     func testSleepSession2() async throws {
-        throw XCTSkip()
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
         try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         try await Task.sleep(for: .seconds(0.5)) // we need to wait a little so that the permissions sheet is properly dismissed
@@ -147,8 +145,11 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
     }
     
     
+    // named like this bc XCTest runs its tests in alphabetical order and we need this to be the last one
+    // (it'll manually add samples via the Health app, which we can't easily remove, and we don't want these
+    // to mess up the other tests, which operate under the assumption that there exist no such samples).
     @MainActor
-    func testXXXSourceFiltering() async throws {
+    func testXXXXXSourceFiltering() async throws {
         throw XCTSkip()
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
         try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
