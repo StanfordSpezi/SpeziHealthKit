@@ -17,7 +17,6 @@ import XCTHealthKit
 final class CollectSampleTests: SpeziHealthKitTests {
     @MainActor
     func testCollectSamples() async throws {
-        throw XCTSkip()
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
         try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         
