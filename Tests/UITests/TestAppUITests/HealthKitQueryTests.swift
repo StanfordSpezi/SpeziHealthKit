@@ -13,7 +13,6 @@ import XCTest
 final class HealthKitQueryTests: SpeziHealthKitTests {
     @MainActor
     func testHealthKitQuery() async throws {
-        throw XCTSkip()
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
         try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         
@@ -30,7 +29,6 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
     
     @MainActor
     func testHealthKitStatisticsQuery() async throws {
-        throw XCTSkip()
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
         try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         
@@ -53,7 +51,6 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
     
     @MainActor
     func testCharacteristicsQuery() async throws {
-        throw XCTSkip()
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
         try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         
@@ -80,7 +77,6 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
     
     @MainActor
     func testScoredAssessments() async throws {
-        throw XCTSkip()
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
         try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         
@@ -116,7 +112,6 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
     
     @MainActor
     func testSleepSession() async throws {
-        throw XCTSkip()
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
         try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         
@@ -142,7 +137,6 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
     
     @MainActor
     func testSleepSession2() async throws {
-        throw XCTSkip()
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
         try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         try await Task.sleep(for: .seconds(0.5)) // we need to wait a little so that the permissions sheet is properly dismissed
