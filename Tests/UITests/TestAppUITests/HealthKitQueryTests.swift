@@ -146,20 +146,37 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
     
     
     @MainActor
-    func testSourceFiltering() async throws {
-        try launchAndAddSamples(healthApp: .healthApp, [
+    func testXXXSourceFiltering() async throws {
+        let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
+        try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
+        app.terminate()
+        
+        let healthApp = XCUIApplication.healthApp
+        healthApp.launch()
+        self.handleHealthAppOnboardingIfNecessary(healthApp)
+        try await Task.sleep(for: .seconds(1))
+        try launchAndAddSamples(healthApp: healthApp, [
             .steps()
         ])
         
-        let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
+        try await launchAndHandleInitialStuff(app, deleteAllHealthData: false)
         try await Task.sleep(for: .seconds(0.5)) // we need to wait a little so that the permissions sheet is properly dismissed
         
         app.buttons["Source Filtering"].tap()
         try await Task.sleep(for: .seconds(2))
         XCTAssert(app.staticTexts["Sample Counts Add Up, true"].waitForExistence(timeout: 1))
-        XCTAssert(app.staticTexts["# All Samples"].waitForExistence(timeout: 1))
-        XCTAssert(app.staticTexts["# Our Samples"].waitForExistence(timeout: 1))
-        XCTAssert(app.staticTexts["# Health.app Samples"].waitForExistence(timeout: 1))
+        XCTAssert(app.staticTexts["# All Samples, 1"].waitForExistence(timeout: 1))
+        XCTAssert(app.staticTexts["# Our Samples"].waitForNonExistence(timeout: 1))
+        XCTAssert(app.staticTexts["# Health.app Samples, 1"].waitForExistence(timeout: 1))
+        
+        app.navigationBars.buttons["HealthKit"].tap()
+        try await addSample(.stepCount, in: app)
+        
+        app.buttons["Source Filtering"].tap()
+        try await Task.sleep(for: .seconds(2))
+        XCTAssert(app.staticTexts["Sample Counts Add Up, true"].waitForExistence(timeout: 1))
+        XCTAssert(app.staticTexts["# All Samples, 2"].waitForExistence(timeout: 1))
+        XCTAssert(app.staticTexts["# Our Samples, 1"].waitForExistence(timeout: 1))
+        XCTAssert(app.staticTexts["# Health.app Samples, 1"].waitForExistence(timeout: 1))
     }
 }

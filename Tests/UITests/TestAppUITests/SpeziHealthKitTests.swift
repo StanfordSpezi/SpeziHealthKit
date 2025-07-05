@@ -48,7 +48,7 @@ class SpeziHealthKitTests: XCTestCase {
     
     @MainActor
     func addSample(_ sampleType: SampleType<HKQuantitySample>, in app: XCUIApplication) async throws {
-        let menuButton = app.navigationBars.images["plus"]
+        let menuButton = app.navigationBars.images["ellipsis.circle"]
         XCTAssert(menuButton.waitForExistence(timeout: 1))
         menuButton.tap()
         let addSampleButton = app.buttons["Add Sample: \(sampleType.displayTitle)"]
@@ -139,10 +139,10 @@ extension XCUIApplication {
         XCTFail(msg)
         throw XCTSkip(msg)
         #else
-        let menuButton = self.navigationBars.images["plus"]
+        let menuButton = self.navigationBars.images["ellipsis.circle"]
         XCTAssert(menuButton.waitForExistence(timeout: 1))
         menuButton.tap()
-        let button = self.buttons["Delete all Data from HealthKit"]
+        let button = self.buttons["Delete Test Data from HealthKit"]
         XCTAssert(button.waitForExistence(timeout: 2))
         button.tap()
         try await Task.sleep(for: .seconds(0.5))

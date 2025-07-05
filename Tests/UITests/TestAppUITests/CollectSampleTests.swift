@@ -20,6 +20,8 @@ final class CollectSampleTests: SpeziHealthKitTests {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
         try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         
+        app.buttons["Collect Samples"].tap()
+        
         // At the beginning, we expect nothing to be collected
         try await assertCollectedSamplesSinceLaunch(in: app, [:])
         // Add a heart rate sample

@@ -8,6 +8,7 @@
 
 import SpeziHealthKit
 import SpeziHealthKitUI
+import SpeziViews
 import SwiftUI
 
 
@@ -22,6 +23,7 @@ struct SourceFilteredQueryView: View {
     private var healthAppSteps
     
     @Environment(HealthKit.self) private var healthKit
+    @State private var viewState: ViewState = .idle
     
     var body: some View {
         Form {
@@ -31,6 +33,12 @@ struct SourceFilteredQueryView: View {
             makeSection("All", samples: allSteps)
             makeSection("Our", samples: ourSteps)
             makeSection("Health.app", samples: healthAppSteps)
+        }
+        .viewStateAlert(state: $viewState)
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                ActionsMenu(viewState: $viewState)
+            }
         }
     }
     
