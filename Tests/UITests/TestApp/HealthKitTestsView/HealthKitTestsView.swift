@@ -28,16 +28,6 @@ struct HealthKitTestsView: View {
                     await checkInitialSamplesAuthStatus()
                 }
                 .disabled(allInitialSampleTypesAreAuthorized)
-                AsyncButton("Trigger data source collection", state: $viewState) {
-                    let start = ContinuousClock.now
-                    await healthKit.triggerDataSourceCollection()
-                    try await Task.sleep(until: start + .seconds(2)) // pretend that the data source triggering takes at least 2 seconds.
-                }
-                AsyncButton("Register more CollectSample instances") {
-                    // we have matching ones for these in the AppDelegate, and we now add the resp reverse, to check the subsumption.
-                    await healthKit.addHealthDataCollector(CollectSample(.stairAscentSpeed, continueInBackground: false))
-                    await healthKit.addHealthDataCollector(CollectSample(.stairDescentSpeed, continueInBackground: true))
-                }
                 LabeledContent("isFullyAuthorized", value: "\(healthKit.isFullyAuthorized)")
                 NavigationLink("Sleep Tests") {
                     SleepSessionTestsView()
