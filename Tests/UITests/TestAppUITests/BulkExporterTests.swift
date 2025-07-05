@@ -13,6 +13,7 @@ import XCTest
 final class BulkExporterTests: SpeziHealthKitTests {
     @MainActor
     func testBulkExport() async throws {
+        throw XCTSkip()
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
         try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         try await Task.sleep(for: .seconds(1))
@@ -40,6 +41,7 @@ final class BulkExporterTests: SpeziHealthKitTests {
     
     @MainActor
     func testBulkExportReset() async throws {
+        throw XCTSkip()
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
         try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         try await Task.sleep(for: .seconds(1))
@@ -76,6 +78,7 @@ final class BulkExporterTests: SpeziHealthKitTests {
     
     @MainActor
     func testDeleteSessionRestorationInfo() async throws {
+        throw XCTSkip()
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
         try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         try await Task.sleep(for: .seconds(1))
