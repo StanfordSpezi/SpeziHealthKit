@@ -45,6 +45,11 @@ import SwiftUI
 /// - Note: This property wrapper is intended for situations where you are interested in all individual samples.
 ///     If you are interested in pre-computed sumamary values for a certain sample type over a certain time range,
 ///     consider using ``HealthKitStatisticsQuery`` instead.
+///
+/// - Note: There is a known bug, where a query that uses a `SourceFilter` and initially doesn't match any samples
+///     (e.g.: because no samples from a matching `HKSource` exist), will not auto-update when a source that matches the filter adds new samples.
+///     Instead, these samples will only show up when the view appears the next time.
+///     If this is a likely scenario for your app, use a ``HealthKitQuery`` without a `SourceFilter` and then perform manual filtering on the resulting samples.
 @propertyWrapper @MainActor
 public struct HealthKitQuery<Sample: _HKSampleWithSampleType>: DynamicProperty { // swiftlint:disable:this file_types_order
     private let input: SamplesQueryResults<Sample>.Input
@@ -184,6 +189,7 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
         guard let input, let healthKit else {
             return
         }
+        samples.removeAll()
         self.isCurrentlyPerformingInitialFetch = true
         queryTask?.cancel()
         queryTask = Task.detached { [weak self] in

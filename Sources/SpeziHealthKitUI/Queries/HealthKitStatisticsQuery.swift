@@ -38,6 +38,11 @@ import SwiftUI
 ///     for a certain sample type over a certain time range.
 ///     If you are interested in simply querying all individual samples for a certain sample type over a certain time range,
 ///     consider using ``HealthKitQuery`` instead.
+///
+/// - Note: There is a known bug, where a query that uses a `SourceFilter` and initially doesn't match any samples
+///     (e.g.: because no samples from a matching `HKSource` exist), will not auto-update when a source that matches the filter adds new samples.
+///     Instead, these samples will only show up when the view appears the next time.
+///     If this is a likely scenario for your app, use a ``HealthKitQuery`` without a `SourceFilter` and then perform manual filtering on the resulting samples.
 @propertyWrapper @MainActor
 public struct HealthKitStatisticsQuery: DynamicProperty { // swiftlint:disable:this file_types_order
     public enum CumulativeAggregationOption: Hashable {

@@ -14,7 +14,8 @@ extension HealthKit {
     /// A filter that allows querying `HKSample`s based on their underlying `HKSource`.
     ///
     /// ## Topics
-    /// ### Creating a SourceFilter
+    ///
+    /// ### Creating a Source Filter
     /// - ``any``
     /// - ``currentApp``
     /// - ``healthApp``
@@ -23,6 +24,10 @@ extension HealthKit {
     /// - ``bundleId(beginsWith:)``
     /// - ``name(beginsWith:)``
     /// - ``name(endsWith:)``
+    ///
+    /// ### Using a Source Filter
+    /// - ``isAny``
+    /// - ``matches(_:)``
     public struct SourceFilter: Hashable, Sendable {
         // SAFETY: this is @unchecked Sendable, bc of the NSPredicate,
         // but we (ie, this type) control which predicates get passed in,
@@ -48,7 +53,8 @@ extension HealthKit {
             variant = .predicate(nsPredicate)
         }
         
-        func matches(_ source: HKSource) -> Bool {
+        /// Determines whether the filter matches a `HKSource`.
+        public func matches(_ source: HKSource) -> Bool {
             switch variant {
             case .any:
                 true

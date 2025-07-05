@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
+@_spi(Testing)
 import SpeziHealthKit
 import SpeziHealthKitUI
 import SpeziViews
@@ -13,6 +14,22 @@ import SwiftUI
 
 
 struct HealthKitTestsView: View {
+    private enum HealthDataDeletionSelector {
+        /// Delete **everything**.
+        case allData
+        /// Delete all data saved to HealthKit by the TestApp.
+        case ourData
+        
+        var queryPredicate: NSPredicate? {
+            switch self {
+            case .allData:
+                nil
+            case .ourData:
+                HKQuery.predicateForObjects(from: HKSource.default())
+            }
+        }
+    }
+    
     @Environment(HealthKit.self) var healthKit
     @Environment(FakeHealthStore.self) var fakeHealthStore
     
@@ -117,7 +134,10 @@ struct HealthKitTestsView: View {
         ]
         return Menu {
             AsyncButton("Delete Test Data from HealthKit", role: .destructive, state: $viewState) {
-                try await deleteTestData()
+                try await deleteTestData(.ourData)
+            }
+            AsyncButton("Delete all Data from HealthKit", role: .destructive, state: $viewState) {
+                try await deleteTestData(.allData)
             }
             Divider()
             ForEach(testData, id: \.self) { entry in
@@ -135,7 +155,7 @@ struct HealthKitTestsView: View {
     
     @MainActor
     private func checkInitialSamplesAuthStatus() async {
-        let reqs = healthKit._initialConfigDataAccessRequirements
+        let reqs = healthKit.initialConfigDataAccessRequirements
         let readFullyAuthd = await reqs.read.allSatisfy { @MainActor type in
             await healthKit.didAskForAuthorization(toRead: type)
         }
@@ -203,21 +223,24 @@ struct HealthKitTestsView: View {
     }
     
     
-    private func deleteTestData() async throws {
-        for sampleType in HKSampleType.allKnownObjectTypes.compactMap({ $0 as? HKSampleType }) {
+    private func deleteTestData(_ selector: HealthDataDeletionSelector) async throws {
+        for sampleType in healthKit.dataAccessRequirements.write {
             let descriptor = HKSampleQueryDescriptor(
                 predicates: [
                     HKSamplePredicate<HKSample>.sample(
                         type: sampleType,
-                        predicate: HKQuery.predicateForObjects(from: HKSource.default())
+                        predicate: selector.queryPredicate
                     )
                 ],
                 sortDescriptors: []
             )
             do {
                 let samples = (try? await descriptor.result(for: healthKit.healthStore)) ?? []
-                try await healthKit.healthStore.delete(samples)
+                if !samples.isEmpty {
+                    try await healthKit.healthStore.delete(samples)
+                }
             } catch {
+                print("Failed to delete \(sampleType): \(error)")
                 throw error
             }
         }

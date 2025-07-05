@@ -45,6 +45,7 @@ import SwiftUI
 /// - ``ContinuousQueryElement``
 ///
 /// ### Handling Authorization
+/// - ``dataAccessRequirements-swift.property``
 /// - ``isFullyAuthorized``
 /// - ``askForAuthorization()``
 /// - ``askForAuthorization(for:)``
@@ -84,11 +85,12 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     /// The HealthKit module's underlying `HKHealthStore`.
     public let healthStore: HKHealthStore
     
-    /// (for testing purposes only) The data access requirements that resulted form the initial configuration passed to the ``HealthKit-swift.class`` module.
-    public let _initialConfigDataAccessRequirements: DataAccessRequirements // swiftlint:disable:this identifier_name
+    /// The data access requirements that resulted form the initial configuration passed to the ``HealthKit-swift.class`` module.
+    @_spi(Testing)
+    public let initialConfigDataAccessRequirements: DataAccessRequirements
     
-    /// Which HealthKit data we need to be able to access, for read and/or write operations.
-    private(set) var dataAccessRequirements: DataAccessRequirements = .init()
+    /// The HealthKit module's current access requirements, resulting from its initial configuration and subsequent authorizations.
+    public private(set) var dataAccessRequirements: DataAccessRequirements = .init()
     
     /// Whether all of the module's current data access requirements were prompted to the user.
     ///
@@ -118,10 +120,10 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     ) {
         healthStore = HKHealthStore()
         pendingConfiguration = config()
-        _initialConfigDataAccessRequirements = pendingConfiguration.reduce(.init()) { dataReqs, component in
+        initialConfigDataAccessRequirements = pendingConfiguration.reduce(.init()) { dataReqs, component in
             dataReqs.merging(with: component.dataAccessRequirements)
         }
-        dataAccessRequirements = _initialConfigDataAccessRequirements
+        dataAccessRequirements = initialConfigDataAccessRequirements
         if !HKHealthStore.isHealthDataAvailable() {
             // If HealthKit is not available, we still initialise the module and the health store as normal.
             // Queries and sample collection, in this case, will simply not return any results.

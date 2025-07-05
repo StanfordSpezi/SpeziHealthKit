@@ -48,7 +48,7 @@ class TestAppDelegate: SpeziAppDelegate {
                 )
                 
                 RequestWriteAccess(
-                    quantity: [.heartRate, .bloodOxygen, .stepCount, .height, .activeEnergyBurned],
+                    quantity: [.heartRate, .bloodOxygen, .stepCount, .height, .activeEnergyBurned, .pushCount],
                     category: [.sleepAnalysis],
                     other: [SampleType.gad7, SampleType.phq9]
                 )
