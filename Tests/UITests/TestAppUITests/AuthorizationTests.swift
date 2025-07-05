@@ -12,7 +12,6 @@ import XCTest
 final class AuthorizationTests: SpeziHealthKitTests {
     @MainActor
     func testRepeatedHealthKitAuthorization() async throws {
-        throw XCTSkip()
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
         try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         // Wait for button to become disabled
