@@ -93,6 +93,10 @@ class ExampleAppDelegate: SpeziAppDelegate {
 - ``HealthKitCharacteristic``
 - ``HealthKitCharacteristicProtocol``
 
+### Working with Sleep Analysis Data
+- ``SleepSession``
+- ``Swift/Collection/splitIntoSleepSessions(threshold:)``
+
 ### Working with ECG Data
 - ``HealthKit/HKElectrocardiogram/symptoms(from:)``
 - ``HealthKit/HKElectrocardiogram/voltageMeasurements(from:)``

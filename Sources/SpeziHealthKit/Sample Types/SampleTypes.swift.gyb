@@ -264,7 +264,7 @@ quantity_types = [
     SampleType.quantity_type(
         identifier='height',
         display_title='Height',
-        display_unit=localeDependentUnit(us='.foot()', metric='.meter()'),
+        display_unit=localeDependentUnit(us='.foot()', metric='.meterUnit(with: .centi)'),
         doc='A quantity sample type that measures the user’s height.'
     ),
     SampleType.quantity_type(

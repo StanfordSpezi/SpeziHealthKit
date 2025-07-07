@@ -99,7 +99,6 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
                         }
                         do {
                             try await self.anchoredSingleObjectQuery()
-                            self.healthKit.logger.debug("Successfully processed background update for \(self.sampleType.hkSampleType)")
                         } catch {
                             self.healthKit.logger.error("Could not query samples in a background update for \(self.sampleType.hkSampleType): \(error)")
                         }
@@ -109,7 +108,6 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
                 queryVariant = .backgroundDelivery(queryInvalidator)
             } else {
                 // set up a non-background query
-                healthKit.logger.notice("Starting anchor query")
                 try await anchoredContinuousObjectQuery()
                 isActive = true
             }

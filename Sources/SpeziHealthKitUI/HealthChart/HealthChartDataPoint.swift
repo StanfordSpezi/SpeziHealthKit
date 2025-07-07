@@ -35,7 +35,7 @@ public struct HealthChartDataPoint: Hashable, Identifiable { // swiftlint:disabl
     public init(sample: HKQuantitySample, unit: HKUnit) {
         self.init(
             id: sample.uuid,
-            date: (sample.startDate...sample.endDate).middle,
+            date: (sample.startDate..<sample.endDate).middle,
             value: sample.quantity.doubleValue(for: unit),
             unit: unit
         )
@@ -44,7 +44,7 @@ public struct HealthChartDataPoint: Hashable, Identifiable { // swiftlint:disabl
     /// Creates a DataPoint from a `HKStatistics` summary object.
     public init?(statistics: HKStatistics, aggregationOption: StatisticsAggregationOption, unit: HKUnit) {
         self.id = AnyHashable(statistics.id)
-        self.date = (statistics.startDate...statistics.endDate).middle
+        self.date = (statistics.startDate..<statistics.endDate).middle
         let value: Double?
         switch aggregationOption {
         case .sum:

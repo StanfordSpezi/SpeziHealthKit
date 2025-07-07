@@ -27,8 +27,8 @@ struct SamplesQueryView: View {
         Form {
             Section {
                 HealthChart {
-                    HealthChartEntry($heartRateSamples, drawingConfig: .init(mode: .line, color: .red))
-                    HealthChartEntry($bloodOxygenSamples, drawingConfig: .init(mode: .line, color: .blue))
+                    HealthChartEntry($heartRateSamples, drawingConfig: .init(chartType: .line, color: .red))
+                    HealthChartEntry($bloodOxygenSamples, drawingConfig: .init(chartType: .line, color: .blue))
                 }
                 .frame(height: 270)
             }
