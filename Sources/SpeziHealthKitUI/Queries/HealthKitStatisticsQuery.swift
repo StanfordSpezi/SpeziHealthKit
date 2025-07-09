@@ -38,6 +38,11 @@ import SwiftUI
 ///     for a certain sample type over a certain time range.
 ///     If you are interested in simply querying all individual samples for a certain sample type over a certain time range,
 ///     consider using ``HealthKitQuery`` instead.
+///
+/// - Note: There is a known bug, where a query that uses a `SourceFilter` and initially doesn't match any samples
+///     (e.g.: because no samples from a matching `HKSource` exist), will not auto-update when a source that matches the filter adds new samples.
+///     Instead, these samples will only show up when the view appears the next time.
+///     If this is a likely scenario for your app, use a ``HealthKitQuery`` without a `SourceFilter` and then perform manual filtering on the resulting samples.
 @propertyWrapper @MainActor
 public struct HealthKitStatisticsQuery: DynamicProperty { // swiftlint:disable:this file_types_order
     public enum CumulativeAggregationOption: Hashable {
@@ -109,6 +114,7 @@ public struct HealthKitStatisticsQuery: DynamicProperty { // swiftlint:disable:t
         rawOptions options: HKStatisticsOptions,
         aggInterval: AggregationInterval,
         timeRange: HealthKitQueryTimeRange,
+        sourceFilter: HealthKit.SourceFilter,
         filter filterPredicate: NSPredicate?
     ) {
         input = .init(
@@ -116,15 +122,16 @@ public struct HealthKitStatisticsQuery: DynamicProperty { // swiftlint:disable:t
             options: options,
             aggInterval: aggInterval,
             timeRange: timeRange,
+            sourceFilter: sourceFilter,
             filterPredicate: filterPredicate
         )
     }
     
     @_documentation(visibility: internal)
     public nonisolated func update() {
-        runOrScheduleOnMainActor {
+        MainActor.assumeIsolated {
             results.initializeSwiftUIManagedQuery(
-                healthStore: healthKit.healthStore,
+                healthKit: healthKit,
                 input: input
             )
         }
@@ -139,6 +146,7 @@ extension HealthKitStatisticsQuery { // swiftlint:disable:this file_types_order
         aggregatedBy options: Set<CumulativeAggregationOption>,
         over aggInterval: AggregationInterval,
         timeRange: HealthKitQueryTimeRange,
+        source sourceFilter: HealthKit.SourceFilter = .any,
         filter filterPredicate: NSPredicate? = nil
     ) {
         self.init(
@@ -146,6 +154,7 @@ extension HealthKitStatisticsQuery { // swiftlint:disable:this file_types_order
             rawOptions: options.reduce(into: [.mostRecent], { $0.formUnion($1.hkStatisticsOption) }),
             aggInterval: aggInterval,
             timeRange: timeRange,
+            sourceFilter: sourceFilter,
             filter: filterPredicate
         )
     }
@@ -156,6 +165,7 @@ extension HealthKitStatisticsQuery { // swiftlint:disable:this file_types_order
         aggregatedBy options: Set<DiscreteAggregationOption>,
         over aggInterval: AggregationInterval,
         timeRange: HealthKitQueryTimeRange,
+        source sourceFilter: HealthKit.SourceFilter = .any,
         filter filterPredicate: NSPredicate? = nil
     ) {
         self.init(
@@ -163,6 +173,7 @@ extension HealthKitStatisticsQuery { // swiftlint:disable:this file_types_order
             rawOptions: options.reduce(into: [.mostRecent], { $0.formUnion($1.hkStatisticsOption) }),
             aggInterval: aggInterval,
             timeRange: timeRange,
+            sourceFilter: sourceFilter,
             filter: filterPredicate
         )
     }
@@ -186,6 +197,7 @@ public final class StatisticsQueryResults: @unchecked Sendable {
         let options: HKStatisticsOptions
         let aggInterval: HealthKitStatisticsQuery.AggregationInterval
         let timeRange: HealthKitQueryTimeRange
+        let sourceFilter: HealthKit.SourceFilter
         let filterPredicate: NSPredicate?
     }
     
@@ -198,7 +210,7 @@ public final class StatisticsQueryResults: @unchecked Sendable {
     /// In the context of this type specifically, this is safe, because the fileprivate `init()` is used only by the ``HealthKitStatisticsQuery``
     /// property wrapper, which assigns a non-nil health store prior to updating the `input` property.
     @ObservationIgnored
-    fileprivate var healthStore: HKHealthStore! // swiftlint:disable:this implicitly_unwrapped_optional
+    private var healthKit: HealthKit?
     
     @ObservationIgnored private var input: Input?
     @ObservationIgnored private var task: Task<Void, Never>?
@@ -216,11 +228,11 @@ public final class StatisticsQueryResults: @unchecked Sendable {
     
     
     @MainActor
-    fileprivate func initializeSwiftUIManagedQuery(healthStore: HKHealthStore, input: Input) {
+    fileprivate func initializeSwiftUIManagedQuery(healthKit: HealthKit, input: Input) {
         guard self.input != input else {
             return
         }
-        self.healthStore = healthStore
+        self.healthKit = healthKit
         self.input = input
         startQuery()
     }
@@ -228,32 +240,30 @@ public final class StatisticsQueryResults: @unchecked Sendable {
     
     @MainActor
     private func startQuery() {
-        guard let healthStore, let input else {
+        guard let healthKit, let input else {
             return
         }
         self.isCurrentlyPerformingInitialFetch = true
-        let sampleType = input.sampleType.hkSampleType
-        let predicate: NSPredicate?
-        switch (input.timeRange.predicate, input.filterPredicate) {
-        case (.none, .none):
-            predicate = nil
-        case (.some(let pred), .none), (.none, .some(let pred)):
-            predicate = pred
-        case let (.some(pred1), .some(pred2)):
-            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [pred1, pred2])
-        }
-        let queryDesc = HKStatisticsCollectionQueryDescriptor(
-            predicate: HKSamplePredicate<HKQuantitySample>.quantitySample(type: sampleType, predicate: predicate),
-            options: input.options,
-            anchorDate: input.timeRange.range.lowerBound,
-            intervalComponents: input.aggInterval.intervalComponents
-        )
-        
         task?.cancel()
-        task = Task.detached { [weak self] in
+        task = Task.detached { [weak self] in // swiftlint:disable:this closure_body_length
             do {
+                let basePredicate = NSCompoundPredicate(
+                    andPredicateWithSubpredicates: [input.timeRange.predicate, input.filterPredicate].compactMap(\.self)
+                )
+                let sourcePredicate = try await healthKit.sourcePredicate(
+                    for: input.sourceFilter,
+                    predicate: input.sampleType._makeSamplePredicate(filter: basePredicate)
+                )
+                let queryDesc = HKStatisticsCollectionQueryDescriptor(
+                    predicate: input.sampleType._makeSamplePredicate(
+                        filter: NSCompoundPredicate(andPredicateWithSubpredicates: [basePredicate, sourcePredicate].compactMap(\.self))
+                    ),
+                    options: input.options,
+                    anchorDate: input.timeRange.range.lowerBound,
+                    intervalComponents: input.aggInterval.intervalComponents
+                )
                 let results = try catchingNSException {
-                    queryDesc.results(for: healthStore)
+                    queryDesc.results(for: healthKit.healthStore)
                 }
                 for try await update in results {
                     guard let self = self else {
