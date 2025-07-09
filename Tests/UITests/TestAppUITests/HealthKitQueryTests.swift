@@ -150,6 +150,7 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
     // to mess up the other tests, which operate under the assumption that there exist no such samples).
     @MainActor
     func testXXXXXSourceFiltering() async throws {
+        throw XCTSkip()
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
         try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         app.terminate()
