@@ -43,7 +43,8 @@ class TestAppDelegate: SpeziAppDelegate {
                 RequestReadAccess(
                     quantity: [.bloodOxygen],
                     category: [.sleepAnalysis],
-                    characteristic: [.activityMoveMode, .biologicalSex, .bloodType, .dateOfBirth, .fitzpatrickSkinType, .wheelchairUse],
+                    // intentionally omitting the blood type here, since we use that for testing the deferred authorization observer
+                    characteristic: [.activityMoveMode, .biologicalSex, .dateOfBirth, .fitzpatrickSkinType, .wheelchairUse],
                     other: [SampleType.workout, SampleType.audiogram, SampleType.gad7, SampleType.phq9]
                 )
                 

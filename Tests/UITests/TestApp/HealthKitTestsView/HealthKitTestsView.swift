@@ -14,14 +14,27 @@ import SwiftUI
 
 
 struct HealthKitTestsView: View {
+    enum TestView: String, CaseIterable {
+        case collectSamples = "Collect Samples"
+        case samplesQuery = "Samples Query"
+        case statisticsQuery = "Statistics Query"
+        case characteristicsQuery = "Characteristics Query"
+        case sleepSessions = "Sleep Sessions"
+        case scoredAssessments = "Scored Assessements"
+        case bulkExporter = "Bulk Exporter"
+        case sourceFiltering = "Source Filtering"
+        case deferredAuthorization = "Deferred Authorization"
+    }
+    
     @Environment(HealthKit.self) var healthKit
     @Environment(FakeHealthStore.self) var fakeHealthStore
     
     @State private var allInitialSampleTypesAreAuthorized = false
     @State private var viewState: ViewState = .idle
+    @State private var tmp = false
     
     var body: some View {
-        Form { // swiftlint:disable:this closure_body_length
+        Form {
             Section {
                 AsyncButton("Ask for authorization", state: $viewState) {
                     try? await healthKit.askForAuthorization()
@@ -34,30 +47,31 @@ struct HealthKitTestsView: View {
                 }
             }
             Section {
-                NavigationLink("Collect Samples") {
-                    CollectSamplesTestView()
+                ForEach(TestView.allCases, id: \.self) { testView in
+                    NavigationLink(testView.rawValue, value: testView)
                 }
-                NavigationLink("Samples Query") {
-                    SamplesQueryView()
-                }
-                NavigationLink("Statistics Query") {
-                    StatisticsQueryView()
-                }
-                NavigationLink("Characteristics") {
-                    CharacteristicsView()
-                }
-                NavigationLink("Sleep Sessions") {
-                    SleepSessionsView()
-                }
-                NavigationLink("Scored Assessments") {
-                    ScoredAssessmentsView()
-                }
-                NavigationLink("Bulk Exporter") {
-                    BulkExportView()
-                }
-                NavigationLink("Source Filtering") {
-                    SourceFilteredQueryView()
-                }
+            }
+        }
+        .navigationDestination(for: TestView.self) { testView in
+            switch testView {
+            case .collectSamples:
+                CollectSamplesTestView()
+            case .samplesQuery:
+                SamplesQueryView()
+            case .statisticsQuery:
+                StatisticsQueryView()
+            case .characteristicsQuery:
+                CharacteristicsView()
+            case .sleepSessions:
+                SleepSessionsView()
+            case .scoredAssessments:
+                ScoredAssessmentsView()
+            case .bulkExporter:
+                BulkExportView()
+            case .sourceFiltering:
+                SourceFilteredQueryView()
+            case .deferredAuthorization:
+                DeferredAuthorizationTests(viewState: $viewState)
             }
         }
         .viewStateAlert(state: $viewState)

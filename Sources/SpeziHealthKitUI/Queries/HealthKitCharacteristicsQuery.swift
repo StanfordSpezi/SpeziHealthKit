@@ -35,8 +35,15 @@ import SwiftUI
 @propertyWrapper
 @MainActor
 public struct HealthKitCharacteristicQuery<Characteristic: HealthKitCharacteristicProtocol>: DynamicProperty {
+    @Observable
+    @MainActor
+    fileprivate final class Storage {
+        var viewUpdate: UInt8 = 0
+    }
+    
     @Environment(HealthKit.self) private var healthKit
     @State private var storage = Storage()
+    @HealthAccessAuthorizationObserver private var accessAuthObserver
     
     private let characteristic: Characteristic
     
@@ -53,36 +60,9 @@ public struct HealthKitCharacteristicQuery<Characteristic: HealthKitCharacterist
     
     public nonisolated func update() {
         MainActor.assumeIsolated {
-            storage.startUpdates(for: characteristic, in: healthKit)
-        }
-    }
-}
-
-
-extension HealthKitCharacteristicQuery {
-    @Observable
-    fileprivate final class Storage: @unchecked Sendable {
-        @MainActor private(set) var viewUpdate: UInt8 = 0
-        @ObservationIgnored private var task: Task<Void, Never>?
-        @ObservationIgnored private var characteristic: Characteristic?
-        
-        nonisolated init() {}
-        
-        @MainActor
-        func startUpdates(for characteristic: Characteristic, in healthKit: HealthKit) {
-            guard task == nil || self.characteristic != characteristic else {
-                // already set up
-                return
-            }
-            task?.cancel()
-            task = Task { [weak self] in
-                let stream = healthKit.observeAuthenticationEvents(matching: .init(read: [characteristic.hkType]))
-                for await accessReqs in stream {
-                    if accessReqs.read.contains(characteristic.hkType) { // swiftlint:disable:this for_where
-                        await MainActor.run {
-                            self?.viewUpdate &+= 1
-                        }
-                    }
+            accessAuthObserver.observeAuthorizationChanges(for: .init(read: [characteristic.hkType])) { [weak storage] in
+                await MainActor.run {
+                    storage?.viewUpdate &+= 1
                 }
             }
         }
