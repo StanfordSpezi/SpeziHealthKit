@@ -11,9 +11,9 @@ import XCTest
 
 final class AuthorizationTests: SpeziHealthKitTests {
     @MainActor
-    func testRepeatedHealthKitAuthorization() throws {
+    func testRepeatedHealthKitAuthorization() async throws {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        try launchAndHandleInitialStuff(app)
+        try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         // Wait for button to become disabled
         let expectation = XCTNSPredicateExpectation(
             predicate: NSPredicate { _, _ in
@@ -21,7 +21,7 @@ final class AuthorizationTests: SpeziHealthKitTests {
             },
             object: .none
         )
-        wait(for: [expectation], timeout: 2)
+        await fulfillment(of: [expectation], timeout: 2)
         XCTAssert(!app.buttons["Ask for authorization"].isEnabled)
     }
 }

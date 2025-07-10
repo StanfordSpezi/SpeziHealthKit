@@ -30,7 +30,7 @@ class SpeziHealthKitTests: XCTestCase {
     }
     
     @MainActor
-    func launchAndHandleInitialStuff(_ app: XCUIApplication) throws {
+    func launchAndHandleInitialStuff(_ app: XCUIApplication, deleteAllHealthData: Bool) async throws {
         app.launch()
         if app.alerts["“TestApp” Would Like to Send You Notifications"].waitForExistence(timeout: 5) {
             app.alerts["“TestApp” Would Like to Send You Notifications"].buttons["Allow"].tap()
@@ -41,17 +41,20 @@ class SpeziHealthKitTests: XCTestCase {
             app.buttons["Ask for authorization"].tap()
             try app.handleHealthKitAuthorization()
         }
+        if deleteAllHealthData {
+            try await app.deleteAllHealthData()
+        }
     }
     
     @MainActor
-    func addSample(_ sampleType: SampleType<HKQuantitySample>, in app: XCUIApplication) throws {
-        let menuButton = app.navigationBars.images["plus"]
+    func addSample(_ sampleType: SampleType<HKQuantitySample>, in app: XCUIApplication) async throws {
+        let menuButton = app.navigationBars.images["ellipsis.circle"]
         XCTAssert(menuButton.waitForExistence(timeout: 1))
         menuButton.tap()
         let addSampleButton = app.buttons["Add Sample: \(sampleType.displayTitle)"]
         XCTAssert(addSampleButton.waitForExistence(timeout: 2))
         addSampleButton.tap()
-        usleep(500_000) // i sleep
+        try await Task.sleep(for: .seconds(0.5)) // i sleep
     }
     
     
@@ -74,9 +77,10 @@ extension SpeziHealthKitTests {
         _ expectedNumSamplesBySampleType: NumSamplesByType,
         file: StaticString = #filePath,
         line: UInt = #line
-    ) {
+    ) async throws {
         let expected = Dictionary(uniqueKeysWithValues: expectedNumSamplesBySampleType.map { ($0.hkSampleType.identifier, $1) })
-        func imp(try: Int) {
+        @MainActor
+        func imp(try: Int) async throws {
             // swiftlint:disable:next empty_count
             let staticTexts = app.staticTexts.count > 0
                 ? app.staticTexts.allElementsBoundByIndex.compactMap { $0.exists ? $0.label : nil }
@@ -86,8 +90,8 @@ extension SpeziHealthKitTests {
                 return
             }
             guard staticTexts.count > 0 else { // swiftlint:disable:this empty_count
-                sleep(2)
-                imp(try: `try` - 1)
+                try await Task.sleep(for: .seconds(2))
+                try await imp(try: `try` - 1)
                 return
             }
             let actual: [String: Int] = Dictionary(uniqueKeysWithValues: staticTexts.compactMap { text in
@@ -100,14 +104,14 @@ extension SpeziHealthKitTests {
             })
             if expected != actual, `try` > 1 {
                 // try again
-                sleep(2)
-                imp(try: `try` - 1)
+                try await Task.sleep(for: .seconds(2))
+                try await imp(try: `try` - 1)
                 return
             } else {
                 XCTAssertEqual(actual, expected, file: file, line: line)
             }
         }
-        imp(try: 5)
+        try await imp(try: 5)
     }
 }
 
@@ -126,5 +130,22 @@ extension XCUIApplication {
             file: file,
             line: line
         )
+    }
+    
+    @MainActor
+    func deleteAllHealthData() async throws {
+        #if !targetEnvironment(simulator)
+        let msg = "Refusing to delete HealthData on a non-simulator device"
+        XCTFail(msg)
+        throw XCTSkip(msg)
+        #else
+        let menuButton = self.navigationBars.images["ellipsis.circle"]
+        XCTAssert(menuButton.waitForExistence(timeout: 1))
+        menuButton.tap()
+        let button = self.buttons["Delete Test Data from HealthKit"]
+        XCTAssert(button.waitForExistence(timeout: 2))
+        button.tap()
+        try await Task.sleep(for: .seconds(0.5))
+        #endif
     }
 }

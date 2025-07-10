@@ -25,15 +25,29 @@ extension Collection where Element == HKCategorySample {
     /// Splits the collection's individual samples into ``SleepSession``s.
     ///
     /// - parameter maxAllowedDistance: The maximum allowed distance between two samples for them to still be considered as bslonging to the same sleep session
+    /// - parameter separateBySource: Whether the algorithm should operate on the samples on a per-source basis,
+    ///     i.e. create separate ``SleepSession``s in case there exist, for a time period, samples from multiple `HKSource`s.
     /// - throws: if the collection doens't exclusively consist of sleep analysis samples
     ///
     /// ## Topics
     /// - ``SleepSessionConversionError``
-    public func splitIntoSleepSessions(threshold maxAllowedDistance: Duration = .minutes(60)) throws(SleepSessionConversionError) -> [SleepSession] {
+    public func splitIntoSleepSessions(
+        threshold maxAllowedDistance: Duration = .minutes(60),
+        separateBySource: Bool = false
+    ) throws(SleepSessionConversionError) -> [SleepSession] {
         guard allSatisfy({ $0.is(.sleepAnalysis) }) else {
             throw SleepSessionConversionError.invalidSampleType
         }
-        return SleepSessionsBuilder.run(maxAllowedDistance: maxAllowedDistance.timeInterval, samples: self)
+        return if separateBySource {
+            // We need to process the samples separately by each source,
+            // in order to avoid incorrect results when there's e.g. 2 apps
+            // performing sleep tracking simultaneously. (E.g.: Apple Watch and AutoSleep.)
+            self.grouped(by: \.sourceRevision.source).flatMap { _, samples in
+                SleepSessionsBuilder.run(maxAllowedDistance: maxAllowedDistance.timeInterval, samples: samples)
+            }
+        } else {
+            SleepSessionsBuilder.run(maxAllowedDistance: maxAllowedDistance.timeInterval, samples: self)
+        }
     }
 }
 

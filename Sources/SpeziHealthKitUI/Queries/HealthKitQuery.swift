@@ -45,6 +45,11 @@ import SwiftUI
 /// - Note: This property wrapper is intended for situations where you are interested in all individual samples.
 ///     If you are interested in pre-computed sumamary values for a certain sample type over a certain time range,
 ///     consider using ``HealthKitStatisticsQuery`` instead.
+///
+/// - Note: There is a known bug, where a query that uses a `SourceFilter` and initially doesn't match any samples
+///     (e.g.: because no samples from a matching `HKSource` exist), will not auto-update when a source that matches the filter adds new samples.
+///     Instead, these samples will only show up when the view appears the next time.
+///     If this is a likely scenario for your app, use a ``HealthKitQuery`` without a `SourceFilter` and then perform manual filtering on the resulting samples.
 @propertyWrapper @MainActor
 public struct HealthKitQuery<Sample: _HKSampleWithSampleType>: DynamicProperty { // swiftlint:disable:this file_types_order
     private let input: SamplesQueryResults<Sample>.Input
@@ -60,7 +65,7 @@ public struct HealthKitQuery<Sample: _HKSampleWithSampleType>: DynamicProperty {
     ///
     /// - Note: This property is a `RandomAccessCollection<Sample>`; the specific type is an implementation detail and may change.
     public var wrappedValue: Slice<OrderedArray<Sample>> {
-        // until https://github.com/swiftlang/swift/issues/78405, https://github.com/swiftlang/swift/issues/81560,
+        // until https://github.com/swiftlang/swift/issues/78405 https://github.com/swiftlang/swift/issues/81560
         // and https://github.com/swiftlang/swift/issues/81561 are fixed, we can't return `some RandomAccessCollection<Sample>` here,
         // which would arguably be vastly preferable, and sadly need to expose the `OrderedArray` implementation detail :/
         
@@ -91,12 +96,14 @@ public struct HealthKitQuery<Sample: _HKSampleWithSampleType>: DynamicProperty {
     public init(
         _ sampleType: SampleType<Sample>,
         timeRange: HealthKitQueryTimeRange,
+        source sourceFilter: HealthKit.SourceFilter = .any,
         filter filterPredicate: NSPredicate? = nil,
         limit: Int? = nil
     ) {
         self.input = .init(
             sampleType: sampleType,
             timeRange: timeRange,
+            sourceFilter: sourceFilter,
             filterPredicate: filterPredicate
         )
         self.limit = limit
@@ -104,7 +111,7 @@ public struct HealthKitQuery<Sample: _HKSampleWithSampleType>: DynamicProperty {
     
     @_documentation(visibility: internal)
     public nonisolated func update() {
-        runOrScheduleOnMainActor {
+        MainActor.assumeIsolated {
             results.initializeSwiftUIManagedQuery(
                 healthKit: healthKit,
                 input: input
@@ -123,6 +130,7 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
     struct Input: Hashable, @unchecked Sendable {
         let sampleType: SampleType<Sample>
         let timeRange: HealthKitQueryTimeRange
+        let sourceFilter: HealthKit.SourceFilter
         let filterPredicate: NSPredicate?
     }
     
@@ -181,17 +189,19 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
         guard let input, let healthKit else {
             return
         }
+        samples.removeAll()
         self.isCurrentlyPerformingInitialFetch = true
         queryTask?.cancel()
         queryTask = Task.detached { [weak self] in
-            let query = healthKit.continuousQuery(
-                input.sampleType,
-                timeRange: input.timeRange,
-                anchor: QueryAnchor(),
-                limit: nil,
-                predicate: input.filterPredicate
-            )
             do {
+                let query = try await healthKit.continuousQuery(
+                    input.sampleType,
+                    timeRange: input.timeRange,
+                    anchor: QueryAnchor(),
+                    source: input.sourceFilter,
+                    limit: nil,
+                    predicate: input.filterPredicate
+                )
                 for try await update in query {
                     guard let self = self else {
                         break

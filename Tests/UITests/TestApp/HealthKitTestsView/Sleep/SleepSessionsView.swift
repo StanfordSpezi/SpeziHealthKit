@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+// swiftlint:disable all
+
 import Charts
 import SpeziHealthKit
 import SpeziHealthKitUI
@@ -16,6 +18,8 @@ import SwiftUI
 struct SleepSessionsView: View {
     @Environment(HealthKit.self)
     private var healthKit
+    
+    @SleepPhaseColors private var sleepPhaseColors
     
     @HealthKitQuery(.sleepAnalysis, timeRange: .init({ () -> Range<Date> in
         let cal = Calendar.current
@@ -29,30 +33,35 @@ struct SleepSessionsView: View {
     
     var body: some View {
         Form {
+            let devices = sleepAnalysisSamples.compactMapIntoSet(\.device)
+                .sorted(using: KeyPathComparator(\.name))
+            let _ = print("#devices: \(devices.count)")
+            let sourceRevisions = sleepAnalysisSamples.mapIntoSet(\.sourceRevision)
+                .sorted(using: KeyPathComparator(\.source.name))
+            Section("Devices") {
+                ForEach(devices, id: \.self) { device in
+                    Text("\(device)")
+                }
+            }
+            Section("SourceRevisions") {
+                ForEach(sourceRevisions, id: \.self) { sourceRevision in
+                    Text("\(sourceRevision)")
+                }
+            }
             if let sleepSession {
                 Section {
                     LabeledContent("Tracked Time", value: sleepSession.timeRange, format: .timeDuration)
-                    LabeledContent("Time Awake", value: Duration.seconds(sleepSession.totalTimeAwake).formatted())
-                    LabeledContent("Time Asleep", value: Duration.seconds(sleepSession.totalTimeAsleep).formatted())
+                    LabeledContent("Time Awake", value: Duration.seconds(sleepSession.totalTimeSpentAwake).formatted())
+                    LabeledContent("Time Asleep", value: Duration.seconds(sleepSession.totalTimeSpentAsleep).formatted())
                     LabeledContent("#Samples", value: sleepSession.count, format: .number)
                     ForEach([SleepSession.SleepPhase.asleepCore, .asleepDeep, .asleepREM], id: \.self) { phase in
-                        let duration = sleepSession.timeTracked(for: phase)
+                        let duration = sleepSession.timeSpent(in: phase)
                         LabeledContent("Time: \(phase.displayTitle)", value: Duration.seconds(duration).formatted())
                     }
                 }
                 Section {
-                    Chart {
-                        let phases = [SleepSession.SleepPhase.inBed, .awake, .asleepREM, .asleepCore, .asleepDeep]
-                        ForEach(phases, id: \.self) { phase in
-                            ForEach(sleepSession.samples(for: phase)) { sample in
-                                RuleMark(
-                                    xStart: .value("Start Date", sample.startDate),
-                                    xEnd: .value("End Date", sample.endDate),
-                                    y: .value("Sleep Phase", sample.sleepPhase!.displayTitle) // swiftlint:disable:this force_unwrapping
-                                )
-                            }
-                        }
-                    }
+                    chart(for: sleepSession)
+                        .frame(height: 250)
                 }
             } else {
                 HStack {
@@ -78,6 +87,38 @@ struct SleepSessionsView: View {
     
     private var sleepSession: SleepSession? {
         (try? sleepAnalysisSamples.splitIntoSleepSessions())?.first
+    }
+    
+    @ViewBuilder
+    private func chart(for sleepSession: SleepSession) -> some View {
+        Chart {
+            let phases = [SleepSession.SleepPhase.inBed, .awake, .asleepREM, .asleepCore, .asleepDeep, .asleepUnspecified]
+            ForEach(phases, id: \.self) { phase in
+                ForEach(sleepSession.samples(for: phase)) { sample in
+                    RuleMark(
+                        xStart: .value("Start Date", sample.startDate),
+                        xEnd: .value("End Date", sample.endDate),
+                        y: .value("Sleep Phase", sample.sleepPhase!.displayTitle) // swiftlint:disable:this force_unwrapping
+                    )
+                    .foregroundStyle(sleepPhaseColors[phase])
+                }
+            }
+        }
+        .chartXAxis {
+            AxisMarks(values: .stride(by: .hour, count: 1)) { value in
+                if let date = value.as(Date.self) {
+                    let hour = Calendar.current.component(.hour, from: date)
+                    switch hour {
+                    case 0, 12:
+                        AxisValueLabel(format: .dateTime.hour())
+                    default:
+                        AxisValueLabel(format: .dateTime.hour(.defaultDigits(amPM: .omitted)))
+                    }
+                    AxisGridLine()
+                    AxisTick()
+                }
+            }
+        }
     }
     
     
