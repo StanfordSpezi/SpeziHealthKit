@@ -38,7 +38,7 @@ class TestAppDelegate: SpeziAppDelegate {
                 CollectSample(.stairAscentSpeed, continueInBackground: true)
                 CollectSample(.stairDescentSpeed, continueInBackground: false)
                 CollectSample(.workout)
-                CollectSample(.bloodPressure, start: .automatic)
+                CollectSample(.bloodPressure, start: .automatic, continueInBackground: true)
                 
                 RequestReadAccess(
                     quantity: [.bloodOxygen],
