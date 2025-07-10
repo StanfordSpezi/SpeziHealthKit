@@ -63,8 +63,8 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
         ))
         
         app.activate()
-        XCTAssert(app.buttons["Characteristics"].waitForExistence(timeout: 2))
-        app.buttons["Characteristics"].tap()
+        XCTAssert(app.buttons["Characteristics Query"].waitForExistence(timeout: 2))
+        app.buttons["Characteristics Query"].tap()
         
         app.assertTableRow("Move Mode", "1")
         app.assertTableRow("Blood Type", "2")
