@@ -55,7 +55,7 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
         try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         
         try launchHealthAppAndEnterCharacteristics(.init(
-            bloodType: .aNegative,
+            bloodType: .oPositive,
             dateOfBirth: .init(year: 2022, month: 10, day: 11),
             biologicalSex: .female,
             skinType: .I,
@@ -67,7 +67,7 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
         app.buttons["Characteristics Query"].tap()
         
         app.assertTableRow("Move Mode", "1")
-        app.assertTableRow("Blood Type", "2")
+        app.assertTableRow("Blood Type", "O+")
         app.assertTableRow("Date of Birth", "2022-10-11T[0-9]{2}:00:00Z")
         app.assertTableRow("Biological Sex", "1")
         app.assertTableRow("Skin Type", "1")
@@ -151,20 +151,46 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
     }
     
     
+    @MainActor
+    func testDeferredAuthorization() throws {
+        let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly", "--disable-blood-type-auth-request"])
+        try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
+        addSample(.distanceCycling, in: app)
+        try launchHealthAppAndEnterCharacteristics(.init(
+            bloodType: .oPositive
+        ))
+        
+        app.delete(app: "TestApp")
+        try launchAndHandleInitialStuff(app, askForAuthorization: false, deleteAllHealthData: false)
+        
+        XCTAssert(app.buttons["Deferred Authorization"].waitForExistence(timeout: 2))
+        app.buttons["Deferred Authorization"].tap()
+        
+        app.assertTableRow("Blood Type", "n/a")
+        app.assertTableRow("#cyclingSamples", "0")
+        app.assertTableRow("#km cycled", "0")
+        
+        app.buttons["Request Blood Type"].tap()
+        try app.handleHealthKitAuthorization()
+        app.assertTableRow("Blood Type", "O\\+") // we need to escape the `+` since this is interpreted as a (NSPredicate-compatible) regex pattern.
+        
+        app.buttons["Request Cycling Distance"].tap()
+        try app.handleHealthKitAuthorization()
+        app.assertTableRow("#cyclingSamples", "1")
+        app.assertTableRow("#km cycled", "52")
+    }
+    
+    
     // named like this bc XCTest runs its tests in alphabetical order and we need this to be the last one
     // (it'll manually add samples via the Health app, which we can't easily remove, and we don't want these
     // to mess up the other tests, which operate under the assumption that there exist no such samples).
     @MainActor
     func testXXXXXSourceFiltering() throws {
-        throw XCTSkip()
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
         try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         app.terminate()
         
         let healthApp = XCUIApplication.healthApp
-        healthApp.launch()
-        self.handleHealthAppOnboardingIfNecessary(healthApp)
-        sleep(for: .seconds(1))
         try launchAndAddSamples(healthApp: healthApp, [
             .steps()
         ])

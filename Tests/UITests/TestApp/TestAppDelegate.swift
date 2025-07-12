@@ -14,7 +14,7 @@ import SpeziHealthKitBulkExport
 class TestAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
         Configuration(standard: HealthKitTestAppStandard()) { // swiftlint:disable:this closure_body_length
-            HealthKit {
+            HealthKit { // swiftlint:disable:this closure_body_length
                 CollectSample(
                     .electrocardiogram,
                     start: .manual,
@@ -43,13 +43,21 @@ class TestAppDelegate: SpeziAppDelegate {
                 RequestReadAccess(
                     quantity: [.bloodOxygen],
                     category: [.sleepAnalysis],
-                    // intentionally omitting the blood type here, since we use that for testing the deferred authorization observer
-                    characteristic: [.activityMoveMode, .biologicalSex, .dateOfBirth, .fitzpatrickSkinType, .wheelchairUse],
+                    characteristic: Array {
+                        HealthKitCharacteristic.activityMoveMode
+                        HealthKitCharacteristic.biologicalSex
+                        if !ProcessInfo.processInfo.arguments.contains("--disable-blood-type-auth-request") {
+                            HealthKitCharacteristic.bloodType
+                        }
+                        HealthKitCharacteristic.dateOfBirth
+                        HealthKitCharacteristic.fitzpatrickSkinType
+                        HealthKitCharacteristic.wheelchairUse
+                    },
                     other: [SampleType.workout, SampleType.audiogram, SampleType.gad7, SampleType.phq9]
                 )
                 
                 RequestWriteAccess(
-                    quantity: [.heartRate, .bloodOxygen, .stepCount, .height, .activeEnergyBurned, .pushCount],
+                    quantity: [.heartRate, .bloodOxygen, .stepCount, .height, .activeEnergyBurned, .pushCount, .distanceCycling],
                     category: [.sleepAnalysis],
                     other: [SampleType.gad7, SampleType.phq9]
                 )

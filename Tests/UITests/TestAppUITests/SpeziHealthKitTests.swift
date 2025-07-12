@@ -30,14 +30,17 @@ class SpeziHealthKitTests: XCTestCase {
     }
     
     @MainActor
-    func launchAndHandleInitialStuff(_ app: XCUIApplication, deleteAllHealthData: Bool) throws {
+    func launchAndHandleInitialStuff(
+        _ app: XCUIApplication,
+        askForAuthorization: Bool = true, // swiftlint:disable:this function_default_parameter_at_end
+        deleteAllHealthData: Bool
+    ) throws {
         app.launch()
         if app.alerts["“TestApp” Would Like to Send You Notifications"].waitForExistence(timeout: 5) {
             app.alerts["“TestApp” Would Like to Send You Notifications"].buttons["Allow"].tap()
         }
-        
         XCTAssert(app.buttons["Ask for authorization"].waitForExistence(timeout: 3))
-        if app.buttons["Ask for authorization"].isEnabled {
+        if askForAuthorization, app.buttons["Ask for authorization"].isEnabled {
             app.buttons["Ask for authorization"].tap()
             try app.handleHealthKitAuthorization()
         }

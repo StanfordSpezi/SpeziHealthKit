@@ -37,10 +37,10 @@ struct DeferredAuthorizationTests: View {
                 )
             }
             Section {
-                AsyncButton("Request BloodType", state: $viewState) {
+                AsyncButton("Request Blood Type", state: $viewState) {
                     try await healthKit.askForAuthorization(for: .init(read: [HKCharacteristicType(.bloodType)]))
                 }
-                AsyncButton("Request CyclingDistance", state: $viewState) {
+                AsyncButton("Request Cycling Distance", state: $viewState) {
                     try await healthKit.askForAuthorization(for: .init(read: [HKQuantityType(.distanceCycling)]))
                 }
             }
