@@ -12,12 +12,12 @@ import XCTest
 
 final class HealthKitQueryTests: SpeziHealthKitTests {
     @MainActor
-    func testHealthKitQuery() async throws {
+    func testHealthKitQuery() throws {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
+        try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         
         for _ in 0..<7 {
-            try await addSample(.stepCount, in: app)
+            addSample(.stepCount, in: app)
         }
         
         XCTAssert(app.buttons["Samples Query"].wait(for: \.isHittable, toEqual: true, timeout: 2))
@@ -28,12 +28,12 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
     
     
     @MainActor
-    func testHealthKitStatisticsQuery() async throws {
+    func testHealthKitStatisticsQuery() throws {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
+        try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         
         for _ in 0..<7 {
-            try await addSample(.stepCount, in: app)
+            addSample(.stepCount, in: app)
         }
         
         XCTAssert(app.buttons["Samples Query"].wait(for: \.isHittable, toEqual: true, timeout: 2))
@@ -50,9 +50,9 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
     
     
     @MainActor
-    func testCharacteristicsQuery() async throws {
+    func testCharacteristicsQuery() throws {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
+        try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         
         try launchHealthAppAndEnterCharacteristics(.init(
             bloodType: .aNegative,
@@ -76,33 +76,33 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
     
     
     @MainActor
-    func testScoredAssessments() async throws {
+    func testScoredAssessments() throws {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
+        try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         
-        try await Task.sleep(for: .seconds(0.5)) // we need to wait a little so that the permissions sheet is properly dismissed
+        sleep(for: .seconds(0.5)) // we need to wait a little so that the permissions sheet is properly dismissed
         app.buttons["Scored Assessments"].tap()
         
         XCTAssert(app.staticTexts["No GAD-7 Assessments"].waitForExistence(timeout: 2))
         XCTAssert(app.staticTexts["No PHQ-9 Assessments"].waitForExistence(timeout: 2))
         
-        func addScore(_ name: String) async throws {
+        func addScore(_ name: String) {
             let menuButton = app.navigationBars.images["plus"]
             XCTAssert(menuButton.waitForExistence(timeout: 1))
             menuButton.tap()
             let addSampleButton = app.buttons["Add Sample: \(name)"]
             XCTAssert(addSampleButton.waitForExistence(timeout: 2))
             addSampleButton.tap()
-            try await Task.sleep(for: .seconds(0.5)) // i sleep
+            sleep(for: .seconds(0.5)) // i sleep
         }
         
-        try await addScore("GAD-7")
+        addScore("GAD-7")
         XCTAssert(app.staticTexts["No GAD-7 Assessments"].waitForNonExistence(timeout: 2))
         app.assertTableRow("Date", "2025-04-25")
         app.assertTableRow("Risk", "2")
         app.assertTableRow("Answers", "2;3;0;1;1;0;2")
         
-        try await addScore("PHQ-9")
+        addScore("PHQ-9")
         XCTAssert(app.staticTexts["No PHQ-9 Assessments"].waitForNonExistence(timeout: 2))
         app.assertTableRow("Date", "2025-04-27")
         app.assertTableRow("Risk", "3")
@@ -111,14 +111,14 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
     
     
     @MainActor
-    func testSleepSession() async throws {
+    func testSleepSession() throws {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
+        try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         
-        try await Task.sleep(for: .seconds(0.5)) // we need to wait a little so that the permissions sheet is properly dismissed
+        sleep(for: .seconds(0.5)) // we need to wait a little so that the permissions sheet is properly dismissed
         app.buttons["Sleep Sessions"].tap()
         
-        try await Task.sleep(for: .seconds(2)) // give it a bit to fetch and process the data
+        sleep(for: .seconds(2)) // give it a bit to fetch and process the data
         
         if app.staticTexts["No Sleep Data"].waitForExistence(timeout: 1) {
             app.navigationBars.buttons["Add Samples"].tap()
@@ -136,11 +136,17 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
     
     
     @MainActor
-    func testSleepSession2() async throws {
+    func testSleepSession2() throws {
+        print(#function, #line)
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
-        try await Task.sleep(for: .seconds(0.5)) // we need to wait a little so that the permissions sheet is properly dismissed
+        print(#function, #line)
+        try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
+        print(#function, #line)
+        sleep(for: .seconds(0.5)) // we need to wait a little so that the permissions sheet is properly dismissed
+//        sleep(1)
+        print(#function, #line)
         app.buttons["Sleep Tests"].tap()
+        print(#function, #line)
         XCTAssert(app.staticTexts["Success"].waitForExistence(timeout: 5))
     }
     
@@ -149,35 +155,35 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
     // (it'll manually add samples via the Health app, which we can't easily remove, and we don't want these
     // to mess up the other tests, which operate under the assumption that there exist no such samples).
     @MainActor
-    func testXXXXXSourceFiltering() async throws {
+    func testXXXXXSourceFiltering() throws {
         throw XCTSkip()
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
+        try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         app.terminate()
         
         let healthApp = XCUIApplication.healthApp
         healthApp.launch()
         self.handleHealthAppOnboardingIfNecessary(healthApp)
-        try await Task.sleep(for: .seconds(1))
+        sleep(for: .seconds(1))
         try launchAndAddSamples(healthApp: healthApp, [
             .steps()
         ])
         
-        try await launchAndHandleInitialStuff(app, deleteAllHealthData: false)
-        try await Task.sleep(for: .seconds(0.5)) // we need to wait a little so that the permissions sheet is properly dismissed
+        try launchAndHandleInitialStuff(app, deleteAllHealthData: false)
+        sleep(for: .seconds(0.5)) // we need to wait a little so that the permissions sheet is properly dismissed
         
         app.buttons["Source Filtering"].tap()
-        try await Task.sleep(for: .seconds(2))
+        sleep(for: .seconds(2))
         XCTAssert(app.staticTexts["Sample Counts Add Up, true"].waitForExistence(timeout: 1))
         XCTAssert(app.staticTexts["# All Samples, 1"].waitForExistence(timeout: 1))
         XCTAssert(app.staticTexts["# Our Samples"].waitForNonExistence(timeout: 1))
         XCTAssert(app.staticTexts["# Health.app Samples, 1"].waitForExistence(timeout: 1))
         
         app.navigationBars.buttons["HealthKit"].tap()
-        try await addSample(.stepCount, in: app)
+        addSample(.stepCount, in: app)
         
         app.buttons["Source Filtering"].tap()
-        try await Task.sleep(for: .seconds(2))
+        sleep(for: .seconds(2))
         XCTAssert(app.staticTexts["Sample Counts Add Up, true"].waitForExistence(timeout: 1))
         XCTAssert(app.staticTexts["# All Samples, 2"].waitForExistence(timeout: 1))
         XCTAssert(app.staticTexts["# Our Samples, 1"].waitForExistence(timeout: 1))

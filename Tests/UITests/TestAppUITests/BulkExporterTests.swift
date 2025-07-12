@@ -12,10 +12,10 @@ import XCTest
 
 final class BulkExporterTests: SpeziHealthKitTests {
     @MainActor
-    func testBulkExport() async throws {
+    func testBulkExport() throws {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
-        try await Task.sleep(for: .seconds(1))
+        try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
+        sleep(for: .seconds(1))
         app.buttons["Bulk Exporter"].tap()
         
         app.buttons["Request full access"].tap()
@@ -31,7 +31,7 @@ final class BulkExporterTests: SpeziHealthKitTests {
         app.buttons["Start Bulk Export"].tap()
         XCTAssert(app.staticTexts["Completed 8 of 27 (0 failed)"].waitForExistence(timeout: 20))
         app.buttons["Pause"].tap()
-        try await Task.sleep(for: .seconds(2))
+        sleep(for: .seconds(2))
         app.buttons["Start"].tap()
         XCTAssert(app.staticTexts["State, completed"].waitForExistence(timeout: 30))
         XCTAssertEqual(try XCTUnwrap(app.numExportedSamples), try XCTUnwrap(app.numTestingSamples))
@@ -39,10 +39,10 @@ final class BulkExporterTests: SpeziHealthKitTests {
     
     
     @MainActor
-    func testBulkExportReset() async throws {
+    func testBulkExportReset() throws {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
-        try await Task.sleep(for: .seconds(1))
+        try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
+        sleep(for: .seconds(1))
         
         app.buttons["Bulk Exporter"].tap()
         
@@ -57,13 +57,13 @@ final class BulkExporterTests: SpeziHealthKitTests {
         XCTAssertGreaterThan(try XCTUnwrap(app.numTestingSamples), 0)
         
         app.buttons["Start Bulk Export"].tap()
-        try await Task.sleep(for: .seconds(7))
+        sleep(for: .seconds(7))
         app.buttons["Pause"].tap()
-        try await Task.sleep(for: .seconds(1))
+        sleep(for: .seconds(1))
         let numExportedSamplesFirstSession = try XCTUnwrap(app.numExportedSamples)
         app.terminate()
         
-        try await launchAndHandleInitialStuff(app, deleteAllHealthData: false)
+        try launchAndHandleInitialStuff(app, deleteAllHealthData: false)
         app.buttons["Bulk Exporter"].tap()
         XCTAssertEqual(try XCTUnwrap(app.numExportedSamples), 0)
         XCTAssertGreaterThan(try XCTUnwrap(app.numTestingSamples), 0)
@@ -75,10 +75,10 @@ final class BulkExporterTests: SpeziHealthKitTests {
     
     
     @MainActor
-    func testDeleteSessionRestorationInfo() async throws {
+    func testDeleteSessionRestorationInfo() throws {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        try await launchAndHandleInitialStuff(app, deleteAllHealthData: true)
-        try await Task.sleep(for: .seconds(1))
+        try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
+        sleep(for: .seconds(1))
         
         app.buttons["Bulk Exporter"].tap()
         
@@ -93,12 +93,12 @@ final class BulkExporterTests: SpeziHealthKitTests {
         XCTAssertGreaterThan(try XCTUnwrap(app.numTestingSamples), 0)
         
         app.buttons["Start Bulk Export"].tap()
-        try await Task.sleep(for: .seconds(7))
+        sleep(for: .seconds(7))
         app.buttons["Pause"].tap()
-        try await Task.sleep(for: .seconds(1))
+        sleep(for: .seconds(1))
         app.terminate()
         
-        try await launchAndHandleInitialStuff(app, deleteAllHealthData: false)
+        try launchAndHandleInitialStuff(app, deleteAllHealthData: false)
         app.buttons["Bulk Exporter"].tap()
         XCTAssertEqual(try XCTUnwrap(app.numExportedSamples), 0)
         XCTAssertGreaterThan(try XCTUnwrap(app.numTestingSamples), 0)
