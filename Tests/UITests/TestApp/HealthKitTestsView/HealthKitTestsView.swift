@@ -20,7 +20,7 @@ struct HealthKitTestsView: View {
         case statisticsQuery = "Statistics Query"
         case characteristicsQuery = "Characteristics Query"
         case sleepSessions = "Sleep Sessions"
-        case scoredAssessments = "Scored Assessements"
+        case scoredAssessments = "Scored Assessments"
         case bulkExporter = "Bulk Exporter"
         case sourceFiltering = "Source Filtering"
         case deferredAuthorization = "Deferred Authorization"
