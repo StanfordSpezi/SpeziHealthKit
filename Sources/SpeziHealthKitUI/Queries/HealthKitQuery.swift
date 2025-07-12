@@ -61,6 +61,8 @@ public struct HealthKitQuery<Sample: _HKSampleWithSampleType>: DynamicProperty {
     @State
     private var results = SamplesQueryResults<Sample>()
     
+    @HealthAccessAuthorizationObserver private var accessAuthObserver
+    
     /// The individual query results.
     ///
     /// - Note: This property is a `RandomAccessCollection<Sample>`; the specific type is an implementation detail and may change.
@@ -116,6 +118,10 @@ public struct HealthKitQuery<Sample: _HKSampleWithSampleType>: DynamicProperty {
                 healthKit: healthKit,
                 input: input
             )
+            let accessReqs = HealthKit.DataAccessRequirements(read: [input.sampleType.hkSampleType])
+            accessAuthObserver.observeAuthorizationChanges(for: accessReqs) { [results, healthKit, input] in
+                await results.initializeSwiftUIManagedQuery(healthKit: healthKit, input: input, forceUpdate: true)
+            }
         }
     }
 }
@@ -150,6 +156,9 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
     @ObservationIgnored
     private var queryTask: Task<Void, Never>?
     
+    @ObservationIgnored
+    private var authorizationObserverTask: Task<Void, Never>?
+    
     public private(set) var isCurrentlyPerformingInitialFetch: Bool = false
     public private(set) var queryError: (any Error)?
     
@@ -172,8 +181,8 @@ public final class SamplesQueryResults<Sample: _HKSampleWithSampleType>: @unchec
     
     
     @MainActor
-    fileprivate func initializeSwiftUIManagedQuery(healthKit: HealthKit, input: Input) {
-        guard self.input != input else {
+    fileprivate func initializeSwiftUIManagedQuery(healthKit: HealthKit, input: Input, forceUpdate: Bool = false) {
+        guard forceUpdate || self.input != input else {
             return
         }
         self.healthKit = healthKit
