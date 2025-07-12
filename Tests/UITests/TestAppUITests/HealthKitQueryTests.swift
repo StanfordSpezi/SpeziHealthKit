@@ -67,7 +67,7 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
         app.buttons["Characteristics Query"].tap()
         
         app.assertTableRow("Move Mode", "1")
-        app.assertTableRow("Blood Type", "O+")
+        app.assertTableRow("Blood Type", "O\\+")
         app.assertTableRow("Date of Birth", "2022-10-11T[0-9]{2}:00:00Z")
         app.assertTableRow("Biological Sex", "1")
         app.assertTableRow("Skin Type", "1")
@@ -190,8 +190,7 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
         try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         app.terminate()
         
-        let healthApp = XCUIApplication.healthApp
-        try launchAndAddSamples(healthApp: healthApp, [
+        try launchAndAddSamples(healthApp: .healthApp, [
             .steps()
         ])
         
