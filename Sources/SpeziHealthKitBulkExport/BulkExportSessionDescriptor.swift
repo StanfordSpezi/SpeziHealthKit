@@ -88,6 +88,7 @@ struct ExportSessionDescriptor: Codable {
     }
 }
 
+
 extension ExportSessionDescriptor {
     /// Determines a resolved batch size, based on an input batch size and a sample type.
     ///
@@ -96,7 +97,8 @@ extension ExportSessionDescriptor {
         switch batchSize {
         case .automatic:
             switch sampleType {
-            case SampleType.activeEnergyBurned, SampleType.stepCount, SampleType.heartRate:
+            case SampleType.activeEnergyBurned, SampleType.basalEnergyBurned, SampleType.heartRate,
+                SampleType.distanceWalkingRunning, SampleType.physicalEffort, SampleType.stepCount:
                 .byMonth
             default:
                 .byYear
