@@ -93,7 +93,8 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
                         guard !sampleTypes.isEmpty else {
                             return
                         }
-                        guard sampleTypes.contains(self.sampleType.hkSampleType) else {
+                        let expectedSampleTypes = self.sampleType.effectiveSampleTypesForAuthentication.compactMapIntoSet { $0.hkSampleType }
+                        guard !sampleTypes.isDisjoint(with: expectedSampleTypes) else {
                             self.healthKit.logger.warning("Received Observation query types (\(sampleTypes)) are not corresponding to the CollectSample type \(self.sampleType.hkSampleType)")
                             return
                         }

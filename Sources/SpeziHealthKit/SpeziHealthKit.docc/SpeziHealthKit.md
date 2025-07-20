@@ -107,3 +107,5 @@ class ExampleAppDelegate: SpeziAppDelegate {
 ### HealthKit Utilities
 - ``HealthKit/HKUnit/*(_:_:)``
 - ``HealthKit/HKUnit//(_:_:)``
+- ``HealthKit/HKBloodType/allKnownValues``
+- ``HealthKit/HKBloodType/displayTitle``

@@ -8,7 +8,7 @@
 
 import Foundation
 import HealthKit
-@_spi(Internal) import SpeziHealthKit
+@_spi(APISupport) import SpeziHealthKit
 import SwiftUI
 
 
@@ -33,18 +33,38 @@ import SwiftUI
 /// }
 /// ```
 @propertyWrapper
+@MainActor
 public struct HealthKitCharacteristicQuery<Characteristic: HealthKitCharacteristicProtocol>: DynamicProperty {
+    @Observable
+    @MainActor
+    fileprivate final class Storage {
+        var viewUpdate: UInt8 = 0
+    }
+    
     @Environment(HealthKit.self) private var healthKit
+    @State private var storage = Storage()
+    @HealthAccessAuthorizationObserver private var accessAuthObserver
     
     private let characteristic: Characteristic
     
     /// The value of the underlying characteristic.
     public var wrappedValue: Characteristic.Value? {
-        try? characteristic.value(in: healthKit.healthStore)
+        _ = storage.viewUpdate
+        return try? characteristic.value(in: healthKit.healthStore)
     }
     
     /// Creates a new characteristic query
     public init(_ characteristic: Characteristic) {
         self.characteristic = characteristic
+    }
+    
+    public nonisolated func update() {
+        MainActor.assumeIsolated {
+            accessAuthObserver.observeAuthorizationChanges(for: .init(read: [characteristic.hkType])) { [weak storage] in
+                await MainActor.run {
+                    storage?.viewUpdate &+= 1
+                }
+            }
+        }
     }
 }

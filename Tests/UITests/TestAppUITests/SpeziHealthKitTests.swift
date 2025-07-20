@@ -30,31 +30,34 @@ class SpeziHealthKitTests: XCTestCase {
     }
     
     @MainActor
-    func launchAndHandleInitialStuff(_ app: XCUIApplication, deleteAllHealthData: Bool) async throws {
+    func launchAndHandleInitialStuff(
+        _ app: XCUIApplication,
+        askForAuthorization: Bool = true, // swiftlint:disable:this function_default_parameter_at_end
+        deleteAllHealthData: Bool
+    ) throws {
         app.launch()
         if app.alerts["“TestApp” Would Like to Send You Notifications"].waitForExistence(timeout: 5) {
             app.alerts["“TestApp” Would Like to Send You Notifications"].buttons["Allow"].tap()
         }
-        
         XCTAssert(app.buttons["Ask for authorization"].waitForExistence(timeout: 3))
-        if app.buttons["Ask for authorization"].isEnabled {
+        if askForAuthorization, app.buttons["Ask for authorization"].isEnabled {
             app.buttons["Ask for authorization"].tap()
             try app.handleHealthKitAuthorization()
         }
         if deleteAllHealthData {
-            try await app.deleteAllHealthData()
+            try app.deleteAllHealthData()
         }
     }
     
     @MainActor
-    func addSample(_ sampleType: SampleType<HKQuantitySample>, in app: XCUIApplication) async throws {
+    func addSample(_ sampleType: SampleType<HKQuantitySample>, in app: XCUIApplication) {
         let menuButton = app.navigationBars.images["ellipsis.circle"]
         XCTAssert(menuButton.waitForExistence(timeout: 1))
         menuButton.tap()
         let addSampleButton = app.buttons["Add Sample: \(sampleType.displayTitle)"]
         XCTAssert(addSampleButton.waitForExistence(timeout: 2))
         addSampleButton.tap()
-        try await Task.sleep(for: .seconds(0.5)) // i sleep
+        sleep(for: .seconds(0.5)) // i sleep
     }
     
     
@@ -77,10 +80,10 @@ extension SpeziHealthKitTests {
         _ expectedNumSamplesBySampleType: NumSamplesByType,
         file: StaticString = #filePath,
         line: UInt = #line
-    ) async throws {
+    ) {
         let expected = Dictionary(uniqueKeysWithValues: expectedNumSamplesBySampleType.map { ($0.hkSampleType.identifier, $1) })
         @MainActor
-        func imp(try: Int) async throws {
+        func imp(try: Int) {
             // swiftlint:disable:next empty_count
             let staticTexts = app.staticTexts.count > 0
                 ? app.staticTexts.allElementsBoundByIndex.compactMap { $0.exists ? $0.label : nil }
@@ -90,8 +93,8 @@ extension SpeziHealthKitTests {
                 return
             }
             guard staticTexts.count > 0 else { // swiftlint:disable:this empty_count
-                try await Task.sleep(for: .seconds(2))
-                try await imp(try: `try` - 1)
+                sleep(for: .seconds(2))
+                imp(try: `try` - 1)
                 return
             }
             let actual: [String: Int] = Dictionary(uniqueKeysWithValues: staticTexts.compactMap { text in
@@ -104,14 +107,14 @@ extension SpeziHealthKitTests {
             })
             if expected != actual, `try` > 1 {
                 // try again
-                try await Task.sleep(for: .seconds(2))
-                try await imp(try: `try` - 1)
+                sleep(for: .seconds(2))
+                imp(try: `try` - 1)
                 return
             } else {
                 XCTAssertEqual(actual, expected, file: file, line: line)
             }
         }
-        try await imp(try: 5)
+        imp(try: 5)
     }
 }
 
@@ -133,7 +136,7 @@ extension XCUIApplication {
     }
     
     @MainActor
-    func deleteAllHealthData() async throws {
+    func deleteAllHealthData() throws {
         #if !targetEnvironment(simulator)
         let msg = "Refusing to delete HealthData on a non-simulator device"
         XCTFail(msg)
@@ -145,7 +148,12 @@ extension XCUIApplication {
         let button = self.buttons["Delete Test Data from HealthKit"]
         XCTAssert(button.waitForExistence(timeout: 2))
         button.tap()
-        try await Task.sleep(for: .seconds(0.5))
+        sleep(for: .seconds(0.5))
         #endif
     }
+}
+
+
+func sleep(for duration: Duration) {
+    usleep(UInt32(duration.timeInterval * 1000000))
 }

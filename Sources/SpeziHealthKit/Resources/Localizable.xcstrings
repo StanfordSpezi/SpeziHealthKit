@@ -1,6 +1,18 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "A-" : {
+
+    },
+    "A+" : {
+
+    },
+    "AB-" : {
+
+    },
+    "AB+" : {
+
+    },
     "Abdominal Cramps" : {
 
     },
@@ -48,6 +60,12 @@
           }
         }
       }
+    },
+    "B-" : {
+
+    },
+    "B+" : {
+
     },
     "Basal Body Temperature" : {
 
@@ -424,7 +442,16 @@
     "Night Sweats" : {
 
     },
+    "Not Set" : {
+
+    },
     "Number of Times Fallen" : {
+
+    },
+    "O-" : {
+
+    },
+    "O+" : {
 
     },
     "Ovulation Test Result" : {
@@ -620,6 +647,9 @@
 
     },
     "Underwater Depth" : {
+
+    },
+    "Unknown" : {
 
     },
     "UV Index" : {

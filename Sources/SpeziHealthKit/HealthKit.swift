@@ -73,6 +73,11 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
         case completed
     }
     
+    private struct AuthorizationEventObserver {
+        let accessRequirements: DataAccessRequirements
+        let continuation: AsyncStream<DataAccessRequirements>.Continuation
+    }
+    
     @ObservationIgnored @StandardActor
     private var standard: any HealthKitConstraint
     
@@ -109,6 +114,8 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     
     /// All background-data-collecting data sources registered with the HealthKit module.
     @ObservationIgnored /* private-but-testable */ private(set) var registeredDataCollectors: [any HealthDataCollector] = []
+    
+    private var authorizationEventObservers: [UUID: AuthorizationEventObserver] = [:]
     
     
     /// Creates a new instance of the ``HealthKit-class`` module, with the specified configuration.
@@ -206,6 +213,11 @@ extension HealthKit {
             }
             for collector in registeredDataCollectors {
                 await startAutomaticDataCollectionIfPossible(collector)
+            }
+            for observer in authorizationEventObservers.values {
+                if observer.accessRequirements.overlaps(accessRequirements) { // swiftlint:disable:this for_where
+                    observer.continuation.yield(accessRequirements)
+                }
             }
             await updateIsFullyAuthorized(for: accessRequirements)
         } catch {
@@ -356,6 +368,28 @@ extension HealthKit {
             isFullyAuthorized = true
         }
     }
+    
+    /// Monitor changes to the application's Health Data Authorizations
+    ///
+    /// Creates an `AsyncStream` that will emit an element every time health access authorizations are requested that overlap with the specified `accessRequirements`.
+    ///
+    /// - Note: For read requirements, the stream will emit an element regardless of whether or not the user actually granted access.
+    @_spi(APISupport)
+    @MainActor
+    public func observeAuthenticationEvents(matching accessRequirements: DataAccessRequirements) -> AsyncStream<DataAccessRequirements> {
+        let (stream, continuation) = AsyncStream.makeStream(of: DataAccessRequirements.self)
+        let id = UUID()
+        self.authorizationEventObservers[id] = .init(
+            accessRequirements: accessRequirements,
+            continuation: continuation
+        )
+        continuation.onTermination = { [weak self] _ in
+            Task { @MainActor in
+                self?.authorizationEventObservers[id] = nil
+            }
+        }
+        return stream
+    }
 }
 
 
@@ -492,6 +526,13 @@ extension HealthKit {
             }
             await group.waitForAll()
         }
+    }
+}
+
+
+extension HealthKit.DataAccessRequirements {
+    func overlaps(_ other: Self) -> Bool {
+        !self.read.isDisjoint(with: other.read) || !self.write.isDisjoint(with: other.write)
     }
 }
 
