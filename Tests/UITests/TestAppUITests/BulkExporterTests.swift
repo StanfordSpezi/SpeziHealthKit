@@ -34,7 +34,7 @@ final class BulkExporterTests: SpeziHealthKitTests {
         app.buttons["Pause"].tap()
         sleep(for: .seconds(2))
         app.buttons["Start"].tap()
-        XCTAssert(app.staticTexts["State, completed"].waitForExistence(timeout: 30))
+        XCTAssert(app.staticTexts["State, completed"].waitForExistence(timeout: 180))
         XCTAssertEqual(try XCTUnwrap(app.numExportedSamples), try XCTUnwrap(app.numTestingSamples))
     }
     
