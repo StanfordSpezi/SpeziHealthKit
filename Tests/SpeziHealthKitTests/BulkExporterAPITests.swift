@@ -85,7 +85,7 @@ struct BulkExporterAPITests {
     
     
     @Test
-    func exportBatchTimeRanges() async throws {
+    func exportBatchTimeRanges() async throws { // swiftlint:disable:this function_body_length
         let cal = Calendar.current
         let healthKit = HealthKit()
         let bulkExporter = BulkHealthExporter()
@@ -106,7 +106,11 @@ struct BulkExporterAPITests {
         )
         #expect(sessionDescriptor.pendingBatches.isEmpty)
         #expect(sessionDescriptor.completedBatches.isEmpty)
-        #expect(try await sessionDescriptor.startDate.startDate(for: SampleType.heartRate, in: healthKit, relativeTo: sessionDescriptor.endDate) == makeDate(2025, 1, 26))
+        #expect(try await sessionDescriptor.startDate.startDate(
+            for: SampleType.heartRate,
+            in: healthKit,
+            relativeTo: sessionDescriptor.endDate
+        ) == makeDate(2025, 1, 26))
         #expect(try cal.startOfWeek(for: makeDate(2025, 1, 26)) == makeDate(2025, 1, 20))
         #expect(try cal.start(of: .week, for: makeDate(2025, 1, 26)) == makeDate(2025, 1, 20))
         
@@ -127,7 +131,7 @@ struct BulkExporterAPITests {
             .init(sampleType: SampleType.heartRate, timeRange: try makeDate(2025, 4, 1)..<makeDate(2025, 5, 1)),
             .init(sampleType: SampleType.heartRate, timeRange: try makeDate(2025, 5, 1)..<makeDate(2025, 6, 1)),
             .init(sampleType: SampleType.heartRate, timeRange: try makeDate(2025, 6, 1)..<makeDate(2025, 7, 1)),
-            .init(sampleType: SampleType.heartRate, timeRange: try makeDate(2025, 7, 1)..<makeDate(2025, 7, 26)),
+            .init(sampleType: SampleType.heartRate, timeRange: try makeDate(2025, 7, 1)..<makeDate(2025, 7, 26))
         ])
         
         await sessionDescriptor.add(sampleType: .activeEnergyBurned, batchSize: .calendarComponent(.week, multiplier: 2), healthKit: healthKit)
@@ -146,7 +150,7 @@ struct BulkExporterAPITests {
             .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 6, 9)..<makeDate(2025, 6, 23)),
             .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 6, 23)..<makeDate(2025, 7, 7)),
             .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 7, 7)..<makeDate(2025, 7, 21)),
-            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 7, 21)..<makeDate(2025, 7, 26)),
+            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 7, 21)..<makeDate(2025, 7, 26))
         ]))
     }
 }
