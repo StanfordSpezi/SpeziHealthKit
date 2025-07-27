@@ -99,7 +99,9 @@ struct BulkExporterAPITests {
             try #require(cal.date(from: .init(year: year, month: month, day: day)), sourceLocation: location)
         }
         
-        let dayAdj = -(2 - Calendar.current.firstWeekday)
+        // needed to support running the test in both locales that start the week on monday and on sunday.
+        // the test case below assumes monday as start of week.
+        let dayAdj = -(2 - cal.firstWeekday)
         
         var sessionDescriptor = ExportSessionDescriptor(
             sessionId: .init(UUID().uuidString),
@@ -139,20 +141,20 @@ struct BulkExporterAPITests {
         await sessionDescriptor.add(sampleType: .activeEnergyBurned, batchSize: .calendarComponent(.week, multiplier: 2), healthKit: healthKit)
         #expect(batches(for: .activeEnergyBurned).count == 14)
         #expect(batches(for: .activeEnergyBurned).starts(with: [
-            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 1, 24)..<makeDate(2025, 2, 3)),
-            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 2, 3)..<makeDate(2025, 2, 17)),
-            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 2, 17)..<makeDate(2025, 3, 3)),
-            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 3, 3)..<makeDate(2025, 3, 17)),
-            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 3, 17)..<makeDate(2025, 3, 31)),
-            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 3, 31)..<makeDate(2025, 4, 14)),
-            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 4, 14)..<makeDate(2025, 4, 28)),
-            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 4, 28)..<makeDate(2025, 5, 12)),
-            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 5, 12)..<makeDate(2025, 5, 26)),
-            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 5, 26)..<makeDate(2025, 6, 9)),
-            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 6, 9)..<makeDate(2025, 6, 23)),
-            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 6, 23)..<makeDate(2025, 7, 7)),
-            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 7, 7)..<makeDate(2025, 7, 21)),
-            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 7, 21)..<makeDate(2025, 7, 24))
+            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 1, 24)..<makeDate(2025, 2, 3 + dayAdj)),
+            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 2, 3 + dayAdj)..<makeDate(2025, 2, 17 + dayAdj)),
+            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 2, 17 + dayAdj)..<makeDate(2025, 3, 3 + dayAdj)),
+            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 3, 3 + dayAdj)..<makeDate(2025, 3, 17 + dayAdj)),
+            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 3, 17 + dayAdj)..<makeDate(2025, 3, 31 + dayAdj)),
+            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 3, 31 + dayAdj)..<makeDate(2025, 4, 14 + dayAdj)),
+            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 4, 14 + dayAdj)..<makeDate(2025, 4, 28 + dayAdj)),
+            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 4, 28 + dayAdj)..<makeDate(2025, 5, 12 + dayAdj)),
+            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 5, 12 + dayAdj)..<makeDate(2025, 5, 26 + dayAdj)),
+            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 5, 26 + dayAdj)..<makeDate(2025, 6, 9 + dayAdj)),
+            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 6, 9 + dayAdj)..<makeDate(2025, 6, 23 + dayAdj)),
+            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 6, 23 + dayAdj)..<makeDate(2025, 7, 7 + dayAdj)),
+            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 7, 7 + dayAdj)..<makeDate(2025, 7, 21 + dayAdj)),
+            .init(sampleType: SampleType.activeEnergyBurned, timeRange: try makeDate(2025, 7, 21 + dayAdj)..<makeDate(2025, 7, 24))
         ]))
     }
 }
