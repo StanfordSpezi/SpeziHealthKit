@@ -54,9 +54,12 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
         try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         
+        let dateOfBirthComponents = DateComponents(year: 2022, month: 10, day: 11)
+        let dateOfBirth = try XCTUnwrap(Calendar.current.date(from: dateOfBirthComponents))
+        
         try launchHealthAppAndEnterCharacteristics(.init(
             bloodType: .oPositive,
-            dateOfBirth: .init(year: 2022, month: 10, day: 11),
+            dateOfBirth: dateOfBirthComponents,
             biologicalSex: .female,
             skinType: .I,
             wheelchairUse: .no
@@ -68,7 +71,7 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
         
         app.assertTableRow("Move Mode", "1")
         app.assertTableRow("Blood Type", "O\\+")
-        app.assertTableRow("Date of Birth", "2022-10-11T[0-9]{2}:00:00Z")
+        app.assertTableRow("Date of Birth", dateOfBirth.formatted(.iso8601))
         app.assertTableRow("Biological Sex", "1")
         app.assertTableRow("Skin Type", "1")
         app.assertTableRow("Wheelchair Use", "1")
