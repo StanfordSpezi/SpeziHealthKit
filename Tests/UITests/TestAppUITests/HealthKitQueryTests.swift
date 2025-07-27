@@ -140,16 +140,10 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
     
     @MainActor
     func testSleepSession2() throws {
-        print(#function, #line)
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        print(#function, #line)
         try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
-        print(#function, #line)
         sleep(for: .seconds(0.5)) // we need to wait a little so that the permissions sheet is properly dismissed
-//        sleep(1)
-        print(#function, #line)
         app.buttons["Sleep Tests"].tap()
-        print(#function, #line)
         XCTAssert(app.staticTexts["Success"].waitForExistence(timeout: 5))
     }
     
