@@ -24,7 +24,7 @@ final class BulkExporterTests: SpeziHealthKitTests {
         app.buttons["Add Historical Data"].tap()
         XCTAssert(app.staticTexts["Adding Historical Samples…"].waitForExistence(timeout: 2))
         XCTAssert(app.staticTexts["Adding Historical Samples…"].waitForNonExistence(timeout: 120))
-        sleep(for: .seconds(1))
+        XCTAssert(app.staticTexts["Add Historical Data"].waitForExistence(timeout: 20))
         
         XCTAssertEqual(try XCTUnwrap(app.numExportedSamples), 0)
         XCTAssertGreaterThan(try XCTUnwrap(app.numTestingSamples), 0)
@@ -53,7 +53,7 @@ final class BulkExporterTests: SpeziHealthKitTests {
         app.buttons["Add Historical Data"].tap()
         XCTAssert(app.staticTexts["Adding Historical Samples…"].waitForExistence(timeout: 2))
         XCTAssert(app.staticTexts["Adding Historical Samples…"].waitForNonExistence(timeout: 120))
-        sleep(for: .seconds(1))
+        XCTAssert(app.staticTexts["Add Historical Data"].waitForExistence(timeout: 20))
         
         XCTAssertEqual(try XCTUnwrap(app.numExportedSamples), 0)
         XCTAssertGreaterThan(try XCTUnwrap(app.numTestingSamples), 0)
@@ -67,12 +67,15 @@ final class BulkExporterTests: SpeziHealthKitTests {
         
         try launchAndHandleInitialStuff(app, deleteAllHealthData: false)
         app.buttons["Bulk Exporter"].tap()
+        sleep(for: .seconds(1))
         XCTAssertEqual(try XCTUnwrap(app.numExportedSamples), 0)
         XCTAssertGreaterThan(try XCTUnwrap(app.numTestingSamples), 0)
         
         app.buttons["Start Bulk Export"].tap()
         XCTAssert(app.staticTexts["State, completed"].waitForExistence(timeout: 180))
         XCTAssertEqual(try XCTUnwrap(app.numExportedSamples) + numExportedSamplesFirstSession, try XCTUnwrap(app.numTestingSamples))
+        
+        XCTFail("uhh ohhh")
     }
     
     
@@ -90,7 +93,7 @@ final class BulkExporterTests: SpeziHealthKitTests {
         app.buttons["Add Historical Data"].tap()
         XCTAssert(app.staticTexts["Adding Historical Samples…"].waitForExistence(timeout: 2))
         XCTAssert(app.staticTexts["Adding Historical Samples…"].waitForNonExistence(timeout: 120))
-        sleep(for: .seconds(1))
+        XCTAssert(app.staticTexts["Add Historical Data"].waitForExistence(timeout: 20))
         
         XCTAssertEqual(try XCTUnwrap(app.numExportedSamples), 0)
         XCTAssertGreaterThan(try XCTUnwrap(app.numTestingSamples), 0)

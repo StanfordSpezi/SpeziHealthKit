@@ -8,6 +8,7 @@
 
 import Foundation
 import XCTest
+import XCTHealthKit
 
 
 final class HealthKitQueryTests: SpeziHealthKitTests {
@@ -186,6 +187,12 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
         try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         app.terminate()
+        
+        let healthApp = XCUIApplication.healthApp
+        healthApp.launch()
+        if healthApp.staticTexts["Health Details"].waitForExistence(timeout: 2) {
+            healthApp.buttons["Done"].tap()
+        }
         
         try launchAndAddSamples(healthApp: .healthApp, [
             .steps()
