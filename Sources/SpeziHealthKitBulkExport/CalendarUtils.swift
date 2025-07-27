@@ -56,10 +56,12 @@ extension Calendar.Component {
 extension Calendar {
     func ranges(
         of component: ComponentForIteration,
+        multiplier: Int = 1,
         startingAt start: Date,
         in limitRange: Range<Date>,
         clampToLimits: Bool
     ) -> some Sendable & Sequence<Range<Date>> {
+        precondition(multiplier >= 1, "Invalid multiplier value")
         struct Iterator: IteratorProtocol, Sendable {
             typealias Element = Range<Date>
             let cal: Calendar
@@ -88,7 +90,7 @@ extension Calendar {
             cal: self,
             componentsToAdd: {
                 var components = DateComponents()
-                components.setValue(1, for: .init(component))
+                components.setValue(multiplier, for: .init(component))
                 return components
             }(),
             limitRange: limitRange,

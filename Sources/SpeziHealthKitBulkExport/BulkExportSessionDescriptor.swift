@@ -24,37 +24,33 @@ struct ExportSessionDescriptor: Codable {
     let sessionId: BulkExportSessionIdentifier
     let startDate: ExportSessionStartDate
     let endDate: Date
-    let batchSize: ExportSessionBatchSize
     var pendingBatches: [ExportBatch]
     var completedBatches: [ExportBatch]
     
     init(
         sessionId: BulkExportSessionIdentifier,
         startDate: ExportSessionStartDate,
-        endDate: Date,
-        batchSize: ExportSessionBatchSize,
-        sampleTypes: SampleTypesCollection,
-        using healthKit: HealthKit
-    ) async {
+        endDate: Date
+    ) {
         self.sessionId = sessionId
         self.startDate = startDate
         self.endDate = endDate
-        self.batchSize = batchSize
-        self.completedBatches = []
         self.pendingBatches = []
-        for sampleType in sampleTypes {
-            await add(sampleType: sampleType, healthKit: healthKit)
-        }
+        self.completedBatches = []
     }
     
-    mutating func add<Sample>(sampleType: some AnySampleType<Sample>, healthKit: HealthKit) async {
+    mutating func add<Sample>(sampleType: some AnySampleType<Sample>, batchSize: ExportSessionBatchSize, healthKit: HealthKit) async {
+        await add(sampleType: SampleType(sampleType), batchSize: batchSize, healthKit: healthKit)
+    }
+    
+    mutating func add<Sample>(sampleType: SampleType<Sample>, batchSize: ExportSessionBatchSize, healthKit: HealthKit) async {
         let sampleType = SampleType(sampleType)
         guard !(pendingBatches + completedBatches).contains(where: { $0.sampleType == sampleType }) else {
             // we have at least one scheduled or already-completed batch with this sample type
             // --> nothing to be done; we're already handling it.
             return
         }
-        let cal = Calendar(identifier: .gregorian)
+        let cal = Calendar.current
         let startDate: Date = await startDate.startDate(for: sampleType, in: healthKit, relativeTo: self.endDate) ?? {
             // if we can't determine the oldest sample date, we use the day HealthKit was introduced as our fallback
             // Note: it could be that there's no oldest sample date because there are no samples for the sample type,
@@ -66,8 +62,14 @@ struct ExportSessionDescriptor: Codable {
         case .automatic:
             // guaranteed to be unreachable by resolveBatchSize()
             fatalError("unreachable")
-        case .calendarComponent(let component):
-            batchTimeRanges = Array(cal.ranges(of: component, startingAt: startDate, in: startDate..<endDate, clampToLimits: true))
+        case let .calendarComponent(component, multiplier):
+            batchTimeRanges = Array(cal.ranges(
+                of: component,
+                multiplier: multiplier,
+                startingAt: startDate,
+                in: startDate..<endDate,
+                clampToLimits: true
+            ))
         }
         pendingBatches.append(contentsOf: batchTimeRanges.map { timeRange in
             ExportBatch(sampleType: sampleType, timeRange: timeRange)
@@ -101,10 +103,10 @@ extension ExportSessionDescriptor {
                 SampleType.distanceWalkingRunning, SampleType.physicalEffort, SampleType.stepCount:
                 .byMonth
             default:
-                .byYear
+                .calendarComponent(.month, multiplier: 6)
             }
-        case .calendarComponent(let component):
-            .calendarComponent(component)
+        case .calendarComponent:
+            batchSize
         }
     }
 }

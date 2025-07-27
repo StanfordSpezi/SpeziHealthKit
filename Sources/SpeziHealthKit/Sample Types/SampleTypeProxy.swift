@@ -161,3 +161,10 @@ extension SampleTypeProxy: Codable {
         try container.encode("\(classname);\(underlyingSampleType.hkSampleType.identifier)")
     }
 }
+
+
+/// Compare two sample types, based on their identifiers
+@inlinable // swiftlint:disable:next static_operator
+public func ~= (pattern: SampleType<some Any>, value: SampleTypeProxy) -> Bool {
+    pattern.id == value.id
+}

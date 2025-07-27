@@ -192,7 +192,7 @@ extension HealthKitQueryTimeRange {
     /// The purpose here is that we want to start the data collection at the previous full minute mark,
     /// to make it deterministic to manually entered data in HealthKit.
     func adjustedToWholeMinute() -> Self {
-        let cal = Calendar(identifier: .gregorian)
+        let cal = Calendar.current
         func imp(_ date: Date) -> Date {
             var components = cal.dateComponents(in: .current, from: date)
             components.second = 0
