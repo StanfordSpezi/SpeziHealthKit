@@ -74,8 +74,6 @@ final class BulkExporterTests: SpeziHealthKitTests {
         app.buttons["Start Bulk Export"].tap()
         XCTAssert(app.staticTexts["State, completed"].waitForExistence(timeout: 180))
         XCTAssertEqual(try XCTUnwrap(app.numExportedSamples) + numExportedSamplesFirstSession, try XCTUnwrap(app.numTestingSamples))
-        
-        XCTFail("uhh ohhh")
     }
     
     
