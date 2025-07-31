@@ -93,7 +93,8 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
                         guard !sampleTypes.isEmpty else {
                             return
                         }
-                        guard sampleTypes.contains(self.sampleType.hkSampleType) else {
+                        let expectedSampleTypes = self.sampleType.effectiveSampleTypesForAuthentication.compactMapIntoSet { $0.hkSampleType }
+                        guard !sampleTypes.isDisjoint(with: expectedSampleTypes) else {
                             self.healthKit.logger.warning("Received Observation query types (\(sampleTypes)) are not corresponding to the CollectSample type \(self.sampleType.hkSampleType)")
                             return
                         }
@@ -191,7 +192,7 @@ extension HealthKitQueryTimeRange {
     /// The purpose here is that we want to start the data collection at the previous full minute mark,
     /// to make it deterministic to manually entered data in HealthKit.
     func adjustedToWholeMinute() -> Self {
-        let cal = Calendar(identifier: .gregorian)
+        let cal = Calendar.current
         func imp(_ date: Date) -> Date {
             var components = cal.dateComponents(in: .current, from: date)
             components.second = 0

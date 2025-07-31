@@ -93,6 +93,8 @@ public struct HealthKitStatisticsQuery: DynamicProperty { // swiftlint:disable:t
     
     @State private var results = StatisticsQueryResults()
     
+    @HealthAccessAuthorizationObserver private var accessAuthObserver
+    
     private let input: StatisticsQueryResults.Input
     
     /// The query's resulting `HKStatistics` objects.
@@ -134,6 +136,10 @@ public struct HealthKitStatisticsQuery: DynamicProperty { // swiftlint:disable:t
                 healthKit: healthKit,
                 input: input
             )
+            let accessReqs = HealthKit.DataAccessRequirements(read: [input.sampleType.hkSampleType])
+            accessAuthObserver.observeAuthorizationChanges(for: accessReqs) { [results, healthKit, input] in
+                await results.initializeSwiftUIManagedQuery(healthKit: healthKit, input: input, forceUpdate: true)
+            }
         }
     }
 }
@@ -228,8 +234,8 @@ public final class StatisticsQueryResults: @unchecked Sendable {
     
     
     @MainActor
-    fileprivate func initializeSwiftUIManagedQuery(healthKit: HealthKit, input: Input) {
-        guard self.input != input else {
+    fileprivate func initializeSwiftUIManagedQuery(healthKit: HealthKit, input: Input, forceUpdate: Bool = false) {
+        guard forceUpdate || self.input != input else {
             return
         }
         self.healthKit = healthKit

@@ -29,6 +29,9 @@ struct ActionsMenu: View {
         ]),
         .init(sampleType: .height, samples: [
             .init(date: .now, value: 187, unit: .meterUnit(with: .centi))
+        ]),
+        .init(sampleType: .distanceCycling, samples: [
+            .init(date: .now, value: 52, unit: .meterUnit(with: .kilo))
         ])
     ]
     

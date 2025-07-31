@@ -20,7 +20,7 @@ public protocol HealthKitCharacteristicProtocol<Value>: Hashable, Sendable {
     var displayTitle: String { get }
     
     /// Fetches the characteristic's value from a `HKHealthStore`.
-    @_spi(Internal)
+    @_spi(APISupport)
     func value(in healthStore: HKHealthStore) throws -> Value
 }
 
@@ -53,7 +53,7 @@ public struct HealthKitCharacteristic<Value>: HealthKitCharacteristicProtocol, S
         self.accessor = accessor
     }
     
-    @_spi(Internal)
+    @_spi(APISupport)
     public func value(in healthStore: HKHealthStore) throws -> Value {
         try accessor(healthStore)
     }

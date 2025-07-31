@@ -39,9 +39,10 @@ extension HKHealthStore {
             Result<(sampleTypes: Set<HKSampleType>, completionHandler: HKObserverQueryCompletionHandler), any Error>
         ) async -> Void
     ) async throws -> BackgroundObserverQueryInvalidator {
-        let queryDescriptors: [HKQueryDescriptor] = sampleTypes.map {
-            HKQueryDescriptor(sampleType: $0, predicate: predicate)
-        }
+        let queryDescriptors: [HKQueryDescriptor] = sampleTypes
+            .flatMap { $0.effectiveObjectTypesForAuthentication }
+            .compactMap { $0 as? HKSampleType }
+            .map { HKQueryDescriptor(sampleType: $0, predicate: predicate) }
         let observerQuery = HKObserverQuery(queryDescriptors: queryDescriptors) { query, sampleTypes, completionHandler, error in
             // From https://developer.apple.com/documentation/healthkit/hkobserverquery/executing_observer_queries
             // "Whenever a matching sample is added to or deleted from the HealthKit store,
