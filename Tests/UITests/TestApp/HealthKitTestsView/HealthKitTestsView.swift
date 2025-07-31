@@ -31,7 +31,6 @@ struct HealthKitTestsView: View {
     
     @State private var allInitialSampleTypesAreAuthorized = false
     @State private var viewState: ViewState = .idle
-    @State private var tmp = false
     
     var body: some View {
         Form {
