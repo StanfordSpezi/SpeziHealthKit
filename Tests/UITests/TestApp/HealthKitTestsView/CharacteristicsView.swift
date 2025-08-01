@@ -23,6 +23,9 @@ struct CharacteristicsView: View {
     @HealthKitCharacteristicQuery(.dateOfBirth)
     private var dateOfBirth
     
+    @HealthKitCharacteristicQuery(.dateOfBirthComponents)
+    private var dateOfBirthComponents
+    
     @HealthKitCharacteristicQuery(.biologicalSex)
     private var biologicalSex
     
@@ -37,6 +40,7 @@ struct CharacteristicsView: View {
             makeRow("Move Mode", value: moveMode)
             LabeledContent("Blood Type", value: bloodType?.displayTitle.localizedString() ?? "n/a")
             LabeledContent("Date of Birth", value: dateOfBirth?.formatted(.iso8601) ?? "n/a")
+            LabeledContent("Date of Birth Components", value: dateOfBirthComponents?.description ?? "n/a")
             makeRow("Biological Sex", value: biologicalSex)
             makeRow("Skin Type", value: skinType)
             makeRow("Wheelchair Use", value: wheelchairUse)

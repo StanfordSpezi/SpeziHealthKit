@@ -28,14 +28,17 @@ public protocol HealthKitCharacteristicProtocol<Value>: Hashable, Sendable {
 /// A type-safe wrapper around `HKCharacteristicType`, usable for reading data from HealthKit.
 ///
 /// ## Topics
+///
 /// ### Instance Properties
 /// - ``displayTitle``
 /// - ``hkType``
+///
 /// ### Characteristic Types
 /// - ``activityMoveMode``
 /// - ``biologicalSex``
 /// - ``bloodType``
 /// - ``dateOfBirth``
+/// - ``dateOfBirthComponents``
 /// - ``fitzpatrickSkinType``
 /// - ``wheelchairUse``
 public struct HealthKitCharacteristic<Value>: HealthKitCharacteristicProtocol, Sendable {
@@ -107,17 +110,34 @@ extension HealthKitCharacteristicProtocol where Self == HealthKitCharacteristic<
 
 extension HealthKitCharacteristicProtocol where Self == HealthKitCharacteristic<Date> {
     /// The characteristic representing the user's date of birth.
+    ///
+    /// - Note: The `Date` values returned here are created in the context of the `Calendar` and `TimeZone` in which the date was entered into the Health app,
+    ///     which can lead to unexpected dates, e.g. if the user has moved time zone since then. You might want to prefer using ``dateOfBirthComponents`` instead.
     public static var dateOfBirth: HealthKitCharacteristic<Date> {
         Self(.dateOfBirth, displayTitle: "Date of Birth") { healthStore in
             let components = try healthStore.dateOfBirthComponents()
-            if let date = Calendar.current.date(from: components) {
-                // Question: Do we need to take time zones into account here?
-                // What if the user entered their DoB in a different time zone than the one they're currently in?
+            // The DateComponents objects returned by HealthKit here seem to always have their `calendar` property set,
+            // but the `timeZone` property only seems to be set sometimes. (`calendar.timeZone` is nonnil, though.)
+            // The `Calendar.date(from:)` function does allow the components' timeZone property to override that of the
+            // calendar on which `date(from:)` is called, but it does not allow the components' `calendar` property to overide the calendar.
+            // We therefore need to handle the calendar explicitly, but can rely on the Calendar to handle the timeZone for us, if it is specified.
+            if let date = (components.calendar ?? .current).date(from: components) {
                 return date
             } else {
                 // We don't use a custom error type here, since the error will be discarded anyway.
-                throw NSError(domain: "SpeziHealthKit", code: 0)
+                throw NSError(domain: "SpeziHealthKit", code: 0, userInfo: [
+                    NSLocalizedDescriptionKey: "Unable to create Date from DateComponents"
+                ])
             }
+        }
+    }
+}
+
+extension HealthKitCharacteristicProtocol where Self == HealthKitCharacteristic<DateComponents> {
+    /// The characteristic representing the user's date of birth.
+    public static var dateOfBirthComponents: HealthKitCharacteristic<DateComponents> {
+        Self(.dateOfBirth, displayTitle: "Date of Birth") { healthStore in
+            try healthStore.dateOfBirthComponents()
         }
     }
 }

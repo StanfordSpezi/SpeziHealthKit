@@ -55,7 +55,13 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
         try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         
-        let dateOfBirthComponents = DateComponents(year: 2022, month: 10, day: 11)
+        let dateOfBirthComponents = DateComponents(
+            calendar: .init(identifier: .gregorian),
+            era: 1,
+            year: 2022,
+            month: 10,
+            day: 11
+        )
         let dateOfBirth = try XCTUnwrap(Calendar.current.date(from: dateOfBirthComponents))
         
         try launchHealthAppAndEnterCharacteristics(.init(
@@ -71,8 +77,9 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
         app.buttons["Characteristics Query"].tap()
         
         app.assertTableRow("Move Mode", "1")
-        app.assertTableRow("Blood Type", "O\\+")
+        app.assertTableRow("Blood Type", "O+")
         app.assertTableRow("Date of Birth", dateOfBirth.formatted(.iso8601))
+        app.assertTableRow("Date of Birth Components", dateOfBirthComponents.description)
         app.assertTableRow("Biological Sex", "1")
         app.assertTableRow("Skin Type", "1")
         app.assertTableRow("Wheelchair Use", "1")
@@ -170,7 +177,7 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
         
         app.buttons["Request Blood Type"].tap()
         try app.handleHealthKitAuthorization()
-        app.assertTableRow("Blood Type", "O\\+") // we need to escape the `+` since this is interpreted as a (NSPredicate-compatible) regex pattern.
+        app.assertTableRow("Blood Type", "O+")
         
         app.buttons["Request Cycling Distance"].tap()
         try app.handleHealthKitAuthorization()
