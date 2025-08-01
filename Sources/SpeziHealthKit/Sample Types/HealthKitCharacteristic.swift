@@ -111,17 +111,17 @@ extension HealthKitCharacteristicProtocol where Self == HealthKitCharacteristic<
 extension HealthKitCharacteristicProtocol where Self == HealthKitCharacteristic<Date> {
     /// The characteristic representing the user's date of birth.
     ///
-    /// - Note: The `Date` values returned here are created in the context of the `Calendar` and `TimeZone` in which the date was entered into the Health app,
-    ///     which can lead to unexpected dates, e.g. if the user has moved time zone since then. You might want to prefer using ``dateOfBirthComponents`` instead.
+    /// The `Date` values returned here are always implicitly adjusted to match midnight in the current time zone,
+    /// regardless of whether the resulting date would still fall into the same day as the original birthday.
+    /// This behaviour matches the instinctive way most people treat birthdays: if you were born in the morning on may 17th in asia,
+    /// your birthday is still may 17th when you move to the united states.
+    ///
+    /// - Note: Prefer using ``dateOfBirthComponents`` if you need the user's date of birth in a non-UI-related context.
+    ///     The `DateComponents` will have their `calendar` and `timeZone` properties set based on the specific time zone in which the user entered their date of birth.
     public static var dateOfBirth: HealthKitCharacteristic<Date> {
         Self(.dateOfBirth, displayTitle: "Date of Birth") { healthStore in
             let components = try healthStore.dateOfBirthComponents()
-            // The DateComponents objects returned by HealthKit here seem to always have their `calendar` property set,
-            // but the `timeZone` property only seems to be set sometimes. (`calendar.timeZone` is nonnil, though.)
-            // The `Calendar.date(from:)` function does allow the components' timeZone property to override that of the
-            // calendar on which `date(from:)` is called, but it does not allow the components' `calendar` property to overide the calendar.
-            // We therefore need to handle the calendar explicitly, but can rely on the Calendar to handle the timeZone for us, if it is specified.
-            if let date = (components.calendar ?? .current).date(from: components) {
+            if let date = Calendar.current.date(from: .init(year: components.year, month: components.month, day: components.day)) {
                 return date
             } else {
                 // We don't use a custom error type here, since the error will be discarded anyway.
@@ -135,9 +135,14 @@ extension HealthKitCharacteristicProtocol where Self == HealthKitCharacteristic<
 
 extension HealthKitCharacteristicProtocol where Self == HealthKitCharacteristic<DateComponents> {
     /// The characteristic representing the user's date of birth.
+    ///
+    /// The `DateComponents` returned here will, if available, have their `calendar` and `timeZone` properties
+    /// set based on the specific time zone in which the user entered their date of birth into the Health app.
     public static var dateOfBirthComponents: HealthKitCharacteristic<DateComponents> {
         Self(.dateOfBirth, displayTitle: "Date of Birth") { healthStore in
-            try healthStore.dateOfBirthComponents()
+            var components = try healthStore.dateOfBirthComponents()
+            components.timeZone = components.calendar?.timeZone
+            return components
         }
     }
 }
