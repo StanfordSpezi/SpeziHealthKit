@@ -125,8 +125,8 @@ extension XCUIApplication {
         self.launchArguments.append(contentsOf: launchArguments)
     }
     
-    func assertTableRow(_ title: String, _ pattern: String, file: StaticString = #filePath, line: UInt = #line) {
-        let predicate = NSPredicate(format: "label MATCHES %@", "\(title).*\(pattern)")
+    func assertTableRow(_ title: String, _ value: String, file: StaticString = #filePath, line: UInt = #line) {
+        let predicate = NSPredicate(format: "label = %@", "\(title), \(value)")
         XCTAssert(
             self.staticTexts.matching(predicate).element.waitForExistence(timeout: 2),
             "Unable to find element '\(predicate)'",
