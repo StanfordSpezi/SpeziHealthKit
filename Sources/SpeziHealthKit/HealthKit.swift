@@ -221,7 +221,7 @@ extension HealthKit {
                     continue
                 }
                 if overlap.read.contains(where: { dataAccessRequirements.read.contains($0) && prevAuthStates[$0] != .unnecessary })
-                    || overlap.write.contains(where: { dataAccessRequirements.write.contains($0) && prevAuthStates[$0] != .unknown }) {
+                    || overlap.write.contains(where: { dataAccessRequirements.write.contains($0) && prevAuthStates[$0] != .unnecessary }) {
                     observer.continuation.yield(accessRequirements)
                 }
             }
