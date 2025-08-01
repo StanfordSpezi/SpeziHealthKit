@@ -194,7 +194,7 @@ extension HealthKit {
     /// If all necessary authorizations have already been requested (regardless of whether the user granted or denied access),
     /// this function will not present any UI to the user.
     ///
-    /// - Note: There is no need for an app itself to keep track of whether it already requested health data access; the ``HealthKit-swift.class`` takes care of this.
+    /// - Note: There is no need for an app itself to keep track of whether it already requested health data access; the ``HealthKit-swift.class``module takes care of this.
     ///
     /// - Warning: Only request read or write access to HealthKit data if your app's `Info.plist` file
     ///     contains an entry for `NSHealthShareUsageDescription` and `NSHealthUpdateUsageDescription` respectively.
@@ -204,6 +204,7 @@ extension HealthKit {
             return
         }
         do {
+            let prevAuthStates = await authorizationRequestStates(for: accessRequirements)
             if !accessRequirements.isEmpty {
                 self.dataAccessRequirements.merge(with: accessRequirements)
                 try await healthStore.requestAuthorization(
@@ -215,7 +216,12 @@ extension HealthKit {
                 await startAutomaticDataCollectionIfPossible(collector)
             }
             for observer in authorizationEventObservers.values {
-                if observer.accessRequirements.overlaps(accessRequirements) { // swiftlint:disable:this for_where
+                let overlap = observer.accessRequirements.intersection(accessRequirements)
+                guard !overlap.isEmpty else {
+                    continue
+                }
+                if overlap.read.contains(where: { dataAccessRequirements.read.contains($0) && prevAuthStates[$0] != .unnecessary })
+                    || overlap.write.contains(where: { dataAccessRequirements.write.contains($0) && prevAuthStates[$0] != .unknown }) {
                     observer.continuation.yield(accessRequirements)
                 }
             }
@@ -390,6 +396,31 @@ extension HealthKit {
         }
         return stream
     }
+    
+    private func authorizationRequestStates(for accessRequirements: DataAccessRequirements) async -> [HKObjectType: HKAuthorizationRequestStatus] {
+        await withTaskGroup(
+            of: (HKObjectType, HKAuthorizationRequestStatus).self,
+            returning: [HKObjectType: HKAuthorizationRequestStatus].self
+        ) { [healthStore] taskGroup in
+            for writeTy in accessRequirements.write {
+                taskGroup.addTask {
+                    let status = try? await healthStore.statusForAuthorizationRequest(toShare: [writeTy], read: [writeTy])
+                    return (writeTy, status ?? .unknown)
+                }
+            }
+            for readTy in accessRequirements.read.subtracting(accessRequirements.write) {
+                taskGroup.addTask {
+                    let status = try? await healthStore.statusForAuthorizationRequest(toShare: [], read: [readTy])
+                    return (readTy, status ?? .unknown)
+                }
+            }
+            var retval: [HKObjectType: HKAuthorizationRequestStatus] = [:]
+            for await (type, status) in taskGroup {
+                retval[type] = status
+            }
+            return retval
+        }
+    }
 }
 
 
@@ -533,6 +564,13 @@ extension HealthKit {
 extension HealthKit.DataAccessRequirements {
     func overlaps(_ other: Self) -> Bool {
         !self.read.isDisjoint(with: other.read) || !self.write.isDisjoint(with: other.write)
+    }
+    
+    func intersection(_ other: Self) -> Self {
+        Self(
+            read: read.intersection(other.read),
+            write: write.intersection(other.write)
+        )
     }
 }
 
