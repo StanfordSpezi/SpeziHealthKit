@@ -194,7 +194,7 @@ extension HealthKit {
     /// If all necessary authorizations have already been requested (regardless of whether the user granted or denied access),
     /// this function will not present any UI to the user.
     ///
-    /// - Note: There is no need for an app itself to keep track of whether it already requested health data access; the ``HealthKit-swift.class``module takes care of this.
+    /// - Note: There is no need for an app itself to keep track of whether it already requested health data access; the ``HealthKit-swift.class`` module takes care of this.
     ///
     /// - Warning: Only request read or write access to HealthKit data if your app's `Info.plist` file
     ///     contains an entry for `NSHealthShareUsageDescription` and `NSHealthUpdateUsageDescription` respectively.

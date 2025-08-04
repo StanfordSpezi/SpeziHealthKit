@@ -14,6 +14,9 @@ import SwiftUI
 
 
 struct CharacteristicsView: View {
+    @Environment(\.calendar)
+    private var calendar
+    
     @HealthKitCharacteristicQuery(.activityMoveMode)
     private var moveMode
     
@@ -40,6 +43,7 @@ struct CharacteristicsView: View {
             makeRow("Move Mode", value: moveMode)
             LabeledContent("Blood Type", value: bloodType?.displayTitle.localizedString() ?? "n/a")
             LabeledContent("Date of Birth", value: dateOfBirth?.formatted(.iso8601) ?? "n/a")
+            LabeledContent("Date of Birth is Midnight", value: (dateOfBirth.map { $0 == calendar.startOfDay(for: $0) } ?? false).description)
             LabeledContent("Date of Birth Components", value: dateOfBirthComponents?.description ?? "n/a")
             makeRow("Biological Sex", value: biologicalSex)
             makeRow("Skin Type", value: skinType)

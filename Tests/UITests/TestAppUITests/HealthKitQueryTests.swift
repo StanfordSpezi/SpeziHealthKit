@@ -80,6 +80,7 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
         app.assertTableRow("Move Mode", "1")
         app.assertTableRow("Blood Type", "O+")
         app.assertTableRow("Date of Birth", dateOfBirth.formatted(.iso8601))
+        app.assertTableRow("Date of Birth is Midnight", "true")
         app.assertTableRow("Date of Birth Components", dateOfBirthComponents.description)
         app.assertTableRow("Biological Sex", "1")
         app.assertTableRow("Skin Type", "1")
