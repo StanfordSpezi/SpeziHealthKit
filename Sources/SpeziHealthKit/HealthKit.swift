@@ -38,8 +38,8 @@ import SwiftUI
 /// - ``resetSampleCollection(for:)``
 ///
 /// ### Fetching Health Data
-/// - ``query(_:timeRange:limit:sortedBy:predicate:)``
-/// - ``query(_:timeRange:anchor:limit:predicate:)``
+/// - ``query(_:timeRange:source:limit:sortedBy:predicate:)``
+/// - ``query(_:timeRange:anchor:source:limit:predicate:)``
 /// - ``oldestSampleDate(for:)``
 /// - ``continuousQuery(_:timeRange:anchor:limit:predicate:)-66r9v``
 /// - ``ContinuousQueryElement``

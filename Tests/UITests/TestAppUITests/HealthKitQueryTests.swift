@@ -57,6 +57,7 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
         
         let dateOfBirthComponents = DateComponents(
             calendar: .init(identifier: .gregorian),
+            timeZone: .current,
             era: 1,
             year: 2022,
             month: 10,

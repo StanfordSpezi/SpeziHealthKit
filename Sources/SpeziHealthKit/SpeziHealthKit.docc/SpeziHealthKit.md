@@ -95,7 +95,7 @@ class ExampleAppDelegate: SpeziAppDelegate {
 
 ### Working with Sleep Analysis Data
 - ``SleepSession``
-- ``Swift/Collection/splitIntoSleepSessions(threshold:)``
+- ``Swift/Collection/splitIntoSleepSessions(threshold:separateBySource:)``
 
 ### Working with ECG Data
 - ``HealthKit/HKElectrocardiogram/symptoms(from:)``
