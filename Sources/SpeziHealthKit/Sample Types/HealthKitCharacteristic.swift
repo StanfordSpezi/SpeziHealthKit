@@ -64,7 +64,8 @@ public struct HealthKitCharacteristic<Value>: HealthKitCharacteristicProtocol, S
 
 // NOTE: `HealthKitCharacteristic`'s conformance to Hashable and Equatable
 // intentionally looks only at the characteristic's underlying HKCharacteristicType.
-// This is fine, since there is a fixed amount of characteristics, all of which are defined here in this file,
+// This is fine, since there is a fixed amount of characteristics, all of which are defined here in this file
+// (there are multiple characteristics with the same underlying hkType, but they have different concrete swift types),
 // and it is impossible for users to create custom characteristics.
 // As a result, we can guarantee that each instance uses a different HKCharacteristicType,
 // and that the hkType can be used as a stable identity.
