@@ -91,6 +91,7 @@ public struct HealthKitQuery<Sample: _HKSampleWithSampleType>: DynamicProperty {
     /// - parameter sampleType: The sample type to query for
     /// - parameter timeRange: The interval for which the query should fetch samples.
     ///     Any new samples added to or removed from the health store that fall into this time range will be considered by the query.
+    /// - parameter sourceFilter: allows controlling which HealthKit sources the query should fetch data from.
     /// - parameter filterPredicate: An optional refining predicate for filtering the queried-for samples.
     ///     This predicate should be created using the utility methods on the `HKQuery` type: https://developer.apple.com/documentation/healthkit/hkquery#1664362
     /// - parameter limit: Optional. The maximum number of samples the query should return. If set to a value `N > 0`, the query will return the `N` most recent samples.

@@ -22,7 +22,8 @@ import HealthKit
 /// - ``==(_:_:)-4zjyo``
 /// - ``==(_:_:)-5dq7``
 /// - ``==(_:_:)-80mw5``
-/// - ``~=(_:_:)``
+/// - ``~=(_:_:)-(_,SampleType<>)``
+/// - ``~=(_:_:)-(SampleType<>,_)``
 public protocol AnySampleType<Sample>: Hashable, Identifiable, Sendable where ID == String {
     /// The type of the sample type's underlying samples.
     ///
