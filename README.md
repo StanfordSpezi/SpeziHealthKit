@@ -132,6 +132,84 @@ struct ExampleView: View {
 ```
 
 
+### Bulk Export of Historical Health Data
+
+The [`BulkHealthExporter`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkitbulkexport/bulkhealthexporter) enables export of historical HealthKit data through sessions that can process large amounts of data while maintaining memory efficiency and supporting resumption across app launches.
+
+First, configure the `BulkHealthExporter` in your `SpeziAppDelegate`:
+
+```swift
+import SpeziHealthKitBulkExport
+
+class ExampleAppDelegate: SpeziAppDelegate {
+    override var configuration: Configuration {
+        Configuration(standard: ExampleStandard()) {
+            HealthKit {
+                // ... your existing HealthKit configuration
+            }
+            BulkHealthExporter()
+        }
+    }
+}
+```
+
+Start the bulk export from your `Standard` after app launch:
+
+```swift
+actor ExampleStandard: Standard, HealthKitConstraint {
+    @Dependency(BulkHealthExporter.self) private var bulkExporter
+    
+    func configure() {
+        Task {
+            await performBulkExportIfNeeded()
+        }
+    }
+    
+    private func performBulkExportIfNeeded() async {
+        // Define the sample types to export
+        let sampleTypes = SampleTypesCollection(
+            quantity: [.heartRate, .stepCount, .activeEnergyBurned]
+        )
+        
+        // Create or restore an export session
+        let session = try await bulkExporter.session(
+            withId: BulkExportSessionIdentifier("historicalDataExport"),
+            for: sampleTypes,
+            startDate: .oldestSample,
+            endDate: .now,
+            using: .identity  // Built-in processor which returns raw HealthKit samples
+        )
+        
+        // Start the export and handle results
+        let results = try await session.start()
+        
+        Task {
+            for await samples in results {
+                // Process the raw HealthKit samples as needed
+                print("Exported \(samples.count) samples")
+                // samples is [HKSample] - save to file, upload to server, etc.
+            }
+        }
+    }
+    
+    // ... your existing HealthKitConstraint methods
+}
+```
+
+For more advanced processing, you can create a custom [`BatchProcessor`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkitbulkexport/batchprocessor):
+
+```swift
+struct CustomProcessor: BatchProcessor {
+    func process<Sample>(_ samples: consuming [Sample], of sampleType: SampleType<Sample>) async throws -> Int {
+        // Custom processing logic (upload to server, transform data, etc.)
+        return samples.count
+    }
+}
+
+// Use with: using: CustomProcessor()
+```
+
+
 For more information, please refer to the [API documentation](https://swiftpackageindex.com/StanfordSpezi/SpeziHealthKit/documentation).
 
 ## The Spezi Template Application
