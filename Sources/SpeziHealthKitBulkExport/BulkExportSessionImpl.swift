@@ -100,14 +100,15 @@ final class BulkExportSessionImpl<Processor: BatchProcessor>: Sendable, BulkExpo
         } else {
             // if there's no persisted state for this session identifier, we create a new descriptor,
             // which will operate on all samples created up until right now.
-            self.descriptor = await ExportSessionDescriptor(
+            var descriptor = ExportSessionDescriptor(
                 sessionId: sessionId,
                 startDate: startDate,
                 endDate: endDate,
-                batchSize: batchSize,
-                sampleTypes: sampleTypes,
-                using: healthKit
             )
+            for sampleType in sampleTypes {
+                await descriptor.add(sampleType: sampleType, batchSize: batchSize, healthKit: healthKit)
+            }
+            self.descriptor = descriptor
         }
     }
 }

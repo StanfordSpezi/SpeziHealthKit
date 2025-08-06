@@ -9,10 +9,14 @@
 import HealthKit
 import SpeziHealthKit
 import SpeziHealthKitUI
+import SpeziViews
 import SwiftUI
 
 
 struct CharacteristicsView: View {
+    @Environment(\.calendar)
+    private var calendar
+    
     @HealthKitCharacteristicQuery(.activityMoveMode)
     private var moveMode
     
@@ -21,6 +25,9 @@ struct CharacteristicsView: View {
     
     @HealthKitCharacteristicQuery(.dateOfBirth)
     private var dateOfBirth
+    
+    @HealthKitCharacteristicQuery(.dateOfBirthComponents)
+    private var dateOfBirthComponents
     
     @HealthKitCharacteristicQuery(.biologicalSex)
     private var biologicalSex
@@ -34,8 +41,10 @@ struct CharacteristicsView: View {
     var body: some View {
         Form {
             makeRow("Move Mode", value: moveMode)
-            makeRow("Blood Type", value: bloodType)
+            LabeledContent("Blood Type", value: bloodType?.displayTitle.localizedString() ?? "n/a")
             LabeledContent("Date of Birth", value: dateOfBirth?.formatted(.iso8601) ?? "n/a")
+            LabeledContent("Date of Birth is Midnight", value: (dateOfBirth.map { $0 == calendar.startOfDay(for: $0) } ?? false).description)
+            LabeledContent("Date of Birth Components", value: dateOfBirthComponents?.description ?? "n/a")
             makeRow("Biological Sex", value: biologicalSex)
             makeRow("Skin Type", value: skinType)
             makeRow("Wheelchair Use", value: wheelchairUse)

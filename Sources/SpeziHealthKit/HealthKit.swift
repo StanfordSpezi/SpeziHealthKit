@@ -38,8 +38,8 @@ import SwiftUI
 /// - ``resetSampleCollection(for:)``
 ///
 /// ### Fetching Health Data
-/// - ``query(_:timeRange:limit:sortedBy:predicate:)``
-/// - ``query(_:timeRange:anchor:limit:predicate:)``
+/// - ``query(_:timeRange:source:limit:sortedBy:predicate:)``
+/// - ``query(_:timeRange:anchor:source:limit:predicate:)``
 /// - ``oldestSampleDate(for:)``
 /// - ``continuousQuery(_:timeRange:anchor:limit:predicate:)-66r9v``
 /// - ``ContinuousQueryElement``
@@ -71,6 +71,11 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
         case ongoing
         /// The module has completes its initial configuration
         case completed
+    }
+    
+    private struct AuthorizationEventObserver {
+        let accessRequirements: DataAccessRequirements
+        let continuation: AsyncStream<DataAccessRequirements>.Continuation
     }
     
     @ObservationIgnored @StandardActor
@@ -109,6 +114,8 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     
     /// All background-data-collecting data sources registered with the HealthKit module.
     @ObservationIgnored /* private-but-testable */ private(set) var registeredDataCollectors: [any HealthDataCollector] = []
+    
+    private var authorizationEventObservers: [UUID: AuthorizationEventObserver] = [:]
     
     
     /// Creates a new instance of the ``HealthKit-class`` module, with the specified configuration.
@@ -187,7 +194,7 @@ extension HealthKit {
     /// If all necessary authorizations have already been requested (regardless of whether the user granted or denied access),
     /// this function will not present any UI to the user.
     ///
-    /// - Note: There is no need for an app itself to keep track of whether it already requested health data access; the ``HealthKit-swift.class`` takes care of this.
+    /// - Note: There is no need for an app itself to keep track of whether it already requested health data access; the ``HealthKit-swift.class`` module takes care of this.
     ///
     /// - Warning: Only request read or write access to HealthKit data if your app's `Info.plist` file
     ///     contains an entry for `NSHealthShareUsageDescription` and `NSHealthUpdateUsageDescription` respectively.
@@ -197,6 +204,7 @@ extension HealthKit {
             return
         }
         do {
+            let prevAuthStates = await authorizationRequestStates(for: accessRequirements)
             if !accessRequirements.isEmpty {
                 self.dataAccessRequirements.merge(with: accessRequirements)
                 try await healthStore.requestAuthorization(
@@ -206,6 +214,16 @@ extension HealthKit {
             }
             for collector in registeredDataCollectors {
                 await startAutomaticDataCollectionIfPossible(collector)
+            }
+            for observer in authorizationEventObservers.values {
+                let overlap = observer.accessRequirements.intersection(accessRequirements)
+                guard !overlap.isEmpty else {
+                    continue
+                }
+                if overlap.read.contains(where: { dataAccessRequirements.read.contains($0) && prevAuthStates[$0] != .unnecessary })
+                    || overlap.write.contains(where: { dataAccessRequirements.write.contains($0) && prevAuthStates[$0] != .unnecessary }) {
+                    observer.continuation.yield(accessRequirements)
+                }
             }
             await updateIsFullyAuthorized(for: accessRequirements)
         } catch {
@@ -356,6 +374,53 @@ extension HealthKit {
             isFullyAuthorized = true
         }
     }
+    
+    /// Monitor changes to the application's Health Data Authorizations
+    ///
+    /// Creates an `AsyncStream` that will emit an element every time health access authorizations are requested that overlap with the specified `accessRequirements`.
+    ///
+    /// - Note: For read requirements, the stream will emit an element regardless of whether or not the user actually granted access.
+    @_spi(APISupport)
+    @MainActor
+    public func observeAuthenticationEvents(matching accessRequirements: DataAccessRequirements) -> AsyncStream<DataAccessRequirements> {
+        let (stream, continuation) = AsyncStream.makeStream(of: DataAccessRequirements.self)
+        let id = UUID()
+        self.authorizationEventObservers[id] = .init(
+            accessRequirements: accessRequirements,
+            continuation: continuation
+        )
+        continuation.onTermination = { [weak self] _ in
+            Task { @MainActor in
+                self?.authorizationEventObservers[id] = nil
+            }
+        }
+        return stream
+    }
+    
+    private func authorizationRequestStates(for accessRequirements: DataAccessRequirements) async -> [HKObjectType: HKAuthorizationRequestStatus] {
+        await withTaskGroup(
+            of: (HKObjectType, HKAuthorizationRequestStatus).self,
+            returning: [HKObjectType: HKAuthorizationRequestStatus].self
+        ) { [healthStore] taskGroup in
+            for writeTy in accessRequirements.write {
+                taskGroup.addTask {
+                    let status = try? await healthStore.statusForAuthorizationRequest(toShare: [writeTy], read: [writeTy])
+                    return (writeTy, status ?? .unknown)
+                }
+            }
+            for readTy in accessRequirements.read.subtracting(accessRequirements.write) {
+                taskGroup.addTask {
+                    let status = try? await healthStore.statusForAuthorizationRequest(toShare: [], read: [readTy])
+                    return (readTy, status ?? .unknown)
+                }
+            }
+            var retval: [HKObjectType: HKAuthorizationRequestStatus] = [:]
+            for await (type, status) in taskGroup {
+                retval[type] = status
+            }
+            return retval
+        }
+    }
 }
 
 
@@ -492,6 +557,20 @@ extension HealthKit {
             }
             await group.waitForAll()
         }
+    }
+}
+
+
+extension HealthKit.DataAccessRequirements {
+    func overlaps(_ other: Self) -> Bool {
+        !self.read.isDisjoint(with: other.read) || !self.write.isDisjoint(with: other.write)
+    }
+    
+    func intersection(_ other: Self) -> Self {
+        Self(
+            read: read.intersection(other.read),
+            write: write.intersection(other.write)
+        )
     }
 }
 

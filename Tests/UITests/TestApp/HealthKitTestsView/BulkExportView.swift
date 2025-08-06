@@ -33,12 +33,11 @@ extension NSPredicate {
 
 
 struct BulkExportView: View {
-    @Environment(HealthKit.self)
-    private var healthKit
-    @Environment(BulkHealthExporter.self)
-    private var bulkExporter
-    @Environment(\.calendar)
-    private var cal
+    // swiftlint:disable attributes
+    @Environment(HealthKit.self) private var healthKit
+    @Environment(BulkHealthExporter.self) private var bulkExporter
+    @Environment(\.calendar) private var cal
+    // swiftlint:enable attributes
     
     // NOTE: we are intentionally using these specific sample types here, since they don't overlap with the `CollectSample` definitions.
     // Adding eg a ton of heart rate samples would slow down the app a lot, since they'd trigger the observer mechanism.

@@ -30,12 +30,14 @@ import SpeziFoundation
 /// If the first app correctly recorded the entire 7 hours, while the second app only tracked 6.5 hours, the total *recorded* time would be 13.5 hours.
 ///
 /// ## Topics
-/// ### Initializers
-/// - ``init(_:)``
-/// ### Properties
+///
+/// ### Instance Properties
 /// - ``samples-swift.property``
 /// - ``startDate``
 /// - ``endDate``
+///
+/// ### Creating SleepSessions
+/// - ``Swift/Collection/splitIntoSleepSessions(threshold:separateBySource:)``
 public struct SleepSession: Hashable, Sendable {
     public typealias Samples = [HKCategorySample]
     public typealias SleepPhase = HKCategoryValueSleepAnalysis
