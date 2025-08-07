@@ -88,7 +88,7 @@ actor ExampleStandard: Standard, HealthKitConstraint {
 ```
 
 
-### Querying Health Data in SwiftUI
+### Querying and Displaying Health Data
 
 You can use [``SpeziHealthKitUI``](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkitui)'s ``HealthKitQuery`` and ``HealthKitStatisticsQuery`` property wrappers to access the Health database in a View:
 ```swift
