@@ -9,11 +9,6 @@
 import HealthKit
 
 
-//public protocol _HasLocalization {
-//    var displayTitle: LocalizedStringResource { get }
-//}
-
-
 /// Type-erased version of a ``SampleType``
 ///
 /// - Important: The ``AnySampleType`` protocol is public, but your application should not declare any new conformances to it; ``SampleType`` is the only type allowed to conform to ``AnySampleType``.
