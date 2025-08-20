@@ -52,6 +52,7 @@ jobs:
         platform:
           - name: iOS
             destination: 'platform=iOS Simulator,name=iPhone 16 Pro'
+      fail-fast: false
     with:
       runsonlabels: '["macOS", "self-hosted"]'
       path: 'Tests/UITests'
