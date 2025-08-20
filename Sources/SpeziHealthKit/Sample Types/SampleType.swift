@@ -29,6 +29,7 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType {
     
     public let hkSampleType: Sample._SampleType
     
+    @_disfavoredOverload
     public let displayTitle: LocalizedStringResource
     
     /// Variant-specific additional information.
