@@ -10,8 +10,8 @@
 
 import HealthKit
 import OSLog
-import Spezi
-import SpeziFoundation
+public import Spezi
+public import SpeziFoundation
 import SpeziLocalStorage
 import SwiftUI
 

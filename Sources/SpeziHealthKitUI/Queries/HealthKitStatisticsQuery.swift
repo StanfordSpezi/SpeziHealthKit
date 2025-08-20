@@ -8,10 +8,11 @@
 
 import Foundation
 import HealthKit
+public import Observation
 import Spezi
 import SpeziFoundation
-import SpeziHealthKit
-import SwiftUI
+public import SpeziHealthKit
+public import SwiftUI
 
 
 /// Perform statistical queries on the HealthKit database, within SwiftUI views.

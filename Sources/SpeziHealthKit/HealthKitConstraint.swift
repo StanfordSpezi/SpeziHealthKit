@@ -7,7 +7,7 @@
 //
 
 import HealthKit
-import Spezi
+public import Spezi
 
 
 /// The Constraint your app's `Standard` must conform to when using the Spezi HealthKit module.

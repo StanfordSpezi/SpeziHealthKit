@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
-import Foundation
+public import Foundation
 import SpeziHealthKit
 
 /// The earliest date for which the session should collect and export historical Health data.

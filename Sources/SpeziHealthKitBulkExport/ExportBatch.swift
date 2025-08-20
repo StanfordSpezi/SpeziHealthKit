@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import SpeziHealthKit
+public import SpeziHealthKit
 
 
 /// A Batch within a ``BulkExportSession``.

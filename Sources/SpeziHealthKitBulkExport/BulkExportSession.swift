@@ -6,9 +6,10 @@
 // SPDX-License-Identifier: MIT
 //
 
-import Foundation
+public import Foundation
 import HealthKit
 import SpeziHealthKit
+public import Observation
 
 
 /// State of a ``BulkExportSession``

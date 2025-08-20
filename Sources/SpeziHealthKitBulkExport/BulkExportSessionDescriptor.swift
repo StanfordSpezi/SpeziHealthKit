@@ -9,10 +9,10 @@
 // swiftlint:disable file_types_order
 
 import Foundation
-import HealthKit
+public import HealthKit
 import Spezi
 import SpeziFoundation
-import SpeziHealthKit
+public import SpeziHealthKit
 import SpeziLocalStorage
 
 
