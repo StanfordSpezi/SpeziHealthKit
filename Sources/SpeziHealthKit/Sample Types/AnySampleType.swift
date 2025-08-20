@@ -9,6 +9,11 @@
 import HealthKit
 
 
+//public protocol _HasLocalization {
+//    var displayTitle: LocalizedStringResource { get }
+//}
+
+
 /// Type-erased version of a ``SampleType``
 ///
 /// - Important: The ``AnySampleType`` protocol is public, but your application should not declare any new conformances to it; ``SampleType`` is the only type allowed to conform to ``AnySampleType``.
@@ -17,13 +22,14 @@ import HealthKit
 /// ### Instance Properties
 /// - ``hkSampleType``
 /// - ``displayTitle``
+/// - ``displayTitle-65fs3``
 /// - ``identifier``
 /// ### Comparing type-erased sample types
 /// - ``==(_:_:)-4zjyo``
 /// - ``==(_:_:)-5dq7``
 /// - ``==(_:_:)-80mw5``
-/// - ``~=(_:_:)-(_,SampleType<>)``
-/// - ``~=(_:_:)-(SampleType<>,_)``
+/// - ``~=(_:_:)-(_,SampleType<Any>)``
+/// - ``~=(_:_:)-(SampleType<Any>,_)``
 public protocol AnySampleType<Sample>: Hashable, Identifiable, Sendable where ID == String {
     /// The type of the sample type's underlying samples.
     ///
@@ -34,7 +40,7 @@ public protocol AnySampleType<Sample>: Hashable, Identifiable, Sendable where ID
     var hkSampleType: Sample._SampleType { get }
     
     /// The recommended user-displayable name of this sample type.
-    var displayTitle: String { get }
+    var displayTitle: LocalizedStringResource { get }
     
     /// Creates a properly-typed `HKSamplePredicate` object, for the current sample type.
     func _makeSamplePredicateInternal(filter filterPredicate: NSPredicate?) -> HKSamplePredicate<Sample._QueryResult>
@@ -46,6 +52,12 @@ extension AnySampleType {
     /// The sample type's unique identifier, derived from its underlying `HKSampleType`
     @inlinable public var id: String {
         hkSampleType.identifier
+    }
+    
+    /// The recommended user-displayable name of this sample type.
+    @_disfavoredOverload
+    @inlinable public var displayTitle: String {
+        String(localized: displayTitle)
     }
     
     // swiftlint:disable:next identifier_name

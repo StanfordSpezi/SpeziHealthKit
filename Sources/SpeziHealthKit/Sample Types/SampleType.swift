@@ -29,7 +29,7 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType {
     
     public let hkSampleType: Sample._SampleType
     
-    public let displayTitle: String
+    public let displayTitle: LocalizedStringResource
     
     /// Variant-specific additional information.
     @usableFromInline let variant: Variant
@@ -50,7 +50,7 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType {
     /// - parameter variant: The internal variant that should be used for storing any additional data associated with the sample type's specific underlying HealthKit sample type.
     @usableFromInline init(_ hkSampleType: Sample._SampleType, displayTitle: LocalizedStringResource, variant: Variant) {
         self.hkSampleType = hkSampleType
-        self.displayTitle = String(localized: displayTitle)
+        self.displayTitle = displayTitle
         self.variant = variant
     }
     
