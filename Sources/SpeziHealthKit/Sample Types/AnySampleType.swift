@@ -35,6 +35,7 @@ public protocol AnySampleType<Sample>: Hashable, Identifiable, Sendable where ID
     var hkSampleType: Sample._SampleType { get }
     
     /// The recommended user-displayable name of this sample type.
+    @_disfavoredOverload
     var displayTitle: LocalizedStringResource { get }
     
     /// Creates a properly-typed `HKSamplePredicate` object, for the current sample type.
@@ -50,7 +51,6 @@ extension AnySampleType {
     }
     
     /// The recommended user-displayable name of this sample type.
-    @_disfavoredOverload
     @inlinable public var displayTitle: String {
         String(localized: displayTitle)
     }
