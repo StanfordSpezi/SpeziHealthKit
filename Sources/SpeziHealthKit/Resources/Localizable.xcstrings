@@ -20,15 +20,17 @@
 
     },
     "Active Energy" : {
-
-    },
-    "Active Energy Burned" : {
-      "extractionState" : "stale",
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aktivitätsenergie"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Energía de actividad"
           }
         }
       }
@@ -208,7 +210,20 @@
 
     },
     "Cycling Speed" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Radfahrgeschwindigkeit"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Velocidad en bicicleta"
+          }
+        }
+      }
     },
     "Date of Birth" : {
 
@@ -509,7 +524,14 @@
 
     },
     "Pushes" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rollstuhlschübe"
+          }
+        }
+      }
     },
     "Rapid Pounding or Fluttering Heartbeat" : {
 
@@ -518,7 +540,20 @@
 
     },
     "Resting Energy" : {
-
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ruheenergie"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Energía al reposar"
+          }
+        }
+      }
     },
     "Resting Heart Rate" : {
       "localizations" : {
@@ -620,7 +655,13 @@
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Schrittzahl"
+            "value" : "Schritte"
+          }
+        },
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pasos"
           }
         }
       }
@@ -729,17 +770,6 @@
     },
     "Wheelchair Distance" : {
 
-    },
-    "Wheelchair Push Count" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rollstuhlschübe"
-          }
-        }
-      }
     },
     "Wheezing" : {
 
