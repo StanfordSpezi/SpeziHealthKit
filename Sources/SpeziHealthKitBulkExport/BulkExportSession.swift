@@ -8,8 +8,8 @@
 
 public import Foundation
 import HealthKit
-import SpeziHealthKit
 public import Observation
+import SpeziHealthKit
 
 
 /// State of a ``BulkExportSession``

@@ -8,8 +8,8 @@
 
 import Foundation
 import HealthKit
-public import SpeziHealthKit
 public import Observation
+public import SpeziHealthKit
 
 
 /// An auto-updating, observable collection of results to a HealthKit query.
