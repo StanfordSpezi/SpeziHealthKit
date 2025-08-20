@@ -1,7 +1,7 @@
 #
-# This source file is part of the Stanford Spezi open-source project
+# This source file is part of the Stanford Spezi open source project
 #
-# SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
+# SPDX-FileCopyrightText: 2025 Stanford University and the project authors (see CONTRIBUTORS.md)
 #
 # SPDX-License-Identifier: MIT
 #
@@ -15,56 +15,55 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: Build-and-Test-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  buildandtest_ios:
-    name: Build and Test Swift Package iOS
-    uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
+  package_tests:
+    name: Build and Test Swift Package ${{ matrix.platform.name }} (${{ matrix.config }})
+    uses: StanfordBDHG/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
+    strategy:
+      matrix:
+        config: [Debug, Release]
+        platform:
+          - name: iOS
+            destination: 'platform=iOS Simulator,name=iPhone 16 Pro'
+          - name: macOS
+            destination: 'platform=macOS,arch=arm64'
+          - name: watchOS
+            destination: 'platform=watchOS Simulator,name=Apple Watch Series 10 (46mm)'
+          - name: visionOS
+            destination: 'platform=visionOS Simulator,name=Apple Vision Pro'
+      fail-fast: false
     with:
       runsonlabels: '["macOS", "self-hosted"]'
       scheme: SpeziHealthKit-Package
-      artifactname: SpeziHealthKit-Package-iOS.xcresult
-      resultBundle: SpeziHealthKit-Package-iOS.xcresult
-  buildandtest_watchos:
-    name: Build and Test Swift Package watchOS
-    uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
-    with:
-      runsonlabels: '["macOS", "self-hosted"]'
-      scheme: SpeziHealthKit-Package
-      destination: 'platform=watchOS Simulator,name=Apple Watch Series 10 (46mm)'
-      artifactname: SpeziHealthKit-Package-watchOS.xcresult
-      resultBundle: SpeziHealthKit-Package-watchOS.xcresult
-  buildandtest_visionos:
-    name: Build and Test Swift Package visionOS
-    uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
-    with:
-      runsonlabels: '["macOS", "self-hosted"]'
-      scheme: SpeziHealthKit-Package
-      destination: 'platform=visionOS Simulator,name=Apple Vision Pro'
-      artifactname: SpeziHealthKit-Package-visionOS.xcresult
-      resultBundle: SpeziHealthKit-Package-visionOS.xcresult
-  buildandtest_macos:
-    name: Build and Test Swift Package macOS
-    uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
-    with:
-      runsonlabels: '["macOS", "self-hosted"]'
-      scheme: SpeziHealthKit-Package
-      destination: 'platform=macOS,arch=arm64'
-      artifactname: SpeziHealthKit-Package-macOS.xcresult
-      resultBundle: SpeziHealthKit-Package-macOS.xcresult
-  buildandtestuitests:
-    name: Build and Test UI Tests
-    uses: StanfordSpezi/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
+      destination: ${{ matrix.platform.destination }}
+      buildConfig: ${{ matrix.config }}
+      resultBundle: ${{ format('SpeziHealthKit-{0}-{1}.xcresult', matrix.platform.name, matrix.config) }}
+      artifactname: ${{ format('SpeziHealthKit-{0}-{1}.xcresult', matrix.platform.name, matrix.config) }}
+  ui_tests:
+    name: Build and Test UI Tests ${{ matrix.platform.name }} (${{ matrix.config }})
+    uses: StanfordBDHG/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
+    strategy:
+      matrix:
+        config: [Debug, Release]
+        platform:
+          - name: iOS
+            destination: 'platform=iOS Simulator,name=iPhone 16 Pro'
     with:
       runsonlabels: '["macOS", "self-hosted"]'
       path: 'Tests/UITests'
       scheme: TestApp
-      artifactname: TestApp.xcresult
-      resultBundle: TestApp.xcresult
+      destination: ${{ matrix.platform.destination }}
+      resultBundle: ${{ format('TestApp-{0}-{1}.xcresult', matrix.platform.name, matrix.config) }}
+      artifactname: ${{ format('TestApp-{0}-{1}.xcresult', matrix.platform.name, matrix.config) }}
   uploadcoveragereport:
     name: Upload Coverage Report
-    needs: [buildandtest_ios, buildandtest_watchos, buildandtest_visionos, buildandtest_macos, buildandtestuitests]
-    uses: StanfordSpezi/.github/.github/workflows/create-and-upload-coverage-report.yml@v2
+    needs: [package_tests, ui_tests]
+    uses: StanfordBDHG/.github/.github/workflows/create-and-upload-coverage-report.yml@v2
     with:
-      coveragereports: SpeziHealthKit-Package-iOS.xcresult SpeziHealthKit-Package-watchOS.xcresult SpeziHealthKit-Package-visionOS.xcresult SpeziHealthKit-Package-macOS.xcresult TestApp.xcresult
+      coveragereports: SpeziHealthKit-*.xcresult TestApp-*.xcresult
     secrets:
       token: ${{ secrets.CODECOV_TOKEN }}
