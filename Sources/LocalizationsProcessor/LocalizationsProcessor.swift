@@ -17,14 +17,12 @@ enum CommandError: Error {
     case other(String)
 }
 
+
 @main
 struct LocalizationsProcessor: ParsableCommand {
     
     @Flag(name: .short, help: "Enable extended logging")
     var verbose = false
-    
-    @Flag(name: .short)
-    var alt = false
     
     @Option(
         name: .customShort("o"),
@@ -38,110 +36,21 @@ struct LocalizationsProcessor: ParsableCommand {
     @Argument(help: "Locale identifiers for which translations should be processed.")
     var locales: [Locale]
     
-    mutating func run() throws {
+    func run() throws {
         if verbose {
             print("\(self)")
         }
-        if alt {
-            let localizations = try Localizations()
-            if verbose {
-                localizations.debugDump()
-            }
-            for locale in locales {
-                try process(locale: locale, using: localizations)
-            }
-        } else {
-            let bundle = Bundle(for: HKHealthStore.self)
-            guard let bundleResourceUrl = bundle.resourceURL else {
-                throw CommandError.other("Unable to find bundle resource url")
-            }
-            let loctableUrls = ((try? FileManager.default.contents(of: bundleResourceUrl.absoluteURL.resolvingSymlinksInPath())) ?? [])
-                .filter { $0.pathExtension == "loctable" }
-            /// lang: [key: [value]]
-            let loctable: [String: [String: Set<String>]] = try loctableUrls.reduce(into: [:]) { mergedTable, url in
-                let data = try Data(contentsOf: url)
-                guard let table = try PropertyListSerialization.propertyList(from: data, format: nil) as? [String: [String: Any]] else {
-                    throw CommandError.unableToDecodeLoctable(url)
-                }
-                for (key, value) in table where key != "LocProvenance" {
-                    for (key2, value2) in value {
-                        guard let value2 = value2 as? String else {
-                            continue
-                        }
-                        mergedTable[key, default: [:]][key2, default: []].insert(value2)
-                    }
-                }
-            }
-            guard let referenceLoctable = loctable[Locale.current.language.minimalIdentifier] else {
-                throw CommandError.other("unable to find reference loctable")
-            }
-            let displayNameKeysByObjectType: [HKObjectType: String] = HKObjectType.allKnownObjectTypes.reduce(into: [:]) { keys, type in
-                guard !keys.keys.contains(type) else {
-                    return
-                }
-                if let displayName = type.value(forKey: "hk_localizedName") as? String {
-                    let keysWithMatchingValues = referenceLoctable.keys.filter { referenceLoctable[$0]?.contains(displayName) == true }
-                    keys[type] = keysWithMatchingValues.min { $0.count < $1.count }
-                } else {
-                    print(
-                        "Unable to determine display name key for \(type.identifier).",
-                        Swift.type(of: type)
-                    )
-                }
-            }
-            for locale in locales {
-                try process(locale: locale, using: loctable, displayNameKeys: displayNameKeysByObjectType)
-            }
+        let localizations = try Localizations()
+        if verbose {
+            localizations.debugDump()
+        }
+        for locale in locales {
+            try process(locale: locale, using: localizations)
         }
     }
     
     
-    mutating private func process(locale: Locale, using loctable: [String: [String: Set<String>]], displayNameKeys: [HKObjectType: String]) throws {
-        guard let loctable = loctable[locale.identifier] else {
-            throw CommandError.other("unable to find loctable for locale \(locale)")
-        }
-        let year = Calendar.current.component(.year, from: .now)
-        var stringsFile = """
-            //
-            // This source file is part of the Stanford Spezi open-source project
-            //
-            // SPDX-FileCopyrightText: \(year) Stanford University and the project authors (see CONTRIBUTORS.md)
-            //
-            // SPDX-License-Identifier: MIT
-            //
-            
-            // THIS FILE IS AUTO-GENERATED! DO NOT EDIT!!!
-            
-            
-            """
-        for objectType in HKObjectType.allKnownObjectTypes {
-            guard let key = displayNameKeys[objectType] else {
-                print("[\(locale)] Skipping \(objectType) (no key)")
-                continue
-            }
-            guard let displayTitles = loctable[key], !displayTitles.isEmpty else {
-                print("[\(locale)] Skipping \(objectType) (no entry)")
-                continue
-            }
-            if let title = displayTitles.first, displayTitles.count == 1 {
-                stringsFile.append(#""\#(objectType.identifier)" = "\#(title)";\#n"#)
-            } else {
-                print("Found multiple potential titles for \(objectType.identifier). Skipping. Potential titles: \(displayTitles)")
-            }
-        }
-        if let outputUrl {
-            let dstStringsUrl = outputUrl
-                .appending(component: "\(locale.identifier).lproj", directoryHint: .isDirectory)
-                .appending(component: "Localizable.strings", directoryHint: .notDirectory)
-            try FileManager.default.createDirectory(at: dstStringsUrl.deletingLastPathComponent(), withIntermediateDirectories: true)
-            print("Writing title mappings for \(locale.identifier) to \(dstStringsUrl.path)")
-            try Data(stringsFile.utf8).write(to: dstStringsUrl)
-        } else {
-            print("\n\n\(locale.identifier).lproj:\n\(stringsFile)")
-        }
-    }
-    
-    mutating private func process(locale: Locale, using localizations: Localizations) throws {
+    private func process(locale: Locale, using localizations: Localizations) throws {
         let year = Calendar.current.component(.year, from: .now)
         var stringsFile = """
             //
@@ -180,7 +89,6 @@ struct LocalizationsProcessor: ParsableCommand {
 struct Localizations {
     private let displayNameKeys: [HKObjectType: String]
     private let mergedLoctables: [Locale: [String: Set<String>]]
-//    private let customTranslations: [HKObjectType: [Locale]]
     
     init() throws {
         let bundle = Bundle(for: HKHealthStore.self)
