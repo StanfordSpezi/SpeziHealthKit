@@ -8,6 +8,7 @@
 
 import Foundation
 import HealthKit
+private import OSLog
 
 
 public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType {
@@ -50,9 +51,9 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType {
     /// - parameter variant: The internal variant that should be used for storing any additional data associated with the sample type's specific underlying HealthKit sample type.
     @usableFromInline init(_ hkSampleType: Sample._SampleType, displayTitle: LocalizedStringResource, variant: Variant) {
         self.hkSampleType = hkSampleType
-//        self.displayTitle = displayTitle
-        print(Locale.current, Locale.current.language)
-        self.displayTitle = Bundle.module.localizedString(forKey: hkSampleType.identifier, value: nil, table: nil)
+        // we use the identifier here as a fallback; however this will never be used bc the localizedTitle(for:) call will always return a nonnil title.
+        // (we have tests to verify this behaviour).
+        self.displayTitle = Self.localizedTitle(for: hkSampleType) ?? hkSampleType.identifier
         self.variant = variant
     }
     

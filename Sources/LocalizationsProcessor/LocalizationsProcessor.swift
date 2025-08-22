@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+// swiftlint:disable file_types_order
+
 import ArgumentParser
 import Foundation
 import SpeziHealthKit
@@ -20,7 +22,6 @@ enum CommandError: Error {
 
 @main
 struct LocalizationsProcessor: ParsableCommand {
-    
     @Flag(name: .short, help: "Enable extended logging")
     var verbose = false
     
@@ -75,7 +76,7 @@ struct LocalizationsProcessor: ParsableCommand {
         if let outputUrl {
             let dstStringsUrl = outputUrl
                 .appending(component: "\(locale.identifier).lproj", directoryHint: .isDirectory)
-                .appending(component: "Localizable.strings", directoryHint: .notDirectory)
+                .appending(component: "Localizable-HKTypes.strings", directoryHint: .notDirectory)
             try FileManager.default.createDirectory(at: dstStringsUrl.deletingLastPathComponent(), withIntermediateDirectories: true)
             print("Writing title mappings for \(locale.identifier) to \(dstStringsUrl.path)")
             try Data(stringsFile.utf8).write(to: dstStringsUrl)

@@ -15,6 +15,11 @@ import SwiftUI
 struct LocalizedSampleTypeNames: View {
     var body: some View {
         Form {
+            Section {
+                ForEach([SampleType.food, .bloodPressure]) { sampleType in
+                    Text(sampleType.displayTitle)
+                }
+            }
             let allSampleTypes = HKObjectType.allKnownObjectTypes
                 .compactMap { $0.sampleType }
                 .map(SampleTypeProxy.init)
