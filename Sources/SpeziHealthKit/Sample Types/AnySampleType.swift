@@ -153,6 +153,8 @@ extension HKObjectType {
             SampleType.workoutRoute
         case HKPrescriptionType.visionPrescriptionType():
             SampleType.visionPrescription
+        case is HKClinicalType:
+            SampleType<HKClinicalRecord>(.init(rawValue: self.identifier))
         case is HKCharacteristicType, is HKDocumentType, is HKActivitySummaryType:
             nil
         default:
