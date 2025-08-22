@@ -2892,28 +2892,44 @@ extension HKObjectType {
 extension SampleType where Sample == HKElectrocardiogram {
     /// The electrocardiogram sample type
     @inlinable public static var electrocardiogram: SampleType<HKElectrocardiogram> {
-        .init(HKSampleType.electrocardiogramType(), variant: .other)
+        SampleTypeCache.get(
+            identifier: HKSampleType.electrocardiogramType().identifier,
+            as: SampleType<HKElectrocardiogram>.self,
+            default: .init(HKSampleType.electrocardiogramType(), variant: .other)
+        )
     }
 }
 
 extension SampleType where Sample == HKAudiogramSample {
     /// The audiogram sample type
     @inlinable public static var audiogram: SampleType<HKAudiogramSample> {
-        .init(HKSampleType.audiogramSampleType(), variant: .other)
+        SampleTypeCache.get(
+            identifier: HKSampleType.audiogramSampleType().identifier,
+            as: SampleType<HKAudiogramSample>.self,
+            default: .init(HKSampleType.audiogramSampleType(), variant: .other)
+        )
     }
 }
 
 extension SampleType where Sample == HKWorkout {
     /// The workout sample type
     @inlinable public static var workout: SampleType<HKWorkout> {
-        .init(HKSampleType.workoutType(), variant: .other)
+        SampleTypeCache.get(
+            identifier: HKSampleType.workoutType().identifier,
+            as: SampleType<HKWorkout>.self,
+            default: .init(HKSampleType.workoutType(), variant: .other)
+        )
     }
 }
 
 extension SampleType where Sample == HKVisionPrescription {
     /// The vision prescription sample type
     @inlinable public static var visionPrescription: SampleType<HKVisionPrescription> {
-        .init(HKSampleType.visionPrescriptionType(), variant: .other)
+        SampleTypeCache.get(
+            identifier: HKSampleType.visionPrescriptionType().identifier,
+            as: SampleType<HKVisionPrescription>.self,
+            default: .init(HKSampleType.visionPrescriptionType(), variant: .other)
+        )
     }
 }
 
@@ -2921,21 +2937,33 @@ extension SampleType where Sample == HKVisionPrescription {
 extension SampleType where Sample == HKStateOfMind {
     /// The state of mind sample type
     @inlinable public static var stateOfMind: SampleType<HKStateOfMind> {
-        .init(HKSampleType.stateOfMindType(), variant: .other)
+        SampleTypeCache.get(
+            identifier: HKSampleType.stateOfMindType().identifier,
+            as: SampleType<HKStateOfMind>.self,
+            default: .init(HKSampleType.stateOfMindType(), variant: .other)
+        )
     }
 }
 
 extension SampleType where Sample == HKHeartbeatSeriesSample {
     /// The heartbeat series sample type
     @inlinable public static var heartbeatSeries: SampleType<HKHeartbeatSeriesSample> {
-        .init(HKSeriesType.heartbeat(), variant: .other)
+        SampleTypeCache.get(
+            identifier: HKSeriesType.heartbeat().identifier,
+            as: SampleType<HKHeartbeatSeriesSample>.self,
+            default: .init(HKSeriesType.heartbeat(), variant: .other)
+        )
     }
 }
 
 extension SampleType where Sample == HKWorkoutRoute {
     /// The workout route sample type
     @inlinable public static var workoutRoute: SampleType<HKWorkoutRoute> {
-        .init(HKSeriesType.workoutRoute(), variant: .other)
+        SampleTypeCache.get(
+            identifier: HKSeriesType.workoutRoute().identifier,
+            as: SampleType<HKWorkoutRoute>.self,
+            default: .init(HKSeriesType.workoutRoute(), variant: .other)
+        )
     }
 }
 
@@ -2943,7 +2971,11 @@ extension SampleType where Sample == HKWorkoutRoute {
 extension SampleType where Sample == HKGAD7Assessment {
     /// The GAD-7 (generalized anxiery disorder 7) score type
     @inlinable public static var gad7: SampleType<HKGAD7Assessment> {
-        .init(HKScoredAssessmentType(.GAD7), variant: .other)
+        SampleTypeCache.get(
+            identifier: HKScoredAssessmentType(.GAD7).identifier,
+            as: SampleType<HKGAD7Assessment>.self,
+            default: .init(HKScoredAssessmentType(.GAD7), variant: .other)
+        )
     }
 }
 
@@ -2951,7 +2983,11 @@ extension SampleType where Sample == HKGAD7Assessment {
 extension SampleType where Sample == HKPHQ9Assessment {
     /// The PHQ-9 (nine-item Patient Health Questionnaire) score type
     @inlinable public static var phq9: SampleType<HKPHQ9Assessment> {
-        .init(HKScoredAssessmentType(.PHQ9), variant: .other)
+        SampleTypeCache.get(
+            identifier: HKScoredAssessmentType(.PHQ9).identifier,
+            as: SampleType<HKPHQ9Assessment>.self,
+            default: .init(HKScoredAssessmentType(.PHQ9), variant: .other)
+        )
     }
 }
 

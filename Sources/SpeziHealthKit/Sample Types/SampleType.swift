@@ -55,10 +55,10 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType {
         variant: Variant
     ) {
         self.hkSampleType = hkSampleType
+        self.variant = variant
         // we use the identifier here as a fallback; however this will never be used bc the localizedTitle(for:) call will always return a nonnil title.
         // (we have tests to verify this behaviour).
         self.displayTitle = displayTitle.map { String(localized: $0) } ?? Self.localizedTitle(for: hkSampleType) ?? hkSampleType.identifier
-        self.variant = variant
     }
     
     // swiftlint:disable:next identifier_name

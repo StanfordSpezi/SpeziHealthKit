@@ -41,6 +41,12 @@ struct LocalizationEntry: Hashable {
 
 @main
 struct LocalizationsProcessor: ParsableCommand {
+    static var configuration: CommandConfiguration {
+        CommandConfiguration(
+            abstract: "Generate localized string catalogues for HealthKit data types",
+            version: "0.1.0"
+        )
+    }
     @Flag(name: .short, help: "Enable extended logging")
     var verbose = false
     

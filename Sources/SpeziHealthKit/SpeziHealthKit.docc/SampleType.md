@@ -27,6 +27,7 @@ For example, the sample type representing heart rate samples (``SampleType/heart
 - ``SampleType/displayTitle``
 - ``SampleType/displayUnit-1rnhb``
 - ``SampleType/expectedValuesRange``
+- ``SampleType/localizedTitle(in:)``
 
 ### Well-known quantity types
 - <doc:SampleType+QuantityTypes>
