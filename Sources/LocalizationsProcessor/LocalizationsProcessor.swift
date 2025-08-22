@@ -13,10 +13,29 @@ import Foundation
 import SpeziHealthKit
 
 
+private let allSampleTypes: [any AnySampleType] = {
+    var sampleTypes: [any AnySampleType] = SampleType<HKQuantitySample>.otherSampleTypes
+    for objectType in HKObjectType.allKnownObjectTypes {
+        guard let sampleType = objectType.sampleType else {
+            fatalError("ERROR for \(objectType.identifier)")
+        }
+        sampleTypes.append(sampleType)
+    }
+    return sampleTypes.sorted { $0.id < $1.id }
+}()
+
+
 enum CommandError: Error {
     case unableToFindLoctable
     case unableToDecodeLoctable(URL)
     case other(String)
+}
+
+
+struct LocalizationEntry: Hashable {
+    let key: String
+    let value: String
+    let table: String
 }
 
 
@@ -66,7 +85,7 @@ struct LocalizationsProcessor: ParsableCommand {
             
             
             """
-        for objectType in HKObjectType.allKnownObjectTypes {
+        for objectType in allSampleTypes.map({ $0.hkSampleType as HKObjectType }) {
             if let title = localizations[objectType, locale: locale] {
                 stringsFile.append(#""\#(objectType.identifier)" = "\#(title)";\#n"#)
             } else {
@@ -89,9 +108,9 @@ struct LocalizationsProcessor: ParsableCommand {
 
 struct Localizations {
     private let displayNameKeys: [HKObjectType: String]
-    private let mergedLoctables: [Locale: [String: Set<String>]]
+    private let mergedLoctables: [Locale: [String: [LocalizationEntry]]]
     
-    init() throws {
+    init() throws { // swiftlint:disable:this function_body_length
         let bundle = Bundle(for: HKHealthStore.self)
         guard let bundleResourceUrl = bundle.resourceURL else {
             throw CommandError.other("Unable to find bundle resource url")
@@ -104,13 +123,17 @@ struct Localizations {
             guard let table = try PropertyListSerialization.propertyList(from: data, format: nil) as? [String: [String: Any]] else {
                 throw CommandError.unableToDecodeLoctable(url)
             }
-            for (key, value) in table where key != "LocProvenance" {
-                let locale = Locale(identifier: key)
+            for (locale, value) in table where locale != "LocProvenance" {
+                let locale = Locale(identifier: locale)
                 for (key2, value2) in value {
                     guard let value2 = value2 as? String else {
                         continue
                     }
-                    mergedTable[locale, default: [:]][key2, default: []].insert(value2)
+                    mergedTable[locale, default: [:]][key2, default: []].append(.init(
+                        key: key2,
+                        value: value2,
+                        table: url.deletingPathExtension().lastPathComponent
+                    ))
                 }
             }
         }
@@ -128,12 +151,15 @@ struct Localizations {
             HKClinicalType(.vitalSignRecord): "VITAL_SIGN_RECORDS",
             HKClinicalType(.coverageRecord): "INSURANCE_RECORDS"
         ]
-        displayNameKeys = HKObjectType.allKnownObjectTypes.reduce(into: hardcodedNameKeys) { keys, type in
+        displayNameKeys = allSampleTypes.reduce(into: hardcodedNameKeys) { keys, type in
+            let type = type.hkSampleType
             guard !keys.keys.contains(type) else {
                 return
             }
             if let displayName = type.value(forKey: "hk_localizedName") as? String {
-                let keysWithMatchingValues = referenceLoctable.keys.filter { referenceLoctable[$0]?.contains(displayName) == true }
+                let keysWithMatchingValues = referenceLoctable.keys.filter {
+                    referenceLoctable[$0]?.contains(where: { $0.value == displayName }) == true
+                }
                 keys[type] = keysWithMatchingValues.min { $0.count < $1.count }
             } else {
                 print(
@@ -165,14 +191,13 @@ struct Localizations {
             print("no entry for \(key)")
             return nil
         }
-        if let title = potentialTitles.first, potentialTitles.count == 1 {
-            return title
-        } else if potentialTitles.count > 1 {
-            print("Found multiple potential titles for \(type.identifier). Skipping. Potential titles: \(potentialTitles)")
-            return nil
-        } else {
-            return nil
+        if potentialTitles.count > 1 {
+            print("Found multiple potential titles for \(type.identifier). Will use first.")
+            for entry in potentialTitles {
+                print("- [\(entry.table)] \(entry.key) = \(entry.value)")
+            }
         }
+        return potentialTitles.first?.value
     }
 }
 
