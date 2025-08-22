@@ -8,6 +8,7 @@
 // SPDX-License-Identifier: MIT
 //
 
+import CompilerPluginSupport
 import class Foundation.ProcessInfo
 import PackageDescription
 
@@ -31,7 +32,8 @@ let package = Package(
         .package(url: "https://github.com/StanfordSpezi/SpeziFoundation.git", from: "2.2.1"),
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage.git", from: "2.1.1"),
         .package(url: "https://github.com/apple/swift-algorithms.git", from: "1.2.1"),
-        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.17.7")
+        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.17.7"),
+        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.6.1")
     ] + swiftLintPackage(),
     targets: [
         .target(
@@ -87,6 +89,23 @@ let package = Package(
             resources: [.process("__Snapshots__")],
             swiftSettings: [.enableUpcomingFeature("ExistentialAny")],
             plugins: [] + swiftLintPlugin()
+        ),
+        .executableTarget(
+            name: "LocalizationsProcessor",
+            dependencies: [
+                .target(name: "SpeziHealthKit"),
+                .product(name: "ArgumentParser", package: "swift-argument-parser")
+            ]
+        ),
+        .plugin(
+            name: "LocalizationsProcessorPlugin",
+            capability: .command(
+                intent: .custom(verb: "update-localizations", description: "Updates the localizations"),
+                permissions: [.writeToPackageDirectory(reason: "we need to update the files")]
+            ),
+            dependencies: [
+                .target(name: "LocalizationsProcessor")
+            ]
         )
     ]
 )

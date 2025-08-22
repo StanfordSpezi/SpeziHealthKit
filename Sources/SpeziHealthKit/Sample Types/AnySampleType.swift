@@ -35,8 +35,7 @@ public protocol AnySampleType<Sample>: Hashable, Identifiable, Sendable where ID
     var hkSampleType: Sample._SampleType { get }
     
     /// The recommended user-displayable name of this sample type.
-    @_disfavoredOverload
-    var displayTitle: LocalizedStringResource { get }
+    var displayTitle: String { get }
     
     /// Creates a properly-typed `HKSamplePredicate` object, for the current sample type.
     func _makeSamplePredicateInternal(filter filterPredicate: NSPredicate?) -> HKSamplePredicate<Sample._QueryResult>
@@ -48,11 +47,6 @@ extension AnySampleType {
     /// The sample type's unique identifier, derived from its underlying `HKSampleType`
     @inlinable public var id: String {
         hkSampleType.identifier
-    }
-    
-    /// The recommended user-displayable name of this sample type.
-    @inlinable public var displayTitle: String {
-        String(localized: displayTitle)
     }
     
     // swiftlint:disable:next identifier_name

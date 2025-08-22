@@ -24,6 +24,7 @@ struct HealthKitTestsView: View {
         case bulkExporter = "Bulk Exporter"
         case sourceFiltering = "Source Filtering"
         case deferredAuthorization = "Deferred Authorization"
+        case localizedSampleTypeNames = "Localized Sample Type Names"
     }
     
     @Environment(HealthKit.self) var healthKit
@@ -71,6 +72,8 @@ struct HealthKitTestsView: View {
                 SourceFilteredQueryView()
             case .deferredAuthorization:
                 DeferredAuthorizationTests(viewState: $viewState)
+            case .localizedSampleTypeNames:
+                LocalizedSampleTypeNames()
             }
         }
         .viewStateAlert(state: $viewState)
