@@ -17,7 +17,7 @@ private let allSampleTypes: [any AnySampleType] = {
     var sampleTypes: [any AnySampleType] = SampleType<HKQuantitySample>.otherSampleTypes
     for objectType in HKObjectType.allKnownObjectTypes {
         guard let sampleType = objectType.sampleType else {
-            fatalError("ERROR for \(objectType.identifier)")
+            fatalError("Unable to obtain SampleType for \(objectType.identifier)")
         }
         sampleTypes.append(sampleType)
     }
