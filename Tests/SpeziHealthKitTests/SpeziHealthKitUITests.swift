@@ -29,14 +29,12 @@ struct SpeziHealthKitUITests {
         
         let results = MockQueryResults(sampleType: .heartRate, timeRange: .currentWeek, samples: try heartRateSamplesProvider.makeSamples(12 * 7))
         let healthChart = HealthChart {
-            HealthChartEntry(results, drawingConfig: .init(mode: .line, color: .red))
+            HealthChartEntry(results, drawingConfig: .init(chartType: .line, color: .red))
         }
             .frame(width: 600, height: 500)
             .withLocale(.enUS, timeZone: .losAngeles)
         
         assertSnapshot(of: healthChart, as: .image)
-        
-//        bpmProvider.consume(6) // consume some elements to shift the cycle
         
         heartRateSamplesProvider.skipValues(5)
         heartRateSamplesProvider.skipDates(12 * 2)
@@ -75,22 +73,13 @@ struct SpeziHealthKitUITests {
         )
         
         let healthChart = HealthChart {
-            HealthChartEntry(heartRateResults, drawingConfig: .init(mode: .line, color: .red))
-            HealthChartEntry(blooxOxygenResults, drawingConfig: .init(mode: .line, color: .blue))
+            HealthChartEntry(heartRateResults, drawingConfig: .init(chartType: .line, color: .red))
+            HealthChartEntry(blooxOxygenResults, drawingConfig: .init(chartType: .line, color: .blue))
         }
             .frame(width: 600, height: 500)
             .withLocale(.enUS, timeZone: .losAngeles)
         
         assertSnapshot(of: healthChart, as: .image)
-        
-////        bpmProvider.consume(6) // consume some elements to shift the cycle
-//        
-//        heartRateSamplesProvider.skipValues(5)
-//        heartRateSamplesProvider.skipDates(12 * 2)
-//        
-//        results.samples.append(contentsOf: try heartRateSamplesProvider.makeSamples(12 * 4))
-//        
-//        assertSnapshot(of: healthChart, as: .image)
     }
     
     
@@ -111,7 +100,7 @@ struct SpeziHealthKitUITests {
     func emptyHealthChartEntriesButNoDataSnapshot() throws {
         let data = MockQueryResults(sampleType: .heartRate, timeRange: .currentWeek, samples: [])
         let healthChart = HealthChart {
-            HealthChartEntry(data, drawingConfig: .init(mode: .bar, color: .red))
+            HealthChartEntry(data, drawingConfig: .init(chartType: .bar, color: .red))
         }
             .frame(width: 600, height: 500)
             .withLocale(.enUS, timeZone: .losAngeles)
@@ -150,9 +139,9 @@ struct SpeziHealthKitUITests {
         func makeHealthChart(flag: Bool) -> some View {
             HealthChart {
                 if flag {
-                    HealthChartEntry(heartRateResults, drawingConfig: .init(mode: .line, color: .red))
+                    HealthChartEntry(heartRateResults, drawingConfig: .init(chartType: .line, color: .red))
                 } else {
-                    HealthChartEntry(blooxOxygenResults, drawingConfig: .init(mode: .line, color: .blue))
+                    HealthChartEntry(blooxOxygenResults, drawingConfig: .init(chartType: .line, color: .blue))
                 }
             }
             .frame(width: 600, height: 500)
