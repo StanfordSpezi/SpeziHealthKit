@@ -61,7 +61,7 @@ struct SampleTypesTests {
     
     @Test
     func displayTitles() {
-        for sampleType in HKObjectType.allKnownObjectTypes.compactMap(\.sampleType) {
+        for sampleType in HKObjectType.allKnownObjectTypes.compactMap(\.sampleType) + SampleType<HKQuantitySample>.otherSampleTypes {
             // SampleType uses the underlying HKSampleType's identifier as its fallback title if no localized title exists;
             // we need to ensure this never happens.
             // Note: since the translations are bundled with the package, rather than fetched dynamically from HealthKit,

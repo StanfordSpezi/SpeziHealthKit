@@ -49,11 +49,15 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType {
     /// - parameter hkSampleType: The sample type's underlying `HKSampleType`
     /// - parameter displayTitle: The localized string which should be used when displaying this sample type's title in a user-visible context.
     /// - parameter variant: The internal variant that should be used for storing any additional data associated with the sample type's specific underlying HealthKit sample type.
-    @usableFromInline init(_ hkSampleType: Sample._SampleType, displayTitle: LocalizedStringResource, variant: Variant) {
+    @usableFromInline init(
+        _ hkSampleType: Sample._SampleType,
+        displayTitle: LocalizedStringResource? = nil, // swiftlint:disable:this function_default_parameter_at_end
+        variant: Variant
+    ) {
         self.hkSampleType = hkSampleType
         // we use the identifier here as a fallback; however this will never be used bc the localizedTitle(for:) call will always return a nonnil title.
         // (we have tests to verify this behaviour).
-        self.displayTitle = Self.localizedTitle(for: hkSampleType) ?? hkSampleType.identifier
+        self.displayTitle = displayTitle.map { String(localized: $0) } ?? Self.localizedTitle(for: hkSampleType) ?? hkSampleType.identifier
         self.variant = variant
     }
     
@@ -123,7 +127,7 @@ extension SampleType {
     ///     Providing this information allows some components to optimize how they display data belonging to this sample type.
     @inlinable public static func quantity(
         _ identifier: HKQuantityTypeIdentifier,
-        displayTitle: LocalizedStringResource,
+        displayTitle: LocalizedStringResource? = nil, // swiftlint:disable:this function_default_parameter_at_end
         displayUnit: HKUnit,
         expectedValuesRange: ClosedRange<Double>? = nil
     ) -> SampleType<HKQuantitySample> {
@@ -141,7 +145,7 @@ extension SampleType {
     /// - parameter associatedQuantityTypes: The sample type's associated quantity sample types. E.g.: for the blood pressure correlation type, the associated quantity types would be systolic and siastolic blood pressure.
     @inlinable public static func correlation(
         _ identifier: HKCorrelationTypeIdentifier,
-        displayTitle: LocalizedStringResource,
+        displayTitle: LocalizedStringResource? = nil, // swiftlint:disable:this function_default_parameter_at_end
         associatedQuantityTypes: Set<SampleType<HKQuantitySample>>
     ) -> SampleType<HKCorrelation> {
         .init(HKCorrelationType(identifier), displayTitle: displayTitle, variant: .correlation(associatedQuantityTypes: associatedQuantityTypes))
@@ -153,7 +157,7 @@ extension SampleType {
     /// - parameter displayTitle: The localized string which should be used when displaying this sample type's title in a user-visible context.
     @inlinable public static func category(
         _ identifier: HKCategoryTypeIdentifier,
-        displayTitle: LocalizedStringResource
+        displayTitle: LocalizedStringResource? = nil
     ) -> SampleType<HKCategorySample> {
         .init(HKCategoryType(identifier), displayTitle: displayTitle, variant: .category)
     }
@@ -165,7 +169,7 @@ extension SampleType {
     @available(watchOS, unavailable)
     @inlinable public static func clinical(
         _ identifier: HKClinicalTypeIdentifier,
-        displayTitle: LocalizedStringResource
+        displayTitle: LocalizedStringResource? = nil
     ) -> SampleType<HKClinicalRecord> {
         .init(HKClinicalType(identifier), displayTitle: displayTitle, variant: .other)
     }

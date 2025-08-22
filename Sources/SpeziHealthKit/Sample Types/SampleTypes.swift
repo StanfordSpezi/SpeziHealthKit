@@ -34,966 +34,1323 @@ import HealthKit
 extension SampleType where Sample == HKQuantitySample {
     /// A quantity sample type that measures the number of steps the user has taken.
     @inlinable public static var stepCount: SampleType<HKQuantitySample> {
-        .quantity(
-            .stepCount,
-            displayTitle: "Step Count",
-            displayUnit: .count()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.stepCount.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .stepCount,
+                displayUnit: .count()
+            )
         )
     }
     /// A quantity sample type that measures the distance the user has moved by walking or running.
     @inlinable public static var distanceWalkingRunning: SampleType<HKQuantitySample> {
-        .quantity(
-            .distanceWalkingRunning,
-            displayTitle: "Walking + Running Distance",
-            displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo))
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.distanceWalkingRunning.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .distanceWalkingRunning,
+                displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo))
+            )
         )
     }
     /// A quantity sample type that measures the amount of time the runner’s foot is in contact with the ground while running.
     @inlinable public static var runningGroundContactTime: SampleType<HKQuantitySample> {
-        .quantity(
-            .runningGroundContactTime,
-            displayTitle: "Ground Contact Time",
-            displayUnit: .secondUnit(with: .milli)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.runningGroundContactTime.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .runningGroundContactTime,
+                displayUnit: .secondUnit(with: .milli)
+            )
         )
     }
     /// A quantity sample type that measures the rate of work required for the runner to maintain their speed.
     @inlinable public static var runningPower: SampleType<HKQuantitySample> {
-        .quantity(
-            .runningPower,
-            displayTitle: "Running Power",
-            displayUnit: .watt()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.runningPower.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .runningPower,
+                displayUnit: .watt()
+            )
         )
     }
     /// A quantity sample type that measures the runner’s speed.
     @inlinable public static var runningSpeed: SampleType<HKQuantitySample> {
-        .quantity(
-            .runningSpeed,
-            displayTitle: "Running Speed",
-            displayUnit: localeDependentUnit(us: .mile() / .hour(), metric: .meterUnit(with: .kilo) / .hour())
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.runningSpeed.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .runningSpeed,
+                displayUnit: localeDependentUnit(us: .mile() / .hour(), metric: .meterUnit(with: .kilo) / .hour())
+            )
         )
     }
     /// A quantity sample type that measures the distance covered by a single step while running.
     @inlinable public static var runningStrideLength: SampleType<HKQuantitySample> {
-        .quantity(
-            .runningStrideLength,
-            displayTitle: "Running Stride Length",
-            displayUnit: localeDependentUnit(us: .foot(), metric: .meter())
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.runningStrideLength.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .runningStrideLength,
+                displayUnit: localeDependentUnit(us: .foot(), metric: .meter())
+            )
         )
     }
     /// A quantity sample type measuring pelvis vertical range of motion during a single running stride.
     @inlinable public static var runningVerticalOscillation: SampleType<HKQuantitySample> {
-        .quantity(
-            .runningVerticalOscillation,
-            displayTitle: "Vertical Oscillation",
-            displayUnit: localeDependentUnit(us: .inch(), metric: .meterUnit(with: .centi))
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.runningVerticalOscillation.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .runningVerticalOscillation,
+                displayUnit: localeDependentUnit(us: .inch(), metric: .meterUnit(with: .centi))
+            )
         )
     }
     /// A quantity sample type that measures the distance the user has moved by cycling.
     @inlinable public static var distanceCycling: SampleType<HKQuantitySample> {
-        .quantity(
-            .distanceCycling,
-            displayTitle: "Cycling Distance",
-            displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo))
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.distanceCycling.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .distanceCycling,
+                displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo))
+            )
         )
     }
     /// A quantity sample type that measures the number of pushes that the user has performed while using a wheelchair.
     @inlinable public static var pushCount: SampleType<HKQuantitySample> {
-        .quantity(
-            .pushCount,
-            displayTitle: "Pushes",
-            displayUnit: .count()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.pushCount.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .pushCount,
+                displayUnit: .count()
+            )
         )
     }
     /// A quantity sample type that measures the distance the user has moved using a wheelchair.
     @inlinable public static var distanceWheelchair: SampleType<HKQuantitySample> {
-        .quantity(
-            .distanceWheelchair,
-            displayTitle: "Wheelchair Distance",
-            displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo))
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.distanceWheelchair.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .distanceWheelchair,
+                displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo))
+            )
         )
     }
     /// A quantity sample type that measures the number of strokes performed while swimming.
     @inlinable public static var swimmingStrokeCount: SampleType<HKQuantitySample> {
-        .quantity(
-            .swimmingStrokeCount,
-            displayTitle: "Swimming Strokes",
-            displayUnit: .count()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.swimmingStrokeCount.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .swimmingStrokeCount,
+                displayUnit: .count()
+            )
         )
     }
     /// A quantity sample type that measures the distance the user has moved while swimming.
     @inlinable public static var distanceSwimming: SampleType<HKQuantitySample> {
-        .quantity(
-            .distanceSwimming,
-            displayTitle: "Swimming Distance",
-            displayUnit: localeDependentUnit(us: .yard(), uk: .yard(), metric: .meter())
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.distanceSwimming.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .distanceSwimming,
+                displayUnit: localeDependentUnit(us: .yard(), uk: .yard(), metric: .meter())
+            )
         )
     }
     /// A quantity sample type that measures the distance the user has traveled while skiing or snowboarding.
     @inlinable public static var distanceDownhillSnowSports: SampleType<HKQuantitySample> {
-        .quantity(
-            .distanceDownhillSnowSports,
-            displayTitle: "Downhill Snow Sports Distance",
-            displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo))
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.distanceDownhillSnowSports.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .distanceDownhillSnowSports,
+                displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo))
+            )
         )
     }
     /// A quantity sample type that measures the resting energy burned by the user.
     @inlinable public static var basalEnergyBurned: SampleType<HKQuantitySample> {
-        .quantity(
-            .basalEnergyBurned,
-            displayTitle: "Resting Energy",
-            displayUnit: .largeCalorie()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.basalEnergyBurned.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .basalEnergyBurned,
+                displayUnit: .largeCalorie()
+            )
         )
     }
     /// A quantity sample type that measures the amount of active energy the user has burned.
     @inlinable public static var activeEnergyBurned: SampleType<HKQuantitySample> {
-        .quantity(
-            .activeEnergyBurned,
-            displayTitle: "Active Energy",
-            displayUnit: .largeCalorie()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.activeEnergyBurned.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .activeEnergyBurned,
+                displayUnit: .largeCalorie()
+            )
         )
     }
     /// A quantity sample type that measures the number flights of stairs that the user has climbed.
     @inlinable public static var flightsClimbed: SampleType<HKQuantitySample> {
-        .quantity(
-            .flightsClimbed,
-            displayTitle: "Flights Climbed",
-            displayUnit: .count()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.flightsClimbed.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .flightsClimbed,
+                displayUnit: .count()
+            )
         )
     }
     /// A quantity sample type that measures the amount of time the user spent exercising.
     @inlinable public static var appleExerciseTime: SampleType<HKQuantitySample> {
-        .quantity(
-            .appleExerciseTime,
-            displayTitle: "Exercise Minutes",
-            displayUnit: .minute()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.appleExerciseTime.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .appleExerciseTime,
+                displayUnit: .minute()
+            )
         )
     }
     /// A quantity sample type that measures the amount of time the user has spent performing activities that involve full-body movements during the specified day.
     @inlinable public static var appleMoveTime: SampleType<HKQuantitySample> {
-        .quantity(
-            .appleMoveTime,
-            displayTitle: "Move Minutes",
-            displayUnit: .minute()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.appleMoveTime.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .appleMoveTime,
+                displayUnit: .minute()
+            )
         )
     }
     /// A quantity sample type that measures the amount of time the user has spent standing.
     @inlinable public static var appleStandTime: SampleType<HKQuantitySample> {
-        .quantity(
-            .appleStandTime,
-            displayTitle: "Stand Hours",
-            displayUnit: .hour()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.appleStandTime.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .appleStandTime,
+                displayUnit: .hour()
+            )
         )
     }
     /// A quantity sample that measures the maximal oxygen consumption during exercise.
     @inlinable public static var vo2Max: SampleType<HKQuantitySample> {
-        .quantity(
-            .vo2Max,
-            displayTitle: "VO₂ max",
-            displayUnit: .literUnit(with: .milli) / (.gramUnit(with: .kilo) * .minute())
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.vo2Max.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .vo2Max,
+                displayUnit: .literUnit(with: .milli) / (.gramUnit(with: .kilo) * .minute())
+            )
         )
     }
     /// A quantity sample type that measures the user’s height.
     @inlinable public static var height: SampleType<HKQuantitySample> {
-        .quantity(
-            .height,
-            displayTitle: "Height",
-            displayUnit: localeDependentUnit(us: .foot(), metric: .meterUnit(with: .centi))
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.height.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .height,
+                displayUnit: localeDependentUnit(us: .foot(), metric: .meterUnit(with: .centi))
+            )
         )
     }
     /// A quantity sample type that measures the user’s weight.
     @inlinable public static var bodyMass: SampleType<HKQuantitySample> {
-        .quantity(
-            .bodyMass,
-            displayTitle: "Body Mass",
-            displayUnit: localeDependentUnit(us: .pound(), uk: .pound(), metric: .gramUnit(with: .kilo))
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.bodyMass.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .bodyMass,
+                displayUnit: localeDependentUnit(us: .pound(), uk: .pound(), metric: .gramUnit(with: .kilo))
+            )
         )
     }
     /// A quantity sample type that measures the user’s body mass index.
     @inlinable public static var bodyMassIndex: SampleType<HKQuantitySample> {
-        .quantity(
-            .bodyMassIndex,
-            displayTitle: "Body Mass Index",
-            displayUnit: .count()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.bodyMassIndex.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .bodyMassIndex,
+                displayUnit: .count()
+            )
         )
     }
     /// A quantity sample type that measures the user’s lean body mass.
     @inlinable public static var leanBodyMass: SampleType<HKQuantitySample> {
-        .quantity(
-            .leanBodyMass,
-            displayTitle: "Lean Body Mass",
-            displayUnit: localeDependentUnit(us: .pound(), uk: .pound(), metric: .gramUnit(with: .kilo))
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.leanBodyMass.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .leanBodyMass,
+                displayUnit: localeDependentUnit(us: .pound(), uk: .pound(), metric: .gramUnit(with: .kilo))
+            )
         )
     }
     /// A quantity sample type that measures the user’s body fat percentage.
     @inlinable public static var bodyFatPercentage: SampleType<HKQuantitySample> {
-        .quantity(
-            .bodyFatPercentage,
-            displayTitle: "Body Fat Percentage",
-            displayUnit: .percent()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.bodyFatPercentage.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .bodyFatPercentage,
+                displayUnit: .percent()
+            )
         )
     }
     /// A quantity sample type that measures the user’s waist circumference.
     @inlinable public static var waistCircumference: SampleType<HKQuantitySample> {
-        .quantity(
-            .waistCircumference,
-            displayTitle: "Waist Circumference",
-            displayUnit: localeDependentUnit(us: .inch(), metric: .meterUnit(with: .centi))
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.waistCircumference.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .waistCircumference,
+                displayUnit: localeDependentUnit(us: .inch(), metric: .meterUnit(with: .centi))
+            )
         )
     }
     /// A quantity sample type that records the wrist temperature during sleep.
     @inlinable public static var appleSleepingWristTemperature: SampleType<HKQuantitySample> {
-        .quantity(
-            .appleSleepingWristTemperature,
-            displayTitle: "Wrist Temperature",
-            displayUnit: localeDependentUnit(us: .degreeFahrenheit(), metric: .degreeCelsius())
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.appleSleepingWristTemperature.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .appleSleepingWristTemperature,
+                displayUnit: localeDependentUnit(us: .degreeFahrenheit(), metric: .degreeCelsius())
+            )
         )
     }
     /// A quantity sample type that records the user’s basal body temperature.
     @inlinable public static var basalBodyTemperature: SampleType<HKQuantitySample> {
-        .quantity(
-            .basalBodyTemperature,
-            displayTitle: "Basal Body Temperature",
-            displayUnit: localeDependentUnit(us: .degreeFahrenheit(), metric: .degreeCelsius())
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.basalBodyTemperature.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .basalBodyTemperature,
+                displayUnit: localeDependentUnit(us: .degreeFahrenheit(), metric: .degreeCelsius())
+            )
         )
     }
     /// A quantity sample type that measures audio exposure to sounds in the environment.
     @inlinable public static var environmentalAudioExposure: SampleType<HKQuantitySample> {
-        .quantity(
-            .environmentalAudioExposure,
-            displayTitle: "Environmental Audio Exposure",
-            displayUnit: .decibelHearingLevel()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.environmentalAudioExposure.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .environmentalAudioExposure,
+                displayUnit: .decibelHearingLevel()
+            )
         )
     }
     /// A quantity sample type that measures audio exposure from headphones.
     @inlinable public static var headphoneAudioExposure: SampleType<HKQuantitySample> {
-        .quantity(
-            .headphoneAudioExposure,
-            displayTitle: "Headphone Audio Exposure",
-            displayUnit: .decibelHearingLevel()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.headphoneAudioExposure.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .headphoneAudioExposure,
+                displayUnit: .decibelHearingLevel()
+            )
         )
     }
     /// A quantity sample type that measures the user’s heart rate.
     @inlinable public static var heartRate: SampleType<HKQuantitySample> {
-        .quantity(
-            .heartRate,
-            displayTitle: "Heart Rate",
-            displayUnit: .count() / .minute(),
-            expectedValuesRange: 0...175
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.heartRate.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .heartRate,
+                displayUnit: .count() / .minute(),
+                expectedValuesRange: 0...175
+            )
         )
     }
     /// A quantity sample type that measures the user’s resting heart rate.
     @inlinable public static var restingHeartRate: SampleType<HKQuantitySample> {
-        .quantity(
-            .restingHeartRate,
-            displayTitle: "Resting Heart Rate",
-            displayUnit: .count() / .minute()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.restingHeartRate.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .restingHeartRate,
+                displayUnit: .count() / .minute()
+            )
         )
     }
     /// A quantity sample type that measures the user’s heart rate while walking.
     @inlinable public static var walkingHeartRateAverage: SampleType<HKQuantitySample> {
-        .quantity(
-            .walkingHeartRateAverage,
-            displayTitle: "Walking Heart Rate Average",
-            displayUnit: .count() / .minute()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.walkingHeartRateAverage.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .walkingHeartRateAverage,
+                displayUnit: .count() / .minute()
+            )
         )
     }
     /// A quantity sample type that measures the standard deviation of heartbeat intervals.
     @inlinable public static var heartRateVariabilitySDNN: SampleType<HKQuantitySample> {
-        .quantity(
-            .heartRateVariabilitySDNN,
-            displayTitle: "Heart Rate Variability",
-            displayUnit: .secondUnit(with: .milli)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.heartRateVariabilitySDNN.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .heartRateVariabilitySDNN,
+                displayUnit: .secondUnit(with: .milli)
+            )
         )
     }
     /// A quantity sample that records the reduction in heart rate from the peak exercise rate to the rate one minute after exercising ended.
     @inlinable public static var heartRateRecoveryOneMinute: SampleType<HKQuantitySample> {
-        .quantity(
-            .heartRateRecoveryOneMinute,
-            displayTitle: "Cardio Recovery",
-            displayUnit: .count() / .minute()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.heartRateRecoveryOneMinute.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .heartRateRecoveryOneMinute,
+                displayUnit: .count() / .minute()
+            )
         )
     }
     /// A quantity type that measures an estimate of the percentage of time a person’s heart shows signs of atrial fibrillation (AFib) while wearing Apple Watch.
     @inlinable public static var atrialFibrillationBurden: SampleType<HKQuantitySample> {
-        .quantity(
-            .atrialFibrillationBurden,
-            displayTitle: "Atrial Fibrillation",
-            displayUnit: .percent()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.atrialFibrillationBurden.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .atrialFibrillationBurden,
+                displayUnit: .percent()
+            )
         )
     }
     /// A quantity sample type that measures the user’s oxygen saturation.
     @inlinable public static var bloodOxygen: SampleType<HKQuantitySample> {
-        .quantity(
-            .oxygenSaturation,
-            displayTitle: "Blood Oxygen",
-            displayUnit: .percent(),
-            expectedValuesRange: 80...105
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.oxygenSaturation.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .oxygenSaturation,
+                displayUnit: .percent(),
+                expectedValuesRange: 80...105
+            )
         )
     }
     /// A quantity sample type that measures the user’s body temperature.
     @inlinable public static var bodyTemperature: SampleType<HKQuantitySample> {
-        .quantity(
-            .bodyTemperature,
-            displayTitle: "Body Temperature",
-            displayUnit: localeDependentUnit(us: .degreeFahrenheit(), metric: .degreeCelsius())
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.bodyTemperature.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .bodyTemperature,
+                displayUnit: localeDependentUnit(us: .degreeFahrenheit(), metric: .degreeCelsius())
+            )
         )
     }
     /// A quantity sample type that measures the user’s diastolic blood pressure.
     @inlinable public static var bloodPressureDiastolic: SampleType<HKQuantitySample> {
-        .quantity(
-            .bloodPressureDiastolic,
-            displayTitle: "Blood Pressure (Diastolic)",
-            displayUnit: .millimeterOfMercury()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.bloodPressureDiastolic.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .bloodPressureDiastolic,
+                displayUnit: .millimeterOfMercury()
+            )
         )
     }
     /// A quantity sample type that measures the user’s systolic blood pressure.
     @inlinable public static var bloodPressureSystolic: SampleType<HKQuantitySample> {
-        .quantity(
-            .bloodPressureSystolic,
-            displayTitle: "Blood Pressure (Systolic)",
-            displayUnit: .millimeterOfMercury()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.bloodPressureSystolic.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .bloodPressureSystolic,
+                displayUnit: .millimeterOfMercury()
+            )
         )
     }
     /// A quantity sample type that measures the user’s respiratory rate.
     @inlinable public static var respiratoryRate: SampleType<HKQuantitySample> {
-        .quantity(
-            .respiratoryRate,
-            displayTitle: "Respiratory Rate",
-            displayUnit: .count() / .minute()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.respiratoryRate.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .respiratoryRate,
+                displayUnit: .count() / .minute()
+            )
         )
     }
     /// A quantity sample type that measures the user’s blood glucose level.
     @inlinable public static var bloodGlucose: SampleType<HKQuantitySample> {
-        .quantity(
-            .bloodGlucose,
-            displayTitle: "Blood Glucose",
-            displayUnit: .gramUnit(with: .milli) / .literUnit(with: .deci)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.bloodGlucose.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .bloodGlucose,
+                displayUnit: .gramUnit(with: .milli) / .literUnit(with: .deci)
+            )
         )
     }
     /// A quantity sample type that measures electrodermal activity.
     @inlinable public static var electrodermalActivity: SampleType<HKQuantitySample> {
-        .quantity(
-            .electrodermalActivity,
-            displayTitle: "Electrodermal Activity",
-            displayUnit: .siemenUnit(with: .micro)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.electrodermalActivity.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .electrodermalActivity,
+                displayUnit: .siemenUnit(with: .micro)
+            )
         )
     }
     /// A quantity sample type that measures the amount of air that can be forcibly exhaled from the lungs during the first second of a forced exhalation.
     @inlinable public static var forcedExpiratoryVolume1: SampleType<HKQuantitySample> {
-        .quantity(
-            .forcedExpiratoryVolume1,
-            displayTitle: "Forced Expiratory Volume, 1 sec",
-            displayUnit: .liter()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.forcedExpiratoryVolume1.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .forcedExpiratoryVolume1,
+                displayUnit: .liter()
+            )
         )
     }
     /// A quantity sample type that measures the amount of air that can be forcibly exhaled from the lungs after taking the deepest breath possible.
     @inlinable public static var forcedVitalCapacity: SampleType<HKQuantitySample> {
-        .quantity(
-            .forcedVitalCapacity,
-            displayTitle: "Forced Vital Capacity",
-            displayUnit: .liter()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.forcedVitalCapacity.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .forcedVitalCapacity,
+                displayUnit: .liter()
+            )
         )
     }
     /// A quantity sample type that measures the number of puffs the user takes from their inhaler.
     @inlinable public static var inhalerUsage: SampleType<HKQuantitySample> {
-        .quantity(
-            .inhalerUsage,
-            displayTitle: "Inhaler Usage",
-            displayUnit: .count()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.inhalerUsage.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .inhalerUsage,
+                displayUnit: .count()
+            )
         )
     }
     /// A quantity sample that measures the amount of insulin delivered.
     @inlinable public static var insulinDelivery: SampleType<HKQuantitySample> {
-        .quantity(
-            .insulinDelivery,
-            displayTitle: "Insulin Delivery",
-            displayUnit: .internationalUnit()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.insulinDelivery.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .insulinDelivery,
+                displayUnit: .internationalUnit()
+            )
         )
     }
     /// A quantity sample type that measures the number of times the user fell.
     @inlinable public static var numberOfTimesFallen: SampleType<HKQuantitySample> {
-        .quantity(
-            .numberOfTimesFallen,
-            displayTitle: "Number of Times Fallen",
-            displayUnit: .count()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.numberOfTimesFallen.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .numberOfTimesFallen,
+                displayUnit: .count()
+            )
         )
     }
     /// A quantity sample type that measures the user’s maximum flow rate generated during a forceful exhalation.
     @inlinable public static var peakExpiratoryFlowRate: SampleType<HKQuantitySample> {
-        .quantity(
-            .peakExpiratoryFlowRate,
-            displayTitle: "Peak Expiratory Flow Rate",
-            displayUnit: .liter() / .minute()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.peakExpiratoryFlowRate.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .peakExpiratoryFlowRate,
+                displayUnit: .liter() / .minute()
+            )
         )
     }
     /// A quantity sample type that measures the user’s peripheral perfusion index.
     @inlinable public static var peripheralPerfusionIndex: SampleType<HKQuantitySample> {
-        .quantity(
-            .peripheralPerfusionIndex,
-            displayTitle: "Peripheral Perfusion Index",
-            displayUnit: .percent()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.peripheralPerfusionIndex.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .peripheralPerfusionIndex,
+                displayUnit: .percent()
+            )
         )
     }
     /// A quantity sample type that measures the amount of biotin (vitamin B7) consumed.
     @inlinable public static var dietaryBiotin: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryBiotin,
-            displayTitle: "Biotin",
-            displayUnit: .gramUnit(with: .micro)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryBiotin.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryBiotin,
+                displayUnit: .gramUnit(with: .micro)
+            )
         )
     }
     /// A quantity sample type that measures the amount of caffeine consumed.
     @inlinable public static var dietaryCaffeine: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryCaffeine,
-            displayTitle: "Caffeine",
-            displayUnit: .gramUnit(with: .milli)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryCaffeine.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryCaffeine,
+                displayUnit: .gramUnit(with: .milli)
+            )
         )
     }
     /// A quantity sample type that measures the amount of calcium consumed.
     @inlinable public static var dietaryCalcium: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryCalcium,
-            displayTitle: "Calcium",
-            displayUnit: .gramUnit(with: .milli)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryCalcium.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryCalcium,
+                displayUnit: .gramUnit(with: .milli)
+            )
         )
     }
     /// A quantity sample type that measures the amount of carbohydrates consumed.
     @inlinable public static var dietaryCarbohydrates: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryCarbohydrates,
-            displayTitle: "Carbohydrates",
-            displayUnit: .gram()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryCarbohydrates.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryCarbohydrates,
+                displayUnit: .gram()
+            )
         )
     }
     /// A quantity sample type that measures the amount of chloride consumed.
     @inlinable public static var dietaryChloride: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryChloride,
-            displayTitle: "Chloride",
-            displayUnit: .gramUnit(with: .milli)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryChloride.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryChloride,
+                displayUnit: .gramUnit(with: .milli)
+            )
         )
     }
     /// A quantity sample type that measures the amount of cholesterol consumed.
     @inlinable public static var dietaryCholesterol: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryCholesterol,
-            displayTitle: "Cholesterol",
-            displayUnit: .gramUnit(with: .milli)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryCholesterol.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryCholesterol,
+                displayUnit: .gramUnit(with: .milli)
+            )
         )
     }
     /// A quantity sample type that measures the amount of chromium consumed.
     @inlinable public static var dietaryChromium: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryChromium,
-            displayTitle: "Chromium",
-            displayUnit: .gramUnit(with: .micro)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryChromium.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryChromium,
+                displayUnit: .gramUnit(with: .micro)
+            )
         )
     }
     /// A quantity sample type that measures the amount of copper consumed.
     @inlinable public static var dietaryCopper: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryCopper,
-            displayTitle: "Copper",
-            displayUnit: .gramUnit(with: .milli)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryCopper.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryCopper,
+                displayUnit: .gramUnit(with: .milli)
+            )
         )
     }
     /// A quantity sample type that measures the amount of energy consumed.
     @inlinable public static var dietaryEnergyConsumed: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryEnergyConsumed,
-            displayTitle: "Dietary Energy Consumed",
-            displayUnit: .largeCalorie()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryEnergyConsumed.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryEnergyConsumed,
+                displayUnit: .largeCalorie()
+            )
         )
     }
     /// A quantity sample type that measures the amount of monounsaturated fat consumed.
     @inlinable public static var dietaryFatMonounsaturated: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryFatMonounsaturated,
-            displayTitle: "Monounsaturated Fat",
-            displayUnit: .gram()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryFatMonounsaturated.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryFatMonounsaturated,
+                displayUnit: .gram()
+            )
         )
     }
     /// A quantity sample type that measures the amount of polyunsaturated fat consumed.
     @inlinable public static var dietaryFatPolyunsaturated: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryFatPolyunsaturated,
-            displayTitle: "Polyunsaturated Fat",
-            displayUnit: .gram()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryFatPolyunsaturated.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryFatPolyunsaturated,
+                displayUnit: .gram()
+            )
         )
     }
     /// A quantity sample type that measures the amount of saturated fat consumed.
     @inlinable public static var dietaryFatSaturated: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryFatSaturated,
-            displayTitle: "Saturated Fat",
-            displayUnit: .gram()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryFatSaturated.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryFatSaturated,
+                displayUnit: .gram()
+            )
         )
     }
     /// A quantity sample type that measures the total amount of fat consumed.
     @inlinable public static var dietaryFatTotal: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryFatTotal,
-            displayTitle: "Total Fat",
-            displayUnit: .gram()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryFatTotal.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryFatTotal,
+                displayUnit: .gram()
+            )
         )
     }
     /// A quantity sample type that measures the amount of fiber consumed.
     @inlinable public static var dietaryFiber: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryFiber,
-            displayTitle: "Fiber",
-            displayUnit: .gram()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryFiber.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryFiber,
+                displayUnit: .gram()
+            )
         )
     }
     /// A quantity sample type that measures the amount of folate (folic acid) consumed.
     @inlinable public static var dietaryFolate: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryFolate,
-            displayTitle: "Folate",
-            displayUnit: .gramUnit(with: .micro)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryFolate.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryFolate,
+                displayUnit: .gramUnit(with: .micro)
+            )
         )
     }
     /// A quantity sample type that measures the amount of iodine consumed.
     @inlinable public static var dietaryIodine: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryIodine,
-            displayTitle: "Iodine",
-            displayUnit: .gramUnit(with: .micro)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryIodine.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryIodine,
+                displayUnit: .gramUnit(with: .micro)
+            )
         )
     }
     /// A quantity sample type that measures the amount of iron consumed.
     @inlinable public static var dietaryIron: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryIron,
-            displayTitle: "Iron",
-            displayUnit: .gramUnit(with: .milli)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryIron.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryIron,
+                displayUnit: .gramUnit(with: .milli)
+            )
         )
     }
     /// A quantity sample type that measures the amount of magnesium consumed.
     @inlinable public static var dietaryMagnesium: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryMagnesium,
-            displayTitle: "Magnesium",
-            displayUnit: .gramUnit(with: .milli)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryMagnesium.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryMagnesium,
+                displayUnit: .gramUnit(with: .milli)
+            )
         )
     }
     /// A quantity sample type that measures the amount of manganese consumed.
     @inlinable public static var dietaryManganese: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryManganese,
-            displayTitle: "Manganese",
-            displayUnit: .gramUnit(with: .milli)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryManganese.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryManganese,
+                displayUnit: .gramUnit(with: .milli)
+            )
         )
     }
     /// A quantity sample type that measures the amount of molybdenum consumed.
     @inlinable public static var dietaryMolybdenum: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryMolybdenum,
-            displayTitle: "Molybdenum",
-            displayUnit: .gramUnit(with: .micro)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryMolybdenum.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryMolybdenum,
+                displayUnit: .gramUnit(with: .micro)
+            )
         )
     }
     /// A quantity sample type that measures the amount of niacin (vitamin B3) consumed.
     @inlinable public static var dietaryNiacin: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryNiacin,
-            displayTitle: "Niacin",
-            displayUnit: .gramUnit(with: .milli)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryNiacin.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryNiacin,
+                displayUnit: .gramUnit(with: .milli)
+            )
         )
     }
     /// A quantity sample type that measures the amount of pantothenic acid (vitamin B5) consumed.
     @inlinable public static var dietaryPantothenicAcid: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryPantothenicAcid,
-            displayTitle: "Pantothenic Acid",
-            displayUnit: .gramUnit(with: .milli)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryPantothenicAcid.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryPantothenicAcid,
+                displayUnit: .gramUnit(with: .milli)
+            )
         )
     }
     /// A quantity sample type that measures the amount of phosphorus consumed.
     @inlinable public static var dietaryPhosphorus: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryPhosphorus,
-            displayTitle: "Phosphorus",
-            displayUnit: .gramUnit(with: .milli)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryPhosphorus.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryPhosphorus,
+                displayUnit: .gramUnit(with: .milli)
+            )
         )
     }
     /// A quantity sample type that measures the amount of potassium consumed.
     @inlinable public static var dietaryPotassium: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryPotassium,
-            displayTitle: "Potassium",
-            displayUnit: .gramUnit(with: .milli)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryPotassium.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryPotassium,
+                displayUnit: .gramUnit(with: .milli)
+            )
         )
     }
     /// A quantity sample type that measures the amount of protein consumed.
     @inlinable public static var dietaryProtein: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryProtein,
-            displayTitle: "Protein",
-            displayUnit: .gram()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryProtein.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryProtein,
+                displayUnit: .gram()
+            )
         )
     }
     /// A quantity sample type that measures the amount of riboflavin (vitamin B2) consumed.
     @inlinable public static var dietaryRiboflavin: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryRiboflavin,
-            displayTitle: "Riboflavin",
-            displayUnit: .gramUnit(with: .milli)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryRiboflavin.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryRiboflavin,
+                displayUnit: .gramUnit(with: .milli)
+            )
         )
     }
     /// A quantity sample type that measures the amount of selenium consumed.
     @inlinable public static var dietarySelenium: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietarySelenium,
-            displayTitle: "Selenium",
-            displayUnit: .gramUnit(with: .micro)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietarySelenium.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietarySelenium,
+                displayUnit: .gramUnit(with: .micro)
+            )
         )
     }
     /// A quantity sample type that measures the amount of sodium consumed.
     @inlinable public static var dietarySodium: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietarySodium,
-            displayTitle: "Sodium",
-            displayUnit: .gramUnit(with: .milli)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietarySodium.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietarySodium,
+                displayUnit: .gramUnit(with: .milli)
+            )
         )
     }
     /// A quantity sample type that measures the amount of sugar consumed.
     @inlinable public static var dietarySugar: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietarySugar,
-            displayTitle: "Sugar",
-            displayUnit: .gram()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietarySugar.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietarySugar,
+                displayUnit: .gram()
+            )
         )
     }
     /// A quantity sample type that measures the amount of thiamin (vitamin B1) consumed.
     @inlinable public static var dietaryThiamin: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryThiamin,
-            displayTitle: "Thiamin",
-            displayUnit: .gramUnit(with: .milli)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryThiamin.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryThiamin,
+                displayUnit: .gramUnit(with: .milli)
+            )
         )
     }
     /// A quantity sample type that measures the amount of vitamin A consumed.
     @inlinable public static var dietaryVitaminA: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryVitaminA,
-            displayTitle: "Vitamin A",
-            displayUnit: .gramUnit(with: .micro)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryVitaminA.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryVitaminA,
+                displayUnit: .gramUnit(with: .micro)
+            )
         )
     }
     /// A quantity sample type that measures the amount of cyanocobalamin (vitamin B12) consumed.
     @inlinable public static var dietaryVitaminB12: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryVitaminB12,
-            displayTitle: "Vitamin B12",
-            displayUnit: .gramUnit(with: .micro)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryVitaminB12.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryVitaminB12,
+                displayUnit: .gramUnit(with: .micro)
+            )
         )
     }
     /// A quantity sample type that measures the amount of pyridoxine (vitamin B6) consumed.
     @inlinable public static var dietaryVitaminB6: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryVitaminB6,
-            displayTitle: "Vitamin B6",
-            displayUnit: .gramUnit(with: .milli)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryVitaminB6.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryVitaminB6,
+                displayUnit: .gramUnit(with: .milli)
+            )
         )
     }
     /// A quantity sample type that measures the amount of vitamin C consumed.
     @inlinable public static var dietaryVitaminC: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryVitaminC,
-            displayTitle: "Vitamin C",
-            displayUnit: .gramUnit(with: .milli)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryVitaminC.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryVitaminC,
+                displayUnit: .gramUnit(with: .milli)
+            )
         )
     }
     /// A quantity sample type that measures the amount of vitamin D consumed.
     @inlinable public static var dietaryVitaminD: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryVitaminD,
-            displayTitle: "Vitamin D",
-            displayUnit: .gramUnit(with: .micro)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryVitaminD.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryVitaminD,
+                displayUnit: .gramUnit(with: .micro)
+            )
         )
     }
     /// A quantity sample type that measures the amount of vitamin E consumed.
     @inlinable public static var dietaryVitaminE: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryVitaminE,
-            displayTitle: "Vitamin E",
-            displayUnit: .gramUnit(with: .milli)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryVitaminE.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryVitaminE,
+                displayUnit: .gramUnit(with: .milli)
+            )
         )
     }
     /// A quantity sample type that measures the amount of vitamin K consumed.
     @inlinable public static var dietaryVitaminK: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryVitaminK,
-            displayTitle: "Vitamin K",
-            displayUnit: .gramUnit(with: .micro)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryVitaminK.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryVitaminK,
+                displayUnit: .gramUnit(with: .micro)
+            )
         )
     }
     /// A quantity sample type that measures the amount of water consumed.
     @inlinable public static var dietaryWater: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryWater,
-            displayTitle: "Water",
-            displayUnit: localeDependentUnit(us: .fluidOunceUS(), metric: .literUnit(with: .milli))
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryWater.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryWater,
+                displayUnit: localeDependentUnit(us: .fluidOunceUS(), metric: .literUnit(with: .milli))
+            )
         )
     }
     /// A quantity sample type that measures the amount of zinc consumed.
     @inlinable public static var dietaryZinc: SampleType<HKQuantitySample> {
-        .quantity(
-            .dietaryZinc,
-            displayTitle: "Zinc",
-            displayUnit: .gramUnit(with: .milli)
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dietaryZinc.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .dietaryZinc,
+                displayUnit: .gramUnit(with: .milli)
+            )
         )
     }
     /// A quantity sample type that measures the user’s blood alcohol content.
     @inlinable public static var bloodAlcoholContent: SampleType<HKQuantitySample> {
-        .quantity(
-            .bloodAlcoholContent,
-            displayTitle: "Blood Alcohol Content",
-            displayUnit: .percent()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.bloodAlcoholContent.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .bloodAlcoholContent,
+                displayUnit: .percent()
+            )
         )
     }
     /// A quantity sample type that measures the number of standard alcoholic drinks that the user has consumed.
     @inlinable public static var numberOfAlcoholicBeverages: SampleType<HKQuantitySample> {
-        .quantity(
-            .numberOfAlcoholicBeverages,
-            displayTitle: "Alcohol Consumption",
-            displayUnit: .count()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.numberOfAlcoholicBeverages.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .numberOfAlcoholicBeverages,
+                displayUnit: .count()
+            )
         )
     }
     /// A quantity sample type that measures the steadiness of the user’s gait.
     @inlinable public static var appleWalkingSteadiness: SampleType<HKQuantitySample> {
-        .quantity(
-            .appleWalkingSteadiness,
-            displayTitle: "Walking Steadiness",
-            displayUnit: .percent()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.appleWalkingSteadiness.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .appleWalkingSteadiness,
+                displayUnit: .percent()
+            )
         )
     }
     /// A quantity sample type that stores the distance a user can walk during a six-minute walk test.
     @inlinable public static var sixMinuteWalkTestDistance: SampleType<HKQuantitySample> {
-        .quantity(
-            .sixMinuteWalkTestDistance,
-            displayTitle: "Six-Minute Walk Distance",
-            displayUnit: .meter()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.sixMinuteWalkTestDistance.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .sixMinuteWalkTestDistance,
+                displayUnit: .meter()
+            )
         )
     }
     /// A quantity sample type that measures the user’s average speed when walking steadily over flat ground.
     @inlinable public static var walkingSpeed: SampleType<HKQuantitySample> {
-        .quantity(
-            .walkingSpeed,
-            displayTitle: "Walking Speed",
-            displayUnit: localeDependentUnit(us: .mile() / .hour(), metric: .meterUnit(with: .kilo) / .hour())
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.walkingSpeed.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .walkingSpeed,
+                displayUnit: localeDependentUnit(us: .mile() / .hour(), metric: .meterUnit(with: .kilo) / .hour())
+            )
         )
     }
     /// A quantity sample type that measures the average length of the user’s step when walking steadily over flat ground.
     @inlinable public static var walkingStepLength: SampleType<HKQuantitySample> {
-        .quantity(
-            .walkingStepLength,
-            displayTitle: "Walking Step Length",
-            displayUnit: localeDependentUnit(us: .inch(), metric: .meterUnit(with: .centi))
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.walkingStepLength.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .walkingStepLength,
+                displayUnit: localeDependentUnit(us: .inch(), metric: .meterUnit(with: .centi))
+            )
         )
     }
     /// A quantity sample type that measures the percentage of steps in which one foot moves at a different speed than the other when walking on flat ground.
     @inlinable public static var walkingAsymmetryPercentage: SampleType<HKQuantitySample> {
-        .quantity(
-            .walkingAsymmetryPercentage,
-            displayTitle: "Walking Asymmetry",
-            displayUnit: .percent()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.walkingAsymmetryPercentage.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .walkingAsymmetryPercentage,
+                displayUnit: .percent()
+            )
         )
     }
     /// A quantity sample type that measures the percentage of time when both of the user’s feet touch the ground while walking steadily over flat ground.
     @inlinable public static var walkingDoubleSupportPercentage: SampleType<HKQuantitySample> {
-        .quantity(
-            .walkingDoubleSupportPercentage,
-            displayTitle: "Double Support Time",
-            displayUnit: .percent()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.walkingDoubleSupportPercentage.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .walkingDoubleSupportPercentage,
+                displayUnit: .percent()
+            )
         )
     }
     /// A quantity sample type measuring the user’s speed while climbing a flight of stairs.
     @inlinable public static var stairAscentSpeed: SampleType<HKQuantitySample> {
-        .quantity(
-            .stairAscentSpeed,
-            displayTitle: "Stair Speed (Up)",
-            displayUnit: localeDependentUnit(us: .foot() / .second(), metric: .meter() / .second())
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.stairAscentSpeed.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .stairAscentSpeed,
+                displayUnit: localeDependentUnit(us: .foot() / .second(), metric: .meter() / .second())
+            )
         )
     }
     /// A quantity sample type measuring the user’s speed while descending a flight of stairs.
     @inlinable public static var stairDescentSpeed: SampleType<HKQuantitySample> {
-        .quantity(
-            .stairDescentSpeed,
-            displayTitle: "Stair Speed (Down)",
-            displayUnit: localeDependentUnit(us: .foot() / .second(), metric: .meter() / .second())
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.stairDescentSpeed.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .stairDescentSpeed,
+                displayUnit: localeDependentUnit(us: .foot() / .second(), metric: .meter() / .second())
+            )
         )
     }
     /// A quantity sample type that measures the user’s exposure to UV radiation.
     @inlinable public static var uvExposure: SampleType<HKQuantitySample> {
-        .quantity(
-            .uvExposure,
-            displayTitle: "UV Index",
-            displayUnit: .count()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.uvExposure.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .uvExposure,
+                displayUnit: .count()
+            )
         )
     }
     /// A quantity sample that records a person’s depth underwater.
     @inlinable public static var underwaterDepth: SampleType<HKQuantitySample> {
-        .quantity(
-            .underwaterDepth,
-            displayTitle: "Underwater Depth",
-            displayUnit: localeDependentUnit(us: .foot(), metric: .meter())
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.underwaterDepth.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .underwaterDepth,
+                displayUnit: localeDependentUnit(us: .foot(), metric: .meter())
+            )
         )
     }
     ///  A quantity sample that records the water temperature.
     @inlinable public static var waterTemperature: SampleType<HKQuantitySample> {
-        .quantity(
-            .waterTemperature,
-            displayTitle: "Water Temperature",
-            displayUnit: localeDependentUnit(us: .degreeFahrenheit(), metric: .degreeCelsius())
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.waterTemperature.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .waterTemperature,
+                displayUnit: localeDependentUnit(us: .degreeFahrenheit(), metric: .degreeCelsius())
+            )
         )
     }
     /// A quantity sample that records breathing disturbances during sleep.
     @available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
     @inlinable public static var appleSleepingBreathingDisturbances: SampleType<HKQuantitySample> {
-        .quantity(
-            .appleSleepingBreathingDisturbances,
-            displayTitle: "Sleeping Breathing Disturbances",
-            displayUnit: .count()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.appleSleepingBreathingDisturbances.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .appleSleepingBreathingDisturbances,
+                displayUnit: .count()
+            )
         )
     }
     /// A quantity sample that records cross-country skiing speed.
     @available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
     @inlinable public static var crossCountrySkiingSpeed: SampleType<HKQuantitySample> {
-        .quantity(
-            .crossCountrySkiingSpeed,
-            displayTitle: "Cross-Country Skiing Speed",
-            displayUnit: localeDependentUnit(us: .mile() / .hour(), metric: .meterUnit(with: .kilo) / .hour())
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.crossCountrySkiingSpeed.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .crossCountrySkiingSpeed,
+                displayUnit: localeDependentUnit(us: .mile() / .hour(), metric: .meterUnit(with: .kilo) / .hour())
+            )
         )
     }
     /// A quantity sample that records cycling cadence.
     @inlinable public static var cyclingCadence: SampleType<HKQuantitySample> {
-        .quantity(
-            .cyclingCadence,
-            displayTitle: "Cycling Cadence",
-            displayUnit: .count() / .minute()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.cyclingCadence.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .cyclingCadence,
+                displayUnit: .count() / .minute()
+            )
         )
     }
     /// A quantity sample that records cycling functional threshold power.
     @inlinable public static var cyclingFunctionalThresholdPower: SampleType<HKQuantitySample> {
-        .quantity(
-            .cyclingFunctionalThresholdPower,
-            displayTitle: "Cycling Functional Threshold Power",
-            displayUnit: .watt()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.cyclingFunctionalThresholdPower.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .cyclingFunctionalThresholdPower,
+                displayUnit: .watt()
+            )
         )
     }
     /// A quantity sample that records cycling power.
     @inlinable public static var cyclingPower: SampleType<HKQuantitySample> {
-        .quantity(
-            .cyclingPower,
-            displayTitle: "Cycling Power",
-            displayUnit: .watt()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.cyclingPower.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .cyclingPower,
+                displayUnit: .watt()
+            )
         )
     }
     /// A quantity sample that records cycling speed.
     @inlinable public static var cyclingSpeed: SampleType<HKQuantitySample> {
-        .quantity(
-            .cyclingSpeed,
-            displayTitle: "Cycling Speed",
-            displayUnit: localeDependentUnit(us: .mile() / .hour(), metric: .meterUnit(with: .kilo) / .hour())
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.cyclingSpeed.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .cyclingSpeed,
+                displayUnit: localeDependentUnit(us: .mile() / .hour(), metric: .meterUnit(with: .kilo) / .hour())
+            )
         )
     }
     /// A quantity sample that records cross-country skiing distance.
     @available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
     @inlinable public static var distanceCrossCountrySkiing: SampleType<HKQuantitySample> {
-        .quantity(
-            .distanceCrossCountrySkiing,
-            displayTitle: "Cross-Country Skiing Distance",
-            displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo))
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.distanceCrossCountrySkiing.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .distanceCrossCountrySkiing,
+                displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo))
+            )
         )
     }
     /// A quantity sample that records paddle sports distance.
     @available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
     @inlinable public static var distancePaddleSports: SampleType<HKQuantitySample> {
-        .quantity(
-            .distancePaddleSports,
-            displayTitle: "Paddle Sports Distance",
-            displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo))
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.distancePaddleSports.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .distancePaddleSports,
+                displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo))
+            )
         )
     }
     /// A quantity sample that records rowing distance.
     @available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
     @inlinable public static var distanceRowing: SampleType<HKQuantitySample> {
-        .quantity(
-            .distanceRowing,
-            displayTitle: "Rowing Distance",
-            displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo))
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.distanceRowing.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .distanceRowing,
+                displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo))
+            )
         )
     }
     /// A quantity sample that records skating sports distance.
     @available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
     @inlinable public static var distanceSkatingSports: SampleType<HKQuantitySample> {
-        .quantity(
-            .distanceSkatingSports,
-            displayTitle: "Skating Sports Distance",
-            displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo))
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.distanceSkatingSports.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .distanceSkatingSports,
+                displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo))
+            )
         )
     }
     /// A quantity sample that records environmental sound reduction.
     @inlinable public static var environmentalSoundReduction: SampleType<HKQuantitySample> {
-        .quantity(
-            .environmentalSoundReduction,
-            displayTitle: "Environmental Sound Reduction",
-            displayUnit: .decibelHearingLevel()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.environmentalSoundReduction.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .environmentalSoundReduction,
+                displayUnit: .decibelHearingLevel()
+            )
         )
     }
     /// A quantity sample that records estimated physical effort during workouts.
     @available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
     @inlinable public static var estimatedWorkoutEffortScore: SampleType<HKQuantitySample> {
-        .quantity(
-            .estimatedWorkoutEffortScore,
-            displayTitle: "Estimated Workout Effort Score",
-            displayUnit: .count()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.estimatedWorkoutEffortScore.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .estimatedWorkoutEffortScore,
+                displayUnit: .count()
+            )
         )
     }
     /// A quantity sample that records paddle sports speed.
     @available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
     @inlinable public static var paddleSportsSpeed: SampleType<HKQuantitySample> {
-        .quantity(
-            .paddleSportsSpeed,
-            displayTitle: "Paddle Sports Speed",
-            displayUnit: localeDependentUnit(us: .mile() / .hour(), metric: .meterUnit(with: .kilo) / .hour())
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.paddleSportsSpeed.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .paddleSportsSpeed,
+                displayUnit: localeDependentUnit(us: .mile() / .hour(), metric: .meterUnit(with: .kilo) / .hour())
+            )
         )
     }
     /// A quantity sample that records physical effort.
     @inlinable public static var physicalEffort: SampleType<HKQuantitySample> {
-        .quantity(
-            .physicalEffort,
-            displayTitle: "Physical Effort",
-            displayUnit: .kilocalorie() / (.gramUnit(with: .kilo) * .hour())
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.physicalEffort.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .physicalEffort,
+                displayUnit: .kilocalorie() / (.gramUnit(with: .kilo) * .hour())
+            )
         )
     }
     /// A quantity sample that records rowing speed.
     @available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
     @inlinable public static var rowingSpeed: SampleType<HKQuantitySample> {
-        .quantity(
-            .rowingSpeed,
-            displayTitle: "Rowing Speed",
-            displayUnit: localeDependentUnit(us: .mile() / .hour(), metric: .meterUnit(with: .kilo) / .hour())
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.rowingSpeed.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .rowingSpeed,
+                displayUnit: localeDependentUnit(us: .mile() / .hour(), metric: .meterUnit(with: .kilo) / .hour())
+            )
         )
     }
     /// A quantity sample that records time spent in daylight.
     @inlinable public static var timeInDaylight: SampleType<HKQuantitySample> {
-        .quantity(
-            .timeInDaylight,
-            displayTitle: "Time In Daylight",
-            displayUnit: .minute()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.timeInDaylight.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .timeInDaylight,
+                displayUnit: .minute()
+            )
         )
     }
     /// A quantity sample that records workout effort.
     @available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
     @inlinable public static var workoutEffortScore: SampleType<HKQuantitySample> {
-        .quantity(
-            .workoutEffortScore,
-            displayTitle: "Workout Effort Score",
-            displayUnit: .count()
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.workoutEffortScore.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .workoutEffortScore,
+                displayUnit: .count()
+            )
         )
     }
 
@@ -1402,481 +1759,685 @@ extension HKQuantityTypeIdentifier {
 extension SampleType where Sample == HKCategorySample {
     /// A category sample type that counts the number of hours in the day during which the user has stood and moved for at least one minute per hour.
     @inlinable public static var appleStandHour: SampleType<HKCategorySample> {
-        .category(
-            .appleStandHour,
-            displayTitle: "Stand Hours"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.appleStandHour.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .appleStandHour,
+            )
         )
     }
     /// An event that indicates the user’s VO2 max values consistently fall below a particular aerobic fitness threshold.
     @inlinable public static var lowCardioFitnessEvent: SampleType<HKCategorySample> {
-        .category(
-            .lowCardioFitnessEvent,
-            displayTitle: "Low Cardio Fitness Event"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.lowCardioFitnessEvent.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .lowCardioFitnessEvent,
+            )
         )
     }
     /// A category sample type that records menstrual cycles.
     @inlinable public static var menstrualFlow: SampleType<HKCategorySample> {
-        .category(
-            .menstrualFlow,
-            displayTitle: "Menstrual Cycles"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.menstrualFlow.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .menstrualFlow,
+            )
         )
     }
     /// A category sample type that records spotting outside the normal menstruation period.
     @inlinable public static var intermenstrualBleeding: SampleType<HKCategorySample> {
-        .category(
-            .intermenstrualBleeding,
-            displayTitle: "Spotting"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.intermenstrualBleeding.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .intermenstrualBleeding,
+            )
         )
     }
     /// A category sample that indicates an infrequent menstrual cycle.
     @inlinable public static var infrequentMenstrualCycles: SampleType<HKCategorySample> {
-        .category(
-            .infrequentMenstrualCycles,
-            displayTitle: "Infrequent Periods"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.infrequentMenstrualCycles.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .infrequentMenstrualCycles,
+            )
         )
     }
     /// A category sample that indicates an irregular menstrual cycle.
     @inlinable public static var irregularMenstrualCycles: SampleType<HKCategorySample> {
-        .category(
-            .irregularMenstrualCycles,
-            displayTitle: "Irregular Cycles"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.irregularMenstrualCycles.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .irregularMenstrualCycles,
+            )
         )
     }
     /// A category sample that indicates persistent intermenstrual bleeding.
     @inlinable public static var persistentIntermenstrualBleeding: SampleType<HKCategorySample> {
-        .category(
-            .persistentIntermenstrualBleeding,
-            displayTitle: "Persistent Spotting"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.persistentIntermenstrualBleeding.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .persistentIntermenstrualBleeding,
+            )
         )
     }
     /// A category sample that indicates a prolonged menstrual cycle.
     @inlinable public static var prolongedMenstrualPeriods: SampleType<HKCategorySample> {
-        .category(
-            .prolongedMenstrualPeriods,
-            displayTitle: "Prolonged Periods"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.prolongedMenstrualPeriods.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .prolongedMenstrualPeriods,
+            )
         )
     }
     /// A category sample type that records the quality of the user’s cervical mucus.
     @inlinable public static var cervicalMucusQuality: SampleType<HKCategorySample> {
-        .category(
-            .cervicalMucusQuality,
-            displayTitle: "Cervical Mucus Quality"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.cervicalMucusQuality.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .cervicalMucusQuality,
+            )
         )
     }
     /// A category sample type that records the result of an ovulation home test.
     @inlinable public static var ovulationTestResult: SampleType<HKCategorySample> {
-        .category(
-            .ovulationTestResult,
-            displayTitle: "Ovulation Test Result"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.ovulationTestResult.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .ovulationTestResult,
+            )
         )
     }
     /// A category type that represents the results from a home progesterone test.
     @inlinable public static var progesteroneTestResult: SampleType<HKCategorySample> {
-        .category(
-            .progesteroneTestResult,
-            displayTitle: "Progesterone Test Result"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.progesteroneTestResult.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .progesteroneTestResult,
+            )
         )
     }
     /// A category sample type that records sexual activity.
     @inlinable public static var sexualActivity: SampleType<HKCategorySample> {
-        .category(
-            .sexualActivity,
-            displayTitle: "Sexual Activity"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.sexualActivity.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .sexualActivity,
+            )
         )
     }
     /// A category sample type that records the use of contraceptives.
     @inlinable public static var contraceptive: SampleType<HKCategorySample> {
-        .category(
-            .contraceptive,
-            displayTitle: "Contraceptives"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.contraceptive.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .contraceptive,
+            )
         )
     }
     /// A category type that records pregnancy.
     @inlinable public static var pregnancy: SampleType<HKCategorySample> {
-        .category(
-            .pregnancy,
-            displayTitle: "Pregnancy"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.pregnancy.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .pregnancy,
+            )
         )
     }
     /// A category type that represents the results from a home pregnancy test.
     @inlinable public static var pregnancyTestResult: SampleType<HKCategorySample> {
-        .category(
-            .pregnancyTestResult,
-            displayTitle: "Pregnancy Test Result"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.pregnancyTestResult.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .pregnancyTestResult,
+            )
         )
     }
     /// A category type that records lactation.
     @inlinable public static var lactation: SampleType<HKCategorySample> {
-        .category(
-            .lactation,
-            displayTitle: "Lactation"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.lactation.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .lactation,
+            )
         )
     }
     /// A category sample type that records exposure to potentially damaging sounds from the environment.
     @inlinable public static var environmentalAudioExposureEvent: SampleType<HKCategorySample> {
-        .category(
-            .environmentalAudioExposureEvent,
-            displayTitle: "Environmental Audio Exposure Event"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.environmentalAudioExposureEvent.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .environmentalAudioExposureEvent,
+            )
         )
     }
     /// A category sample type that records exposure to potentially damaging sounds from headphones.
     @inlinable public static var headphoneAudioExposureEvent: SampleType<HKCategorySample> {
-        .category(
-            .headphoneAudioExposureEvent,
-            displayTitle: "Headphone Audio Exposure Event"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.headphoneAudioExposureEvent.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .headphoneAudioExposureEvent,
+            )
         )
     }
     /// A category sample type for low heart rate events.
     @inlinable public static var lowHeartRateEvent: SampleType<HKCategorySample> {
-        .category(
-            .lowHeartRateEvent,
-            displayTitle: "Low Heart Rate Event"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.lowHeartRateEvent.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .lowHeartRateEvent,
+            )
         )
     }
     /// A category sample type for high heart rate events.
     @inlinable public static var highHeartRateEvent: SampleType<HKCategorySample> {
-        .category(
-            .highHeartRateEvent,
-            displayTitle: "High Heart Rate Event"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.highHeartRateEvent.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .highHeartRateEvent,
+            )
         )
     }
     /// A category sample type for irregular heart rhythm events.
     @inlinable public static var irregularHeartRhythmEvent: SampleType<HKCategorySample> {
-        .category(
-            .irregularHeartRhythmEvent,
-            displayTitle: "Irregular Heart Rythm Event"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.irregularHeartRhythmEvent.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .irregularHeartRhythmEvent,
+            )
         )
     }
     /// A category sample type that records an incident where the user showed a reduced score for their gait’s steadiness.
     @inlinable public static var appleWalkingSteadinessEvent: SampleType<HKCategorySample> {
-        .category(
-            .appleWalkingSteadinessEvent,
-            displayTitle: "Walking Steadiness Event"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.appleWalkingSteadinessEvent.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .appleWalkingSteadinessEvent,
+            )
         )
     }
     /// A category sample type for recording a mindful session.
     @inlinable public static var mindfulSession: SampleType<HKCategorySample> {
-        .category(
-            .mindfulSession,
-            displayTitle: "Mindful Session"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.mindfulSession.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .mindfulSession,
+            )
         )
     }
     /// A category sample type for sleep analysis information.
     @inlinable public static var sleepAnalysis: SampleType<HKCategorySample> {
-        .category(
-            .sleepAnalysis,
-            displayTitle: "Sleep Analysis"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.sleepAnalysis.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .sleepAnalysis,
+            )
         )
     }
     /// A category sample type for toothbrushing events.
     @inlinable public static var toothbrushingEvent: SampleType<HKCategorySample> {
-        .category(
-            .toothbrushingEvent,
-            displayTitle: "Toothbrushing Event"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.toothbrushingEvent.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .toothbrushingEvent,
+            )
         )
     }
     /// A category sample type for handwashing events.
     @inlinable public static var handwashingEvent: SampleType<HKCategorySample> {
-        .category(
-            .handwashingEvent,
-            displayTitle: "Handwashing Event"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.handwashingEvent.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .handwashingEvent,
+            )
         )
     }
     /// A category type that records abdominal cramps as a symptom.
     @inlinable public static var abdominalCramps: SampleType<HKCategorySample> {
-        .category(
-            .abdominalCramps,
-            displayTitle: "Abdominal Cramps"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.abdominalCramps.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .abdominalCramps,
+            )
         )
     }
     /// A category type that records bloating as a symptom.
     @inlinable public static var bloating: SampleType<HKCategorySample> {
-        .category(
-            .bloating,
-            displayTitle: "Bloating"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.bloating.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .bloating,
+            )
         )
     }
     /// A category type that records constipation as a symptom.
     @inlinable public static var constipation: SampleType<HKCategorySample> {
-        .category(
-            .constipation,
-            displayTitle: "Constipation"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.constipation.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .constipation,
+            )
         )
     }
     /// A category type that records diarrhea as a symptom.
     @inlinable public static var diarrhea: SampleType<HKCategorySample> {
-        .category(
-            .diarrhea,
-            displayTitle: "Diarrhea"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.diarrhea.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .diarrhea,
+            )
         )
     }
     /// A category type that records heartburn as a symptom.
     @inlinable public static var heartburn: SampleType<HKCategorySample> {
-        .category(
-            .heartburn,
-            displayTitle: "Heartburn"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.heartburn.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .heartburn,
+            )
         )
     }
     /// A category type that records nausea as a symptom.
     @inlinable public static var nausea: SampleType<HKCategorySample> {
-        .category(
-            .nausea,
-            displayTitle: "Nausea"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.nausea.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .nausea,
+            )
         )
     }
     /// A category type that records vomiting as a symptom.
     @inlinable public static var vomiting: SampleType<HKCategorySample> {
-        .category(
-            .vomiting,
-            displayTitle: "Vomiting"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.vomiting.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .vomiting,
+            )
         )
     }
     /// A category type that records changes in appetite as a symptom.
     @inlinable public static var appetiteChanges: SampleType<HKCategorySample> {
-        .category(
-            .appetiteChanges,
-            displayTitle: "Appetite Changes"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.appetiteChanges.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .appetiteChanges,
+            )
         )
     }
     /// A category type that records chills as a symptom.
     @inlinable public static var chills: SampleType<HKCategorySample> {
-        .category(
-            .chills,
-            displayTitle: "Chills"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.chills.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .chills,
+            )
         )
     }
     /// A category type that records dizziness as a symptom.
     @inlinable public static var dizziness: SampleType<HKCategorySample> {
-        .category(
-            .dizziness,
-            displayTitle: "Dizziness"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.dizziness.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .dizziness,
+            )
         )
     }
     /// A category type that records fainting as a symptom.
     @inlinable public static var fainting: SampleType<HKCategorySample> {
-        .category(
-            .fainting,
-            displayTitle: "Fainting"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.fainting.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .fainting,
+            )
         )
     }
     /// A category type that records fatigue as a symptom.
     @inlinable public static var fatigue: SampleType<HKCategorySample> {
-        .category(
-            .fatigue,
-            displayTitle: "Fatigue"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.fatigue.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .fatigue,
+            )
         )
     }
     /// A category type that records fever as a symptom.
     @inlinable public static var fever: SampleType<HKCategorySample> {
-        .category(
-            .fever,
-            displayTitle: "Fever"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.fever.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .fever,
+            )
         )
     }
     /// A category type that records body ache as a symptom.
     @inlinable public static var generalizedBodyAche: SampleType<HKCategorySample> {
-        .category(
-            .generalizedBodyAche,
-            displayTitle: "Generalized Body Ache"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.generalizedBodyAche.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .generalizedBodyAche,
+            )
         )
     }
     /// A category type that records hot flashes as a symptom.
     @inlinable public static var hotFlashes: SampleType<HKCategorySample> {
-        .category(
-            .hotFlashes,
-            displayTitle: "Hot Flashes"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.hotFlashes.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .hotFlashes,
+            )
         )
     }
     /// A category type that records chest tightness or pain as a symptom.
     @inlinable public static var chestTightnessOrPain: SampleType<HKCategorySample> {
-        .category(
-            .chestTightnessOrPain,
-            displayTitle: "Chest Tightness or Pain"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.chestTightnessOrPain.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .chestTightnessOrPain,
+            )
         )
     }
     /// A category type that records coughing as a symptom.
     @inlinable public static var coughing: SampleType<HKCategorySample> {
-        .category(
-            .coughing,
-            displayTitle: "Coughing"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.coughing.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .coughing,
+            )
         )
     }
     /// A category type that records a rapid, pounding, or fluttering heartbeat as a symptom.
     @inlinable public static var rapidPoundingOrFlutteringHeartbeat: SampleType<HKCategorySample> {
-        .category(
-            .rapidPoundingOrFlutteringHeartbeat,
-            displayTitle: "Rapid Pounding or Fluttering Heartbeat"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.rapidPoundingOrFlutteringHeartbeat.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .rapidPoundingOrFlutteringHeartbeat,
+            )
         )
     }
     /// A category type that records shortness of breath as a symptom.
     @inlinable public static var shortnessOfBreath: SampleType<HKCategorySample> {
-        .category(
-            .shortnessOfBreath,
-            displayTitle: "Shortness of Breath"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.shortnessOfBreath.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .shortnessOfBreath,
+            )
         )
     }
     /// A category type that records skipped heartbeat as a symptom.
     @inlinable public static var skippedHeartbeat: SampleType<HKCategorySample> {
-        .category(
-            .skippedHeartbeat,
-            displayTitle: "Skipped Heartbeat"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.skippedHeartbeat.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .skippedHeartbeat,
+            )
         )
     }
     /// A category type that records wheezing as a symptom.
     @inlinable public static var wheezing: SampleType<HKCategorySample> {
-        .category(
-            .wheezing,
-            displayTitle: "Wheezing"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.wheezing.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .wheezing,
+            )
         )
     }
     /// A category type that records lower back pain as a symptom.
     @inlinable public static var lowerBackPain: SampleType<HKCategorySample> {
-        .category(
-            .lowerBackPain,
-            displayTitle: "Lower Back Pain"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.lowerBackPain.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .lowerBackPain,
+            )
         )
     }
     /// A category type that records headache as a symptom.
     @inlinable public static var headache: SampleType<HKCategorySample> {
-        .category(
-            .headache,
-            displayTitle: "Headache"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.headache.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .headache,
+            )
         )
     }
     /// A category type that records memory lapse as a symptom.
     @inlinable public static var memoryLapse: SampleType<HKCategorySample> {
-        .category(
-            .memoryLapse,
-            displayTitle: "Memory Lapse"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.memoryLapse.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .memoryLapse,
+            )
         )
     }
     /// A category type that records mood changes as a symptom.
     @inlinable public static var moodChanges: SampleType<HKCategorySample> {
-        .category(
-            .moodChanges,
-            displayTitle: "Mood Changes"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.moodChanges.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .moodChanges,
+            )
         )
     }
     /// A category type that records loss of smell as a symptom.
     @inlinable public static var lossOfSmell: SampleType<HKCategorySample> {
-        .category(
-            .lossOfSmell,
-            displayTitle: "Loss of Smell"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.lossOfSmell.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .lossOfSmell,
+            )
         )
     }
     /// A category type that records loss of taste as a symptom.
     @inlinable public static var lossOfTaste: SampleType<HKCategorySample> {
-        .category(
-            .lossOfTaste,
-            displayTitle: "Loss of Taste"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.lossOfTaste.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .lossOfTaste,
+            )
         )
     }
     /// A category type that records runny nose as a symptom.
     @inlinable public static var runnyNose: SampleType<HKCategorySample> {
-        .category(
-            .runnyNose,
-            displayTitle: "Runny Nose"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.runnyNose.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .runnyNose,
+            )
         )
     }
     /// A category type that records sore throat as a symptom.
     @inlinable public static var soreThroat: SampleType<HKCategorySample> {
-        .category(
-            .soreThroat,
-            displayTitle: "Sore Throat"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.soreThroat.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .soreThroat,
+            )
         )
     }
     /// A category type that records sinus congestion as a symptom.
     @inlinable public static var sinusCongestion: SampleType<HKCategorySample> {
-        .category(
-            .sinusCongestion,
-            displayTitle: "Sinus Congestion"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.sinusCongestion.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .sinusCongestion,
+            )
         )
     }
     /// A category type that records breast pain as a symptom.
     @inlinable public static var breastPain: SampleType<HKCategorySample> {
-        .category(
-            .breastPain,
-            displayTitle: "Breast Pain"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.breastPain.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .breastPain,
+            )
         )
     }
     /// A category type that records pelvic pain as a symptom.
     @inlinable public static var pelvicPain: SampleType<HKCategorySample> {
-        .category(
-            .pelvicPain,
-            displayTitle: "Pelvic Pain"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.pelvicPain.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .pelvicPain,
+            )
         )
     }
     /// A category type that records vaginal dryness as a symptom.
     @inlinable public static var vaginalDryness: SampleType<HKCategorySample> {
-        .category(
-            .vaginalDryness,
-            displayTitle: "Vaginal Dryness"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.vaginalDryness.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .vaginalDryness,
+            )
         )
     }
     /// A category type that records bleeding during pregnancy as a symptom.
     @available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
     @inlinable public static var bleedingDuringPregnancy: SampleType<HKCategorySample> {
-        .category(
-            .bleedingDuringPregnancy,
-            displayTitle: "Bleeding During Pregnancy"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.bleedingDuringPregnancy.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .bleedingDuringPregnancy,
+            )
         )
     }
     /// A category type that records bleeding after pregnancy as a symptom.
     @available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
     @inlinable public static var bleedingAfterPregnancy: SampleType<HKCategorySample> {
-        .category(
-            .bleedingAfterPregnancy,
-            displayTitle: "Bleeding After Pregnancy"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.bleedingAfterPregnancy.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .bleedingAfterPregnancy,
+            )
         )
     }
     /// A category type that records acne as a symptom.
     @inlinable public static var acne: SampleType<HKCategorySample> {
-        .category(
-            .acne,
-            displayTitle: "Acne"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.acne.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .acne,
+            )
         )
     }
     /// A category type that records dry skin as a symptom.
     @inlinable public static var drySkin: SampleType<HKCategorySample> {
-        .category(
-            .drySkin,
-            displayTitle: "Dry Skin"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.drySkin.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .drySkin,
+            )
         )
     }
     /// A category type that records hair loss as a symptom.
     @inlinable public static var hairLoss: SampleType<HKCategorySample> {
-        .category(
-            .hairLoss,
-            displayTitle: "Hair Loss"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.hairLoss.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .hairLoss,
+            )
         )
     }
     /// A category type that records night sweats as a symptom.
     @inlinable public static var nightSweats: SampleType<HKCategorySample> {
-        .category(
-            .nightSweats,
-            displayTitle: "Night Sweats"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.nightSweats.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .nightSweats,
+            )
         )
     }
     /// A category type that records sleep changes as a symptom.
     @inlinable public static var sleepChanges: SampleType<HKCategorySample> {
-        .category(
-            .sleepChanges,
-            displayTitle: "Sleep Changes"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.sleepChanges.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .sleepChanges,
+            )
         )
     }
     /// A category type that records sleep apnea as a symptom.
     @available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
     @inlinable public static var sleepApneaEvent: SampleType<HKCategorySample> {
-        .category(
-            .sleepApneaEvent,
-            displayTitle: "Sleep Apnea"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.sleepApneaEvent.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .sleepApneaEvent,
+            )
         )
     }
     /// A category type that records bladder incontinence as a symptom.
     @inlinable public static var bladderIncontinence: SampleType<HKCategorySample> {
-        .category(
-            .bladderIncontinence,
-            displayTitle: "Bladder Incontinence"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.bladderIncontinence.rawValue,
+            as: SampleType<HKCategorySample>.self,
+            default: .category(
+                .bladderIncontinence,
+            )
         )
     }
 
@@ -2118,18 +2679,24 @@ extension HKCategoryTypeIdentifier {
 extension SampleType where Sample == HKCorrelation {
     /// The sample type representing blood pressure correlation samples
     @inlinable public static var bloodPressure: SampleType<HKCorrelation> {
-        .correlation(
-            .bloodPressure,
-            displayTitle: "Blood Pressure",
-            associatedQuantityTypes: [.bloodPressureDiastolic, .bloodPressureSystolic]
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.bloodPressure.rawValue,
+            as: SampleType<HKCorrelation>.self,
+            default: .correlation(
+                .bloodPressure,
+                associatedQuantityTypes: [.bloodPressureDiastolic, .bloodPressureSystolic]
+            )
         )
     }
     /// Food correlation types combine any number of nutritional samples into a single food object.
     @inlinable public static var food: SampleType<HKCorrelation> {
-        .correlation(
-            .food,
-            displayTitle: "Food",
-            associatedQuantityTypes: [.dietaryEnergyConsumed, .dietaryCarbohydrates, .dietaryFiber, .dietarySugar, .dietaryFatTotal, .dietaryFatMonounsaturated, .dietaryFatPolyunsaturated, .dietaryFatSaturated, .dietaryCholesterol, .dietaryProtein, .dietaryVitaminA, .dietaryThiamin, .dietaryRiboflavin, .dietaryNiacin, .dietaryPantothenicAcid, .dietaryVitaminB6, .dietaryBiotin, .dietaryVitaminB12, .dietaryVitaminC, .dietaryVitaminD, .dietaryVitaminE, .dietaryVitaminK, .dietaryFolate, .dietaryCalcium, .dietaryChloride, .dietaryIron, .dietaryMagnesium, .dietaryPhosphorus, .dietaryPotassium, .dietarySodium, .dietaryZinc, .dietaryWater, .dietaryCaffeine, .dietaryChromium, .dietaryCopper, .dietaryIodine, .dietaryManganese, .dietaryMolybdenum, .dietarySelenium]
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.food.rawValue,
+            as: SampleType<HKCorrelation>.self,
+            default: .correlation(
+                .food,
+                associatedQuantityTypes: [.dietaryEnergyConsumed, .dietaryCarbohydrates, .dietaryFiber, .dietarySugar, .dietaryFatTotal, .dietaryFatMonounsaturated, .dietaryFatPolyunsaturated, .dietaryFatSaturated, .dietaryCholesterol, .dietaryProtein, .dietaryVitaminA, .dietaryThiamin, .dietaryRiboflavin, .dietaryNiacin, .dietaryPantothenicAcid, .dietaryVitaminB6, .dietaryBiotin, .dietaryVitaminB12, .dietaryVitaminC, .dietaryVitaminD, .dietaryVitaminE, .dietaryVitaminK, .dietaryFolate, .dietaryCalcium, .dietaryChloride, .dietaryIron, .dietaryMagnesium, .dietaryPhosphorus, .dietaryPotassium, .dietarySodium, .dietaryZinc, .dietaryWater, .dietaryCaffeine, .dietaryChromium, .dietaryCopper, .dietaryIodine, .dietaryManganese, .dietaryMolybdenum, .dietarySelenium]
+            )
         )
     }
 
@@ -2168,65 +2735,92 @@ extension HKCorrelationTypeIdentifier {
 extension SampleType where Sample == HKClinicalRecord {
     /// A type identifier for records of allergic or intolerant reactions.
     @inlinable public static var allergyRecord: SampleType<HKClinicalRecord> {
-        .clinical(
-            .allergyRecord,
-            displayTitle: "Allergy Record"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.allergyRecord.rawValue,
+            as: SampleType<HKClinicalRecord>.self,
+            default: .clinical(
+                .allergyRecord,
+            )
         )
     }
     /// A type identifier for records of clinical notes.
     @inlinable public static var clinicalNoteRecord: SampleType<HKClinicalRecord> {
-        .clinical(
-            .clinicalNoteRecord,
-            displayTitle: "Clinical Note Record"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.clinicalNoteRecord.rawValue,
+            as: SampleType<HKClinicalRecord>.self,
+            default: .clinical(
+                .clinicalNoteRecord,
+            )
         )
     }
     /// A type identifier for records of a condition, problem, diagnosis, or other event.
     @inlinable public static var conditionRecord: SampleType<HKClinicalRecord> {
-        .clinical(
-            .conditionRecord,
-            displayTitle: "Condition Record"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.conditionRecord.rawValue,
+            as: SampleType<HKClinicalRecord>.self,
+            default: .clinical(
+                .conditionRecord,
+            )
         )
     }
     /// A type identifier for records of the current or historical administration of vaccines.
     @inlinable public static var immunizationRecord: SampleType<HKClinicalRecord> {
-        .clinical(
-            .immunizationRecord,
-            displayTitle: "Immunization Record"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.immunizationRecord.rawValue,
+            as: SampleType<HKClinicalRecord>.self,
+            default: .clinical(
+                .immunizationRecord,
+            )
         )
     }
     /// A type identifier for records of lab results.
     @inlinable public static var labResultRecord: SampleType<HKClinicalRecord> {
-        .clinical(
-            .labResultRecord,
-            displayTitle: "Lab Result Record"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.labResultRecord.rawValue,
+            as: SampleType<HKClinicalRecord>.self,
+            default: .clinical(
+                .labResultRecord,
+            )
         )
     }
     /// A type identifier for records of medication.
     @inlinable public static var medicationRecord: SampleType<HKClinicalRecord> {
-        .clinical(
-            .medicationRecord,
-            displayTitle: "Medication Record"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.medicationRecord.rawValue,
+            as: SampleType<HKClinicalRecord>.self,
+            default: .clinical(
+                .medicationRecord,
+            )
         )
     }
     /// A type identifier for records of procedures.
     @inlinable public static var procedureRecord: SampleType<HKClinicalRecord> {
-        .clinical(
-            .procedureRecord,
-            displayTitle: "Procedure Record"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.procedureRecord.rawValue,
+            as: SampleType<HKClinicalRecord>.self,
+            default: .clinical(
+                .procedureRecord,
+            )
         )
     }
     /// A type identifier for records of vital signs.
     @inlinable public static var vitalSignRecord: SampleType<HKClinicalRecord> {
-        .clinical(
-            .vitalSignRecord,
-            displayTitle: "Vital Sign Record"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.vitalSignRecord.rawValue,
+            as: SampleType<HKClinicalRecord>.self,
+            default: .clinical(
+                .vitalSignRecord,
+            )
         )
     }
     /// A type identifier for records containing information about the user’s insurance coverage.
     @inlinable public static var coverageRecord: SampleType<HKClinicalRecord> {
-        .clinical(
-            .coverageRecord,
-            displayTitle: "Coverage Record"
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.coverageRecord.rawValue,
+            as: SampleType<HKClinicalRecord>.self,
+            default: .clinical(
+                .coverageRecord,
+            )
         )
     }
 
@@ -2298,28 +2892,28 @@ extension HKObjectType {
 extension SampleType where Sample == HKElectrocardiogram {
     /// The electrocardiogram sample type
     @inlinable public static var electrocardiogram: SampleType<HKElectrocardiogram> {
-        .init(HKSampleType.electrocardiogramType(), displayTitle: "ECG", variant: .other)
+        .init(HKSampleType.electrocardiogramType(), variant: .other)
     }
 }
 
 extension SampleType where Sample == HKAudiogramSample {
     /// The audiogram sample type
     @inlinable public static var audiogram: SampleType<HKAudiogramSample> {
-        .init(HKSampleType.audiogramSampleType(), displayTitle: "Audiogram", variant: .other)
+        .init(HKSampleType.audiogramSampleType(), variant: .other)
     }
 }
 
 extension SampleType where Sample == HKWorkout {
     /// The workout sample type
     @inlinable public static var workout: SampleType<HKWorkout> {
-        .init(HKSampleType.workoutType(), displayTitle: "Workout", variant: .other)
+        .init(HKSampleType.workoutType(), variant: .other)
     }
 }
 
 extension SampleType where Sample == HKVisionPrescription {
     /// The vision prescription sample type
     @inlinable public static var visionPrescription: SampleType<HKVisionPrescription> {
-        .init(HKSampleType.visionPrescriptionType(), displayTitle: "Vision Prescription", variant: .other)
+        .init(HKSampleType.visionPrescriptionType(), variant: .other)
     }
 }
 
@@ -2327,21 +2921,21 @@ extension SampleType where Sample == HKVisionPrescription {
 extension SampleType where Sample == HKStateOfMind {
     /// The state of mind sample type
     @inlinable public static var stateOfMind: SampleType<HKStateOfMind> {
-        .init(HKSampleType.stateOfMindType(), displayTitle: "State of Mind", variant: .other)
+        .init(HKSampleType.stateOfMindType(), variant: .other)
     }
 }
 
 extension SampleType where Sample == HKHeartbeatSeriesSample {
     /// The heartbeat series sample type
     @inlinable public static var heartbeatSeries: SampleType<HKHeartbeatSeriesSample> {
-        .init(HKSeriesType.heartbeat(), displayTitle: "Heartbeat Series", variant: .other)
+        .init(HKSeriesType.heartbeat(), variant: .other)
     }
 }
 
 extension SampleType where Sample == HKWorkoutRoute {
     /// The workout route sample type
     @inlinable public static var workoutRoute: SampleType<HKWorkoutRoute> {
-        .init(HKSeriesType.workoutRoute(), displayTitle: "Workout Route", variant: .other)
+        .init(HKSeriesType.workoutRoute(), variant: .other)
     }
 }
 
@@ -2349,7 +2943,7 @@ extension SampleType where Sample == HKWorkoutRoute {
 extension SampleType where Sample == HKGAD7Assessment {
     /// The GAD-7 (generalized anxiery disorder 7) score type
     @inlinable public static var gad7: SampleType<HKGAD7Assessment> {
-        .init(HKScoredAssessmentType(.GAD7), displayTitle: "Anxiety Risk (GAD-7)", variant: .other)
+        .init(HKScoredAssessmentType(.GAD7), variant: .other)
     }
 }
 
@@ -2357,7 +2951,7 @@ extension SampleType where Sample == HKGAD7Assessment {
 extension SampleType where Sample == HKPHQ9Assessment {
     /// The PHQ-9 (nine-item Patient Health Questionnaire) score type
     @inlinable public static var phq9: SampleType<HKPHQ9Assessment> {
-        .init(HKScoredAssessmentType(.PHQ9), displayTitle: "Depression Risk (PHQ-9)", variant: .other)
+        .init(HKScoredAssessmentType(.PHQ9), variant: .other)
     }
 }
 
