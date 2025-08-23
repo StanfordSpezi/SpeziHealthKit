@@ -41,7 +41,6 @@ jobs:
       scheme: SpeziHealthKit-Package
       destination: ${{ matrix.platform.destination }}
       buildConfig: ${{ matrix.config }}
-      resultBundle: ${{ format('SpeziHealthKit-{0}-{1}.xcresult', matrix.platform.name, matrix.config) }}
       artifactname: ${{ format('SpeziHealthKit-{0}-{1}.xcresult', matrix.platform.name, matrix.config) }}
   ui_tests:
     name: Build and Test UI Tests ${{ matrix.platform.name }} (${{ matrix.config }})
