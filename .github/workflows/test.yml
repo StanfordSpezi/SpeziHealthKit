@@ -6,7 +6,7 @@
 # SPDX-License-Identifier: MIT
 #
 
-name: Build and Test
+name: Test
 
 on:
   push:
@@ -16,12 +16,12 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: Build-and-Test-${{ github.ref }}
+  group: Test-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   package_tests:
-    name: Build and Test Swift Package ${{ matrix.platform.name }} (${{ matrix.config }})
+    name: Package ${{ matrix.platform.name }} (${{ matrix.config }})
     uses: StanfordBDHG/.github/.github/workflows/xcodebuild-or-fastlane.yml@lukas/rework
     strategy:
       matrix:
@@ -40,10 +40,10 @@ jobs:
       runsonlabels: '["macOS", "self-hosted"]'
       scheme: SpeziHealthKit-Package
       destination: ${{ matrix.platform.destination }}
-      buildConfig: ${{ matrix.config }}
+      build-config: ${{ matrix.config }}
       artifactname: ${{ format('SpeziHealthKit-{0}-{1}.xcresult', matrix.platform.name, matrix.config) }}
   ui_tests:
-    name: Build and Test UI Tests ${{ matrix.platform.name }} (${{ matrix.config }})
+    name: UI Tests ${{ matrix.platform.name }} (${{ matrix.config }})
     uses: StanfordBDHG/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
     strategy:
       matrix:
@@ -57,7 +57,6 @@ jobs:
       path: 'Tests/UITests'
       scheme: TestApp
       destination: ${{ matrix.platform.destination }}
-      resultBundle: ${{ format('TestApp-{0}-{1}.xcresult', matrix.platform.name, matrix.config) }}
       artifactname: ${{ format('TestApp-{0}-{1}.xcresult', matrix.platform.name, matrix.config) }}
   uploadcoveragereport:
     name: Upload Coverage Report
