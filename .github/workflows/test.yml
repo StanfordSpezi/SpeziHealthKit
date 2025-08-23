@@ -61,7 +61,7 @@ jobs:
   uploadcoveragereport:
     name: Upload Coverage Report
     needs: [package_tests, ui_tests]
-    uses: StanfordBDHG/.github/.github/workflows/create-and-upload-coverage-report.yml@v2
+    uses: StanfordBDHG/.github/.github/workflows/create-and-upload-coverage-report.yml@lukas/rework
     with:
       coveragereports: SpeziHealthKit-*.xcresult TestApp-*.xcresult
     secrets:
