@@ -20,7 +20,7 @@ struct SpeziHealthKitUITests {
     // the UI stuff works fine on catalyst, but the charts render slightly differently
     // (different device scale, different line lengths for dotted axis lines, etc...),
     // so we skip that for the time being.
-    #if os(iOS)  && !targetEnvironment(macCatalyst)
+    #if os(iOS) && !targetEnvironment(macCatalyst)
     @MainActor
     @Test("Simple HealthChart View Snapshot")
     func simpleHealthChartViewSnapshot() throws {
