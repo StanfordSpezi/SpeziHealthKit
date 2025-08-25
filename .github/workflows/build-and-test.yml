@@ -6,7 +6,7 @@
 # SPDX-License-Identifier: MIT
 #
 
-name: Test
+name: Build and Test
 
 on:
   push:
@@ -16,13 +16,13 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: Test-${{ github.ref }}
+  group: Build-and-Test-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   package_tests:
-    name: Package ${{ matrix.platform.name }} (${{ matrix.config }})
-    uses: StanfordBDHG/.github/.github/workflows/xcodebuild-or-fastlane.yml@lukas/rework
+    name: Build and Test Swift Package ${{ matrix.platform.name }} (${{ matrix.config }})
+    uses: StanfordBDHG/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
     strategy:
       matrix:
         config: [Debug, Release]
@@ -42,11 +42,12 @@ jobs:
       runsonlabels: '["macOS", "self-hosted"]'
       scheme: SpeziHealthKit-Package
       destination: ${{ matrix.platform.destination }}
-      build-config: ${{ matrix.config }}
+      buildConfig: ${{ matrix.config }}
+      resultBundle: ${{ format('SpeziHealthKit-{0}-{1}.xcresult', matrix.platform.name, matrix.config) }}
       artifactname: ${{ format('SpeziHealthKit-{0}-{1}.xcresult', matrix.platform.name, matrix.config) }}
   ui_tests:
-    name: UI Tests ${{ matrix.platform.name }} (${{ matrix.config }})
-    uses: StanfordBDHG/.github/.github/workflows/xcodebuild-or-fastlane.yml@lukas/rework
+    name: Build and Test UI Tests ${{ matrix.platform.name }} (${{ matrix.config }})
+    uses: StanfordBDHG/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
     strategy:
       matrix:
         config: [Debug, Release]
@@ -59,11 +60,12 @@ jobs:
       path: 'Tests/UITests'
       scheme: TestApp
       destination: ${{ matrix.platform.destination }}
+      resultBundle: ${{ format('TestApp-{0}-{1}.xcresult', matrix.platform.name, matrix.config) }}
       artifactname: ${{ format('TestApp-{0}-{1}.xcresult', matrix.platform.name, matrix.config) }}
   uploadcoveragereport:
     name: Upload Coverage Report
     needs: [package_tests, ui_tests]
-    uses: StanfordBDHG/.github/.github/workflows/create-and-upload-coverage-report.yml@lukas/rework
+    uses: StanfordBDHG/.github/.github/workflows/create-and-upload-coverage-report.yml@v2
     with:
       coveragereports: SpeziHealthKit-*.xcresult TestApp-*.xcresult
     secrets:
