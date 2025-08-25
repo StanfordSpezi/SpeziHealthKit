@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
+@_spi(Testing)
 @testable import SpeziHealthKit
 import Testing
 
@@ -111,5 +112,42 @@ struct SampleTypesTests {
         let thiamin = SampleType.dietaryThiamin
         #expect(thiamin.localizedTitle(in: english) == "Thiamin")
         #expect(thiamin.localizedTitle(in: englishUK) == "Thiamine")
+    }
+    
+    
+    @Test
+    func bundleLocalizationUtils() throws {
+        let bundle = HealthKit.bundle
+        func fallbackKey(key: String, tables: [Bundle.LocalizationLookupTable], localizations: [Locale.Language]) -> String? {
+            let primary = bundle.localizedString(forKey: key, tables: tables, localizations: localizations)
+            let fallback = bundle.localizedStringForKeyFallback(key: key, tables: tables, localizations: localizations)
+            #expect(primary == fallback)
+            return fallback
+        }
+        #expect(fallbackKey(
+            key: SampleType.food.id,
+            tables: [.custom("Localizable-HKTypes")],
+            localizations: [.init(identifier: "en")]
+        ) == nil)
+        #expect(fallbackKey(
+            key: SampleType.food.id,
+            tables: [.custom("Localizable-HKTypes"), .default],
+            localizations: [.init(identifier: "en")]
+        ) == "Nutrition")
+        #expect(fallbackKey(
+            key: SampleType.food.id,
+            tables: [.default],
+            localizations: [.init(identifier: "en")]
+        ) == "Nutrition")
+        #expect(fallbackKey(
+            key: SampleType.food.id,
+            tables: [.custom("Localizable-HKTypes"), .default],
+            localizations: [.init(identifier: "jp")]
+        ) == "Nutrition")
+        #expect(fallbackKey(
+            key: SampleType.food.id,
+            tables: [.custom("Localizable-HKTypes"), .default],
+            localizations: [.init(identifier: "jp"), .init(identifier: "en")]
+        ) == "Nutrition")
     }
 }

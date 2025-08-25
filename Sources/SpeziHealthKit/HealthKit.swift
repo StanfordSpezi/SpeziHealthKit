@@ -588,3 +588,15 @@ extension HKUnit {
         lhs.unitMultiplied(by: rhs)
     }
 }
+
+
+extension HealthKit {
+    /// The `Bundle` of the SpeziHealthKit package.
+    ///
+    /// - Note: The reason this exists is because `Bundle(for: HealthKit.self)` will return an incorrect bundle in some circumstances.
+    ///     E.g., when you're running in a unit test, it'll return the xctest bundle, which is not what we're looking for in this case.
+    @_spi(Testing)
+    public static var bundle: Bundle {
+        Bundle.module
+    }
+}
