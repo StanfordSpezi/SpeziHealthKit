@@ -22,7 +22,7 @@ concurrency:
 jobs:
   package_tests:
     name: Build and Test Swift Package ${{ matrix.platform.name }} (${{ matrix.config }})
-    uses: StanfordBDHG/.github/.github/workflows/xcodebuild-or-fastlane.yml@lukas/mac-catalyst
+    uses: StanfordBDHG/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
     strategy:
       matrix:
         config: [Debug, Release]
