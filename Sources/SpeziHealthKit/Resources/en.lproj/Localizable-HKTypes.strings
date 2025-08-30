@@ -76,6 +76,12 @@
 "HKCategoryTypeIdentifierVaginalDryness" = "Vaginal Dryness";
 "HKCategoryTypeIdentifierVomiting" = "Vomiting";
 "HKCategoryTypeIdentifierWheezing" = "Wheezing";
+"HKCharacteristicTypeIdentifierActivityMoveMode" = "Move Mode Setting";
+"HKCharacteristicTypeIdentifierBiologicalSex" = "Sex";
+"HKCharacteristicTypeIdentifierBloodType" = "Blood Type";
+"HKCharacteristicTypeIdentifierDateOfBirth" = "Date of Birth";
+"HKCharacteristicTypeIdentifierFitzpatrickSkinType" = "Fitzpatrick Skin Type";
+"HKCharacteristicTypeIdentifierWheelchairUse" = "Wheelchair";
 "HKClinicalTypeIdentifierAllergyRecord" = "Allergies";
 "HKClinicalTypeIdentifierClinicalNoteRecord" = "Clinical Notes";
 "HKClinicalTypeIdentifierConditionRecord" = "Conditions";

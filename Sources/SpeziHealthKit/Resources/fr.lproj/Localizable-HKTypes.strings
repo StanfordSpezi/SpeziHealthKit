@@ -76,6 +76,12 @@
 "HKCategoryTypeIdentifierVaginalDryness" = "Sècheresse vaginale";
 "HKCategoryTypeIdentifierVomiting" = "Vomissements";
 "HKCategoryTypeIdentifierWheezing" = "Respiration sifflante";
+"HKCharacteristicTypeIdentifierActivityMoveMode" = "Réglage du mode « Bouger »";
+"HKCharacteristicTypeIdentifierBiologicalSex" = "Sexe";
+"HKCharacteristicTypeIdentifierBloodType" = "Groupe sanguin";
+"HKCharacteristicTypeIdentifierDateOfBirth" = "Date de naissance";
+"HKCharacteristicTypeIdentifierFitzpatrickSkinType" = "Phototype";
+"HKCharacteristicTypeIdentifierWheelchairUse" = "Fauteuil roulant";
 "HKClinicalTypeIdentifierAllergyRecord" = "Allergies";
 "HKClinicalTypeIdentifierClinicalNoteRecord" = "Notes cliniques";
 "HKClinicalTypeIdentifierConditionRecord" = "Pathologies";

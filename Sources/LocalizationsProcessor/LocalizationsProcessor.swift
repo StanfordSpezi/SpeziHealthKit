@@ -13,15 +13,12 @@ import Foundation
 import SpeziHealthKit
 
 
-private let allSampleTypes: [any AnySampleType] = {
-    var sampleTypes: [any AnySampleType] = SampleType<HKQuantitySample>.otherSampleTypes
+private let allObjectTypes: [HKObjectType] = {
+    var types: [HKObjectType] = SampleType<HKQuantitySample>.otherSampleTypes.map { $0.hkSampleType }
     for objectType in HKObjectType.allKnownObjectTypes {
-        guard let sampleType = objectType.sampleType else {
-            fatalError("Unable to obtain SampleType for \(objectType.identifier)")
-        }
-        sampleTypes.append(sampleType)
+        types.append(objectType)
     }
-    return sampleTypes.sorted { $0.id < $1.id }
+    return types.sorted { $0.identifier < $1.identifier }
 }()
 
 
@@ -62,7 +59,13 @@ struct LocalizationsProcessor: ParsableCommand {
     @Argument(help: "Locale identifiers for which translations should be processed.")
     var locales: [Locale]
     
+    
     func run() throws {
+//        for ident in HKCharacteristicTypeIdentifier.allKnownIdentifiers {
+//            let type = HKCharacteristicType(ident)
+//            print(type.value(forKey: "hk_localizedName") as? String)
+//        }
+//        fatalError()
         if verbose {
             print("\(self)")
         }
@@ -91,7 +94,7 @@ struct LocalizationsProcessor: ParsableCommand {
             
             
             """
-        for objectType in allSampleTypes.map({ $0.hkSampleType as HKObjectType }) {
+        for objectType in allObjectTypes {
             if let title = localizations[objectType, locale: locale] {
                 stringsFile.append(#""\#(objectType.identifier)" = "\#(title)";\#n"#)
             } else {
@@ -112,7 +115,7 @@ struct LocalizationsProcessor: ParsableCommand {
 }
 
 
-struct Localizations {
+private struct Localizations {
     private let displayNameKeys: [HKObjectType: String]
     private let mergedLoctables: [Locale: [String: [LocalizationEntry]]]
     
@@ -157,8 +160,7 @@ struct Localizations {
             HKClinicalType(.vitalSignRecord): "VITAL_SIGN_RECORDS",
             HKClinicalType(.coverageRecord): "INSURANCE_RECORDS"
         ]
-        displayNameKeys = allSampleTypes.reduce(into: hardcodedNameKeys) { keys, type in
-            let type = type.hkSampleType
+        displayNameKeys = allObjectTypes.reduce(into: hardcodedNameKeys) { keys, type in
             guard !keys.keys.contains(type) else {
                 return
             }

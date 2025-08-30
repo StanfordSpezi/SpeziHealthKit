@@ -16,25 +16,10 @@
     "AB+" : {
 
     },
-    "Activity Move Mode" : {
-
-    },
     "B-" : {
 
     },
     "B+" : {
-
-    },
-    "Biological Sex" : {
-
-    },
-    "Blood Type" : {
-
-    },
-    "Date of Birth" : {
-
-    },
-    "Fitzpatrick Skin Type" : {
 
     },
     "HKCorrelationTypeIdentifierFood" : {
@@ -64,9 +49,6 @@
 
     },
     "Unknown" : {
-
-    },
-    "Wheelchain Use" : {
 
     }
   },

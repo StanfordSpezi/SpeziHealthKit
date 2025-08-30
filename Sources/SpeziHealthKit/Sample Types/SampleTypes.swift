@@ -2882,6 +2882,7 @@ extension HKObjectType {
         types.formUnion(HKCategoryType.allKnownCategories)
         types.formUnion(HKCorrelationType.allKnownCorrelations)
         types.formUnion(HKClinicalType.allKnownClinicalRecords)
+        types.formUnion(HKCharacteristicTypeIdentifier.allKnownIdentifiers.map { HKCharacteristicType($0) })
         return types
     }()
 }
@@ -3012,4 +3013,17 @@ extension SampleType {
         }
         return retval
     }
+}
+
+
+extension HKCharacteristicTypeIdentifier {
+    /// All well-known `HKCharacteristicTypeIdentifier`s
+    public static let allKnownIdentifiers: Set<HKCharacteristicTypeIdentifier> = [
+        .activityMoveMode,
+        .biologicalSex,
+        .bloodType,
+        .dateOfBirth,
+        .fitzpatrickSkinType,
+        .wheelchairUse
+    ]
 }

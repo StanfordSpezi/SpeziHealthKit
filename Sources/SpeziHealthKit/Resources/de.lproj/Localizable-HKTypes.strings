@@ -76,6 +76,12 @@
 "HKCategoryTypeIdentifierVaginalDryness" = "Scheiden­trocken­heit";
 "HKCategoryTypeIdentifierVomiting" = "Erbrechen";
 "HKCategoryTypeIdentifierWheezing" = "Keuchatmung";
+"HKCharacteristicTypeIdentifierActivityMoveMode" = "Einstellung für den Bewegungsmodus";
+"HKCharacteristicTypeIdentifierBiologicalSex" = "Geschlecht";
+"HKCharacteristicTypeIdentifierBloodType" = "Blutgruppe";
+"HKCharacteristicTypeIdentifierDateOfBirth" = "Geburtstag";
+"HKCharacteristicTypeIdentifierFitzpatrickSkinType" = "Fitzpatrick-Hauttyp";
+"HKCharacteristicTypeIdentifierWheelchairUse" = "Rollstuhl";
 "HKClinicalTypeIdentifierAllergyRecord" = "Allergien";
 "HKClinicalTypeIdentifierClinicalNoteRecord" = "Arztbrief";
 "HKClinicalTypeIdentifierConditionRecord" = "Erkrankungen";

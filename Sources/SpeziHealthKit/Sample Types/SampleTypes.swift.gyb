@@ -1287,6 +1287,7 @@ extension HKObjectType {
         % for (display_title, display_title_plural, hk_class, hk_sampletype_class, ctor, types) in gen_inputs:
         types.formUnion(${hk_sampletype_class}.allKnown${''.join(display_title_plural.split())})
         % end
+        types.formUnion(HKCharacteristicTypeIdentifier.allKnownIdentifiers.map { HKCharacteristicType($0) })
         return types
     }()
 }
@@ -1417,4 +1418,17 @@ extension SampleType {
         }
         return retval
     }
+}
+
+
+extension HKCharacteristicTypeIdentifier {
+    /// All well-known `HKCharacteristicTypeIdentifier`s
+    public static let allKnownIdentifiers: Set<HKCharacteristicTypeIdentifier> = [
+        .activityMoveMode,
+        .biologicalSex,
+        .bloodType,
+        .dateOfBirth,
+        .fitzpatrickSkinType,
+        .wheelchairUse
+    ]
 }
