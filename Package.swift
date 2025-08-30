@@ -97,16 +97,6 @@ let package = Package(
                 .target(name: "SpeziHealthKit"),
                 .product(name: "ArgumentParser", package: "swift-argument-parser")
             ]
-        ),
-        .plugin(
-            name: "LocalizationsProcessorPlugin",
-            capability: .command(
-                intent: .custom(verb: "update-localizations", description: "Updates the localizations"),
-                permissions: [.writeToPackageDirectory(reason: "we need to update the files")]
-            ),
-            dependencies: [
-                .target(name: "LocalizationsProcessor")
-            ]
         )
     ]
 )
