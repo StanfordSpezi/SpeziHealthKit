@@ -97,9 +97,9 @@ struct SampleTypesTests {
         #expect(food.localizedTitle(in: english) == "Nutrition")
         #expect(food.localizedTitle(in: englishUK) == "Nutrition")
         #expect(food.localizedTitle(in: german) == "Ernährung")
-        #expect(food.localizedTitle(in: french) == nil)
-        #expect(food.localizedTitle(in: spanish) == nil)
-        #expect(food.localizedTitle(in: spanishUS) == nil)
+        #expect(food.localizedTitle(in: french) == "Nutrition")
+        #expect(food.localizedTitle(in: spanish) == "Nutrición")
+        #expect(food.localizedTitle(in: spanishUS) == "Nutrición")
         
         let walkingAsymetry = SampleType.walkingAsymmetryPercentage
         #expect(walkingAsymetry.localizedTitle(in: english) == "Walking Asymmetry")
