@@ -61,11 +61,6 @@ struct LocalizationsProcessor: ParsableCommand {
     
     
     func run() throws {
-//        for ident in HKCharacteristicTypeIdentifier.allKnownIdentifiers {
-//            let type = HKCharacteristicType(ident)
-//            print(type.value(forKey: "hk_localizedName") as? String)
-//        }
-//        fatalError()
         if verbose {
             print("\(self)")
         }
