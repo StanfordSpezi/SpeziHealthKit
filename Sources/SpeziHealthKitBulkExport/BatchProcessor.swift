@@ -7,7 +7,7 @@
 //
 
 import HealthKit
-import SpeziHealthKit
+public import SpeziHealthKit
 
 
 /// Component that receives fetched Health data for processing, as part of a ``BulkExportSession``.

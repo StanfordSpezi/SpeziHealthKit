@@ -9,9 +9,9 @@
 import Foundation
 import HealthKit
 import Spezi
-import SpeziFoundation
-import SpeziHealthKit
-import SwiftUI
+public import SpeziFoundation
+public import SpeziHealthKit
+public import SwiftUI
 
 
 /// Query the HealthKit database within SwiftUI views.

@@ -9,9 +9,9 @@
 import Charts
 import Foundation
 import HealthKit
-import SpeziFoundation
-import SpeziHealthKit
-import SwiftUI
+public import SpeziFoundation
+public import SpeziHealthKit
+public import SwiftUI
 
 
 public struct HealthChart: View {

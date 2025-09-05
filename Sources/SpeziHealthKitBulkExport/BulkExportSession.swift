@@ -6,8 +6,9 @@
 // SPDX-License-Identifier: MIT
 //
 
-import Foundation
+public import Foundation
 import HealthKit
+public import Observation
 import SpeziHealthKit
 
 

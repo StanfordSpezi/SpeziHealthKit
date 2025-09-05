@@ -17,13 +17,14 @@ import HealthKit
 /// ### Instance Properties
 /// - ``hkSampleType``
 /// - ``displayTitle``
+/// - ``displayTitle-65fs3``
 /// - ``identifier``
 /// ### Comparing type-erased sample types
 /// - ``==(_:_:)-4zjyo``
 /// - ``==(_:_:)-5dq7``
 /// - ``==(_:_:)-80mw5``
-/// - ``~=(_:_:)-(_,SampleType<>)``
-/// - ``~=(_:_:)-(SampleType<>,_)``
+/// - ``~=(_:_:)-(_,SampleType<Any>)``
+/// - ``~=(_:_:)-(SampleType<Any>,_)``
 public protocol AnySampleType<Sample>: Hashable, Identifiable, Sendable where ID == String {
     /// The type of the sample type's underlying samples.
     ///
@@ -152,6 +153,10 @@ extension HKObjectType {
             SampleType.workoutRoute
         case HKPrescriptionType.visionPrescriptionType():
             SampleType.visionPrescription
+        #if !os(watchOS)
+        case is HKClinicalType:
+            SampleType<HKClinicalRecord>(.init(rawValue: self.identifier))
+        #endif
         case is HKCharacteristicType, is HKDocumentType, is HKActivitySummaryType:
             nil
         default:

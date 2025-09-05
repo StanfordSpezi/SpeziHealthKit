@@ -8,10 +8,10 @@
 
 import Foundation
 import HealthKit
-import Observation
-import Spezi
+public import Observation
+public import Spezi
 import SpeziFoundation
-import SpeziHealthKit
+public import SpeziHealthKit
 import SpeziLocalStorage
 
 

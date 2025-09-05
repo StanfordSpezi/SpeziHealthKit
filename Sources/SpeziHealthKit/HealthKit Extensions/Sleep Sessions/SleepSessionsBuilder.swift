@@ -11,7 +11,7 @@
 import Algorithms
 import Foundation
 import HealthKit
-import SpeziFoundation
+public import SpeziFoundation
 
 
 /// An error that can occur when processing Sleep Analysis samples.

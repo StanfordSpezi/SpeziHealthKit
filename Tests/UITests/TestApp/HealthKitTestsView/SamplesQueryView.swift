@@ -44,7 +44,11 @@ struct SamplesQueryView: View {
         Section(results.sampleType.displayTitle) {
             ForEach(results) { (sample: HKQuantitySample) in
                 HStack {
-                    Text("\(results.sampleType.displayTitle) \(sample.quantity.doubleValue(for: results.sampleType.displayUnit), format: .number)")
+                    LabeledContent(
+                        results.sampleType.displayTitle,
+                        value: sample.quantity.doubleValue(for: results.sampleType.displayUnit),
+                        format: .number
+                    )
                 }
             }
         }

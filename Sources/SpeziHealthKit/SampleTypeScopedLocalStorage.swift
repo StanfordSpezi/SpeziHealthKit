@@ -8,6 +8,7 @@
 
 
 import Foundation
+import SpeziFoundation
 import SpeziLocalStorage
 
 
@@ -56,7 +57,7 @@ private enum LocalStorageKeysHandling {
 }
 
 
-struct SampleTypeScopedLocalStorage<Value> {
+struct SampleTypeScopedLocalStorage<Value: SendableMetatype> {
     private let localStorage: LocalStorage
     private let makeStorageKey: @Sendable (any AnySampleType) -> LocalStorageKey<Value>
     

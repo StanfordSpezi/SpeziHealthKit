@@ -23,8 +23,7 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
         
         XCTAssert(app.buttons["Samples Query"].wait(for: \.isHittable, toEqual: true, timeout: 2))
         app.buttons["Samples Query"].tap()
-        
-        XCTAssert(app.staticTexts.element(matching: NSPredicate(format: "label MATCHES %@", "Step Count *152")).waitForExistence(timeout: 3))
+        XCTAssert(app.staticTexts["Steps, 152"].waitForExistence(timeout: 3))
     }
     
     
