@@ -150,4 +150,16 @@ struct SampleTypesTests {
             localizations: [.init(identifier: "jp"), .init(identifier: "en")]
         ) == "Nutrition")
     }
+    
+    
+    @Test
+    func sampleTypeSwitching() {
+        let sampleType = SampleTypeProxy(.heartburn)
+        switch sampleType {
+        case .category(.heartburn):
+            #expect(true)
+        default:
+            Issue.record("Pattern matching failed.")
+        }
+    }
 }
