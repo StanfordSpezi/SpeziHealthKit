@@ -273,7 +273,7 @@ extension HealthKit {
         guard !objectTypes.isEmpty else {
             return true
         }
-        let objectTypes = objectTypes.flatMapIntoSet { $0.effectiveObjectTypesForAuthentication }
+        let objectTypes = objectTypes.flatMapIntoSet { $0.effectiveObjectTypesForAuthorization }
         do {
             // status: whether the user would be presented with an authorization request sheet, were we to request access
             let status = try await healthStore.statusForAuthorizationRequest(toShare: [], read: objectTypes)
@@ -404,13 +404,15 @@ extension HealthKit {
         ) { [healthStore] taskGroup in
             for writeTy in accessRequirements.write {
                 taskGroup.addTask {
-                    let status = try? await healthStore.statusForAuthorizationRequest(toShare: [writeTy], read: [writeTy])
+                    let types = writeTy.effectiveObjectTypesForAuthorization.compactMapIntoSet { $0 as? HKSampleType }
+                    let status = try? await healthStore.statusForAuthorizationRequest(toShare: types, read: types)
                     return (writeTy, status ?? .unknown)
                 }
             }
             for readTy in accessRequirements.read.subtracting(accessRequirements.write) {
                 taskGroup.addTask {
-                    let status = try? await healthStore.statusForAuthorizationRequest(toShare: [], read: [readTy])
+                    let types = readTy.effectiveObjectTypesForAuthorization
+                    let status = try? await healthStore.statusForAuthorizationRequest(toShare: [], read: types)
                     return (readTy, status ?? .unknown)
                 }
             }

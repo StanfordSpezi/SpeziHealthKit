@@ -40,7 +40,7 @@ extension HKHealthStore {
         ) async -> Void
     ) async throws -> BackgroundObserverQueryInvalidator {
         let queryDescriptors: [HKQueryDescriptor] = sampleTypes
-            .flatMap { $0.effectiveObjectTypesForAuthentication }
+            .flatMap { $0.effectiveObjectTypesForAuthorization }
             .compactMap { $0 as? HKSampleType }
             .map { HKQueryDescriptor(sampleType: $0, predicate: predicate) }
         let observerQuery = HKObserverQuery(queryDescriptors: queryDescriptors) { query, sampleTypes, completionHandler, error in

@@ -103,8 +103,18 @@ extension AnySampleType {
 }
 
 /// Compare two sample types, based on their identifiers
-@inlinable public func ~= (lhs: any AnySampleType, rhs: SampleType<some Any>) -> Bool {
-    lhs.id == rhs.id
+@inlinable public func ~= (pattern: SampleType<some Any>, value: SampleType<some Any>) -> Bool {
+    pattern.id == value.id
+}
+
+/// Compare two sample types, based on their identifiers
+@inlinable public func ~= (pattern: any AnySampleType, value: SampleType<some Any>) -> Bool {
+    pattern.id == value.id
+}
+
+/// Compare two sample types, based on their identifiers
+@inlinable public func ~= (pattern: SampleType<some Any>, value: any AnySampleType) -> Bool {
+    pattern.id == value.id
 }
 
 // swiftlint:enable static_operator
@@ -124,6 +134,8 @@ extension AnySampleType {
             [self, SampleType.heartRateVariabilitySDNN]
         case let self as SampleType<HKWorkoutRoute>:
             [self, SampleType.workout]
+        case SampleType.bloodPressureSystolic, SampleType.bloodPressureDiastolic:
+            [SampleType.bloodPressureSystolic, SampleType.bloodPressureDiastolic]
         default:
             [self]
         }
