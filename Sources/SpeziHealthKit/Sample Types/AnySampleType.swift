@@ -103,6 +103,7 @@ extension AnySampleType {
 }
 
 /// Compare two sample types, based on their identifiers
+@_disfavoredOverload
 @inlinable public func ~= (pattern: SampleType<some Any>, value: SampleType<some Any>) -> Bool {
     pattern.id == value.id
 }
@@ -113,6 +114,7 @@ extension AnySampleType {
 }
 
 /// Compare two sample types, based on their identifiers
+@_disfavoredOverload
 @inlinable public func ~= (pattern: SampleType<some Any>, value: any AnySampleType) -> Bool {
     pattern.id == value.id
 }
