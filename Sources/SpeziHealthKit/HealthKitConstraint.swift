@@ -44,7 +44,7 @@ public protocol HealthKitConstraint: Standard {
     /// - parameter addedSamples: The `HKSample`s that were added to the HealthKit database.
     /// - parameter sampleType: The ``SampleType`` of the new samples
     func handleNewSamples<Sample>(
-        _ addedSamples: some Collection<Sample>,
+        _ addedSamples: some Collection<Sample> & Sendable,
         ofType sampleType: SampleType<Sample>
     ) async
     
@@ -52,7 +52,7 @@ public protocol HealthKitConstraint: Standard {
     /// - parameter deletedObjects: The `HKDeletedObject`s that were removed from the HealthKit database
     /// - parameter sampleType: The ``SampleType`` of the deleted objects
     func handleDeletedObjects<Sample>(
-        _ deletedObjects: some Collection<HKDeletedObject>,
+        _ deletedObjects: some Collection<HKDeletedObject> & Sendable,
         ofType sampleType: SampleType<Sample>
     ) async
 }
