@@ -26,7 +26,13 @@ import HealthKit
 ///     return imp(sampleType.underlyingSampleType)
 /// }
 /// ```
-public enum SampleTypeProxy: Hashable, Identifiable, Sendable {
+public enum SampleTypeProxy: Identifiable, Sendable {
+    /// An Error that can occur when attempting to create a ``SampleTypeProxy`` from another `SampleType`.
+    public enum InitError: Swift.Error {
+        /// `SampleTypeProxy` is not currently able to represent this `AnySampleType`.
+        case unableToRepresent(any AnySampleType)
+    }
+    
     case quantity(SampleType<HKQuantitySample>)
     case correlation(SampleType<HKCorrelation>)
     case category(SampleType<HKCategorySample>)
@@ -36,6 +42,9 @@ public enum SampleTypeProxy: Hashable, Identifiable, Sendable {
     case electrocardiogram(SampleType<HKElectrocardiogram>)
     case audiogram(SampleType<HKAudiogramSample>)
     case workout(SampleType<HKWorkout>)
+    /// - Note: The associated value here is of type `SampleType<HKStateOfMind>`, but this cannot expressed this way because the `HKStateOfMind` type is only available starting with iOS 18.
+    ///     The type will be changed in an upcoming release, and should always be treated as `SampleType<HKStateOfMind>`.
+    case stateOfMind(any AnySampleType)
     
     /// The type-erased underlying ``AnySampleType``.
     ///
@@ -67,39 +76,59 @@ public enum SampleTypeProxy: Hashable, Identifiable, Sendable {
             sampleType
         case .workout(let sampleType):
             sampleType
+        case .stateOfMind(let sampleType):
+            sampleType
         }
     }
     
+    @inlinable
     public var id: String {
         underlyingSampleType.id
     }
-    
-    @_disfavoredOverload
-    public init(_ sampleType: SampleType<some Any>) {
-        self.init(sampleType)
+}
+
+
+extension SampleTypeProxy: Equatable, Hashable {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        switch (lhs, rhs) {
+        case let (.quantity(lhs), .quantity(rhs)):
+            lhs == rhs
+        case let (.correlation(lhs), .correlation(rhs)):
+            lhs == rhs
+        case let (.category(lhs), .category(rhs)):
+            lhs == rhs
+        case let (.clinical(lhs), .clinical(rhs)):
+            lhs == rhs
+        case let (.electrocardiogram(lhs), .electrocardiogram(rhs)):
+            lhs == rhs
+        case let (.audiogram(lhs), .audiogram(rhs)):
+            lhs == rhs
+        case let (.workout(lhs), .workout(rhs)):
+            lhs == rhs
+        case let (.stateOfMind(lhs), .stateOfMind(rhs)):
+            lhs == rhs
+        default: false
+        }
     }
     
-    /// Wraps an ``AnySampleType``.
-    public init(_ sampleType: any AnySampleType) {
-        switch sampleType {
-        case let sampleType as SampleType<HKQuantitySample>:
-            self = .quantity(sampleType)
-        case let sampleType as SampleType<HKCorrelation>:
-            self = .correlation(sampleType)
-        case let sampleType as SampleType<HKCategorySample>:
-            self = .category(sampleType)
-        #if !os(watchOS)
-        case let sampleType as SampleType<HKClinicalRecord>:
-            self = .clinical(sampleType)
-        #endif
-        case let sampleType as SampleType<HKElectrocardiogram>:
-            self = .electrocardiogram(sampleType)
-        case let sampleType as SampleType<HKAudiogramSample>:
-            self = .audiogram(sampleType)
-        case let sampleType as SampleType<HKWorkout>:
-            self = .workout(sampleType)
-        default:
-            preconditionFailure("Unhandled SampleType input: \(type(of: sampleType)) (\(sampleType))")
+    public func hash(into hasher: inout Hasher) {
+        switch self {
+        case .quantity(let sampleType):
+            hasher.combine(sampleType)
+        case .correlation(let sampleType):
+            hasher.combine(sampleType)
+        case .category(let sampleType):
+            hasher.combine(sampleType)
+        case .clinical(let sampleType):
+            hasher.combine(sampleType)
+        case .electrocardiogram(let sampleType):
+            hasher.combine(sampleType)
+        case .audiogram(let sampleType):
+            hasher.combine(sampleType)
+        case .workout(let sampleType):
+            hasher.combine(sampleType)
+        case .stateOfMind(let sampleType):
+            hasher.combine(sampleType)
         }
     }
 }
@@ -112,7 +141,7 @@ extension SampleTypeProxy: Codable {
         case unknownSampleTypeIdentifier(String)
     }
     
-    public init(from decoder: any Decoder) throws {
+    public init(from decoder: any Decoder) throws { // swiftlint:disable:this cyclomatic_complexity
         let container = try decoder.singleValueContainer()
         let rawValue = try container.decode(String.self)
         let components = rawValue.components(separatedBy: ";")
@@ -150,8 +179,12 @@ extension SampleTypeProxy: Codable {
             self = .audiogram(.audiogram)
         case is HKWorkoutType.Type:
             self = .workout(.workout)
-        default:
-            throw SampleTypeDecodingError.unknownSampleTypeClassname(sampleTypeClassname)
+        case .some(let cls):
+            if #available(iOS 18.0, watchOS 11.0, macOS 15.0, visionOS 2.0, *), cls is HKStateOfMindType.Type {
+                self = .stateOfMind(SampleType.stateOfMind)
+            } else {
+                throw SampleTypeDecodingError.unknownSampleTypeClassname(sampleTypeClassname)
+            }
         }
     }
     

@@ -1288,6 +1288,17 @@ extension HKObjectType {
         types.formUnion(${hk_sampletype_class}.allKnown${''.join(display_title_plural.split())})
         % end
         types.formUnion(HKCharacteristicTypeIdentifier.allKnownIdentifiers.map { HKCharacteristicType($0) })
+        types.insert(SampleType.electrocardiogram.hkSampleType)
+        types.insert(SampleType.audiogram.hkSampleType)
+        types.insert(SampleType.workout.hkSampleType)
+        types.insert(SampleType.visionPrescription.hkSampleType)
+        types.insert(SampleType.heartbeatSeries.hkSampleType)
+        types.insert(SampleType.workoutRoute.hkSampleType)
+        if #available(iOS 18.0, watchOS 11.0, macOS 15.0, visionOS 2.0, *) {
+            types.insert(SampleType.gad7.hkSampleType)
+            types.insert(SampleType.phq9.hkSampleType)
+            types.insert(SampleType.stateOfMind.hkSampleType)
+        }
         return types
     }()
 }
