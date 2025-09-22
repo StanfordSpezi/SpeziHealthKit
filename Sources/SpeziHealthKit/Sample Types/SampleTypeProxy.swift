@@ -83,47 +83,14 @@ public enum SampleTypeProxy: Identifiable, Sendable {
 
 
 extension SampleTypeProxy: Equatable, Hashable {
+    @inlinable
     public static func == (lhs: Self, rhs: Self) -> Bool {
-        switch (lhs, rhs) {
-        case let (.quantity(lhs), .quantity(rhs)):
-            lhs == rhs
-        case let (.correlation(lhs), .correlation(rhs)):
-            lhs == rhs
-        case let (.category(lhs), .category(rhs)):
-            lhs == rhs
-        case let (.clinical(lhs), .clinical(rhs)):
-            lhs == rhs
-        case let (.electrocardiogram(lhs), .electrocardiogram(rhs)):
-            lhs == rhs
-        case let (.audiogram(lhs), .audiogram(rhs)):
-            lhs == rhs
-        case let (.workout(lhs), .workout(rhs)):
-            lhs == rhs
-        case let (.stateOfMind(lhs), .stateOfMind(rhs)):
-            lhs == rhs
-        default: false
-        }
+        lhs.underlyingSampleType == rhs.underlyingSampleType
     }
     
+    @inlinable
     public func hash(into hasher: inout Hasher) {
-        switch self {
-        case .quantity(let sampleType):
-            hasher.combine(sampleType)
-        case .correlation(let sampleType):
-            hasher.combine(sampleType)
-        case .category(let sampleType):
-            hasher.combine(sampleType)
-        case .clinical(let sampleType):
-            hasher.combine(sampleType)
-        case .electrocardiogram(let sampleType):
-            hasher.combine(sampleType)
-        case .audiogram(let sampleType):
-            hasher.combine(sampleType)
-        case .workout(let sampleType):
-            hasher.combine(sampleType)
-        case .stateOfMind(let sampleType):
-            hasher.combine(sampleType)
-        }
+        hasher.combine(underlyingSampleType)
     }
 }
 
