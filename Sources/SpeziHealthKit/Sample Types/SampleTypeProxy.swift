@@ -27,12 +27,6 @@ import HealthKit
 /// }
 /// ```
 public enum SampleTypeProxy: Identifiable, Sendable {
-    /// An Error that can occur when attempting to create a ``SampleTypeProxy`` from another `SampleType`.
-    public enum InitError: Swift.Error {
-        /// `SampleTypeProxy` is not currently able to represent this `AnySampleType`.
-        case unableToRepresent(any AnySampleType)
-    }
-    
     case quantity(SampleType<HKQuantitySample>)
     case correlation(SampleType<HKCorrelation>)
     case category(SampleType<HKCategorySample>)
