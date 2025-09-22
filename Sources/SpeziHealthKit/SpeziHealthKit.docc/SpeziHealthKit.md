@@ -33,7 +33,7 @@ The ``HealthKitConstraint/handleNewSamples(_:ofType:)`` function is called once 
 actor ExampleStandard: Standard, HealthKitConstraint {
     // Add the newly collected HealthKit samples to your application.
     func handleNewSamples<Sample>(
-        _ addedSamples: some Collection<Sample>,
+        _ addedSamples: some Collection<Sample> & Sendable,
         ofType sampleType: SampleType<Sample>
     ) async {
         // ...
@@ -41,7 +41,7 @@ actor ExampleStandard: Standard, HealthKitConstraint {
 
     // Remove the deleted HealthKit objects from your application.
     func handleDeletedObjects<Sample>(
-        _ deletedObjects: some Collection<HKDeletedObject>,
+        _ deletedObjects: some Collection<HKDeletedObject> & Sendable,
         ofType sampleType: SampleType<Sample>
     ) async {
         // ...
