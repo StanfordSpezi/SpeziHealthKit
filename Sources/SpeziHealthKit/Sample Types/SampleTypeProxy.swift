@@ -8,6 +8,7 @@
 
 import Foundation
 import HealthKit
+import SpeziFoundation
 
 
 /// An enum for working with ``SampleType``s in non-generic contexts.
@@ -36,9 +37,18 @@ public enum SampleTypeProxy: Identifiable, Sendable {
     case electrocardiogram(SampleType<HKElectrocardiogram>)
     case audiogram(SampleType<HKAudiogramSample>)
     case workout(SampleType<HKWorkout>)
+    case workoutRoute(SampleType<HKWorkoutRoute>)
     /// - Note: The associated value here is of type `SampleType<HKStateOfMind>`, but this cannot expressed this way because the `HKStateOfMind` type is only available starting with iOS 18.
     ///     The type will be changed in an upcoming release, and should always be treated as `SampleType<HKStateOfMind>`.
     case stateOfMind(any AnySampleType)
+    /// - Note: The associated value here is of type `SampleType<HKGAD7Assessment>`, but this cannot expressed this way because the `HKGAD7Assessment` type is only available starting with iOS 18.
+    ///     The type will be changed in an upcoming release, and should always be treated as `SampleType<HKGAD7Assessment>`.
+    case gad7(any AnySampleType)
+    /// - Note: The associated value here is of type `SampleType<HKPHQ9Assessment>`, but this cannot expressed this way because the `HKPHQ9Assessment` type is only available starting with iOS 18.
+    ///     The type will be changed in an upcoming release, and should always be treated as `SampleType<HKPHQ9Assessment>`.
+    case phq9(any AnySampleType)
+    case heartbeatSeries(SampleType<HKHeartbeatSeriesSample>)
+    case visionPrescription(SampleType<HKVisionPrescription>)
     
     /// The type-erased underlying ``AnySampleType``.
     ///
@@ -70,7 +80,17 @@ public enum SampleTypeProxy: Identifiable, Sendable {
             sampleType
         case .workout(let sampleType):
             sampleType
+        case .workoutRoute(let sampleType):
+            sampleType
         case .stateOfMind(let sampleType):
+            sampleType
+        case .gad7(let sampleType):
+            sampleType
+        case .phq9(let sampleType):
+            sampleType
+        case .heartbeatSeries(let sampleType):
+            sampleType
+        case .visionPrescription(let sampleType):
             sampleType
         }
     }
@@ -102,7 +122,7 @@ extension SampleTypeProxy: Codable {
         case unknownSampleTypeIdentifier(String)
     }
     
-    public init(from decoder: any Decoder) throws { // swiftlint:disable:this cyclomatic_complexity
+    public init(from decoder: any Decoder) throws { // swiftlint:disable:this cyclomatic_complexity function_body_length
         let container = try decoder.singleValueContainer()
         let rawValue = try container.decode(String.self)
         let components = rawValue.components(separatedBy: ";")
@@ -140,9 +160,42 @@ extension SampleTypeProxy: Codable {
             self = .audiogram(.audiogram)
         case is HKWorkoutType.Type:
             self = .workout(.workout)
+        case is HKPrescriptionType.Type:
+            switch sampleTypeIdentifier {
+            case HKVisionPrescriptionTypeIdentifier:
+                self = .visionPrescription(.visionPrescription)
+            default:
+                throw SampleTypeDecodingError.unknownSampleTypeIdentifier(sampleTypeIdentifier)
+            }
+        case is HKSeriesType.Type:
+            switch sampleTypeIdentifier {
+            case HKDataTypeIdentifierHeartbeatSeries:
+                self = .heartbeatSeries(.heartbeatSeries)
+            case HKWorkoutRouteTypeIdentifier:
+                self = .workoutRoute(.workoutRoute)
+            default:
+                throw SampleTypeDecodingError.unknownSampleTypeIdentifier(sampleTypeIdentifier)
+            }
         case .some(let cls):
-            if #available(iOS 18.0, watchOS 11.0, macOS 15.0, visionOS 2.0, *), cls is HKStateOfMindType.Type {
-                self = .stateOfMind(SampleType.stateOfMind)
+            if #available(iOS 18.0, watchOS 11.0, macOS 15.0, visionOS 2.0, *) {
+                switch cls {
+                case is HKStateOfMindType.Type:
+                    self = .stateOfMind(SampleType.stateOfMind)
+                case is HKScoredAssessmentType.Type:
+                    let scoredAssessmentType = try catchingNSException {
+                        HKScoredAssessmentType(.init(rawValue: sampleTypeIdentifier))
+                    }
+                    switch scoredAssessmentType {
+                    case .init(.GAD7):
+                        self = .gad7(SampleType.gad7)
+                    case .init(.PHQ9):
+                        self = .phq9(SampleType.phq9)
+                    default:
+                        throw SampleTypeDecodingError.unknownSampleTypeIdentifier(sampleTypeIdentifier)
+                    }
+                default:
+                    throw SampleTypeDecodingError.unknownSampleTypeClassname(sampleTypeClassname)
+                }
             } else {
                 throw SampleTypeDecodingError.unknownSampleTypeClassname(sampleTypeClassname)
             }

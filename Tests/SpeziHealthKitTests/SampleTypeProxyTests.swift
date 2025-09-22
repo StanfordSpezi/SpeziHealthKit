@@ -17,6 +17,7 @@ struct SampleTypeProxyTests {
         let sampleTypes = HKObjectType.allKnownObjectTypes.compactMap(\.sampleType)
         for sampleType in sampleTypes {
             guard let wrapped = SampleTypeProxy(_ifPossible: sampleType) else {
+                Issue.record("Unable to get a SampleTypeProxy for \(sampleType)")
                 continue
             }
             let encoded = try JSONEncoder().encode(wrapped)
