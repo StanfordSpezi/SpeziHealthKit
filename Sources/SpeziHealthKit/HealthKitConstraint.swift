@@ -20,7 +20,7 @@ public import Spezi
 /// actor ExampleStandard: Standard, HealthKitConstraint {
 ///     // Add the newly collected `HKSample`s to your application.
 ///     func handleNewSamples<Sample>(
-///         _ addedSamples: some Collection<Sample>,
+///         _ addedSamples: some Collection<Sample> & Sendable,
 ///         ofType sampleType: SampleType<Sample>
 ///     ) async {
 ///         // ...
@@ -28,7 +28,7 @@ public import Spezi
 ///
 ///     // Remove the deleted `HKObject`s from your application.
 ///     func handleDeletedObjects<Sample>(
-///         _ deletedObjects: some Collection<HKDeletedObject>,
+///         _ deletedObjects: some Collection<HKDeletedObject> & Sendable,
 ///         ofType sampleType: SampleType<Sample>
 ///     ) async {
 ///         // ...

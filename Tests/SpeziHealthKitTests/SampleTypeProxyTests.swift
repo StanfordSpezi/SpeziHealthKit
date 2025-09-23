@@ -14,14 +14,12 @@ import Testing
 struct SampleTypeProxyTests {
     @Test
     func coding() throws {
-        let sampleTypes: [any AnySampleType] = [
-            SampleType.stepCount, SampleType.heartRate, SampleType.height, SampleType.walkingStepLength,
-            SampleType.bloodOxygen, SampleType.bloodPressureSystolic, SampleType.appleMoveTime,
-            SampleType.bloodPressure, SampleType.food, SampleType.sleepAnalysis,
-            SampleType.workout, SampleType.electrocardiogram, SampleType.audiogram
-        ]
+        let sampleTypes = HKObjectType.allKnownObjectTypes.compactMap(\.sampleType)
         for sampleType in sampleTypes {
-            let wrapped = SampleTypeProxy(sampleType)
+            guard let wrapped = SampleTypeProxy(_ifPossible: sampleType) else {
+                Issue.record("Unable to get a SampleTypeProxy for \(sampleType)")
+                continue
+            }
             let encoded = try JSONEncoder().encode(wrapped)
             let decoded = try JSONDecoder().decode(SampleTypeProxy.self, from: encoded)
             #expect(decoded == wrapped)
