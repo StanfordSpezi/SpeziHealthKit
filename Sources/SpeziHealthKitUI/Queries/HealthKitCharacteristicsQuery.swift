@@ -8,8 +8,8 @@
 
 import Foundation
 import HealthKit
-@_spi(APISupport) import SpeziHealthKit
-import SwiftUI
+@_spi(APISupport) public import SpeziHealthKit
+public import SwiftUI
 
 
 /// Fetches a `HKCharacteristicType` from the HealthKit data store, in a type-safe manner.

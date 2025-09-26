@@ -28,7 +28,7 @@ struct SpeziHealthKitTests {
         #expect(HKQuantityType.allKnownQuantities.count == HKQuantityTypeIdentifier.allKnownIdentifiers.count)
         #expect(HKCorrelationType.allKnownCorrelations.count == HKCorrelationTypeIdentifier.allKnownIdentifiers.count)
         #expect(HKCategoryType.allKnownCategories.count == HKCategoryTypeIdentifier.allKnownIdentifiers.count)
-        #expect(HKObjectType.allKnownObjectTypes.count == 198)
+        #expect(HKObjectType.allKnownObjectTypes.count == 213)
     }
 
 

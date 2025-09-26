@@ -48,11 +48,13 @@ public struct HealthKitCharacteristic<Value>: HealthKitCharacteristicProtocol, S
     
     fileprivate init(
         _ identifier: HKCharacteristicTypeIdentifier,
-        displayTitle: LocalizedStringResource,
+        displayTitle: LocalizedStringResource? = nil,
         accessor: @escaping @Sendable (HKHealthStore) throws -> Value
     ) {
         self.hkType = .init(identifier)
-        self.displayTitle = String(localized: displayTitle)
+        self.displayTitle = displayTitle.map { String(localized: $0) }
+            ?? SampleType<HKQuantitySample>.localizedTitle(for: hkType)
+            ?? hkType.identifier
         self.accessor = accessor
     }
     
@@ -85,7 +87,7 @@ extension HealthKitCharacteristicProtocol {
 extension HealthKitCharacteristicProtocol where Self == HealthKitCharacteristic<HKActivityMoveMode> {
     /// The activity move mode characteristic.
     public static var activityMoveMode: HealthKitCharacteristic<HKActivityMoveMode> {
-        Self(.activityMoveMode, displayTitle: "Activity Move Mode") { healthStore in
+        Self(.activityMoveMode) { healthStore in
             try healthStore.activityMoveMode().activityMoveMode
         }
     }
@@ -94,7 +96,7 @@ extension HealthKitCharacteristicProtocol where Self == HealthKitCharacteristic<
 extension HealthKitCharacteristicProtocol where Self == HealthKitCharacteristic<HKBiologicalSex> {
     /// The characteristic representing the user's biological sex.
     public static var biologicalSex: HealthKitCharacteristic<HKBiologicalSex> {
-        Self(.biologicalSex, displayTitle: "Biological Sex") { healthStore in
+        Self(.biologicalSex) { healthStore in
             try healthStore.biologicalSex().biologicalSex
         }
     }
@@ -103,7 +105,7 @@ extension HealthKitCharacteristicProtocol where Self == HealthKitCharacteristic<
 extension HealthKitCharacteristicProtocol where Self == HealthKitCharacteristic<HKBloodType> {
     /// The characteristic representing the user's blood type.
     public static var bloodType: HealthKitCharacteristic<HKBloodType> {
-        Self(.bloodType, displayTitle: "Blood Type") { healthStore in
+        Self(.bloodType) { healthStore in
             try healthStore.bloodType().bloodType
         }
     }
@@ -120,7 +122,7 @@ extension HealthKitCharacteristicProtocol where Self == HealthKitCharacteristic<
     /// - Note: Prefer using ``dateOfBirthComponents`` if you need the user's date of birth in a non-UI-related context.
     ///     The `DateComponents` will have their `calendar` and `timeZone` properties set based on the specific time zone in which the user entered their date of birth.
     public static var dateOfBirth: HealthKitCharacteristic<Date> {
-        Self(.dateOfBirth, displayTitle: "Date of Birth") { healthStore in
+        Self(.dateOfBirth) { healthStore in
             let components = try healthStore.dateOfBirthComponents()
             if let date = Calendar.current.date(from: .init(year: components.year, month: components.month, day: components.day)) {
                 return date
@@ -140,7 +142,7 @@ extension HealthKitCharacteristicProtocol where Self == HealthKitCharacteristic<
     /// The `DateComponents` returned here will, if available, have their `calendar` and `timeZone` properties
     /// set based on the specific time zone in which the user entered their date of birth into the Health app.
     public static var dateOfBirthComponents: HealthKitCharacteristic<DateComponents> {
-        Self(.dateOfBirth, displayTitle: "Date of Birth") { healthStore in
+        Self(.dateOfBirth) { healthStore in
             var components = try healthStore.dateOfBirthComponents()
             components.timeZone = components.calendar?.timeZone
             return components
@@ -151,7 +153,7 @@ extension HealthKitCharacteristicProtocol where Self == HealthKitCharacteristic<
 extension HealthKitCharacteristicProtocol where Self == HealthKitCharacteristic<HKFitzpatrickSkinType> {
     /// The characteristic representing the user's skin type.
     public static var fitzpatrickSkinType: HealthKitCharacteristic<HKFitzpatrickSkinType> {
-        Self(.fitzpatrickSkinType, displayTitle: "Fitzpatrick Skin Type") { healthStore in
+        Self(.fitzpatrickSkinType) { healthStore in
             try healthStore.fitzpatrickSkinType().skinType
         }
     }
@@ -160,7 +162,7 @@ extension HealthKitCharacteristicProtocol where Self == HealthKitCharacteristic<
 extension HealthKitCharacteristicProtocol where Self == HealthKitCharacteristic<HKWheelchairUse> {
     /// The characteristic representing the user's wheelchair use status.
     public static var wheelchairUse: HealthKitCharacteristic<HKWheelchairUse> {
-        Self(.wheelchairUse, displayTitle: "Wheelchain Use") { healthStore in
+        Self(.wheelchairUse) { healthStore in
             try healthStore.wheelchairUse().wheelchairUse
         }
     }

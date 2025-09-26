@@ -11,6 +11,6 @@ SPDX-License-Identifier: MIT
 SpeziHealthKit contributors
 ====================
 
-* [Paul Schmiedmayer](https://github.com/PSchmiedmayer)
-* [Andreas Bauer](https://github.com/bauer-andreas)
 * [Lukas Kollmer](https://github.com/lukaskollmer)
+* [Andreas Bauer](https://github.com/bauer-andreas)
+* [Paul Schmiedmayer](https://github.com/PSchmiedmayer)

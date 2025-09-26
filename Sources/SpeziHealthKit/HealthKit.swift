@@ -10,8 +10,8 @@
 
 import HealthKit
 import OSLog
-import Spezi
-import SpeziFoundation
+public import Spezi
+public import SpeziFoundation
 import SpeziLocalStorage
 import SwiftUI
 
@@ -273,7 +273,7 @@ extension HealthKit {
         guard !objectTypes.isEmpty else {
             return true
         }
-        let objectTypes = objectTypes.flatMapIntoSet { $0.effectiveObjectTypesForAuthentication }
+        let objectTypes = objectTypes.flatMapIntoSet { $0.effectiveObjectTypesForAuthorization }
         do {
             // status: whether the user would be presented with an authorization request sheet, were we to request access
             let status = try await healthStore.statusForAuthorizationRequest(toShare: [], read: objectTypes)
@@ -404,13 +404,15 @@ extension HealthKit {
         ) { [healthStore] taskGroup in
             for writeTy in accessRequirements.write {
                 taskGroup.addTask {
-                    let status = try? await healthStore.statusForAuthorizationRequest(toShare: [writeTy], read: [writeTy])
+                    let types = writeTy.effectiveObjectTypesForAuthorization.compactMapIntoSet { $0 as? HKSampleType }
+                    let status = try? await healthStore.statusForAuthorizationRequest(toShare: types, read: types)
                     return (writeTy, status ?? .unknown)
                 }
             }
             for readTy in accessRequirements.read.subtracting(accessRequirements.write) {
                 taskGroup.addTask {
-                    let status = try? await healthStore.statusForAuthorizationRequest(toShare: [], read: [readTy])
+                    let types = readTy.effectiveObjectTypesForAuthorization
+                    let status = try? await healthStore.statusForAuthorizationRequest(toShare: [], read: types)
                     return (readTy, status ?? .unknown)
                 }
             }
@@ -586,5 +588,17 @@ extension HKUnit {
     /// Creates a unit as the composition of multiplying a unit with another unit.
     @inlinable public static func * (lhs: HKUnit, rhs: HKUnit) -> HKUnit {
         lhs.unitMultiplied(by: rhs)
+    }
+}
+
+
+extension HealthKit {
+    /// The `Bundle` of the SpeziHealthKit package.
+    ///
+    /// - Note: The reason this exists is because `Bundle(for: HealthKit.self)` will return an incorrect bundle in some circumstances.
+    ///     E.g., when you're running in a unit test, it'll return the xctest bundle, which is not what we're looking for in this case.
+    @_spi(Testing)
+    public static var bundle: Bundle {
+        Bundle.module
     }
 }

@@ -17,13 +17,14 @@ import HealthKit
 /// ### Instance Properties
 /// - ``hkSampleType``
 /// - ``displayTitle``
+/// - ``displayTitle-65fs3``
 /// - ``identifier``
 /// ### Comparing type-erased sample types
 /// - ``==(_:_:)-4zjyo``
 /// - ``==(_:_:)-5dq7``
 /// - ``==(_:_:)-80mw5``
-/// - ``~=(_:_:)-(_,SampleType<>)``
-/// - ``~=(_:_:)-(SampleType<>,_)``
+/// - ``~=(_:_:)-(_,SampleType<Any>)``
+/// - ``~=(_:_:)-(SampleType<Any>,_)``
 public protocol AnySampleType<Sample>: Hashable, Identifiable, Sendable where ID == String {
     /// The type of the sample type's underlying samples.
     ///
@@ -102,8 +103,20 @@ extension AnySampleType {
 }
 
 /// Compare two sample types, based on their identifiers
-@inlinable public func ~= (lhs: any AnySampleType, rhs: SampleType<some Any>) -> Bool {
-    lhs.id == rhs.id
+@_disfavoredOverload
+@inlinable public func ~= (pattern: SampleType<some Any>, value: SampleType<some Any>) -> Bool {
+    pattern.id == value.id
+}
+
+/// Compare two sample types, based on their identifiers
+@inlinable public func ~= (pattern: any AnySampleType, value: SampleType<some Any>) -> Bool {
+    pattern.id == value.id
+}
+
+/// Compare two sample types, based on their identifiers
+@_disfavoredOverload
+@inlinable public func ~= (pattern: SampleType<some Any>, value: any AnySampleType) -> Bool {
+    pattern.id == value.id
 }
 
 // swiftlint:enable static_operator
@@ -123,6 +136,8 @@ extension AnySampleType {
             [self, SampleType.heartRateVariabilitySDNN]
         case let self as SampleType<HKWorkoutRoute>:
             [self, SampleType.workout]
+        case SampleType.bloodPressureSystolic, SampleType.bloodPressureDiastolic:
+            [SampleType.bloodPressureSystolic, SampleType.bloodPressureDiastolic]
         default:
             [self]
         }
@@ -152,6 +167,10 @@ extension HKObjectType {
             SampleType.workoutRoute
         case HKPrescriptionType.visionPrescriptionType():
             SampleType.visionPrescription
+        #if !os(watchOS)
+        case is HKClinicalType:
+            SampleType<HKClinicalRecord>(.init(rawValue: self.identifier))
+        #endif
         case is HKCharacteristicType, is HKDocumentType, is HKActivitySummaryType:
             nil
         default:

@@ -8,8 +8,8 @@
 
 
 import HealthKit
-import SpeziHealthKit
-import struct SwiftUI.Color
+public import SpeziHealthKit
+public import struct SwiftUI.Color
 
 
 /// How a ``HealthChartEntry`` should be plotted in a Health Chart.

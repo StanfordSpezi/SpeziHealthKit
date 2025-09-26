@@ -56,8 +56,8 @@ extension HealthKit {
             // E.g.:
             // - HKCorrelationTypeBloodPressure --> HKQuantityTypeBloodPressure{Systolic,Diastolic}
             // - HKDataTypeIdentifierHeartbeatSeries implies that we also need to request HKQuantityTypeIdentifierHeartRateVariabilitySDNN
-            self.read = read.flatMapIntoSet { $0.effectiveObjectTypesForAuthentication }
-            self.write = write.flatMapIntoSet { $0.effectiveObjectTypesForAuthentication.compactMap { $0 as? HKSampleType } }
+            self.read = read.flatMapIntoSet { $0.effectiveObjectTypesForAuthorization }
+            self.write = write.flatMapIntoSet { $0.effectiveObjectTypesForAuthorization.compactMap { $0 as? HKSampleType } }
         }
         
         /// Creates a new instance, specifying read and write access to the same set of sample types.
@@ -93,7 +93,7 @@ extension HealthKit {
 
 
 extension HKObjectType {
-    var effectiveObjectTypesForAuthentication: Set<HKObjectType> {
+    var effectiveObjectTypesForAuthorization: Set<HKObjectType> {
         if let sampleType = self.sampleType {
             sampleType.effectiveSampleTypesForAuthentication.mapIntoSet { $0.hkSampleType }
         } else {
