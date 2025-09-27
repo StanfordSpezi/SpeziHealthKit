@@ -46,6 +46,10 @@ public import SwiftUI
 ///     If this is a likely scenario for your app, use a ``HealthKitQuery`` without a `SourceFilter` and then perform manual filtering on the resulting samples.
 @propertyWrapper @MainActor
 public struct HealthKitStatisticsQuery: DynamicProperty { // swiftlint:disable:this file_types_order
+    public typealias CumulativeAggregationOption = HealthKit.CumulativeAggregationOption
+    public typealias DiscreteAggregationOption = HealthKit.DiscreteAggregationOption
+    public typealias AggregationInterval = HealthKit.AggregationInterval
+    
     @Environment(HealthKit.self) private var healthKit
     
     @State private var results = StatisticsQueryResults()

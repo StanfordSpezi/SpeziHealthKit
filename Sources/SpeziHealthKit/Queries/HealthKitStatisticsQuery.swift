@@ -196,6 +196,11 @@ extension HealthKit {
     /// - parameter timeRange: The time range for which the query should return results.
     /// - parameter sourceFilter: Allows filtering based on the samples' `HKSource`.
     /// - parameter filterPredicate: Optional refining predicate that allows you to filter which samples should be included.
+    ///
+    /// - Note: There is a known bug, where a query that uses a `SourceFilter` and initially doesn't match any samples
+    ///     (e.g.: because no samples from a matching `HKSource` exist), will not auto-update when a source that matches the filter adds new samples.
+    ///     Instead, these samples will only be returned when the function is called again.
+    ///     If this is a likely scenario for your app, use ``continuousStatisticsQuery`` without a `SourceFilter` and perform filtering on the resulting samples.
     @available(macOS 15.0, iOS 18.0, watchOS 11.0, *)
     public func continuousStatisticsQuery( // swiftlint:disable:this function_parameter_count
         _ sampleType: SampleType<HKQuantitySample>,
@@ -257,6 +262,11 @@ extension HealthKit {
     /// - parameter timeRange: The time range for which the query should return results.
     /// - parameter sourceFilter: Allows filtering based on the samples' `HKSource`.
     /// - parameter filterPredicate: Optional refining predicate that allows you to filter which samples should be included.
+    ///
+    /// - Note: There is a known bug, where a query that uses a `SourceFilter` and initially doesn't match any samples
+    ///     (e.g.: because no samples from a matching `HKSource` exist), will not auto-update when a source that matches the filter adds new samples.
+    ///     Instead, these samples will only be returned when the function is called again.
+    ///     If this is a likely scenario for your app, use ``continuousStatisticsQuery`` without a `SourceFilter` and perform filtering on the resulting samples.
     @available(iOS, deprecated: 18.0)
     @available(macOS, deprecated: 15.0)
     @available(watchOS, deprecated: 11.0)
