@@ -48,6 +48,42 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
         XCTAssert(app.staticTexts.element(matching: todayPred).waitForExistence(timeout: 2))
     }
     
+    @MainActor
+    func testHealthKitCollectStatisticsQuery() throws {
+        let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
+        try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
+        
+        for _ in 0..<3 {
+            addSample(.stepCount, in: app)
+        }
+        addSample(.heartRate, in: app)
+        
+        XCTAssert(app.buttons["Collect Statistics Query"].wait(for: \.isHittable, toEqual: true, timeout: 2))
+        app.buttons["Collect Statistics Query"].tap()
+        
+        XCTAssert(app.buttons["Trigger Statistics Queries"].wait(for: \.isHittable, toEqual: true, timeout: 2))
+        app.buttons["Trigger Statistics Queries"].tap()
+        sleep(for: .seconds(1))
+        
+        let now = Calendar.current.dateComponents([.year, .month, .day], from: .now)
+        let fmt = { String(format: "%02d", $0) }
+        let todayPred = NSPredicate(
+            format: "label MATCHES %@",
+            "Steps on \(fmt(try XCTUnwrap(now.year)))-\(fmt(try XCTUnwrap(now.month)))-\(fmt(try XCTUnwrap(now.day))).*"
+        )
+        XCTAssert(app.staticTexts.element(matching: todayPred).waitForExistence(timeout: 2))
+        
+        func assertHRRow(_ identifier: String) {
+            let value = app.staticTexts["hr-value-\(identifier)"]
+            XCTAssert(value.waitForExistence(timeout: 2))
+            XCTAssertEqual(value.label, "87 count/min")
+        }
+        
+        assertHRRow("average")
+        assertHRRow("minimum")
+        assertHRRow("maximum")
+    }
+    
     
     @MainActor
     func testCharacteristicsQuery() throws {
