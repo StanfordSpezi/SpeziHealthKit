@@ -14,7 +14,7 @@ extension HealthKit {
     public enum CumulativeAggregationOption: Hashable {
         case sum
         
-        fileprivate var hkStatisticsOption: HKStatisticsOptions {
+        public var hkStatisticsOption: HKStatisticsOptions {
             switch self {
             case .sum:
                 return .cumulativeSum
@@ -25,7 +25,7 @@ extension HealthKit {
     public enum DiscreteAggregationOption: Hashable {
         case average, min, max
         
-        fileprivate var hkStatisticsOption: HKStatisticsOptions {
+        public var hkStatisticsOption: HKStatisticsOptions {
             switch self {
             case .average:
                 return .discreteAverage
@@ -103,12 +103,7 @@ extension HealthKit {
     ) async throws -> [HKStatistics] {
         try await statisticsQuery(
             sampleType,
-            rawOptions: options.reduce(into: [.mostRecent], { partialResult, option in
-                switch option {
-                case .sum:
-                    partialResult.formUnion(.cumulativeSum)
-                }
-            }),
+            rawOptions: options.reduce(into: [.mostRecent], { $0.formUnion($1.hkStatisticsOption) }),
             aggInterval: aggInterval,
             timeRange: timeRange,
             source: sourceFilter,
@@ -137,16 +132,7 @@ extension HealthKit {
     ) async throws -> [HKStatistics] {
         try await statisticsQuery(
             sampleType,
-            rawOptions: options.reduce(into: [.mostRecent], { partialResult, option in
-                switch option {
-                case .average:
-                    partialResult.formUnion(.discreteAverage)
-                case .min:
-                    partialResult.formUnion(.discreteMin)
-                case .max:
-                    partialResult.formUnion(.discreteMax)
-                }
-            }),
+            rawOptions: options.reduce(into: [.mostRecent], { $0.formUnion($1.hkStatisticsOption) }),
             aggInterval: aggInterval,
             timeRange: timeRange,
             source: sourceFilter,
@@ -166,34 +152,6 @@ extension HealthKit {
     /// - parameter options: The aggregation options used to compute statistics, such as `.cumulativeSum` or `.discreteAverage`.
     /// - parameter aggInterval: The interval over which the statistics should be aggregated (e.g., `.day`, `.week`).
     /// - parameter timeRange: The time range for which the query should return results.
-    /// - parameter filterPredicate: Optional refining predicate that allows you to filter which samples should be included.
-    @available(macOS 15.0, iOS 18.0, watchOS 11.0, *)
-    public func continuousStatisticsQuery(
-        _ sampleType: SampleType<HKQuantitySample>,
-        options: HKStatisticsOptions,
-        aggInterval: HealthKit.AggregationInterval,
-        timeRange: HealthKitQueryTimeRange,
-        filterPredicate: NSPredicate?
-    ) throws -> some AsyncSequence<[HKStatistics], any Error> {
-        try continuousStatisticsQueryImp(
-            sampleType,
-            options: options,
-            aggInterval: aggInterval,
-            timeRange: timeRange,
-            filterPredicate: filterPredicate
-        )
-    }
-    
-    
-    /// Performs a long-running query of HealthKit data using statistical aggregations.
-    ///
-    /// Use this function to run a continuous, long-running HealthKit statistics query.
-    /// This function returns an `AsyncSequence`, which will emit new elements whenever HealthKit informs us about changes to the database.
-    ///
-    /// - parameter sampleType: The ``SampleType`` that should be queried for.
-    /// - parameter options: The aggregation options used to compute statistics, such as `.cumulativeSum` or `.discreteAverage`.
-    /// - parameter aggInterval: The interval over which the statistics should be aggregated (e.g., `.day`, `.week`).
-    /// - parameter timeRange: The time range for which the query should return results.
     /// - parameter sourceFilter: Allows filtering based on the samples' `HKSource`.
     /// - parameter filterPredicate: Optional refining predicate that allows you to filter which samples should be included.
     ///
@@ -202,13 +160,13 @@ extension HealthKit {
     ///     Instead, these samples will only be returned when the function is called again.
     ///     If this is a likely scenario for your app, use ``continuousStatisticsQuery`` without a `SourceFilter` and perform filtering on the resulting samples.
     @available(macOS 15.0, iOS 18.0, watchOS 11.0, *)
-    public func continuousStatisticsQuery( // swiftlint:disable:this function_parameter_count
+    public func continuousStatisticsQuery(
         _ sampleType: SampleType<HKQuantitySample>,
         options: HKStatisticsOptions,
         aggInterval: HealthKit.AggregationInterval,
         timeRange: HealthKitQueryTimeRange,
-        source sourceFilter: SourceFilter,
-        filterPredicate: NSPredicate?
+        source sourceFilter: SourceFilter? = nil,
+        filterPredicate: NSPredicate? = nil
     ) async throws -> some AsyncSequence<[HKStatistics], any Error> {
         try await continuousStatisticsQueryImp(
             sampleType,
@@ -225,37 +183,6 @@ extension HealthKit {
     /// Use this function to run a continuous, long-running HealthKit statistics query.
     /// This function returns an `AsyncSequence`, which will emit new elements whenever HealthKit informs us about changes to the database.
     ///
-    ///
-    /// - parameter sampleType: The ``SampleType`` that should be queried for.
-    /// - parameter options: The aggregation options used to compute statistics, such as `.cumulativeSum` or `.discreteAverage`.
-    /// - parameter aggInterval: The interval over which the statistics should be aggregated (e.g., `.day`, `.week`).
-    /// - parameter timeRange: The time range for which the query should return results.
-    /// - parameter filterPredicate: Optional refining predicate that allows you to filter which samples should be included.
-    @available(iOS, deprecated: 18.0)
-    @available(macOS, deprecated: 15.0)
-    @available(watchOS, deprecated: 11.0)
-    @_disfavoredOverload
-    public func continuousStatisticsQuery(
-        _ sampleType: SampleType<HKQuantitySample>,
-        options: HKStatisticsOptions,
-        aggInterval: HealthKit.AggregationInterval,
-        timeRange: HealthKitQueryTimeRange,
-        filterPredicate: NSPredicate?
-    ) throws -> AsyncMapSequence<HKStatisticsCollectionQueryDescriptor.Results, [HKStatistics]> {
-        try continuousStatisticsQueryImp(
-            sampleType,
-            options: options,
-            aggInterval: aggInterval,
-            timeRange: timeRange,
-            filterPredicate: filterPredicate
-        )
-    }
-    
-    /// Performs a long-running query of HealthKit data using statistical aggregations.
-    ///
-    /// Use this function to run a continuous, long-running HealthKit statistics query.
-    /// This function returns an `AsyncSequence`, which will emit new elements whenever HealthKit informs us about changes to the database.
-    ///
     /// - parameter sampleType: The ``SampleType`` that should be queried for.
     /// - parameter options: The aggregation options used to compute statistics, such as `.cumulativeSum` or `.discreteAverage`.
     /// - parameter aggInterval: The interval over which the statistics should be aggregated (e.g., `.day`, `.week`).
@@ -271,13 +198,13 @@ extension HealthKit {
     @available(macOS, deprecated: 15.0)
     @available(watchOS, deprecated: 11.0)
     @_disfavoredOverload
-    public func continuousStatisticsQuery( // swiftlint:disable:this function_parameter_count
+    public func continuousStatisticsQuery(
         _ sampleType: SampleType<HKQuantitySample>,
         options: HKStatisticsOptions,
         aggInterval: HealthKit.AggregationInterval,
         timeRange: HealthKitQueryTimeRange,
-        source sourceFilter: SourceFilter,
-        filterPredicate: NSPredicate?
+        source sourceFilter: SourceFilter? = nil,
+        filterPredicate: NSPredicate? = nil
     ) async throws -> AsyncMapSequence<HKStatisticsCollectionQueryDescriptor.Results, [HKStatistics]> {
         try await continuousStatisticsQueryImp(
             sampleType,
@@ -289,49 +216,31 @@ extension HealthKit {
         )
     }
     
-    private func continuousStatisticsQueryImp( // swiftlint:disable:this function_parameter_count
-        _ sampleType: SampleType<HKQuantitySample>,
-        options: HKStatisticsOptions,
-        aggInterval: HealthKit.AggregationInterval,
-        timeRange: HealthKitQueryTimeRange,
-        source sourceFilter: SourceFilter,
-        filterPredicate: NSPredicate?
-    ) async throws -> AsyncMapSequence<HKStatisticsCollectionQueryDescriptor.Results, [HKStatistics]> {
-        let basePredicate = NSCompoundPredicate(
-            andPredicateWithSubpredicates: [timeRange.predicate, filterPredicate].compactMap(\.self)
-        )
-        let sourcePredicate = try await sourcePredicate(
-            for: sourceFilter,
-            predicate: sampleType._makeSamplePredicate(filter: basePredicate)
-        )
-        let queryDescriptor = HKStatisticsCollectionQueryDescriptor(
-            predicate: sampleType._makeSamplePredicate(
-                filter: NSCompoundPredicate(andPredicateWithSubpredicates: [basePredicate, sourcePredicate].compactMap(\.self))
-            ),
-            options: options,
-            anchorDate: timeRange.range.lowerBound,
-            intervalComponents: aggInterval.intervalComponents
-        )
-        let results = try catchingNSException {
-            queryDescriptor.results(for: healthStore)
-        }
-        
-        return results.map { $0.statisticsCollection.statistics() }
-    }
-    
     private func continuousStatisticsQueryImp(
         _ sampleType: SampleType<HKQuantitySample>,
         options: HKStatisticsOptions,
         aggInterval: HealthKit.AggregationInterval,
         timeRange: HealthKitQueryTimeRange,
-        filterPredicate: NSPredicate?
-    ) throws -> AsyncMapSequence<HKStatisticsCollectionQueryDescriptor.Results, [HKStatistics]> {
+        source sourceFilter: SourceFilter? = nil,
+        filterPredicate: NSPredicate? = nil
+    ) async throws -> AsyncMapSequence<HKStatisticsCollectionQueryDescriptor.Results, [HKStatistics]> {
         let basePredicate = NSCompoundPredicate(
             andPredicateWithSubpredicates: [timeRange.predicate, filterPredicate].compactMap(\.self)
         )
+        
+        let srcPredicate: NSPredicate? = try await {
+            guard let sourceFilter else {
+                return nil
+            }
+            return try await sourcePredicate(
+                for: sourceFilter,
+                predicate: sampleType._makeSamplePredicate(filter: basePredicate)
+            )
+        }()
+        
         let queryDescriptor = HKStatisticsCollectionQueryDescriptor(
             predicate: sampleType._makeSamplePredicate(
-                filter: NSCompoundPredicate(andPredicateWithSubpredicates: [basePredicate].compactMap(\.self))
+                filter: NSCompoundPredicate(andPredicateWithSubpredicates: [basePredicate, srcPredicate].compactMap(\.self))
             ),
             options: options,
             anchorDate: timeRange.range.lowerBound,

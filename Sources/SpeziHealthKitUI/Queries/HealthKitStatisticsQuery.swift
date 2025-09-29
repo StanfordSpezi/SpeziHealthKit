@@ -118,12 +118,7 @@ extension HealthKitStatisticsQuery { // swiftlint:disable:this file_types_order
     ) {
         self.init(
             sampleType,
-            rawOptions: options.reduce(into: [.mostRecent], { partialResult, option in
-                switch option {
-                case .sum:
-                    partialResult.formUnion(.cumulativeSum)
-                }
-            }),
+            rawOptions: options.reduce(into: [.mostRecent], { $0.formUnion($1.hkStatisticsOption) }),
             aggInterval: aggInterval,
             timeRange: timeRange,
             sourceFilter: sourceFilter,
@@ -142,16 +137,7 @@ extension HealthKitStatisticsQuery { // swiftlint:disable:this file_types_order
     ) {
         self.init(
             sampleType,
-            rawOptions: options.reduce(into: [.mostRecent], { partialResult, option in
-                switch option {
-                case .average:
-                    partialResult.formUnion(.discreteAverage)
-                case .min:
-                    partialResult.formUnion(.discreteMin)
-                case .max:
-                    partialResult.formUnion(.discreteMax)
-                }
-            }),
+            rawOptions: options.reduce(into: [.mostRecent], { $0.formUnion($1.hkStatisticsOption) }),
             aggInterval: aggInterval,
             timeRange: timeRange,
             sourceFilter: sourceFilter,
