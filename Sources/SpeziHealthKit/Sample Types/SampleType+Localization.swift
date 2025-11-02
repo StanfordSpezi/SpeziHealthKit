@@ -97,8 +97,6 @@ extension Bundle {
         tables: [LocalizationLookupTable],
         localizations: [Locale.Language]
     ) -> String? {
-        print(self.bundlePath)
-        print(HealthKit.bundle.bundlePath)
         let tables = tables.isEmpty ? [.default] : tables
         for language in Bundle.preferredLocalizations(from: localizations.map(\.minimalIdentifier)) {
             guard let lproj = self.url(forResource: language.replacingOccurrences(of: "-", with: "_"), withExtension: "lproj"),

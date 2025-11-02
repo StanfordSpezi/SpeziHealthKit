@@ -1205,6 +1205,13 @@ import HealthKit
     }
 }
 
+%{
+def make_all_known_types_property_name(display_title):
+    return f'allKnown{''.join(display_title.split())}Types'
+
+def make_all_known_types_property_name_old(display_title_plural):
+    return f'allKnown{''.join(display_title_plural.split())}'
+}%
 
 % for (display_title, display_title_plural, hk_class, hk_sampletype_class, ctor, types) in gen_inputs:
 
@@ -1256,9 +1263,16 @@ def make_hashtag_availability_for_if(availability: Availability, trailing_comma:
 
 extension ${hk_sampletype_class} {
     /// All well-known `${hk_sampletype_class}`s
-    public static let allKnown${''.join(display_title_plural.split())}: Set<${hk_sampletype_class}> = Set(
+    public static let ${make_all_known_types_property_name(display_title)}: Set<${hk_sampletype_class}> = Set(
         ${hk_sampletype_class}Identifier.allKnownIdentifiers.map { ${hk_sampletype_class}($0) }
     )
+
+    /// All well-known `${hk_sampletype_class}`s
+    @_documentation(visibility: internal)
+    @available(*, deprecated, renamed: "${make_all_known_types_property_name(display_title)}")
+    public static var ${make_all_known_types_property_name_old(display_title_plural)}: Set<${hk_sampletype_class}> {
+        Self.${make_all_known_types_property_name(display_title)}
+    }
 }
 
 extension ${hk_sampletype_class}Identifier {
@@ -1285,7 +1299,7 @@ extension HKObjectType {
     public static let allKnownObjectTypes: Set<HKObjectType> = {
         var types = Set<HKObjectType>()
         % for (display_title, display_title_plural, hk_class, hk_sampletype_class, ctor, types) in gen_inputs:
-        types.formUnion(${hk_sampletype_class}.allKnown${''.join(display_title_plural.split())})
+        types.formUnion(${hk_sampletype_class}.${make_all_known_types_property_name(display_title)})
         % end
         types.formUnion(HKCharacteristicTypeIdentifier.allKnownIdentifiers.map { HKCharacteristicType($0) })
         types.insert(SampleType.electrocardiogram.hkSampleType)

@@ -398,6 +398,7 @@
 				ENABLE_TESTING_SEARCH_PATHS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TestApp/Info.plist;
+				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "The TestApp accesses your HealthKit data to run the tests.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "The TestApp accesses your HealthKit data to run the tests.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "The TestApp writes test samples to your HealthKit database to have testing data. There is a mechanism for deleting this (and only this!!!) data.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -435,6 +436,7 @@
 				ENABLE_TESTING_SEARCH_PATHS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TestApp/Info.plist;
+				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "The TestApp accesses your HealthKit data to run the tests.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "The TestApp accesses your HealthKit data to run the tests.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "The TestApp writes test samples to your HealthKit database to have testing data. There is a mechanism for deleting this (and only this!!!) data.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -570,6 +572,7 @@
 				ENABLE_TESTING_SEARCH_PATHS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TestApp/Info.plist;
+				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "The TestApp accesses your HealthKit data to run the tests.";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "The TestApp accesses your HealthKit data to run the tests.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "The TestApp writes test samples to your HealthKit database to have testing data. There is a mechanism for deleting this (and only this!!!) data.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

@@ -1602,9 +1602,16 @@ extension SampleType where Sample == HKQuantitySample {
 
 extension HKQuantityType {
     /// All well-known `HKQuantityType`s
-    public static let allKnownQuantities: Set<HKQuantityType> = Set(
+    public static let allKnownQuantityTypes: Set<HKQuantityType> = Set(
         HKQuantityTypeIdentifier.allKnownIdentifiers.map { HKQuantityType($0) }
     )
+
+    /// All well-known `HKQuantityType`s
+    @_documentation(visibility: internal)
+    @available(*, deprecated, renamed: "allKnownQuantityTypes")
+    public static var allKnownQuantities: Set<HKQuantityType> {
+        Self.allKnownQuantityTypes
+    }
 }
 
 extension HKQuantityTypeIdentifier {
@@ -2587,9 +2594,16 @@ extension SampleType where Sample == HKCategorySample {
 
 extension HKCategoryType {
     /// All well-known `HKCategoryType`s
-    public static let allKnownCategories: Set<HKCategoryType> = Set(
+    public static let allKnownCategoryTypes: Set<HKCategoryType> = Set(
         HKCategoryTypeIdentifier.allKnownIdentifiers.map { HKCategoryType($0) }
     )
+
+    /// All well-known `HKCategoryType`s
+    @_documentation(visibility: internal)
+    @available(*, deprecated, renamed: "allKnownCategoryTypes")
+    public static var allKnownCategories: Set<HKCategoryType> {
+        Self.allKnownCategoryTypes
+    }
 }
 
 extension HKCategoryTypeIdentifier {
@@ -2714,9 +2728,16 @@ extension SampleType where Sample == HKCorrelation {
 
 extension HKCorrelationType {
     /// All well-known `HKCorrelationType`s
-    public static let allKnownCorrelations: Set<HKCorrelationType> = Set(
+    public static let allKnownCorrelationTypes: Set<HKCorrelationType> = Set(
         HKCorrelationTypeIdentifier.allKnownIdentifiers.map { HKCorrelationType($0) }
     )
+
+    /// All well-known `HKCorrelationType`s
+    @_documentation(visibility: internal)
+    @available(*, deprecated, renamed: "allKnownCorrelationTypes")
+    public static var allKnownCorrelations: Set<HKCorrelationType> {
+        Self.allKnownCorrelationTypes
+    }
 }
 
 extension HKCorrelationTypeIdentifier {
@@ -2852,9 +2873,16 @@ extension SampleType where Sample == HKClinicalRecord {
 
 extension HKClinicalType {
     /// All well-known `HKClinicalType`s
-    public static let allKnownClinicalRecords: Set<HKClinicalType> = Set(
+    public static let allKnownClinicalRecordTypes: Set<HKClinicalType> = Set(
         HKClinicalTypeIdentifier.allKnownIdentifiers.map { HKClinicalType($0) }
     )
+
+    /// All well-known `HKClinicalType`s
+    @_documentation(visibility: internal)
+    @available(*, deprecated, renamed: "allKnownClinicalRecordTypes")
+    public static var allKnownClinicalRecords: Set<HKClinicalType> {
+        Self.allKnownClinicalRecordTypes
+    }
 }
 
 extension HKClinicalTypeIdentifier {
@@ -2878,10 +2906,10 @@ extension HKObjectType {
     /// All well-known `HKObjectType`s
     public static let allKnownObjectTypes: Set<HKObjectType> = {
         var types = Set<HKObjectType>()
-        types.formUnion(HKQuantityType.allKnownQuantities)
-        types.formUnion(HKCategoryType.allKnownCategories)
-        types.formUnion(HKCorrelationType.allKnownCorrelations)
-        types.formUnion(HKClinicalType.allKnownClinicalRecords)
+        types.formUnion(HKQuantityType.allKnownQuantityTypes)
+        types.formUnion(HKCategoryType.allKnownCategoryTypes)
+        types.formUnion(HKCorrelationType.allKnownCorrelationTypes)
+        types.formUnion(HKClinicalType.allKnownClinicalRecordTypes)
         types.formUnion(HKCharacteristicTypeIdentifier.allKnownIdentifiers.map { HKCharacteristicType($0) })
         types.insert(SampleType.electrocardiogram.hkSampleType)
         types.insert(SampleType.audiogram.hkSampleType)

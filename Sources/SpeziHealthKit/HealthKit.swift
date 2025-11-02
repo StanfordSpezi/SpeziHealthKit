@@ -551,13 +551,12 @@ extension HealthKit {
     /// Triggers data collection for any currently registered ``HealthDataCollector``s that have a manual delivery setting.
     @MainActor
     public func triggerDataSourceCollection() async {
-        await withTaskGroup(of: Void.self) { group in
+        await withDiscardingTaskGroup { group in
             for collector in registeredDataCollectors where collector.deliverySetting.startSetting == .manual {
                 group.addTask { @MainActor @Sendable in
                     await collector.startDataCollection()
                 }
             }
-            await group.waitForAll()
         }
     }
 }
