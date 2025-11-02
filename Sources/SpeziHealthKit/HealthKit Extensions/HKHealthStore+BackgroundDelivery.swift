@@ -39,9 +39,10 @@ extension HKHealthStore {
             Result<(sampleTypes: Set<HKSampleType>, completionHandler: HKObserverQueryCompletionHandler), any Error>
         ) async -> Void
     ) async throws -> BackgroundObserverQueryInvalidator {
+        let sampleTypes: Set<HKSampleType> = sampleTypes.flatMapIntoSet {
+            $0.effectiveObjectTypesForAuthorization.compactMap { $0 as? HKSampleType }
+        }
         let queryDescriptors: [HKQueryDescriptor] = sampleTypes
-            .flatMap { $0.effectiveObjectTypesForAuthorization }
-            .compactMap { $0 as? HKSampleType }
             .map { HKQueryDescriptor(sampleType: $0, predicate: predicate) }
         let observerQuery = HKObserverQuery(queryDescriptors: queryDescriptors) { query, sampleTypes, completionHandler, error in
             // From https://developer.apple.com/documentation/healthkit/hkobserverquery/executing_observer_queries
