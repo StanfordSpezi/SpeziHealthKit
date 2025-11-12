@@ -16,6 +16,7 @@ import SwiftUI
 struct HealthKitTestsView: View {
     enum TestView: String, CaseIterable {
         case collectSamples = "Collect Samples"
+        case collectStatisticsQuery = "Collect Statistics Query"
         case samplesQuery = "Samples Query"
         case statisticsQuery = "Statistics Query"
         case characteristicsQuery = "Characteristics Query"
@@ -56,6 +57,8 @@ struct HealthKitTestsView: View {
             switch testView {
             case .collectSamples:
                 CollectSamplesTestView()
+            case .collectStatisticsQuery:
+                CollectStatisticsQueryView()
             case .samplesQuery:
                 SamplesQueryView()
             case .statisticsQuery:

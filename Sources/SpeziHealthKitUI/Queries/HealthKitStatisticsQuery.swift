@@ -46,49 +46,9 @@ public import SwiftUI
 ///     If this is a likely scenario for your app, use a ``HealthKitQuery`` without a `SourceFilter` and then perform manual filtering on the resulting samples.
 @propertyWrapper @MainActor
 public struct HealthKitStatisticsQuery: DynamicProperty { // swiftlint:disable:this file_types_order
-    public enum CumulativeAggregationOption: Hashable {
-        case sum
-        
-        fileprivate var hkStatisticsOption: HKStatisticsOptions {
-            switch self {
-            case .sum:
-                return .cumulativeSum
-            }
-        }
-    }
-    
-    public enum DiscreteAggregationOption: Hashable {
-        case average, min, max
-        
-        fileprivate var hkStatisticsOption: HKStatisticsOptions {
-            switch self {
-            case .average:
-                return .discreteAverage
-            case .min:
-                return .discreteMin
-            case .max:
-                return .discreteMax
-            }
-        }
-    }
-    
-    
-    public struct AggregationInterval: Hashable, Sendable {
-        public static let hour = Self(.init(hour: 1))
-        public static let day = Self(.init(day: 1))
-        public static let week = Self(.init(day: 7))
-        public static let month = Self(.init(month: 1))
-        public static let year = Self(.init(year: 1))
-        
-        /// The components defining the interval.
-        /// See [here](https://developer.apple.com/documentation/healthkit/queries/executing_statistics_collection_queries) for some more documentation.
-        public let intervalComponents: DateComponents
-        
-        public init(_ components: DateComponents) {
-            self.intervalComponents = components
-        }
-    }
-    
+    public typealias CumulativeAggregationOption = HealthKit.CumulativeAggregationOption
+    public typealias DiscreteAggregationOption = HealthKit.DiscreteAggregationOption
+    public typealias AggregationInterval = HealthKit.AggregationInterval
     
     @Environment(HealthKit.self) private var healthKit
     
@@ -115,7 +75,7 @@ public struct HealthKitStatisticsQuery: DynamicProperty { // swiftlint:disable:t
     private init(
         _ sampleType: SampleType<HKQuantitySample>,
         rawOptions options: HKStatisticsOptions,
-        aggInterval: AggregationInterval,
+        aggInterval: HealthKit.AggregationInterval,
         timeRange: HealthKitQueryTimeRange,
         sourceFilter: HealthKit.SourceFilter,
         filter filterPredicate: NSPredicate?
@@ -150,8 +110,8 @@ extension HealthKitStatisticsQuery { // swiftlint:disable:this file_types_order
     /// Create a new statistics query.
     public init(
         _ sampleType: SampleType<HKQuantitySample>,
-        aggregatedBy options: Set<CumulativeAggregationOption>,
-        over aggInterval: AggregationInterval,
+        aggregatedBy options: Set<HealthKit.CumulativeAggregationOption>,
+        over aggInterval: HealthKit.AggregationInterval,
         timeRange: HealthKitQueryTimeRange,
         source sourceFilter: HealthKit.SourceFilter = .any,
         filter filterPredicate: NSPredicate? = nil
@@ -169,8 +129,8 @@ extension HealthKitStatisticsQuery { // swiftlint:disable:this file_types_order
     /// Create a new statistics query.
     public init(
         _ sampleType: SampleType<HKQuantitySample>,
-        aggregatedBy options: Set<DiscreteAggregationOption>,
-        over aggInterval: AggregationInterval,
+        aggregatedBy options: Set<HealthKit.DiscreteAggregationOption>,
+        over aggInterval: HealthKit.AggregationInterval,
         timeRange: HealthKitQueryTimeRange,
         source sourceFilter: HealthKit.SourceFilter = .any,
         filter filterPredicate: NSPredicate? = nil
@@ -202,7 +162,7 @@ public final class StatisticsQueryResults: @unchecked Sendable {
     struct Input: Hashable, @unchecked Sendable {
         let sampleType: SampleType<HKQuantitySample>
         let options: HKStatisticsOptions
-        let aggInterval: HealthKitStatisticsQuery.AggregationInterval
+        let aggInterval: HealthKit.AggregationInterval
         let timeRange: HealthKitQueryTimeRange
         let sourceFilter: HealthKit.SourceFilter
         let filterPredicate: NSPredicate?
@@ -252,31 +212,20 @@ public final class StatisticsQueryResults: @unchecked Sendable {
         }
         self.isCurrentlyPerformingInitialFetch = true
         task?.cancel()
-        task = Task.detached { [weak self] in // swiftlint:disable:this closure_body_length
+        task = Task.detached { [weak self] in
             do {
-                let basePredicate = NSCompoundPredicate(
-                    andPredicateWithSubpredicates: [input.timeRange.predicate, input.filterPredicate].compactMap(\.self)
-                )
-                let sourcePredicate = try await healthKit.sourcePredicate(
-                    for: input.sourceFilter,
-                    predicate: input.sampleType._makeSamplePredicate(filter: basePredicate)
-                )
-                let queryDesc = HKStatisticsCollectionQueryDescriptor(
-                    predicate: input.sampleType._makeSamplePredicate(
-                        filter: NSCompoundPredicate(andPredicateWithSubpredicates: [basePredicate, sourcePredicate].compactMap(\.self))
-                    ),
+                let query = try await healthKit.continuousStatisticsQuery(
+                    input.sampleType,
                     options: input.options,
-                    anchorDate: input.timeRange.range.lowerBound,
-                    intervalComponents: input.aggInterval.intervalComponents
+                    aggInterval: input.aggInterval,
+                    timeRange: input.timeRange,
+                    source: input.sourceFilter,
+                    filterPredicate: input.filterPredicate
                 )
-                let results = try catchingNSException {
-                    queryDesc.results(for: healthKit.healthStore)
-                }
-                for try await update in results {
+                for try await statistics in query {
                     guard let self = self else {
                         return
                     }
-                    let statistics = update.statisticsCollection.statistics()
                     Task { @MainActor in
                         self.isCurrentlyPerformingInitialFetch = false
                         self.queryError = nil
@@ -341,7 +290,6 @@ extension StatisticsQueryResults: HealthKitQueryResults {
         statistics[position]
     }
 }
-
 
 extension HKStatistics: @retroactive Identifiable {}
 
