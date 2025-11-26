@@ -76,7 +76,7 @@ struct CollectStatisticsQueryView: View {
     
     @ViewBuilder
     private func makeRow(title: String, hkQuantity: HKQuantity?) -> some View {
-        var unit = HKUnit.count().unitDivided(by: .minute())
+        let unit = HKUnit.count().unitDivided(by: .minute())
         HStack {
             Text(title)
             Spacer()

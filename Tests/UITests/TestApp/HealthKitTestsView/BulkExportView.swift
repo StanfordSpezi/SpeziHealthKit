@@ -66,9 +66,9 @@ struct BulkExportView: View {
                 exporterActions
             }
             Section {
-                LabeledContent("# Expected Samples", value: String(numTestingSamples))
+                LabeledContent("# Expected Samples", value: numTestingSamples, format: .number)
                     .accessibilityValue(String(numTestingSamples))
-                LabeledContent("# Exported Samples", value: String(numExportedSamples))
+                LabeledContent("# Exported Samples", value: numExportedSamples, format: .number)
                     .accessibilityValue(String(numExportedSamples))
             }
             ForEach(bulkExporter.sessions, id: \.sessionId) { (session: any BulkExportSession) in
@@ -153,7 +153,7 @@ struct BulkExportView: View {
     private func fetchNumTestingSamples() async {
         func imp<Sample>(_ sampleType: some AnySampleType<Sample>) async -> Int {
             let sampleType = SampleType(sampleType)
-            let samples = (try? await healthKit.query(sampleType, timeRange: .init(timeRange), predicate: .isSpeziTestingSample)) ?? []
+            let samples = (try? await healthKit.query(sampleType, timeRange: .init(timeRange))) ?? []
             defer {
                 _ = consume samples
             }

@@ -325,7 +325,7 @@ private enum QueryAndProcessError: Error, Sendable {
 
 
 extension BulkExportSessionImpl {
-    private nonisolated func queryAndProcess<Sample: _HKSampleWithSampleType>(
+    nonisolated private func queryAndProcess<Sample: _HKSampleWithSampleType>(
         sampleType: some AnySampleType<Sample>,
         for timeRange: Range<Date>
     ) async throws(QueryAndProcessError) -> Processor.Output {

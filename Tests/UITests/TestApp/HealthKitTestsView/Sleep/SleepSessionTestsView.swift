@@ -27,9 +27,9 @@ struct SleepSessionTestsView: View {
                 Text("Success")
             case .failure(let error):
                 if let error = error as? TestError {
-                    Text("Failure in \(error.sourceLocation.function) @ L\(error.sourceLocation.line):\n\(error.message)")
+                    Text(verbatim: "Failure in \(error.sourceLocation.function) @ L\(error.sourceLocation.line):\n\(error.message)")
                 } else {
-                    Text("Failure:\n\(error)")
+                    Text(verbatim: "Failure:\n\(error)")
                 }
             }
         }

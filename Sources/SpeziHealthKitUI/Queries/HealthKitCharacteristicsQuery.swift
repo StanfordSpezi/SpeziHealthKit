@@ -58,7 +58,7 @@ public struct HealthKitCharacteristicQuery<Characteristic: HealthKitCharacterist
         self.characteristic = characteristic
     }
     
-    public nonisolated func update() {
+    nonisolated public func update() {
         MainActor.assumeIsolated {
             accessAuthObserver.observeAuthorizationChanges(for: .init(read: [characteristic.hkType])) { [weak storage] in
                 await MainActor.run {
