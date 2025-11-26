@@ -31,6 +31,24 @@ public enum BulkExportSessionState: Hashable, Sendable {
 }
 
 
+/// How much concurrency a ``BulkExportSession`` should employ when running.
+///
+/// Allowing concurrency for a session greatly improves performance, since the session will be able to fetch and process multiple batches at the same time.
+public enum BulkExportConcurrencyLevel: Hashable, Sendable {
+    /// The session should not process multiple batches at the same time
+    case disabled
+    /// The session should process at most `limit` batches at the same time.
+    case limit(Int)
+    /// The session should parallelise to the maximum possible extent.
+    case unlimited
+    
+    /// The session should intelligently select a concurrency level.
+    public static var automatic: Self {
+        .unlimited
+    }
+}
+
+
 /// An error which can occur when starting a ``BulkExportSession``.
 public enum StartSessionError: Error {
     /// Attempted to `start()` a session which is already running.
@@ -92,7 +110,10 @@ public protocol BulkExportSession<Processor>: AnyObject, Hashable, Sendable, Obs
     /// Attempting to start a session that is already running will result in a ``StartSessionError/alreadyRunning`` error.
     ///
     /// - returns: an `AsyncStream` that can be used to access the individual batch results resulting from processing the export session.
-    @MainActor func start(retryFailedBatches: Bool) throws(StartSessionError) -> AsyncStream<Processor.Output>
+    @MainActor func start(
+        retryFailedBatches: Bool,
+        concurrencyLevel: BulkExportConcurrencyLevel
+    ) throws(StartSessionError) -> AsyncStream<Processor.Output>
     
     /// Pauses the session at the next possible point in time.
     ///
@@ -122,17 +143,24 @@ extension BulkExportSession {
     /// Starts the session.
     ///
     /// Attempting to start a session that is already running will result in a ``StartSessionError/alreadyRunning`` error.
+    @_disfavoredOverload
     @MainActor
-    public func start() throws(StartSessionError) -> AsyncStream<Processor.Output> {
-        try start(retryFailedBatches: false)
+    public func start(
+        retryFailedBatches: Bool = false,
+        concurrencyLevel: BulkExportConcurrencyLevel = .automatic
+    ) throws(StartSessionError) -> AsyncStream<Processor.Output> {
+        try start(retryFailedBatches: retryFailedBatches, concurrencyLevel: concurrencyLevel)
     }
     
     /// Starts the session.
     ///
     /// Attempting to start a session that is already running will result in a ``StartSessionError/alreadyRunning`` error.
     @MainActor
-    public func start(retryFailedBatches: Bool = false) throws(StartSessionError) where Processor.Output == Void {
-        let _: AsyncStream = try start(retryFailedBatches: retryFailedBatches)
+    public func start(
+        retryFailedBatches: Bool = false,
+        concurrencyLevel: BulkExportConcurrencyLevel = .automatic
+    ) throws(StartSessionError) where Processor.Output == Void {
+        let _: AsyncStream = try start(retryFailedBatches: retryFailedBatches, concurrencyLevel: concurrencyLevel)
     }
 }
 

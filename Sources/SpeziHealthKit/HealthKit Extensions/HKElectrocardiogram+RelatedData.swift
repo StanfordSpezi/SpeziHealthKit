@@ -45,7 +45,7 @@ extension HKElectrocardiogram {
                 read: HKElectrocardiogram.correlatedSymptomTypes.map(\.hkSampleType)
             ))
             let predicate = HKQuery.predicateForObjectsAssociated(electrocardiogram: self)
-            return try await HKElectrocardiogram.correlatedSymptomTypes.reduce(into: Symptoms()) { symptoms, categoryType in
+            return try await HKElectrocardiogram.correlatedSymptomTypes.reduceAsync(into: Symptoms()) { symptoms, categoryType in
                 if let sample = try await healthKit.query(categoryType, timeRange: .ever, predicate: predicate).first {
                     symptoms[sample.categoryType] = HKCategoryValueSeverity(rawValue: sample.value)
                 }
