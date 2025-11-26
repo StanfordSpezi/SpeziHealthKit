@@ -106,7 +106,7 @@ struct BulkExportView: View {
                 )
             }
             let session1 = try await obtainSession()
-            handleExportSessionBatchResults(try session1.start(), for: session1)
+            handleExportSessionBatchResults(try session1.start(concurrencyLevel: .limit(2)), for: session1)
             let session2 = try await obtainSession()
             precondition(session1 == session2)
         }
@@ -127,7 +127,7 @@ struct BulkExportView: View {
                 AsyncButton("Start", state: $viewState) {
                     @MainActor
                     func imp<P: BatchProcessor>(_ session: some BulkExportSession<P>) throws {
-                        let results = try session.start(retryFailedBatches: true)
+                        let results = try session.start(retryFailedBatches: true, concurrencyLevel: .limit(2))
                         do {
                             let _: AsyncStream<_> = try session.start(retryFailedBatches: true)
                             preconditionFailure("Unexpectedly didn't throw an error")
