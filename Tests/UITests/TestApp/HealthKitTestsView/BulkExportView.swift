@@ -161,10 +161,10 @@ struct BulkExportView: View {
                     KeyPathComparator(\.timeRange.lowerBound)
                 ])
                 ForEach(batches, id: \.self) { batch in
-                    ProgressView(value: progress.completion) {
+                    VStack(alignment: .leading) {
                         Text(batch.sampleType.displayTitle)
-                    } currentValueLabel: {
-                        Text(batch.userDisplayedDescription)
+                        Text("\(batch.timeRange.lowerBound, format: .dateTime) – \(batch.timeRange.upperBound, format: .dateTime)")
+                            .foregroundStyle(.secondary)
                     }
                 }
             }
