@@ -53,6 +53,8 @@ struct BulkExportView: View {
         return startDate..<endDate
     }()
     
+    private let concurrencyLevel: BulkExportConcurrencyLevel = .limit(4)
+    
     @State private var viewState: ViewState = .idle
     @State private var numTestingSamples = 0
     @State private var numExportedSamples = 0
@@ -106,7 +108,7 @@ struct BulkExportView: View {
                 )
             }
             let session1 = try await obtainSession()
-            handleExportSessionBatchResults(try session1.start(concurrencyLevel: .limit(2)), for: session1)
+            handleExportSessionBatchResults(try session1.start(concurrencyLevel: concurrencyLevel), for: session1)
             let session2 = try await obtainSession()
             precondition(session1 == session2)
         }
@@ -115,19 +117,16 @@ struct BulkExportView: View {
         }
     }
     
-    @ViewBuilder private func section(for session: any BulkExportSession) -> some View {
+    @ViewBuilder private func section(for session: any BulkExportSession) -> some View { // swiftlint:disable:this function_body_length
         Section("Bulk Export Session") {
             LabeledContent("State", value: session.state.description)
             LabeledContent("Status", value: "Completed \(session.completedBatches.count) of \(session.numTotalBatches) (\(session.failedBatches.count) failed)")
-            if let progress = session.progress {
-                ProgressView(progress)
-            }
             switch session.state {
             case .paused, .completed:
                 AsyncButton("Start", state: $viewState) {
                     @MainActor
                     func imp<P: BatchProcessor>(_ session: some BulkExportSession<P>) throws {
-                        let results = try session.start(retryFailedBatches: true, concurrencyLevel: .limit(2))
+                        let results = try session.start(retryFailedBatches: true, concurrencyLevel: concurrencyLevel)
                         do {
                             let _: AsyncStream<_> = try session.start(retryFailedBatches: true)
                             preconditionFailure("Unexpectedly didn't throw an error")
@@ -146,6 +145,28 @@ struct BulkExportView: View {
                 }
             case .terminated:
                 EmptyView()
+            }
+        }
+        if let progress = session.progress {
+            Section {
+                HStack {
+                    Text("Overall Progress")
+                    Spacer()
+                    Text(progress.completion, format: .percent.precision(.fractionLength(0)))
+                        .foregroundStyle(.secondary)
+                    ProgressView()
+                }
+                let batches = progress.activeBatches.sorted(using: [
+                    KeyPathComparator(\.sampleType.displayTitle),
+                    KeyPathComparator(\.timeRange.lowerBound)
+                ])
+                ForEach(batches, id: \.self) { batch in
+                    ProgressView(value: progress.completion) {
+                        Text(batch.sampleType.displayTitle)
+                    } currentValueLabel: {
+                        Text(batch.userDisplayedDescription)
+                    }
+                }
             }
         }
     }

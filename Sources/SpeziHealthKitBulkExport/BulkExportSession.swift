@@ -6,7 +6,6 @@
 // SPDX-License-Identifier: MIT
 //
 
-public import Foundation
 import HealthKit
 public import Observation
 import SpeziHealthKit
@@ -28,6 +27,33 @@ public enum BulkExportSessionState: Hashable, Sendable {
     ///
     /// A session enters this state if the ``BulkHealthExporter/deleteSessionRestorationInfo(for:)`` is called for an already-created session.
     case terminated
+}
+
+
+public struct BulkExportSessionProgress: Hashable, Sendable {
+    /// The amount of work that has already been successfully completed, as a value from `0` to `1`.
+    public let completion: Double
+    /// The number of batches that have been successfully completed.
+    public let numCompletedBatches: Int
+    /// The number of batches that failed.
+    public let numFailedBatches: Int
+    /// The total number of batches expected for the session.
+    public let numTotalBatches: Int
+    /// The export batches that are currently being processed.
+    public let activeBatches: Set<ExportBatch>
+    
+    init(
+        numCompletedBatches: Int,
+        numFailedBatches: Int,
+        numTotalBatches: Int,
+        activeBatches: Set<ExportBatch>
+    ) {
+        self.completion = min(1, Double(numCompletedBatches) / Double(numTotalBatches))
+        self.numCompletedBatches = numCompletedBatches
+        self.numFailedBatches = numFailedBatches
+        self.numTotalBatches = numTotalBatches
+        self.activeBatches = activeBatches
+    }
 }
 
 
@@ -96,14 +122,16 @@ public protocol BulkExportSession<Processor>: AnyObject, Hashable, Sendable, Obs
     @MainActor var failedBatches: [ExportBatch] { get }
     /// The total number of batches in the session.
     @MainActor var numTotalBatches: Int { get }
-    /// The batch currently being processed, if the session is running.
-    ///
-    /// This can be used to obtain a user-displayable description of a running session's current work: `session.currentBatch?.userDisplayedDescription`.
-    @MainActor var currentBatch: ExportBatch? { get }
     
-    /// A `Progress` object representing the session's current progress, relative to the total number of batches
-    /// (including failed ones that will be retried at some point in the future). `nil` if the session hasn't yet been started or is terminated.
-    @MainActor var progress: Progress? { get }
+//    /// The batches currently being processed, if the session is running.
+//    ///
+//    /// This can be used to obtain a user-displayable description of a running session's current work; see also ``ExportBatch/userDisplayedDescription``.
+//    @MainActor var currentBatches: Set<ExportBatch> { get }
+    
+    /// The session's current progress.
+    ///
+    /// `nil` if the session is terminated or hasn't yet been started.
+    @MainActor var progress: BulkExportSessionProgress? { get }
     
     /// Starts the session.
     ///

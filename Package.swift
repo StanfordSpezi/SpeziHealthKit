@@ -30,7 +30,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/StanfordSpezi/Spezi.git", from: "1.8.2"),
-        .package(url: "https://github.com/StanfordSpezi/SpeziFoundation.git", revision: "111e480c964723146673e85e02e825dc358910bf"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziFoundation.git", revision: "f6f1a4e53b1112247bd1ef555df6882982b4d59d"),
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage.git", from: "2.1.1"),
         .package(url: "https://github.com/apple/swift-algorithms.git", from: "1.2.1"),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.17.7"),

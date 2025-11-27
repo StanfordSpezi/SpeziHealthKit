@@ -17,9 +17,8 @@ final class BulkExporterTests: SpeziHealthKitTests {
         try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
         sleep(for: .seconds(1))
         app.buttons["Bulk Exporter"].tap()
-        
         app.buttons["Request full access"].tap()
-        try app.handleHealthKitAuthorization()
+        app.handleHealthKitAuthorization()
         
         app.buttons["Add Historical Data"].tap()
         XCTAssert(app.staticTexts["Adding Historical Samples…"].waitForExistence(timeout: 2))
@@ -31,7 +30,6 @@ final class BulkExporterTests: SpeziHealthKitTests {
         
         app.buttons["Start Bulk Export"].tap()
         sleep(for: .seconds(1.5))
-//        XCTAssert(app.staticTexts["Completed 8 of 53 (0 failed)"].waitForExistence(timeout: 60))
         app.buttons["Pause"].tap()
         sleep(for: .seconds(2))
         app.buttons["Start"].tap()
@@ -47,9 +45,8 @@ final class BulkExporterTests: SpeziHealthKitTests {
         sleep(for: .seconds(1))
         
         app.buttons["Bulk Exporter"].tap()
-        
         app.buttons["Request full access"].tap()
-        try app.handleHealthKitAuthorization()
+        app.handleHealthKitAuthorization()
         
         app.buttons["Add Historical Data"].tap()
         XCTAssert(app.staticTexts["Adding Historical Samples…"].waitForExistence(timeout: 2))
@@ -85,9 +82,8 @@ final class BulkExporterTests: SpeziHealthKitTests {
         sleep(for: .seconds(1))
         
         app.buttons["Bulk Exporter"].tap()
-        
         app.buttons["Request full access"].tap()
-        try app.handleHealthKitAuthorization()
+        app.handleHealthKitAuthorization()
         
         app.buttons["Add Historical Data"].tap()
         XCTAssert(app.staticTexts["Adding Historical Samples…"].waitForExistence(timeout: 2))

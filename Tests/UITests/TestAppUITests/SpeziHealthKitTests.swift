@@ -42,7 +42,7 @@ class SpeziHealthKitTests: XCTestCase {
         XCTAssert(app.buttons["Ask for authorization"].waitForExistence(timeout: 3))
         if askForAuthorization, app.buttons["Ask for authorization"].isEnabled {
             app.buttons["Ask for authorization"].tap()
-            try app.handleHealthKitAuthorization()
+            app.handleHealthKitAuthorization()
         }
         if deleteAllHealthData {
             try app.deleteAllHealthData()

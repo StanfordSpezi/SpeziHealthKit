@@ -213,11 +213,11 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
         app.assertTableRow("#km cycled", "0")
         
         app.buttons["Request Blood Type"].tap()
-        try app.handleHealthKitAuthorization()
+        app.handleHealthKitAuthorization()
         app.assertTableRow("Blood Type", "O+")
         
         app.buttons["Request Cycling Distance"].tap()
-        try app.handleHealthKitAuthorization()
+        app.handleHealthKitAuthorization()
         app.assertTableRow("#cyclingSamples", "1")
         app.assertTableRow("#km cycled", "52")
     }

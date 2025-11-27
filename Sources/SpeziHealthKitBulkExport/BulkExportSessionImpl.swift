@@ -37,10 +37,11 @@ final class BulkExportSessionImpl<Processor: BatchProcessor>: Sendable, BulkExpo
             if state != .terminated {
                 try? localStorage.store(descriptor, for: localStorageKey)
             }
-            updateProgress()
         }
     }
+    
     @ObservationIgnored @MainActor private var task: Task<Void, Never>?
+    
     @MainActor private(set) var state: BulkExportSessionState = .paused {
         willSet {
             if state == .terminated && newValue != .terminated {
@@ -61,11 +62,19 @@ final class BulkExportSessionImpl<Processor: BatchProcessor>: Sendable, BulkExpo
     @MainActor var numTotalBatches: Int {
         descriptor.pendingBatches.count + descriptor.completedBatches.count
     }
-    @MainActor var currentBatch: ExportBatch? {
-        state == .running ? pendingBatches.first : nil
-    }
+    @MainActor private(set) var currentBatches = Set<ExportBatch>()
     
-    @MainActor private(set) var progress: Progress?
+    @MainActor var progress: BulkExportSessionProgress? {
+        guard state == .running else {
+            return nil
+        }
+        return BulkExportSessionProgress(
+            numCompletedBatches: completedBatches.count,
+            numFailedBatches: failedBatches.count,
+            numTotalBatches: numTotalBatches,
+            activeBatches: currentBatches
+        )
+    }
     
     @MainActor
     internal init(
@@ -117,18 +126,6 @@ final class BulkExportSessionImpl<Processor: BatchProcessor>: Sendable, BulkExpo
 
 extension BulkExportSessionImpl {
     @MainActor
-    private func updateProgress() {
-        guard let progress else {
-            return
-        }
-        progress.totalUnitCount = Int64(numTotalBatches)
-        progress.completedUnitCount = Int64(completedBatches.count)
-        progress.localizedDescription = String(
-            localized: "Completed \(completedBatches.count) of \(numTotalBatches) (\(failedBatches.count) failed)"
-        )
-    }
-    
-    @MainActor
     func start(retryFailedBatches: Bool, concurrencyLevel: BulkExportConcurrencyLevel) throws(StartSessionError) -> AsyncStream<Processor.Output> {
         switch state {
         case .running:
@@ -144,10 +141,6 @@ extension BulkExportSessionImpl {
         }
         state = .running
         let (batchResults, batchResultsContinuation) = AsyncStream.makeStream(of: Processor.Output.self)
-        if progress == nil {
-            progress = .discreteProgress(totalUnitCount: Int64(numTotalBatches))
-            updateProgress()
-        }
         if retryFailedBatches {
             self.descriptor.unmarkAllFailedBatches()
         }
@@ -229,6 +222,14 @@ extension BulkExportSessionImpl {
         }
         
         let handleBatch = { @Sendable (batch: ExportBatch) in
+            await MainActor.run {
+                _ = self.currentBatches.insert(batch)
+            }
+            defer {
+                Task { @MainActor in
+                    self.currentBatches.remove(batch)
+                }
+            }
             switch batch.result {
             case .success:
                 // should be unreachable, since we never put completed batches into `pendingBatches`
@@ -246,9 +247,6 @@ extension BulkExportSessionImpl {
                 // the batch hasn't run yet. we simply continue with the code below
                 let result: Processor.Output
                 do {
-                    await MainActor.run {
-                        self.progress?.localizedAdditionalDescription = batch.userDisplayedDescription
-                    }
                     result = try await self.queryAndProcess(sampleType: batch.sampleType, for: batch.timeRange)
                 } catch let error as QueryAndProcessError {
                     if !(error.underlyingError is CancellationError && Task.isCancelled) {
@@ -269,7 +267,6 @@ extension BulkExportSessionImpl {
         
         let isDone = { @MainActor @Sendable in
             self.task = nil
-            self.progress?.localizedAdditionalDescription = nil
             if !(self.state == .paused || self.state == .terminated) {
                 // if we end up in here (ie, outside of the while loop), and we haven't manually paused or terminated the session,
                 // it reached its end normally and we simply want to complete it.
