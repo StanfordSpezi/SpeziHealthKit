@@ -123,11 +123,6 @@ public protocol BulkExportSession<Processor>: AnyObject, Hashable, Sendable, Obs
     /// The total number of batches in the session.
     @MainActor var numTotalBatches: Int { get }
     
-//    /// The batches currently being processed, if the session is running.
-//    ///
-//    /// This can be used to obtain a user-displayable description of a running session's current work; see also ``ExportBatch/userDisplayedDescription``.
-//    @MainActor var currentBatches: Set<ExportBatch> { get }
-    
     /// The session's current progress.
     ///
     /// `nil` if the session is terminated or hasn't yet been started.
