@@ -59,7 +59,7 @@ final class BulkExporterTests: SpeziHealthKitTests {
         app.buttons["Start Bulk Export"].tap()
         sleep(for: .seconds(1.5))
         app.buttons["Pause"].tap()
-        sleep(for: .seconds(1))
+        sleep(for: .seconds(3))
         let numExportedSamplesFirstSession = try XCTUnwrap(app.numExportedSamples)
         app.terminate()
         

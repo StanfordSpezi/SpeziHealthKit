@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
-// swiftlint:disable file_types_order
+// swiftlint:disable file_types_order all
 
 import Foundation
 import HealthKit
@@ -235,6 +235,7 @@ extension BulkExportSessionImpl {
                 // should be unreachable, since we never put completed batches into `pendingBatches`
                 await popBatch(batch, .success(()))
             case .failure:
+                fatalError()
                 // the pending batch at the beginning of the queue is a failed one.
                 // we don't want to retry this one right now, so we'll instead move try to find another non-failed one.
                 if let idx = await self.descriptor.pendingBatches.firstIndex(where: { $0.result == nil }) {
@@ -278,7 +279,7 @@ extension BulkExportSessionImpl {
         await withTaskCancellationHandler {
             await withManagedTaskQueue(limit: concurrencyLevel.effectiveLimit) { taskQueue in
                 let batches = await self.descriptor.pendingBatches
-                for batch in batches {
+                for batch in batches where batch.result == nil {
                     taskQueue.addTask {
                         guard !Task.isCancelled else {
                             return

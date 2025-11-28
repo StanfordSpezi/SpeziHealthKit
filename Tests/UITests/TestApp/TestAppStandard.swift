@@ -24,6 +24,7 @@ actor TestAppStandard: Standard, HealthKitConstraint {
                 FakeHealthStore.reset()
                 try FileManager.default.removeItem(at: .documentsDirectory)
                 try FileManager.default.createDirectory(at: .documentsDirectory, withIntermediateDirectories: true)
+                print("DELETING OLD STUFF")
                 try await bulkExporter.deleteSessionRestorationInfo(for: .testApp)
             }
         }

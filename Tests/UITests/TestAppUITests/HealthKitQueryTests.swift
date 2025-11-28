@@ -242,7 +242,13 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
         let healthApp = XCUIApplication.healthApp
         healthApp.launch()
         if healthApp.staticTexts["Health Details"].waitForExistence(timeout: 2) {
-            healthApp.buttons["Done"].tap()
+            for label in ["close", "Close"] {
+                let button = healthApp.navigationBars.buttons[label]
+                if button.exists {
+                    button.tap()
+                    break
+                }
+            }
         }
         
         try launchAndAddSamples(healthApp: .healthApp, [

@@ -55,6 +55,7 @@ struct BulkExportView: View {
     
     private let concurrencyLevel: BulkExportConcurrencyLevel = .limit(4)
     
+    @State private var session: (any BulkExportSession<SamplesCounter>)?
     @State private var viewState: ViewState = .idle
     @State private var numTestingSamples = 0
     @State private var numExportedSamples = 0
@@ -78,7 +79,8 @@ struct BulkExportView: View {
             }
         }
         .task {
-            await fetchNumTestingSamples()
+            async let _ = await fetchNumTestingSamples()
+            session = try? await getSession()
         }
     }
     
@@ -97,24 +99,26 @@ struct BulkExportView: View {
     
     @ViewBuilder private var exporterActions: some View {
         AsyncButton("Start Bulk Export", state: $viewState) {
-            let obtainSession = { @MainActor in
-                try await bulkExporter.session(
-                    withId: .testApp,
-                    for: sampleTypes,
-                    startDate: .oldestSample,
-                    // we intentionally give it a little delay, so that we can test the pause() functionality as part of the UI test.
-                    using: SamplesCounter(delay: .seconds(1))
-                )
-            }
-            let session1 = try await obtainSession()
+            let session1 = try await getSession()
             handleExportSessionBatchResults(try session1.start(concurrencyLevel: concurrencyLevel), for: session1)
-            let session2 = try await obtainSession()
+            let session2 = try await getSession()
             precondition(session1 == session2)
         }
         AsyncButton("Reset ExportSession", role: .destructive, state: $viewState) {
             try await bulkExporter.deleteSessionRestorationInfo(for: .testApp)
         }
     }
+    
+    private func getSession() async throws -> some BulkExportSession<SamplesCounter> {
+        try await bulkExporter.session(
+            withId: .testApp,
+            for: sampleTypes,
+            startDate: .oldestSample,
+            // we intentionally give it a little delay, so that we can test the pause() functionality as part of the UI test.
+            using: SamplesCounter(delay: .seconds(1))
+        )
+    }
+    
     
     @ViewBuilder private func section(for session: any BulkExportSession) -> some View { // swiftlint:disable:this function_body_length
         Section("Bulk Export Session") {
