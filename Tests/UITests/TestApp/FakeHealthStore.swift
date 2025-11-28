@@ -44,6 +44,10 @@ final class FakeHealthStore: Module, DefaultInitializable, EnvironmentAccessible
         }
     }
     
+    static func reset() {
+        UserDefaults.standard.removeObject(forKey: StorageKeys.backgroundPersistance)
+    }
+    
     
     func configure() {
         if !FakeHealthStore.collectedSamplesOnly {

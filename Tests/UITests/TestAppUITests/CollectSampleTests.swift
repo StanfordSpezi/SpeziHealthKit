@@ -18,7 +18,7 @@ final class CollectSampleTests: SpeziHealthKitTests {
     @MainActor
     func testCollectSamples() throws {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
+        try launchAndHandleInitialStuff(app, resetEverything: true, deleteAllHealthData: true)
         
         app.buttons["Collect Samples"].tap()
         
