@@ -6,9 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
-import HealthKit
 import Spezi
-import SpeziFoundation
 import SwiftUI
 
 
@@ -23,19 +21,6 @@ struct UITestsApp: App {
                     .navigationTitle("HealthKit")
             }
             .spezi(appDelegate)
-        }
-    }
-    
-    init() {
-        let cliArgs = CommandLine.arguments
-        if cliArgs.contains("--resetEverything") {
-            do {
-                FakeHealthStore.reset()
-                try FileManager.default.removeItem(at: .documentsDirectory)
-                try FileManager.default.createDirectory(at: .documentsDirectory, withIntermediateDirectories: true)
-            } catch {
-                fatalError("\(error)")
-            }
         }
     }
 }

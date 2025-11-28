@@ -13,7 +13,7 @@ import SpeziHealthKitBulkExport
 
 class TestAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
-        Configuration(standard: HealthKitTestAppStandard()) { // swiftlint:disable:this closure_body_length
+        Configuration(standard: TestAppStandard()) { // swiftlint:disable:this closure_body_length
             HealthKit { // swiftlint:disable:this closure_body_length
                 CollectSample(
                     .electrocardiogram,

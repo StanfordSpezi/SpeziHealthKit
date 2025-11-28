@@ -7,7 +7,7 @@
 //
 
 import Foundation
-@preconcurrency import HealthKit
+import HealthKit
 import OSLog
 import Spezi
 import SpeziFoundation

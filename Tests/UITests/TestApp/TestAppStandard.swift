@@ -6,14 +6,28 @@
 // SPDX-License-Identifier: MIT
 //
 
-@preconcurrency import HealthKit
+import HealthKit
 import Spezi
 import SpeziHealthKit
+import SpeziHealthKitBulkExport
 
 
 /// An example Standard used for the configuration.
-actor HealthKitTestAppStandard: Standard, HealthKitConstraint {
+actor TestAppStandard: Standard, HealthKitConstraint {
     @Dependency(FakeHealthStore.self) private var fakeHealthStore
+    @Dependency(BulkHealthExporter.self) private var bulkExporter
+    
+    nonisolated func configure() {
+        let cliArgs = CommandLine.arguments
+        if cliArgs.contains("--resetEverything") {
+            Task {
+                FakeHealthStore.reset()
+                try FileManager.default.removeItem(at: .documentsDirectory)
+                try FileManager.default.createDirectory(at: .documentsDirectory, withIntermediateDirectories: true)
+                try await bulkExporter.deleteSessionRestorationInfo(for: .testApp)
+            }
+        }
+    }
     
     func handleNewSamples<Sample>(
         _ addedSamples: some Collection<Sample>,

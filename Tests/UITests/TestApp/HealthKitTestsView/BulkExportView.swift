@@ -96,11 +96,10 @@ struct BulkExportView: View {
     }
     
     @ViewBuilder private var exporterActions: some View {
-        let sessionId = BulkExportSessionIdentifier("testSession")
         AsyncButton("Start Bulk Export", state: $viewState) {
             let obtainSession = { @MainActor in
                 try await bulkExporter.session(
-                    withId: sessionId,
+                    withId: .testApp,
                     for: sampleTypes,
                     startDate: .oldestSample,
                     // we intentionally give it a little delay, so that we can test the pause() functionality as part of the UI test.
@@ -113,7 +112,7 @@ struct BulkExportView: View {
             precondition(session1 == session2)
         }
         AsyncButton("Reset ExportSession", role: .destructive, state: $viewState) {
-            try await bulkExporter.deleteSessionRestorationInfo(for: sessionId)
+            try await bulkExporter.deleteSessionRestorationInfo(for: .testApp)
         }
     }
     
@@ -337,4 +336,9 @@ extension BulkExportSessionState {
             "paused"
         }
     }
+}
+
+
+extension BulkExportSessionIdentifier {
+    static let testApp = Self("testSession")
 }
