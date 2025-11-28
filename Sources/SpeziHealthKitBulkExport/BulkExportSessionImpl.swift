@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
-// swiftlint:disable file_types_order all
+// swiftlint:disable file_types_order
 
 import Foundation
 import HealthKit
@@ -221,31 +221,23 @@ extension BulkExportSessionImpl {
             }
         }
         
+        /// processes a single batch
+        ///
+        /// - invariant: the batch must not have been processed already. (i.e., `batch.result == nil` must be true.)
         let handleBatch = { @Sendable (batch: ExportBatch) in
-            await MainActor.run {
-                _ = self.currentBatches.insert(batch)
-            }
-            defer {
-                Task { @MainActor in
-                    self.currentBatches.remove(batch)
-                }
-            }
             switch batch.result {
-            case .success:
-                // should be unreachable, since we never put completed batches into `pendingBatches`
-                await popBatch(batch, .success(()))
-            case .failure:
-                fatalError()
-                // the pending batch at the beginning of the queue is a failed one.
-                // we don't want to retry this one right now, so we'll instead move try to find another non-failed one.
-                if let idx = await self.descriptor.pendingBatches.firstIndex(where: { $0.result == nil }) {
-                    // if there is at least one not-to-be-skipped batch, bring it to the front and continue the loop, to handle it next.
-                    await MainActor.run {
-                        self.descriptor.pendingBatches.swapAt(idx, self.descriptor.pendingBatches.startIndex)
+            case .success, .failure:
+                // unreachable (taken care of by caller)
+                return
+            case nil: // the batch hasn't run yet
+                await MainActor.run {
+                    _ = self.currentBatches.insert(batch)
+                }
+                defer {
+                    Task { @MainActor in
+                        self.currentBatches.remove(batch)
                     }
                 }
-            case nil:
-                // the batch hasn't run yet. we simply continue with the code below
                 let result: Processor.Output
                 do {
                     result = try await self.queryAndProcess(sampleType: batch.sampleType, for: batch.timeRange)
