@@ -13,13 +13,6 @@ import XCTHealthKit
 
 final class HealthKitQueryTests: SpeziHealthKitTests {
     @MainActor
-    func testHmmm() throws {
-        let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        try launchAndHandleInitialStuff(app, resetEverything: true, deleteAllHealthData: true)
-    }
-    
-    
-    @MainActor
     func testHealthKitQuery() throws {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
         try launchAndHandleInitialStuff(app, resetEverything: true, deleteAllHealthData: true)
