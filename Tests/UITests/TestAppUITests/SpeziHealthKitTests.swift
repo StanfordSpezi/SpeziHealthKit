@@ -19,16 +19,6 @@ class SpeziHealthKitTests: XCTestCase {
         continueAfterFailure = false
     }
     
-//    override func tearDown() {
-//        super.tearDown()
-//        MainActor.assumeIsolated {
-//            // After each test, we want the app to get fully reset.
-//            let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-//            app.terminate()
-//            app.delete(app: "TestApp")
-//        }
-//    }
-    
     @MainActor
     func launchAndHandleInitialStuff(
         _ app: XCUIApplication,
