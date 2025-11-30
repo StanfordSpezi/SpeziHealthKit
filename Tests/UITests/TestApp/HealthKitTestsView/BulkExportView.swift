@@ -53,6 +53,9 @@ struct BulkExportView: View {
         return startDate..<endDate
     }()
     
+    private let concurrencyLevel: BulkExportConcurrencyLevel = .limit(4)
+    
+    @State private var session: (any BulkExportSession<SamplesCounter>)?
     @State private var viewState: ViewState = .idle
     @State private var numTestingSamples = 0
     @State private var numExportedSamples = 0
@@ -66,9 +69,9 @@ struct BulkExportView: View {
                 exporterActions
             }
             Section {
-                LabeledContent("# Expected Samples", value: String(numTestingSamples))
+                LabeledContent("# Expected Samples", value: numTestingSamples, format: .number)
                     .accessibilityValue(String(numTestingSamples))
-                LabeledContent("# Exported Samples", value: String(numExportedSamples))
+                LabeledContent("# Exported Samples", value: numExportedSamples, format: .number)
                     .accessibilityValue(String(numExportedSamples))
             }
             ForEach(bulkExporter.sessions, id: \.sessionId) { (session: any BulkExportSession) in
@@ -76,7 +79,8 @@ struct BulkExportView: View {
             }
         }
         .task {
-            await fetchNumTestingSamples()
+            async let _ = await fetchNumTestingSamples()
+            session = try? await getSession()
         }
     }
     
@@ -94,40 +98,38 @@ struct BulkExportView: View {
     }
     
     @ViewBuilder private var exporterActions: some View {
-        let sessionId = BulkExportSessionIdentifier("testSession")
         AsyncButton("Start Bulk Export", state: $viewState) {
-            let obtainSession = { @MainActor in
-                try await bulkExporter.session(
-                    withId: sessionId,
-                    for: sampleTypes,
-                    startDate: .oldestSample,
-                    // we intentionally give it a little delay, so that we can test the pause() functionality as part of the UI test.
-                    using: SamplesCounter(delay: .seconds(1))
-                )
-            }
-            let session1 = try await obtainSession()
-            handleExportSessionBatchResults(try session1.start(), for: session1)
-            let session2 = try await obtainSession()
+            let session1 = try await getSession()
+            handleExportSessionBatchResults(try session1.start(concurrencyLevel: concurrencyLevel), for: session1)
+            let session2 = try await getSession()
             precondition(session1 == session2)
         }
         AsyncButton("Reset ExportSession", role: .destructive, state: $viewState) {
-            try await bulkExporter.deleteSessionRestorationInfo(for: sessionId)
+            try await bulkExporter.deleteSessionRestorationInfo(for: .testApp)
         }
     }
     
-    @ViewBuilder private func section(for session: any BulkExportSession) -> some View {
+    private func getSession() async throws -> some BulkExportSession<SamplesCounter> {
+        try await bulkExporter.session(
+            withId: .testApp,
+            for: sampleTypes,
+            startDate: .oldestSample,
+            // we intentionally give it a little delay, so that we can test the pause() functionality as part of the UI test.
+            using: SamplesCounter(delay: .seconds(1))
+        )
+    }
+    
+    
+    @ViewBuilder private func section(for session: any BulkExportSession) -> some View { // swiftlint:disable:this function_body_length
         Section("Bulk Export Session") {
             LabeledContent("State", value: session.state.description)
             LabeledContent("Status", value: "Completed \(session.completedBatches.count) of \(session.numTotalBatches) (\(session.failedBatches.count) failed)")
-            if let progress = session.progress {
-                ProgressView(progress)
-            }
             switch session.state {
             case .paused, .completed:
                 AsyncButton("Start", state: $viewState) {
                     @MainActor
                     func imp<P: BatchProcessor>(_ session: some BulkExportSession<P>) throws {
-                        let results = try session.start(retryFailedBatches: true)
+                        let results = try session.start(retryFailedBatches: true, concurrencyLevel: concurrencyLevel)
                         do {
                             let _: AsyncStream<_> = try session.start(retryFailedBatches: true)
                             preconditionFailure("Unexpectedly didn't throw an error")
@@ -148,12 +150,34 @@ struct BulkExportView: View {
                 EmptyView()
             }
         }
+        if let progress = session.progress {
+            Section {
+                HStack {
+                    Text("Overall Progress")
+                    Spacer()
+                    Text(progress.completion, format: .percent.precision(.fractionLength(0)))
+                        .foregroundStyle(.secondary)
+                    ProgressView()
+                }
+                let batches = progress.activeBatches.sorted(using: [
+                    KeyPathComparator(\.sampleType.displayTitle),
+                    KeyPathComparator(\.timeRange.lowerBound)
+                ])
+                ForEach(batches, id: \.self) { batch in
+                    VStack(alignment: .leading) {
+                        Text(batch.sampleType.displayTitle)
+                        Text("\(batch.timeRange.lowerBound, format: .dateTime) – \(batch.timeRange.upperBound, format: .dateTime)")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            }
+        }
     }
     
     private func fetchNumTestingSamples() async {
         func imp<Sample>(_ sampleType: some AnySampleType<Sample>) async -> Int {
             let sampleType = SampleType(sampleType)
-            let samples = (try? await healthKit.query(sampleType, timeRange: .init(timeRange), predicate: .isSpeziTestingSample)) ?? []
+            let samples = (try? await healthKit.query(sampleType, timeRange: .init(timeRange))) ?? []
             defer {
                 _ = consume samples
             }
@@ -316,4 +340,9 @@ extension BulkExportSessionState {
             "paused"
         }
     }
+}
+
+
+extension BulkExportSessionIdentifier {
+    static let testApp = Self("testSession")
 }

@@ -7,7 +7,7 @@
 //
 
 import Foundation
-@preconcurrency import HealthKit
+import HealthKit
 import OSLog
 import Spezi
 import SpeziFoundation
@@ -42,6 +42,10 @@ final class FakeHealthStore: Module, DefaultInitializable, EnvironmentAccessible
         } else {
             backgroundPersistance = []
         }
+    }
+    
+    static func reset() {
+        UserDefaults.standard.removeObject(forKey: StorageKeys.backgroundPersistance)
     }
     
     

@@ -19,22 +19,17 @@ class SpeziHealthKitTests: XCTestCase {
         continueAfterFailure = false
     }
     
-    override func tearDown() {
-        super.tearDown()
-        MainActor.assumeIsolated {
-            // After each test, we want the app to get fully reset.
-            let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-            app.terminate()
-            app.delete(app: "TestApp")
-        }
-    }
-    
     @MainActor
     func launchAndHandleInitialStuff(
         _ app: XCUIApplication,
+        resetEverything: Bool,
         askForAuthorization: Bool = true, // swiftlint:disable:this function_default_parameter_at_end
         deleteAllHealthData: Bool
     ) throws {
+        if resetEverything {
+            app.resetAuthorizationStatus(for: .health)
+            app.launchArguments.append("--resetEverything")
+        }
         app.launch()
         if app.alerts["“TestApp” Would Like to Send You Notifications"].waitForExistence(timeout: 5) {
             app.alerts["“TestApp” Would Like to Send You Notifications"].buttons["Allow"].tap()
@@ -42,7 +37,7 @@ class SpeziHealthKitTests: XCTestCase {
         XCTAssert(app.buttons["Ask for authorization"].waitForExistence(timeout: 3))
         if askForAuthorization, app.buttons["Ask for authorization"].isEnabled {
             app.buttons["Ask for authorization"].tap()
-            try app.handleHealthKitAuthorization()
+            app.handleHealthKitAuthorization()
         }
         if deleteAllHealthData {
             try app.deleteAllHealthData()

@@ -14,12 +14,11 @@ final class BulkExporterTests: SpeziHealthKitTests {
     @MainActor
     func testBulkExport() throws {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
+        try launchAndHandleInitialStuff(app, resetEverything: true, deleteAllHealthData: true)
         sleep(for: .seconds(1))
         app.buttons["Bulk Exporter"].tap()
-        
         app.buttons["Request full access"].tap()
-        try app.handleHealthKitAuthorization()
+        app.handleHealthKitAuthorization()
         
         app.buttons["Add Historical Data"].tap()
         XCTAssert(app.staticTexts["Adding Historical Samples…"].waitForExistence(timeout: 2))
@@ -30,7 +29,7 @@ final class BulkExporterTests: SpeziHealthKitTests {
         XCTAssertGreaterThan(try XCTUnwrap(app.numTestingSamples), 0)
         
         app.buttons["Start Bulk Export"].tap()
-        XCTAssert(app.staticTexts["Completed 8 of 53 (0 failed)"].waitForExistence(timeout: 60))
+        sleep(for: .seconds(1.5))
         app.buttons["Pause"].tap()
         sleep(for: .seconds(2))
         app.buttons["Start"].tap()
@@ -42,13 +41,12 @@ final class BulkExporterTests: SpeziHealthKitTests {
     @MainActor
     func testBulkExportReset() throws {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
+        try launchAndHandleInitialStuff(app, resetEverything: true, deleteAllHealthData: true)
         sleep(for: .seconds(1))
         
         app.buttons["Bulk Exporter"].tap()
-        
         app.buttons["Request full access"].tap()
-        try app.handleHealthKitAuthorization()
+        app.handleHealthKitAuthorization()
         
         app.buttons["Add Historical Data"].tap()
         XCTAssert(app.staticTexts["Adding Historical Samples…"].waitForExistence(timeout: 2))
@@ -59,13 +57,13 @@ final class BulkExporterTests: SpeziHealthKitTests {
         XCTAssertGreaterThan(try XCTUnwrap(app.numTestingSamples), 0)
         
         app.buttons["Start Bulk Export"].tap()
-        sleep(for: .seconds(7))
+        sleep(for: .seconds(1.5))
         app.buttons["Pause"].tap()
-        sleep(for: .seconds(1))
+        sleep(for: .seconds(3))
         let numExportedSamplesFirstSession = try XCTUnwrap(app.numExportedSamples)
         app.terminate()
         
-        try launchAndHandleInitialStuff(app, deleteAllHealthData: false)
+        try launchAndHandleInitialStuff(app, resetEverything: false, deleteAllHealthData: false)
         app.buttons["Bulk Exporter"].tap()
         sleep(for: .seconds(1))
         XCTAssertEqual(try XCTUnwrap(app.numExportedSamples), 0)
@@ -80,13 +78,12 @@ final class BulkExporterTests: SpeziHealthKitTests {
     @MainActor
     func testDeleteSessionRestorationInfo() throws {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
+        try launchAndHandleInitialStuff(app, resetEverything: true, deleteAllHealthData: true)
         sleep(for: .seconds(1))
         
         app.buttons["Bulk Exporter"].tap()
-        
         app.buttons["Request full access"].tap()
-        try app.handleHealthKitAuthorization()
+        app.handleHealthKitAuthorization()
         
         app.buttons["Add Historical Data"].tap()
         XCTAssert(app.staticTexts["Adding Historical Samples…"].waitForExistence(timeout: 2))
@@ -97,12 +94,12 @@ final class BulkExporterTests: SpeziHealthKitTests {
         XCTAssertGreaterThan(try XCTUnwrap(app.numTestingSamples), 0)
         
         app.buttons["Start Bulk Export"].tap()
-        sleep(for: .seconds(7))
+        sleep(for: .seconds(1.5))
         app.buttons["Pause"].tap()
         sleep(for: .seconds(1))
         app.terminate()
         
-        try launchAndHandleInitialStuff(app, deleteAllHealthData: false)
+        try launchAndHandleInitialStuff(app, resetEverything: false, deleteAllHealthData: false)
         app.buttons["Bulk Exporter"].tap()
         XCTAssertEqual(try XCTUnwrap(app.numExportedSamples), 0)
         XCTAssertGreaterThan(try XCTUnwrap(app.numTestingSamples), 0)

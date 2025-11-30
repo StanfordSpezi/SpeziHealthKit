@@ -29,7 +29,7 @@ extension HKHealthStore {
     }
     
     private static let activeObservationsLock = NSLock()
-    private static nonisolated(unsafe) var activeObservations: [HKObjectType: Int] = [:]
+    nonisolated(unsafe) private static var activeObservations: [HKObjectType: Int] = [:]
     
     @MainActor @discardableResult
     func startBackgroundDelivery(

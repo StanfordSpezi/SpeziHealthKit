@@ -13,7 +13,7 @@ final class AuthorizationTests: SpeziHealthKitTests {
     @MainActor
     func testRepeatedHealthKitAuthorization() throws {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
+        try launchAndHandleInitialStuff(app, resetEverything: true, deleteAllHealthData: true)
         // Wait for button to become disabled
         let expectation = XCTNSPredicateExpectation(
             predicate: NSPredicate { _, _ in

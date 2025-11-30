@@ -6,8 +6,6 @@
 // SPDX-License-Identifier: MIT
 //
 
-// swiftlint:disable all
-
 import Charts
 import SpeziHealthKit
 import SpeziHealthKitUI
@@ -32,10 +30,9 @@ struct SleepSessionsView: View {
     @State private var viewState: ViewState = .idle
     
     var body: some View {
-        Form {
+        Form { // swiftlint:disable:this closure_body_length
             let devices = sleepAnalysisSamples.compactMapIntoSet(\.device)
                 .sorted(using: KeyPathComparator(\.name))
-            let _ = print("#devices: \(devices.count)")
             let sourceRevisions = sleepAnalysisSamples.mapIntoSet(\.sourceRevision)
                 .sorted(using: KeyPathComparator(\.source.name))
             Section("Devices") {

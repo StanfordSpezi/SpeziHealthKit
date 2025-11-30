@@ -15,7 +15,7 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
     @MainActor
     func testHealthKitQuery() throws {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
+        try launchAndHandleInitialStuff(app, resetEverything: true, deleteAllHealthData: true)
         
         for _ in 0..<7 {
             addSample(.stepCount, in: app)
@@ -30,7 +30,7 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
     @MainActor
     func testHealthKitStatisticsQuery() throws {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
+        try launchAndHandleInitialStuff(app, resetEverything: true, deleteAllHealthData: true)
         
         for _ in 0..<7 {
             addSample(.stepCount, in: app)
@@ -51,7 +51,7 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
     @MainActor
     func testHealthKitCollectStatisticsQuery() throws {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
+        try launchAndHandleInitialStuff(app, resetEverything: true, deleteAllHealthData: true)
         
         for _ in 0..<3 {
             addSample(.stepCount, in: app)
@@ -88,7 +88,7 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
     @MainActor
     func testCharacteristicsQuery() throws {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
+        try launchAndHandleInitialStuff(app, resetEverything: true, deleteAllHealthData: true)
         
         let dateOfBirthComponents = DateComponents(
             calendar: .init(identifier: .gregorian),
@@ -126,7 +126,7 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
     @MainActor
     func testScoredAssessments() throws {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
+        try launchAndHandleInitialStuff(app, resetEverything: true, deleteAllHealthData: true)
         
         sleep(for: .seconds(0.5)) // we need to wait a little so that the permissions sheet is properly dismissed
         app.buttons["Scored Assessments"].tap()
@@ -161,7 +161,7 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
     @MainActor
     func testSleepSession() throws {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
+        try launchAndHandleInitialStuff(app, resetEverything: true, deleteAllHealthData: true)
         
         sleep(for: .seconds(0.5)) // we need to wait a little so that the permissions sheet is properly dismissed
         app.buttons["Sleep Sessions"].tap()
@@ -186,7 +186,7 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
     @MainActor
     func testSleepSession2() throws {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
+        try launchAndHandleInitialStuff(app, resetEverything: true, deleteAllHealthData: true)
         sleep(for: .seconds(0.5)) // we need to wait a little so that the permissions sheet is properly dismissed
         app.buttons["Sleep Tests"].tap()
         XCTAssert(app.staticTexts["Success"].waitForExistence(timeout: 5))
@@ -196,14 +196,14 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
     @MainActor
     func testDeferredAuthorization() throws {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly", "--disable-blood-type-auth-request"])
-        try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
+        try launchAndHandleInitialStuff(app, resetEverything: true, deleteAllHealthData: true)
         addSample(.distanceCycling, in: app)
         try launchHealthAppAndEnterCharacteristics(.init(
             bloodType: .oPositive
         ))
         
-        app.delete(app: "TestApp")
-        try launchAndHandleInitialStuff(app, askForAuthorization: false, deleteAllHealthData: false)
+//        app.delete(app: "TestApp")
+        try launchAndHandleInitialStuff(app, resetEverything: true, askForAuthorization: false, deleteAllHealthData: false)
         
         XCTAssert(app.buttons["Deferred Authorization"].waitForExistence(timeout: 2))
         app.buttons["Deferred Authorization"].tap()
@@ -213,11 +213,11 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
         app.assertTableRow("#km cycled", "0")
         
         app.buttons["Request Blood Type"].tap()
-        try app.handleHealthKitAuthorization()
+        app.handleHealthKitAuthorization()
         app.assertTableRow("Blood Type", "O+")
         
         app.buttons["Request Cycling Distance"].tap()
-        try app.handleHealthKitAuthorization()
+        app.handleHealthKitAuthorization()
         app.assertTableRow("#cyclingSamples", "1")
         app.assertTableRow("#km cycled", "52")
     }
@@ -229,20 +229,26 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
     @MainActor
     func testXXXXXSourceFiltering() throws {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
-        try launchAndHandleInitialStuff(app, deleteAllHealthData: true)
+        try launchAndHandleInitialStuff(app, resetEverything: true, deleteAllHealthData: true)
         app.terminate()
         
         let healthApp = XCUIApplication.healthApp
         healthApp.launch()
         if healthApp.staticTexts["Health Details"].waitForExistence(timeout: 2) {
-            healthApp.buttons["Done"].tap()
+            for label in ["close", "Close"] {
+                let button = healthApp.navigationBars.buttons[label]
+                if button.exists {
+                    button.tap()
+                    break
+                }
+            }
         }
         
         try launchAndAddSamples(healthApp: .healthApp, [
             .steps()
         ])
         
-        try launchAndHandleInitialStuff(app, deleteAllHealthData: false)
+        try launchAndHandleInitialStuff(app, resetEverything: true, deleteAllHealthData: false)
         sleep(for: .seconds(0.5)) // we need to wait a little so that the permissions sheet is properly dismissed
         
         app.buttons["Source Filtering"].tap()
