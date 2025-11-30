@@ -8,4 +8,5 @@
 
 ignore:
   - "Sources/SpeziHealthKit/Sample Types/SampleTypes.swift"
+  - "Tests/SpeziHealthKitTests"
 
