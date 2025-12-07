@@ -58,6 +58,7 @@ import SwiftUI
 /// - ``didAskForAuthorization(toRead:)-14mhe``
 /// - ``didAskForAuthorization(toWrite:)-1q0oz``
 /// - ``didAskForAuthorization(toWrite:)-3rlz6``
+/// - ``waitForConfigurationDone()``
 ///
 /// ## See Also
 /// - <doc:ModuleConfiguration>
@@ -107,6 +108,13 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     
     /// The state of the module's configuration, i.e. whether the initial configuration is still pending, currently ongoing, or already completed.
     @ObservationIgnored public private(set) var configurationState: ConfigState = .pending
+    
+    @ObservationIgnored private var configurationDoneWaiters: [CheckedContinuation<Void, Never>] = [] {
+        didSet {
+            // once the initial config is done, we don't allow registering new waiters (but we allow clearing old ones...)
+            assert(configurationDoneWaiters.isEmpty || configurationState != .completed)
+        }
+    }
     
     /// Configurations which were supplied to the initializer, but have not yet been applied.
     /// - Note: This property is intended only to store the configuration until `configure()` has been called. It is not used afterwards.
@@ -160,12 +168,33 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
             }
             await updateIsFullyAuthorized(for: dataAccessRequirements)
             configurationState = .completed
+            for continuation in exchange(&configurationDoneWaiters, with: []) {
+                continuation.resume()
+            }
         }
     }
 }
 
 
 extension HealthKit {
+    // MARK: Config State Handling
+    
+    /// Waits until the module has finished its initial configuration.
+    ///
+    /// If the initial configuration is already completed, the function will return immediately.
+    @MainActor
+    public func waitForConfigurationDone() async {
+        switch configurationState {
+        case .pending, .ongoing:
+            await withCheckedContinuation { continuation in
+                configurationDoneWaiters.append(continuation)
+            }
+        case .completed:
+            return
+        }
+    }
+    
+    
     // MARK: HealthKit authorization handling
     
     /// Requests authorization for accessing all HealthKit data types defined in the ``HealthKit-swift.class`` module's current data access requirements list.
