@@ -15,30 +15,30 @@ class TestAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
         Configuration(standard: TestAppStandard()) { // swiftlint:disable:this closure_body_length
             HealthKit { // swiftlint:disable:this closure_body_length
-                CollectSample(
+                CollectSamples(
                     .electrocardiogram,
                     start: .manual,
                     continueInBackground: true
                 )
-                CollectSample(
+                CollectSamples(
                     .stepCount,
                     start: .automatic,
                     continueInBackground: true
                 )
-                CollectSample(
+                CollectSamples(
                     .pushCount,
                     start: .manual
                 )
-                CollectSample(
+                CollectSamples(
                     .activeEnergyBurned
                 )
-                CollectSample(.heartRate, start: .manual)
-                CollectSample(.heartRate, start: .manual)
+                CollectSamples(.heartRate, start: .manual)
+                CollectSamples(.heartRate, start: .manual)
                 
-                CollectSample(.stairAscentSpeed, continueInBackground: true)
-                CollectSample(.stairDescentSpeed, continueInBackground: false)
-                CollectSample(.workout)
-                CollectSample(.bloodPressure, start: .automatic, continueInBackground: true)
+                CollectSamples(.stairAscentSpeed, continueInBackground: true)
+                CollectSamples(.stairDescentSpeed, continueInBackground: false)
+                CollectSamples(.workout)
+                CollectSamples(.bloodPressure, start: .automatic, continueInBackground: true)
                 
                 RequestReadAccess(
                     quantity: [.bloodOxygen],

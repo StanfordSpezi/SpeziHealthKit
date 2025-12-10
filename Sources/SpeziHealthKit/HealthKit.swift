@@ -128,7 +128,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
     
     /// Creates a new instance of the ``HealthKit-class`` module, with the specified configuration.
     /// - parameter config: The configuration defines the behaviour of the `HealthKit` module,
-    ///     specifying e.g. which samples the app wants to continuously collect (via ``CollectSample``),
+    ///     specifying e.g. which samples the app wants to continuously collect (via ``CollectSamples``),
     ///     and which sample and object types the user should be prompted to grant the app read access to (via ``RequestReadAccess``).
     public init(
         @ArrayBuilder<any HealthKitConfigurationComponent> _ config: () -> [any HealthKitConfigurationComponent]
@@ -199,9 +199,9 @@ extension HealthKit {
     
     /// Requests authorization for accessing all HealthKit data types defined in the ``HealthKit-swift.class`` module's current data access requirements list.
     /// Once the initial configuration of the ``HealthKit-swift.class`` module has completed, this list will consist of all data types defined by the individual configuration components,
-    /// i.e., for example anything required by a ``CollectSample`` component, or explicitly requested via ``RequestReadAccess`` or ``RequestWriteAccess``.
+    /// i.e., for example anything required by a ``CollectSamples`` component, or explicitly requested via ``RequestReadAccess`` or ``RequestWriteAccess``.
     ///
-    /// Calling this function will also activate all data collecting components from the module configuration (e.g., ``CollectSample``)
+    /// Calling this function will also activate all data collecting components from the module configuration (e.g., ``CollectSamples``)
     /// which require read access to data types for which the user hadn't already be prompted in the past.
     /// If all necessary authorizations have already been requested (regardless of whether the user granted or denied access),
     /// this function will not present any UI to the user, but will still activate the configuration components.
@@ -467,7 +467,7 @@ extension HealthKit {
         )
     }
     
-    /// Keeps track of the first time a ``SampleType`` was registered for collection using ``CollectSample``.
+    /// Keeps track of the first time a ``SampleType`` was registered for collection using ``CollectSamples``.
     var sampleCollectionStartDates: SampleTypeScopedLocalStorage<Date> {
         SampleTypeScopedLocalStorage(
             localStorage: localStorage,
@@ -476,9 +476,9 @@ extension HealthKit {
         )
     }
     
-    /// Resets the internal state associated with a sample type's collection via ``CollectSample``.
+    /// Resets the internal state associated with a sample type's collection via ``CollectSamples``.
     ///
-    /// Use this function if you want to reset ``CollectSample``, so that the next time a ``CollectSample`` instance is registered with the ``HealthKit-swift.class`` module,
+    /// Use this function if you want to reset ``CollectSamples``, so that the next time a ``CollectSamples`` instance is registered with the ``HealthKit-swift.class`` module,
     /// its behaviour will be as if it were being registered for the first time.
     ///
     /// - Note: Calling this function will stop currently-active sample collection for the specified `sampleType`.
@@ -493,7 +493,7 @@ extension HealthKit {
         // query update would end up restoring the just-reset anchor.
         for (idx, collector) in registeredDataCollectors.enumerated().reversed() {
             guard let collector = collector as? HealthKitSampleCollector<Sample>,
-                  collector.source == .collectSample,
+                  collector.source == .collectSamples,
                   collector.typeErasedSampleType == sampleType else {
                 continue
             }
@@ -503,17 +503,17 @@ extension HealthKit {
         }
     }
     
-    /// Adds a new ``CollectSample`` definition to the module.
+    /// Adds a new ``CollectSamples`` definition to the module.
     ///
-    /// Calling this function is equivalent to including the ``CollectSample`` definition in the initial module configuration.
+    /// Calling this function is equivalent to including the ``CollectSamples`` definition in the initial module configuration.
     @MainActor
-    public func addHealthDataCollector(_ collectSample: CollectSample<some Any>) async {
+    public func addHealthDataCollector(_ collectSamples: CollectSamples<some Any>) async {
         switch configurationState {
         case .pending:
-            pendingConfiguration.append(collectSample)
+            pendingConfiguration.append(collectSamples)
         case .ongoing, .completed:
-            dataAccessRequirements.merge(with: collectSample.dataAccessRequirements)
-            await collectSample.configure(for: self, on: standard)
+            dataAccessRequirements.merge(with: collectSamples.dataAccessRequirements)
+            await collectSamples.configure(for: self, on: standard)
         }
     }
     

@@ -58,17 +58,17 @@ actor ExampleStandard: Standard, HealthKitConstraint {
 
 
 Then, you can configure the [`HealthKit`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkit-swift.class) module in the configuration section of your `SpeziAppDelegate`.
-You can, e.g., use [`CollectSample`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/collectsample) to collect a wide variety of HealthKit data types:
+You can, e.g., use [`CollectSamples`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/collectsamples) to collect a wide variety of HealthKit data types:
 ```swift
 class ExampleAppDelegate: SpeziAppDelegate {
     override var configuration: Configuration {
         Configuration(standard: ExampleStandard()) {
             HealthKit {
-                CollectSample(.activeEnergyBurned)
-                CollectSample(.stepCount, start: .manual)
-                CollectSample(.pushCount, start: .manual)
-                CollectSample(.heartRate, continueInBackground: true)
-                CollectSample(.electrocardiogram, start: .manual)
+                CollectSamples(.activeEnergyBurned)
+                CollectSamples(.stepCount, start: .manual)
+                CollectSamples(.pushCount, start: .manual)
+                CollectSamples(.heartRate, continueInBackground: true)
+                CollectSamples(.electrocardiogram, start: .manual)
                 RequestReadAccess(quantity: [.bloodOxygen])
             }
         }

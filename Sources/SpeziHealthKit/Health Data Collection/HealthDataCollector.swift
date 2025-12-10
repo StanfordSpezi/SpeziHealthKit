@@ -13,7 +13,7 @@ import SwiftUI
 
 /// A data collector that continuously, over the lifetime of the application, collects samples and/or other data from the HealthKit database.
 ///
-/// - Tip: The ``CollectSample`` configuration component provides an easy means for adding data collection to an app.
+/// - Tip: The ``CollectSamples`` configuration component provides an easy means for adding data collection to an app.
 ///     In most cases, it shouldn't be necessary to define and implement a custom data collector.
 ///
 /// Custom `HealthDataCollector`s can be registered with the ``HealthKit-swift.class`` module
