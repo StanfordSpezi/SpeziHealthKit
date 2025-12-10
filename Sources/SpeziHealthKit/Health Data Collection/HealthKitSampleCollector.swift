@@ -15,13 +15,13 @@ import SwiftUI
 final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDataCollector {
     /// How this ``HealthKitSampleCollector`` was created, i.e. what it was created for.
     ///
-    /// The reason why this type exists is that in the case of the ``CollectSample`` API specifically,
+    /// The reason why this type exists is that in the case of the ``CollectSamples`` API specifically,
     /// we want to offer the ability to reset the underlying anchor and start date, which requires us to have the ability to stop a collector.
     /// Should SpeziHealthKit, at some point in the future, start registering additional sample collectors, we'd end up accidentally disabling those as well
-    /// when we really just want to disable the ``CollectSample``-associated ones.
+    /// when we really just want to disable the ``CollectSamples``-associated ones.
     enum Source {
-        /// This instance of the ``HealthKitSampleCollector`` was created by a ``CollectSample`` instance.
-        case collectSample
+        /// This instance of the ``HealthKitSampleCollector`` was created by a ``CollectSamples`` instance.
+        case collectSamples
     }
     
     private enum QueryVariant {
@@ -95,7 +95,7 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
                         }
                         let expectedSampleTypes = self.sampleType.effectiveSampleTypesForAuthentication.compactMapIntoSet { $0.hkSampleType }
                         guard !sampleTypes.isDisjoint(with: expectedSampleTypes) else {
-                            self.healthKit.logger.warning("Received Observation query types (\(sampleTypes)) are not corresponding to the CollectSample type \(self.sampleType.hkSampleType)")
+                            self.healthKit.logger.warning("Received Observation query types (\(sampleTypes)) are not corresponding to the CollectSamples type \(self.sampleType.hkSampleType)")
                             return
                         }
                         do {

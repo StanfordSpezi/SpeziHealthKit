@@ -17,7 +17,7 @@ Each configuration component defines which HealthKit data types it needs access 
 Configuration components are processed in the order in which they are defined.
 
 There are several built-in configuration components you can use in your app:
-- ``CollectSample``: Set up background delivery of HealthKit samples to your app's `Standard`
+- ``CollectSamples``: Set up background delivery of HealthKit samples to your app's `Standard`
 - ``RequestReadAccess``: Define which HealthKit sample types your app requires read-access to
 - ``RequestWriteAccess``: Define which HealthKit sample types your app requires write-access to
 
@@ -29,8 +29,8 @@ This example uses the ``HealthKit-swift.class`` module to collect step count sam
 
 ```swift
 HealthKit {
-    CollectSample(.stepCount)
-    CollectSample(.heartRate, continueInBackground: true)
+    CollectSamples(.stepCount)
+    CollectSamples(.heartRate, continueInBackground: true)
     RequestReadAccess(quantity: [.heartRate, .bloodOxygen])
 }
 ```

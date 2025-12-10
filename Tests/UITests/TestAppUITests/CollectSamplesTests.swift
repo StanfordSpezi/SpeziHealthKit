@@ -14,7 +14,7 @@ import XCTestExtensions
 import XCTHealthKit
 
 
-final class CollectSampleTests: SpeziHealthKitTests {
+final class CollectSamplesTests: SpeziHealthKitTests {
     @MainActor
     func testCollectSamples() throws {
         let app = XCUIApplication(launchArguments: ["--collectedSamplesOnly"])
@@ -26,7 +26,7 @@ final class CollectSampleTests: SpeziHealthKitTests {
         assertCollectedSamplesSinceLaunch(in: app, [:])
         // Add a heart rate sample
         addSample(.heartRate, in: app)
-        // Since the CollectSample start setting for heart rate is .manual, it stil shouldn't be there
+        // Since the CollectSamples start setting for heart rate is .manual, it stil shouldn't be there
         assertCollectedSamplesSinceLaunch(in: app, [:])
         // We manually start the heart rate data collection, which should make the sample show up
         triggerDataCollection(in: app)
@@ -75,7 +75,7 @@ final class CollectSampleTests: SpeziHealthKitTests {
             .stepCount: 1
         ])
         
-        app.buttons["Register more CollectSample instances"].tap()
+        app.buttons["Register more CollectSamples instances"].tap()
         sleep(for: .seconds(1)) // give it some time to handle this.
     }
 }

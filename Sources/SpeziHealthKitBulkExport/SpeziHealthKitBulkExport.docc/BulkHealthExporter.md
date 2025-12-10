@@ -30,7 +30,7 @@ In order to perform a Health data export, an app simply calls the ``BulkHealthEx
 
 It is safe to call this function multiple times and with the same input, even if a previously-created upload has already been completed.
 The session will internally keep track of its creation date, and will only ever export samples up to that date.
-This allows an app to e.g. use the `CollectSample` API to continuously fetch and collect new Health samples, and use the ``BulkHealthExporter`` to do a one-time export operation of historical Health data.
+This allows an app to e.g. use the `CollectSamples` API to continuously fetch and collect new Health samples, and use the ``BulkHealthExporter`` to do a one-time export operation of historical Health data.
 
 The ``BulkHealthExporter/session(withId:for:startDate:endDate:batchSize:using:)`` function will, when a ``BulkExportSession`` is first created, also return an `AsyncStream` which can be used to access the individual results of the session's ``BatchProcessor``.
 
