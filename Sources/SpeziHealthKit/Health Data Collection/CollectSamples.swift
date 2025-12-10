@@ -10,8 +10,9 @@ import HealthKit
 import Spezi
 
 
+@_documentation(visibility: internal)
 @available(*, deprecated, renamed: "CollectSamples")
-public typealias CollectSample = CollectSamples
+public typealias CollectSample = CollectSamples // swiftlint:disable:this missing_docs
 
 /// Collects a specified ``SampleType``  via the ``HealthKit-class`` module.
 ///
