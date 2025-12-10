@@ -26,10 +26,10 @@ struct CollectSamplesTestView: View {
                     await healthKit.triggerDataSourceCollection()
                     try await Task.sleep(until: start + .seconds(2)) // pretend that the data source triggering takes at least 2 seconds.
                 }
-                AsyncButton("Register more CollectSample instances") {
+                AsyncButton("Register more CollectSamples instances") {
                     // we have matching ones for these in the AppDelegate, and we now add the resp reverse, to check the subsumption.
-                    await healthKit.addHealthDataCollector(CollectSample(.stairAscentSpeed, continueInBackground: false))
-                    await healthKit.addHealthDataCollector(CollectSample(.stairDescentSpeed, continueInBackground: true))
+                    await healthKit.addHealthDataCollector(CollectSamples(.stairAscentSpeed, continueInBackground: false))
+                    await healthKit.addHealthDataCollector(CollectSamples(.stairDescentSpeed, continueInBackground: true))
                 }
             }
             Section("Collected Samples Since App Launch") {

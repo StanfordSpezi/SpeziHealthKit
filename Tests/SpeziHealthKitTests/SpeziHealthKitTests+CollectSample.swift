@@ -27,17 +27,17 @@ extension SpeziHealthKitTests {
     @Test("Collect Samples Registration Deduplication")
     func collectSamplesRegistrationDeduplication() async throws {
         let healthKit = HealthKit {
-            CollectSample(.stepCount, continueInBackground: false)
-            CollectSample(.heartRate)
-            CollectSample(.heartRate)
-            CollectSample(.stepCount, continueInBackground: false)
-            CollectSample(.stepCount, continueInBackground: true)
-            CollectSample(.bloodGlucose, continueInBackground: false)
-            CollectSample(.bloodGlucose, continueInBackground: true)
-            CollectSample(.dietaryPotassium, continueInBackground: true)
-            CollectSample(.dietaryPotassium, continueInBackground: false)
-            CollectSample(.pushCount)
-            CollectSample(.pushCount)
+            CollectSamples(.stepCount, continueInBackground: false)
+            CollectSamples(.heartRate)
+            CollectSamples(.heartRate)
+            CollectSamples(.stepCount, continueInBackground: false)
+            CollectSamples(.stepCount, continueInBackground: true)
+            CollectSamples(.bloodGlucose, continueInBackground: false)
+            CollectSamples(.bloodGlucose, continueInBackground: true)
+            CollectSamples(.dietaryPotassium, continueInBackground: true)
+            CollectSamples(.dietaryPotassium, continueInBackground: false)
+            CollectSamples(.pushCount)
+            CollectSamples(.pushCount)
         }
         await withDependencyResolution(standard: TestStandard()) {
             healthKit
@@ -55,30 +55,30 @@ extension SpeziHealthKitTests {
             [SampleType.heartRate, .stepCount, .bloodGlucose, .dietaryPotassium, .pushCount].mapIntoSet(\.displayTitle)
         )
 
-        await healthKit.addHealthDataCollector(CollectSample(.bloodOxygen))
+        await healthKit.addHealthDataCollector(CollectSamples(.bloodOxygen))
         #expect(healthKit.registeredDataCollectors.count == 6)
 
         erasedCollectors = healthKit.registeredDataCollectors
-        await healthKit.addHealthDataCollector(CollectSample(.bloodOxygen))
+        await healthKit.addHealthDataCollector(CollectSamples(.bloodOxygen))
         #expect(erasedCollectors.elementsEqual(healthKit.registeredDataCollectors, by: ===))
         #expect(healthKit.registeredDataCollectors.count == 6)
 
-        await healthKit.addHealthDataCollector(CollectSample(.walkingStepLength, continueInBackground: true))
+        await healthKit.addHealthDataCollector(CollectSamples(.walkingStepLength, continueInBackground: true))
         #expect(healthKit.registeredDataCollectors.count == 7)
         erasedCollectors = healthKit.registeredDataCollectors
-        await healthKit.addHealthDataCollector(CollectSample(.walkingStepLength, continueInBackground: true))
+        await healthKit.addHealthDataCollector(CollectSamples(.walkingStepLength, continueInBackground: true))
         // nothing should change, since the new collector is equal to an existing one.
         #expect(healthKit.registeredDataCollectors.count == 7)
         #expect(erasedCollectors.elementsEqual(healthKit.registeredDataCollectors, by: ===))
-        await healthKit.addHealthDataCollector(CollectSample(.walkingStepLength, continueInBackground: false))
+        await healthKit.addHealthDataCollector(CollectSamples(.walkingStepLength, continueInBackground: false))
         // nothing should change, since the new (non-bg) collector will get subsumed into the existing (bg) one.
         #expect(healthKit.registeredDataCollectors.count == 7)
         #expect(erasedCollectors.elementsEqual(healthKit.registeredDataCollectors, by: ===))
 
-        await healthKit.addHealthDataCollector(CollectSample(.height, continueInBackground: false))
+        await healthKit.addHealthDataCollector(CollectSamples(.height, continueInBackground: false))
         #expect(healthKit.registeredDataCollectors.count == 8)
         erasedCollectors = healthKit.registeredDataCollectors
-        await healthKit.addHealthDataCollector(CollectSample(.height, continueInBackground: true))
+        await healthKit.addHealthDataCollector(CollectSamples(.height, continueInBackground: true))
         // we expect the second height collector to replace the first (background vs non-background),
         // so the #collectors will remain the same, but they won't compare equal anymore
         #expect(healthKit.registeredDataCollectors.count == 8)
