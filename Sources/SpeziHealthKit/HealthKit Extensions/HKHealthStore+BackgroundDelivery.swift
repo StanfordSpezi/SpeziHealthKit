@@ -52,7 +52,7 @@ extension HKHealthStore {
             // Sadly necessary to enable capture of the `completionHandler` within the `Task`s below (isolation error)
             nonisolated(unsafe) let completionHandler = completionHandler
             if let error {
-                Logger.healthKit.error(
+                HealthKit.logger.error(
                     """
                     Failed HealthKit background delivery for observer query \(query) on sample types \(String(describing: sampleTypes)) with error: \(error)
                     """
@@ -89,7 +89,7 @@ extension HKHealthStore {
                 }
             }
         } catch {
-            Logger.healthKit.error("Could not enable HealthKit Backgound access for \(objectTypes): \(error.localizedDescription)")
+            HealthKit.logger.error("Could not enable HealthKit Backgound access for \(objectTypes): \(error.localizedDescription)")
             // Revert all changes as enable background delivery for the object types failed.
             disableBackgroundDelivery(for: enabledObjectTypes)
         }

@@ -73,17 +73,18 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
         guard !isActive else {
             return
         }
+        let logger = healthKit.logger
         do {
             if deliverySetting.continueInBackground {
                 // set up a background query
-                let queryInvalidator = try await healthStore.startBackgroundDelivery(for: [sampleType.hkSampleType]) { result in
-                    guard self.isActive else {
+                let queryInvalidator = try await healthStore.startBackgroundDelivery(for: [sampleType.hkSampleType]) { [weak self] result in
+                    guard let self, self.isActive else {
                         // if the sample collector has been turned off, we don't want to process these.
                         return
                     }
                     switch result {
                     case .failure(let error):
-                        self.healthKit.logger.error("Error in background delivery: \(error)")
+                        logger.error("Error in background delivery: \(error)")
                     case let .success((sampleTypes, completionHandler)):
                         defer {
                             // Inform to HealthKit that the data has been processed:
@@ -95,13 +96,13 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
                         }
                         let expectedSampleTypes = self.sampleType.effectiveSampleTypesForAuthentication.compactMapIntoSet { $0.hkSampleType }
                         guard !sampleTypes.isDisjoint(with: expectedSampleTypes) else {
-                            self.healthKit.logger.warning("Received Observation query types (\(sampleTypes)) are not corresponding to the CollectSamples type \(self.sampleType.hkSampleType)")
+                            logger.warning("Received Observation query types (\(sampleTypes)) are not corresponding to the CollectSamples type \(self.sampleType.hkSampleType)")
                             return
                         }
                         do {
                             try await self.anchoredSingleObjectQuery()
                         } catch {
-                            self.healthKit.logger.error("Could not query samples in a background update for \(self.sampleType.hkSampleType): \(error)")
+                            logger.error("Could not query samples in a background update for \(self.sampleType.hkSampleType): \(error)")
                         }
                     }
                 }
@@ -113,7 +114,7 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
                 isActive = true
             }
         } catch {
-            healthKit.logger.error("Could not Process HealthKit data collection: \(error.localizedDescription)")
+            logger.error("Could not Process HealthKit data collection: \(error.localizedDescription)")
         }
     }
     

@@ -79,11 +79,12 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
         let continuation: AsyncStream<DataAccessRequirements>.Continuation
     }
     
+    static let logger = Logger(subsystem: "edu.stanford.SpeziHealthKit", category: "HealthKit")
+    
     @ObservationIgnored @StandardActor
     private var standard: any HealthKitConstraint
     
-    @ObservationIgnored @Application(\.logger)
-    var logger
+    var logger: Logger { Self.logger }
     
     @ObservationIgnored @Dependency(LocalStorage.self)
     private var localStorage
@@ -142,7 +143,7 @@ public final class HealthKit: Module, EnvironmentAccessible, DefaultInitializabl
         if !HKHealthStore.isHealthDataAvailable() {
             // If HealthKit is not available, we still initialise the module and the health store as normal.
             // Queries and sample collection, in this case, will simply not return any results.
-            Logger.healthKit.error(
+            logger.error(
                 """
                 HealthKit is not available.
                 SpeziHealthKit and its module will still exist in the application, but all HealthKit-related functionality will be disabled.
