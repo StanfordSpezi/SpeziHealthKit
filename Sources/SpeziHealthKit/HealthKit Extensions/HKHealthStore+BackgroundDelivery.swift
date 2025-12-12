@@ -73,7 +73,7 @@ extension HKHealthStore {
             }
         }
         self.execute(observerQuery)
-        try await enableBackgroundDelivery(for: sampleTypes)
+        try await enableBackgroundDelivery(for: queryDescriptors.mapIntoSet(\.sampleType))
         return .init(healthStore: self, query: observerQuery)
     }
     
