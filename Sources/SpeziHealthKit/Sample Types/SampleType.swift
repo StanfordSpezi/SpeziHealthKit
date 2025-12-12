@@ -11,6 +11,7 @@ import HealthKit
 
 
 public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType {
+    @_documentation(visibility: internal)
     public typealias Sample = Sample
     
     @usableFromInline
