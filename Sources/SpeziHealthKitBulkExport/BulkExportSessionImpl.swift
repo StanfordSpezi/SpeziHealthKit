@@ -326,12 +326,10 @@ private final class SessionDescriptorPersisting: Sendable {
     }
     
     @concurrent
-    func persistDescriptor(_ descriptor: ExportSessionDescriptor) async {
-        dispatchPrecondition(condition: .notOnQueue(.main))
+    private func persistDescriptor(_ descriptor: ExportSessionDescriptor) async {
         persistTaskLock.withWriteLock {
             persistTask?.cancel()
             persistTask = Task { @PersistSessionStateActor in
-                dispatchPrecondition(condition: .notOnQueue(.main))
                 guard !Task.isCancelled else {
                     return
                 }
