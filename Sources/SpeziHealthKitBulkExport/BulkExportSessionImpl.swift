@@ -28,18 +28,18 @@ final class BulkExportSessionImpl<Processor: BatchProcessor>: Sendable, BulkExpo
     private unowned let bulkExporter: BulkHealthExporter
     private unowned let healthKit: HealthKit
     @ObservationIgnored private let batchProcessor: Processor
-    @ObservationIgnored private let localStorage: LocalStorage
-    @ObservationIgnored private let localStorageKey: LocalStorageKey<ExportSessionDescriptor>
     @ObservationIgnored @MainActor private var pendingStateChangeRequest: StateChangeRequest?
+    @ObservationIgnored private let persistDescriptor: SessionDescriptorPersisting
     
     @MainActor private var descriptor: ExportSessionDescriptor {
         didSet {
             if state != .terminated {
-                try? localStorage.store(descriptor, for: localStorageKey)
+                persistDescriptor(descriptor)
             }
         }
     }
     
+    /// The `Task` on which the session's exporting is executed.
     @ObservationIgnored @MainActor private var task: Task<Void, Never>?
     
     @MainActor private(set) var state: BulkExportSessionState = .paused {
@@ -92,9 +92,9 @@ final class BulkExportSessionImpl<Processor: BatchProcessor>: Sendable, BulkExpo
         self.bulkExporter = bulkExporter
         self.healthKit = healthKit
         self.batchProcessor = batchProcessor
-        self.localStorage = localStorage
-        self.localStorageKey = LocalStorageKey(BulkHealthExporter.localStorageKey(forSessionId: sessionId))
-        if let descriptor = try localStorage.load(localStorageKey) {
+        let storageKey = LocalStorageKey<ExportSessionDescriptor>(BulkHealthExporter.localStorageKey(forSessionId: sessionId))
+        self.persistDescriptor = .init(localStorage: localStorage, storageKey: storageKey)
+        if let descriptor = try localStorage.load(storageKey) {
             self.descriptor = descriptor
             // when restoring a previously-persisted session, we want to "reset" all failed batches, so that everything is processed again.
             // this is fine, because we only end up in here (in the ExportSession init) once per session per app lifecycle.
@@ -295,6 +295,45 @@ extension BulkExportSessionImpl {
                     self.pendingStateChangeRequest = nil
                     isDone()
                 }
+            }
+        }
+    }
+}
+
+
+// MARK: Helpers
+
+private final class SessionDescriptorPersisting: Sendable {
+    @globalActor
+    private actor PersistSessionStateActor {
+        static let shared = PersistSessionStateActor()
+    }
+    
+    private let localStorage: LocalStorage
+    private let storageKey: LocalStorageKey<ExportSessionDescriptor>
+    private let persistTaskLock = RWLock()
+    nonisolated(unsafe) private var persistTask: Task<Void, any Error>?
+    
+    init(localStorage: LocalStorage, storageKey: LocalStorageKey<ExportSessionDescriptor>) {
+        self.localStorage = localStorage
+        self.storageKey = storageKey
+    }
+    
+    func callAsFunction(_ descriptor: ExportSessionDescriptor) {
+        Task { @concurrent in
+            await persistDescriptor(descriptor)
+        }
+    }
+    
+    @concurrent
+    private func persistDescriptor(_ descriptor: ExportSessionDescriptor) async {
+        persistTaskLock.withWriteLock {
+            persistTask?.cancel()
+            persistTask = Task { @PersistSessionStateActor in
+                guard !Task.isCancelled else {
+                    return
+                }
+                try? localStorage.store(descriptor, for: storageKey)
             }
         }
     }
