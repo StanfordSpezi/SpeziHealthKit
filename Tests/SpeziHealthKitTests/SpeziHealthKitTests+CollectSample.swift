@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
 
 import Spezi
 @testable import SpeziHealthKit
@@ -85,3 +86,5 @@ extension SpeziHealthKitTests {
         #expect(erasedCollectors.elementsEqual(healthKit.registeredDataCollectors, by: ===) == false)
     }
 }
+
+#endif

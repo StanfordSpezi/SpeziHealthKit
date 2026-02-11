@@ -37,7 +37,7 @@ struct Codegen: ParsableCommand {
     
     
     func run() throws {
-        guard #available(macOS 15, *) else {
+        guard #available(iOS 18, macOS 15, tvOS 18, watchOS 11, visionOS 2, *) else {
             print("Must be run on macOS 15+")
             Foundation.exit(EXIT_FAILURE)
         }
@@ -50,7 +50,7 @@ struct Codegen: ParsableCommand {
     }
     
     
-    @available(macOS 15, *)
+    @available(iOS 18, macOS 15, tvOS 18, watchOS 11, visionOS 2, *)
     private func makeIdentifierDefsFile() -> String {
         let staticPropertiesByStructName = SampleTypeIdentifierDefinition.definitions
             .reduce(into: [:] as [String: [SampleTypeIdentifierDefinition.IdentifierConstDef]]) { partialResult, element in

@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 // swiftlint:disable file_types_order
 
 import Algorithms
@@ -169,3 +171,5 @@ private actor TestStandard: Standard, HealthKitConstraint {
         // ...
     }
 }
+
+#endif

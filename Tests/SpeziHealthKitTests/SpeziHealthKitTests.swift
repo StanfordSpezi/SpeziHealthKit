@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import HealthKit
 @testable import SpeziHealthKit
 import SpeziHealthKitUI
@@ -83,3 +85,5 @@ extension HKSource {
         return imp(self, sel, bundleId as NSString, name as NSString, NSString(), 0)
     }
 }
+
+#endif
