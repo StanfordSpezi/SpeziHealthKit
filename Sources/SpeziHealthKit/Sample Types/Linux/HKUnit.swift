@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
-// swiftlint:disable file_types_order missing_docs
+// swiftlint:disable file_types_order missing_docs type_name identifier_name type_contents_order file_length todo
 
 public import Foundation
 
@@ -38,7 +38,7 @@ public class _HKUnit: NSObject, @unchecked Sendable {
     }
     
     
-    public override var description: String {
+    override public var description: String {
         factorization.description
     }
     
@@ -83,7 +83,7 @@ public class _HKUnit: NSObject, @unchecked Sendable {
         _HKCompoundUnit(factorization: self.factorization.reciprocal())
     }
     
-    public override func isEqual(_ object: Any?) -> Bool {
+    override public func isEqual(_ object: Any?) -> Bool {
         _compareEq(with: object, on: \.factorization, \.scaleOffset, \.scaleFactor)
     }
     
@@ -217,7 +217,6 @@ private class _HKBaseUnit: _HKUnit, @unchecked Sendable {
 }
 
 
-
 // TODO do we actually need this?
 private class _HKCompoundUnit: _HKUnit, @unchecked Sendable {
     init(factorization: HKFactorization) {
@@ -259,6 +258,9 @@ private struct HKFactorization: Hashable, CustomStringConvertible, Sendable {
     }
     
     var unitString: String {
+        guard !(exponents.isEmpty && factor == 0) else {
+            return "()"
+        }
         let string = exponents.lazy
             .map { base, exp in
                 if exp == 1 {
@@ -321,8 +323,6 @@ private struct HKFactorization: Hashable, CustomStringConvertible, Sendable {
         lhs * rhs.reciprocal()
     }
 }
-
-
 
 
 extension _HKUnit {
@@ -520,7 +520,7 @@ extension _HKUnit {
     }
     
     public class func degreeFahrenheit() -> _HKUnit {
-        _HKBaseUnit(unit: "degF", prefix: "", factor: 1, scaleOffset: (5/9) * 459.67, scaleFactor: 5/9)
+        _HKBaseUnit(unit: "degF", prefix: "", factor: 1, scaleOffset: (5 / 9) * 459.67, scaleFactor: 5 / 9)
     }
     
     public class func kelvin() -> _HKUnit {

@@ -38,14 +38,19 @@ struct HKUnitTests {
         #expect(HKUnitA.meter().unitRaised(toPower: -1) == .meter().reciprocal())
         #expect(HKUnitB.meter().unitRaised(toPower: -1) == .meter().reciprocal())
         
-        #expect(HKUnitA.meterUnit(with: .kilo).unitRaised(toPower: 1) == .meterUnit(with: .kilo))
+        #expect(throws: ExpectationFailedError.self) { // FB21934449
+            try #require(HKUnitA.meter().unitRaised(toPower: 1) == .meter())
+        }
+        #expect(HKUnitB.meter().unitRaised(toPower: 1) == .meter())
+        
+        #expect(throws: ExpectationFailedError.self) { // FB21934449
+            try #require(HKUnitA.meterUnit(with: .kilo).unitRaised(toPower: 1) == .meterUnit(with: .kilo))
+        }
         #expect(HKUnitB.meterUnit(with: .kilo).unitRaised(toPower: 1) == .meterUnit(with: .kilo))
         
         #expect(HKUnitA.meter().unitRaised(toPower: 0).isNull())
         #expect(HKUnitB.meter().unitRaised(toPower: 0).isNull())
         
-        #expect(HKUnitA.meter().unitRaised(toPower: 1) == .meter())
-        #expect(HKUnitB.meter().unitRaised(toPower: 1) == .meter())
         #expect(HKUnitA.meter().unitRaised(toPower: 1).unitString == HKUnitA.meter().unitString)
         #expect(HKUnitB.meter().unitRaised(toPower: 1).unitString == HKUnitB.meter().unitString)
         #expect(HKUnitA.meter().unitRaised(toPower: 2).isEqual(HKUnitA.meter().unitMultiplied(by: .meter())))
@@ -58,8 +63,8 @@ struct HKUnitTests {
         
         #expect(HKUnitA.meterUnit(with: .kilo).unitRaised(toPower: 1).unitString == "km")
         #expect(HKUnitB.meterUnit(with: .kilo).unitRaised(toPower: 1).unitString == "km")
-        #expect(HKUnitA.meterUnit(with: .kilo).unitRaised(toPower: 0).unitString == "")
-        #expect(HKUnitB.meterUnit(with: .kilo).unitRaised(toPower: 0).unitString == "")
+        #expect(HKUnitA.meterUnit(with: .kilo).unitRaised(toPower: 0).unitString == "()")
+        #expect(HKUnitB.meterUnit(with: .kilo).unitRaised(toPower: 0).unitString == "()")
         
 //        #expect(_HKUnit.meter().unitRaised(toPower: -1) == .meter().reciprocal())
 //        
