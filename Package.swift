@@ -49,7 +49,10 @@ var package = Package(
                 ),
                 .product(name: "Algorithms", package: "swift-algorithms")
             ],
-            exclude: ["Sample Types/SampleTypes.swift.gyb"],
+            exclude: [
+                "Sample Types/SampleTypeDefs.py",
+                "Sample Types/SampleTypes.swift.gyb"
+            ],
             resources: [.process("Resources")],
             swiftSettings: [
                 .enableUpcomingFeature("ExistentialAny"),
@@ -116,7 +119,8 @@ package.targets += [
         dependencies: [
             .target(name: "SpeziHealthKit"),
             .product(name: "ArgumentParser", package: "swift-argument-parser")
-        ]
+        ],
+        exclude: ["HKTypeIdentifierDefs+Linux.swift.gyb"]
     )
 ]
 #endif
