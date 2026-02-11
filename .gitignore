@@ -32,3 +32,5 @@ docs/
 
 # UITests Project
 !UITests.xcodeproj
+
+__pycache__/
