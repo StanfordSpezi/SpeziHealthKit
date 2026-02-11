@@ -88,7 +88,9 @@ public class _HKUnit: NSObject, @unchecked Sendable {
     }
     
     func isCompatible(with other: _HKUnit) -> Bool {
-        fatalError("Missing implementation in subclass \(Self.self)")
+        // TODO
+        true
+//        fatalError("Missing implementation in subclass \(Self.self)")
     }
 }
 
