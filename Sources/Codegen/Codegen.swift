@@ -19,18 +19,33 @@ import SpeziHealthKit
 struct Codegen: ParsableCommand {
     static var configuration: CommandConfiguration {
         CommandConfiguration(
-            abstract: "Generate localized string catalogues for HealthKit data types",
+            abstract: "Generates HealthKit sample type identifier constants for use on Linux",
+            discussion: """
+                The purpose of this tool is to generate the Sources/SpeziHealthKit/Sample Types/Linux/HKTypeIdentifiers+Linux.swift file,
+                which provides HealthKit-related identifier definitions (like e.g. HKQuantityTypeIdentifier) on Linux, where HealthKit is
+                not available.
+                This allows `SampleType` and related APIs to be accessible on Linux.
+                
+                Q: Why is this a separate CLI tool, instead of simply generating the file via gyb? (Which seems to already be happening anyway?)
+                A: The issue is that the list of all sample types (and the names of their identifiers) is available in the gyb file,
+                   but the gyb file cannot fetch a sample type's corresponding identifier value (because it would need to evaluate Swift code
+                   like e.g. `HKQuantityTyeIdentifier.${sample_type.identifier}.rawValue` for that, which it cannot).
+                   So what we need to do instead, is that we use gyb to generate an intermediate file, which contains a Swift array listing
+                   all sample type identifier properties and variables, consisting each of the raw name of the property/variable,
+                   and also (as a Swift expression, so that we can access the actual value when processing all of this) the underlying identifier
+                   raw value.
+                   This tool then processes the sample type identifier properties/variables in this array, and generates the actual Swift file
+                   containing the fully resolved definitions, for use on Linux. 
+                """,
             version: "0.1.0"
         )
     }
-    @Flag(name: .short, help: "Enable extended logging")
-    var verbose = false
     
     @Option(
         name: .customShort("o"),
         help: """
             Output directory path. Should point to 'Sources/SpeziHealthKit/Sample Types/Linux/HKTypeIdentifiers+Linux.swift'.
-            May be omitted to perform a dry run, in which case the resulting translation mappings will be printed to stdout, but not written to disk.
+            May be omitted to perform a dry run, in which case the resulting file will be printed to stdout, but not written to disk.
             """
     )
     var outputUrl: URL?
