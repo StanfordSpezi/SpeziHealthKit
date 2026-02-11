@@ -157,7 +157,7 @@ extension HKObjectType {
 //    public class func documentType(forIdentifier identifier: HKDocumentTypeIdentifier) -> HKDocumentType?
     
     public class func seriesType(forIdentifier identifier: String) -> HKSeriesType? {
-        _notImplemented()
+        fatalError("TODO")
     }
     
     public class func workoutType() -> HKWorkoutType {

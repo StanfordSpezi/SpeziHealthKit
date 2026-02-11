@@ -6,7 +6,13 @@
 // SPDX-License-Identifier: MIT
 //
 
+
 #if !canImport(HealthKit)
+public typealias HKQuantity = HKQuantity2
+#endif
+
+
+#if true || !canImport(HealthKit)
 
 public import Foundation
 
@@ -35,7 +41,3 @@ public final class HKQuantity2: NSObject, Sendable {
 
 #endif
 
-
-//#if !canImport(HealthKit)
-//public typealias HKQuantity = HKQuantity2
-//#endif

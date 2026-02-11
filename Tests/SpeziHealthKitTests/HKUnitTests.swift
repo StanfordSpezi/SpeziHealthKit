@@ -20,6 +20,11 @@ struct HKUnitTests {
         #expect(HKUnit2.degreeCelsius().convert(27, to: .degreeFahrenheit()) == 80.59999999999994)
         #expect(HKQuantity2(unit: .ounce(), doubleValue: 1).doubleValue(for: .gram()) == 28.349523125)
     }
+    
+    @Test
+    func operations() {
+        #expect(HKUnit2.meter().unitRaised(toPower: -1) == .meter().reciprocal())
+    }
 }
 
 #endif
