@@ -67,7 +67,8 @@ struct Codegen: ParsableCommand {
     
     @available(iOS 18, macOS 15, tvOS 18, watchOS 11, visionOS 2, *)
     private func makeIdentifierDefsFile() -> String {
-        let staticPropertiesByStructName = SampleTypeIdentifierDefinition.definitions
+        let allDefinitions = SampleTypeIdentifierDefinition.definitions
+        let staticPropertiesByStructName = allDefinitions
             .reduce(into: [:] as [String: [SampleTypeIdentifierDefinition.IdentifierConstDef]]) { partialResult, element in
                 switch element {
                 case .globalVariable:
@@ -78,8 +79,11 @@ struct Codegen: ParsableCommand {
             }
         
         var file = IdentifierDefinitionsFile()
-        for (structName, defs) in staticPropertiesByStructName {
-            file.defineStruct(name: structName, staticProperties: defs)
+        for (structName, defs) in staticPropertiesByStructName.sorted(using: KeyPathComparator(\.key)) {
+            file.defineStruct(
+                name: structName,
+                staticProperties: defs.sorted(using: KeyPathComparator(\.identifierName))
+            )
         }
         // IDEA instead of having this in here, handle it via the gyb file!
         if staticPropertiesByStructName["HKDocumentTypeIdentifier"] == nil {
@@ -92,19 +96,25 @@ struct Codegen: ParsableCommand {
             ])
         }
         
-        for definition in SampleTypeIdentifierDefinition.definitions {
+        var globalVariables = allDefinitions.compactMap { definition -> SampleTypeIdentifierDefinition.IdentifierConstDef? in
             switch definition {
             case .staticProperty:
-                break
+                nil
             case .globalVariable(let definition):
-                file.defineGlobalVariable(definition)
+                definition
             }
         }
-        file.defineGlobalVariable(.init(
-            identifierName: "HKActivitySummaryTypeIdentifier",
-            rawValue: HKObjectType.activitySummaryType().identifier,
-            docComment: ""
-        ))
+        if !globalVariables.contains(where: { $0.identifierName == "HKActivitySummaryTypeIdentifier" }) {
+            globalVariables.append(.init(
+                identifierName: "HKActivitySummaryTypeIdentifier",
+                rawValue: HKObjectType.activitySummaryType().identifier,
+                docComment: ""
+            ))
+        }
+        
+        for definition in globalVariables.sorted(using: KeyPathComparator(\.identifierName)) {
+            file.defineGlobalVariable(definition)
+        }
         return file.finalize()
     }
 }
