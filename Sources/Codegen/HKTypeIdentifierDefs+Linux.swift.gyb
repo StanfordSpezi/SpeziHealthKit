@@ -25,7 +25,7 @@ from SampleTypeDefs import *
 import HealthKit
 
 
-public enum _SampleTypeIdentifierDefinition: Sendable {
+public enum SampleTypeIdentifierDefinition: Sendable {
     /// Definition of a HK type identifier constant (eg a global variable or a static property)
     public struct IdentifierConstDef: Sendable {
         /// The name of the definition's identifier, in its respective context.
@@ -36,8 +36,8 @@ public enum _SampleTypeIdentifierDefinition: Sendable {
         public let docComment: String
     }
 
-    case _staticProperty(parentStruct: String, IdentifierConstDef)
-    case _globalVariable(IdentifierConstDef)
+    case staticProperty(parentStruct: String, IdentifierConstDef)
+    case globalVariable(IdentifierConstDef)
 }
 
 
@@ -51,12 +51,12 @@ struct_based_defs = [
 ]
 }%
 
-extension _SampleTypeIdentifierDefinition {
+extension SampleTypeIdentifierDefinition {
     @available(macOS 15, *)
-    public static let definitions: [_SampleTypeIdentifierDefinition] = [
+    public static let definitions: [SampleTypeIdentifierDefinition] = [
         % for (typename, types) in struct_based_defs:
         % for type in types:
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "${typename}",
             IdentifierConstDef(
                 identifierName: "${type.identifier}",
@@ -68,13 +68,13 @@ extension _SampleTypeIdentifierDefinition {
         % end
         % for sample_type in filter(lambda s: s.identifier_def is not None, other_sample_types):
         % if '.' not in sample_type.identifier_def:
-        ._globalVariable(IdentifierConstDef(
+        .globalVariable(IdentifierConstDef(
             identifierName: "${sample_type.identifier_def}",
             rawValue: ${sample_type.hkSampleType}.identifier,
             docComment: "${sample_type.doc}"
         )),
         % else:
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "${sample_type.identifier_def.split('.')[0]}",
             IdentifierConstDef(
                 identifierName: "${sample_type.identifier_def.split('.')[1]}",

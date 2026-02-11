@@ -15,7 +15,7 @@
 import HealthKit
 
 
-public enum _SampleTypeIdentifierDefinition: Sendable {
+public enum SampleTypeIdentifierDefinition: Sendable {
     /// Definition of a HK type identifier constant (eg a global variable or a static property)
     public struct IdentifierConstDef: Sendable {
         /// The name of the definition's identifier, in its respective context.
@@ -26,16 +26,16 @@ public enum _SampleTypeIdentifierDefinition: Sendable {
         public let docComment: String
     }
 
-    case _staticProperty(parentStruct: String, IdentifierConstDef)
-    case _globalVariable(IdentifierConstDef)
+    case staticProperty(parentStruct: String, IdentifierConstDef)
+    case globalVariable(IdentifierConstDef)
 }
 
 
 
-extension _SampleTypeIdentifierDefinition {
+extension SampleTypeIdentifierDefinition {
     @available(macOS 15, *)
-    public static let definitions: [_SampleTypeIdentifierDefinition] = [
-        ._staticProperty(
+    public static let definitions: [SampleTypeIdentifierDefinition] = [
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "stepCount",
@@ -43,7 +43,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the number of steps the user has taken."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "distanceWalkingRunning",
@@ -51,7 +51,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the distance the user has moved by walking or running."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "runningGroundContactTime",
@@ -59,7 +59,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of time the runner’s foot is in contact with the ground while running."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "runningPower",
@@ -67,7 +67,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the rate of work required for the runner to maintain their speed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "runningSpeed",
@@ -75,7 +75,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the runner’s speed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "runningStrideLength",
@@ -83,7 +83,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the distance covered by a single step while running."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "runningVerticalOscillation",
@@ -91,7 +91,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type measuring pelvis vertical range of motion during a single running stride."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "distanceCycling",
@@ -99,7 +99,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the distance the user has moved by cycling."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "pushCount",
@@ -107,7 +107,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the number of pushes that the user has performed while using a wheelchair."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "distanceWheelchair",
@@ -115,7 +115,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the distance the user has moved using a wheelchair."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "swimmingStrokeCount",
@@ -123,7 +123,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the number of strokes performed while swimming."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "distanceSwimming",
@@ -131,7 +131,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the distance the user has moved while swimming."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "distanceDownhillSnowSports",
@@ -139,7 +139,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the distance the user has traveled while skiing or snowboarding."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "basalEnergyBurned",
@@ -147,7 +147,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the resting energy burned by the user."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "activeEnergyBurned",
@@ -155,7 +155,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of active energy the user has burned."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "flightsClimbed",
@@ -163,7 +163,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the number flights of stairs that the user has climbed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "appleExerciseTime",
@@ -171,7 +171,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of time the user spent exercising."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "appleMoveTime",
@@ -179,7 +179,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of time the user has spent performing activities that involve full-body movements during the specified day."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "appleStandTime",
@@ -187,7 +187,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of time the user has spent standing."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "vo2Max",
@@ -195,7 +195,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample that measures the maximal oxygen consumption during exercise."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "height",
@@ -203,7 +203,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the user’s height."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "bodyMass",
@@ -211,7 +211,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the user’s weight."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "bodyMassIndex",
@@ -219,7 +219,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the user’s body mass index."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "leanBodyMass",
@@ -227,7 +227,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the user’s lean body mass."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "bodyFatPercentage",
@@ -235,7 +235,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the user’s body fat percentage."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "waistCircumference",
@@ -243,7 +243,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the user’s waist circumference."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "appleSleepingWristTemperature",
@@ -251,7 +251,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that records the wrist temperature during sleep."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "basalBodyTemperature",
@@ -259,7 +259,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that records the user’s basal body temperature."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "environmentalAudioExposure",
@@ -267,7 +267,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures audio exposure to sounds in the environment."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "headphoneAudioExposure",
@@ -275,7 +275,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures audio exposure from headphones."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "heartRate",
@@ -283,7 +283,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the user’s heart rate."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "restingHeartRate",
@@ -291,7 +291,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the user’s resting heart rate."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "walkingHeartRateAverage",
@@ -299,7 +299,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the user’s heart rate while walking."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "heartRateVariabilitySDNN",
@@ -307,7 +307,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the standard deviation of heartbeat intervals."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "heartRateRecoveryOneMinute",
@@ -315,7 +315,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample that records the reduction in heart rate from the peak exercise rate to the rate one minute after exercising ended."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "atrialFibrillationBurden",
@@ -323,7 +323,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity type that measures an estimate of the percentage of time a person’s heart shows signs of atrial fibrillation (AFib) while wearing Apple Watch."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "oxygenSaturation",
@@ -331,7 +331,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the user’s oxygen saturation."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "bodyTemperature",
@@ -339,7 +339,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the user’s body temperature."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "bloodPressureDiastolic",
@@ -347,7 +347,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the user’s diastolic blood pressure."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "bloodPressureSystolic",
@@ -355,7 +355,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the user’s systolic blood pressure."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "respiratoryRate",
@@ -363,7 +363,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the user’s respiratory rate."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "bloodGlucose",
@@ -371,7 +371,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the user’s blood glucose level."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "electrodermalActivity",
@@ -379,7 +379,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures electrodermal activity."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "forcedExpiratoryVolume1",
@@ -387,7 +387,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of air that can be forcibly exhaled from the lungs during the first second of a forced exhalation."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "forcedVitalCapacity",
@@ -395,7 +395,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of air that can be forcibly exhaled from the lungs after taking the deepest breath possible."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "inhalerUsage",
@@ -403,7 +403,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the number of puffs the user takes from their inhaler."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "insulinDelivery",
@@ -411,7 +411,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample that measures the amount of insulin delivered."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "numberOfTimesFallen",
@@ -419,7 +419,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the number of times the user fell."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "peakExpiratoryFlowRate",
@@ -427,7 +427,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the user’s maximum flow rate generated during a forceful exhalation."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "peripheralPerfusionIndex",
@@ -435,7 +435,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the user’s peripheral perfusion index."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryBiotin",
@@ -443,7 +443,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of biotin (vitamin B7) consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryCaffeine",
@@ -451,7 +451,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of caffeine consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryCalcium",
@@ -459,7 +459,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of calcium consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryCarbohydrates",
@@ -467,7 +467,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of carbohydrates consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryChloride",
@@ -475,7 +475,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of chloride consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryCholesterol",
@@ -483,7 +483,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of cholesterol consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryChromium",
@@ -491,7 +491,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of chromium consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryCopper",
@@ -499,7 +499,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of copper consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryEnergyConsumed",
@@ -507,7 +507,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of energy consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryFatMonounsaturated",
@@ -515,7 +515,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of monounsaturated fat consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryFatPolyunsaturated",
@@ -523,7 +523,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of polyunsaturated fat consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryFatSaturated",
@@ -531,7 +531,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of saturated fat consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryFatTotal",
@@ -539,7 +539,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the total amount of fat consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryFiber",
@@ -547,7 +547,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of fiber consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryFolate",
@@ -555,7 +555,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of folate (folic acid) consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryIodine",
@@ -563,7 +563,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of iodine consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryIron",
@@ -571,7 +571,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of iron consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryMagnesium",
@@ -579,7 +579,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of magnesium consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryManganese",
@@ -587,7 +587,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of manganese consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryMolybdenum",
@@ -595,7 +595,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of molybdenum consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryNiacin",
@@ -603,7 +603,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of niacin (vitamin B3) consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryPantothenicAcid",
@@ -611,7 +611,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of pantothenic acid (vitamin B5) consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryPhosphorus",
@@ -619,7 +619,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of phosphorus consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryPotassium",
@@ -627,7 +627,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of potassium consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryProtein",
@@ -635,7 +635,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of protein consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryRiboflavin",
@@ -643,7 +643,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of riboflavin (vitamin B2) consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietarySelenium",
@@ -651,7 +651,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of selenium consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietarySodium",
@@ -659,7 +659,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of sodium consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietarySugar",
@@ -667,7 +667,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of sugar consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryThiamin",
@@ -675,7 +675,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of thiamin (vitamin B1) consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryVitaminA",
@@ -683,7 +683,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of vitamin A consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryVitaminB12",
@@ -691,7 +691,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of cyanocobalamin (vitamin B12) consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryVitaminB6",
@@ -699,7 +699,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of pyridoxine (vitamin B6) consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryVitaminC",
@@ -707,7 +707,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of vitamin C consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryVitaminD",
@@ -715,7 +715,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of vitamin D consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryVitaminE",
@@ -723,7 +723,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of vitamin E consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryVitaminK",
@@ -731,7 +731,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of vitamin K consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryWater",
@@ -739,7 +739,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of water consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dietaryZinc",
@@ -747,7 +747,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the amount of zinc consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "bloodAlcoholContent",
@@ -755,7 +755,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the user’s blood alcohol content."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "numberOfAlcoholicBeverages",
@@ -763,7 +763,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the number of standard alcoholic drinks that the user has consumed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "appleWalkingSteadiness",
@@ -771,7 +771,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the steadiness of the user’s gait."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "sixMinuteWalkTestDistance",
@@ -779,7 +779,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that stores the distance a user can walk during a six-minute walk test."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "walkingSpeed",
@@ -787,7 +787,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the user’s average speed when walking steadily over flat ground."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "walkingStepLength",
@@ -795,7 +795,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the average length of the user’s step when walking steadily over flat ground."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "walkingAsymmetryPercentage",
@@ -803,7 +803,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the percentage of steps in which one foot moves at a different speed than the other when walking on flat ground."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "walkingDoubleSupportPercentage",
@@ -811,7 +811,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the percentage of time when both of the user’s feet touch the ground while walking steadily over flat ground."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "stairAscentSpeed",
@@ -819,7 +819,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type measuring the user’s speed while climbing a flight of stairs."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "stairDescentSpeed",
@@ -827,7 +827,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type measuring the user’s speed while descending a flight of stairs."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "uvExposure",
@@ -835,7 +835,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample type that measures the user’s exposure to UV radiation."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "underwaterDepth",
@@ -843,7 +843,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample that records a person’s depth underwater."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "waterTemperature",
@@ -851,7 +851,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: " A quantity sample that records the water temperature."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "appleSleepingBreathingDisturbances",
@@ -859,7 +859,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample that records breathing disturbances during sleep."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "crossCountrySkiingSpeed",
@@ -867,7 +867,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample that records cross-country skiing speed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "cyclingCadence",
@@ -875,7 +875,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample that records cycling cadence."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "cyclingFunctionalThresholdPower",
@@ -883,7 +883,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample that records cycling functional threshold power."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "cyclingPower",
@@ -891,7 +891,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample that records cycling power."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "cyclingSpeed",
@@ -899,7 +899,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample that records cycling speed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "distanceCrossCountrySkiing",
@@ -907,7 +907,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample that records cross-country skiing distance."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "distancePaddleSports",
@@ -915,7 +915,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample that records paddle sports distance."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "distanceRowing",
@@ -923,7 +923,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample that records rowing distance."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "distanceSkatingSports",
@@ -931,7 +931,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample that records skating sports distance."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "environmentalSoundReduction",
@@ -939,7 +939,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample that records environmental sound reduction."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "estimatedWorkoutEffortScore",
@@ -947,7 +947,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample that records estimated physical effort during workouts."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "paddleSportsSpeed",
@@ -955,7 +955,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample that records paddle sports speed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "physicalEffort",
@@ -963,7 +963,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample that records physical effort."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "rowingSpeed",
@@ -971,7 +971,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample that records rowing speed."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "timeInDaylight",
@@ -979,7 +979,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample that records time spent in daylight."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "workoutEffortScore",
@@ -987,7 +987,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A quantity sample that records workout effort."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "appleStandHour",
@@ -995,7 +995,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category sample type that counts the number of hours in the day during which the user has stood and moved for at least one minute per hour."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "lowCardioFitnessEvent",
@@ -1003,7 +1003,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "An event that indicates the user’s VO2 max values consistently fall below a particular aerobic fitness threshold."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "menstrualFlow",
@@ -1011,7 +1011,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category sample type that records menstrual cycles."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "intermenstrualBleeding",
@@ -1019,7 +1019,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category sample type that records spotting outside the normal menstruation period."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "infrequentMenstrualCycles",
@@ -1027,7 +1027,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category sample that indicates an infrequent menstrual cycle."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "irregularMenstrualCycles",
@@ -1035,7 +1035,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category sample that indicates an irregular menstrual cycle."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "persistentIntermenstrualBleeding",
@@ -1043,7 +1043,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category sample that indicates persistent intermenstrual bleeding."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "prolongedMenstrualPeriods",
@@ -1051,7 +1051,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category sample that indicates a prolonged menstrual cycle."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "cervicalMucusQuality",
@@ -1059,7 +1059,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category sample type that records the quality of the user’s cervical mucus."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "ovulationTestResult",
@@ -1067,7 +1067,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category sample type that records the result of an ovulation home test."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "progesteroneTestResult",
@@ -1075,7 +1075,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that represents the results from a home progesterone test."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "sexualActivity",
@@ -1083,7 +1083,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category sample type that records sexual activity."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "contraceptive",
@@ -1091,7 +1091,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category sample type that records the use of contraceptives."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "pregnancy",
@@ -1099,7 +1099,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records pregnancy."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "pregnancyTestResult",
@@ -1107,7 +1107,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that represents the results from a home pregnancy test."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "lactation",
@@ -1115,7 +1115,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records lactation."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "environmentalAudioExposureEvent",
@@ -1123,7 +1123,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category sample type that records exposure to potentially damaging sounds from the environment."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "headphoneAudioExposureEvent",
@@ -1131,7 +1131,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category sample type that records exposure to potentially damaging sounds from headphones."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "lowHeartRateEvent",
@@ -1139,7 +1139,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category sample type for low heart rate events."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "highHeartRateEvent",
@@ -1147,7 +1147,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category sample type for high heart rate events."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "irregularHeartRhythmEvent",
@@ -1155,7 +1155,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category sample type for irregular heart rhythm events."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "appleWalkingSteadinessEvent",
@@ -1163,7 +1163,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category sample type that records an incident where the user showed a reduced score for their gait’s steadiness."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "mindfulSession",
@@ -1171,7 +1171,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category sample type for recording a mindful session."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "sleepAnalysis",
@@ -1179,7 +1179,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category sample type for sleep analysis information."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "toothbrushingEvent",
@@ -1187,7 +1187,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category sample type for toothbrushing events."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "handwashingEvent",
@@ -1195,7 +1195,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category sample type for handwashing events."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "abdominalCramps",
@@ -1203,7 +1203,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records abdominal cramps as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "bloating",
@@ -1211,7 +1211,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records bloating as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "constipation",
@@ -1219,7 +1219,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records constipation as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "diarrhea",
@@ -1227,7 +1227,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records diarrhea as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "heartburn",
@@ -1235,7 +1235,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records heartburn as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "nausea",
@@ -1243,7 +1243,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records nausea as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "vomiting",
@@ -1251,7 +1251,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records vomiting as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "appetiteChanges",
@@ -1259,7 +1259,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records changes in appetite as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "chills",
@@ -1267,7 +1267,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records chills as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dizziness",
@@ -1275,7 +1275,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records dizziness as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "fainting",
@@ -1283,7 +1283,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records fainting as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "fatigue",
@@ -1291,7 +1291,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records fatigue as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "fever",
@@ -1299,7 +1299,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records fever as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "generalizedBodyAche",
@@ -1307,7 +1307,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records body ache as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "hotFlashes",
@@ -1315,7 +1315,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records hot flashes as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "chestTightnessOrPain",
@@ -1323,7 +1323,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records chest tightness or pain as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "coughing",
@@ -1331,7 +1331,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records coughing as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "rapidPoundingOrFlutteringHeartbeat",
@@ -1339,7 +1339,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records a rapid, pounding, or fluttering heartbeat as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "shortnessOfBreath",
@@ -1347,7 +1347,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records shortness of breath as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "skippedHeartbeat",
@@ -1355,7 +1355,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records skipped heartbeat as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "wheezing",
@@ -1363,7 +1363,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records wheezing as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "lowerBackPain",
@@ -1371,7 +1371,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records lower back pain as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "headache",
@@ -1379,7 +1379,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records headache as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "memoryLapse",
@@ -1387,7 +1387,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records memory lapse as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "moodChanges",
@@ -1395,7 +1395,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records mood changes as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "lossOfSmell",
@@ -1403,7 +1403,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records loss of smell as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "lossOfTaste",
@@ -1411,7 +1411,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records loss of taste as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "runnyNose",
@@ -1419,7 +1419,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records runny nose as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "soreThroat",
@@ -1427,7 +1427,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records sore throat as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "sinusCongestion",
@@ -1435,7 +1435,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records sinus congestion as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "breastPain",
@@ -1443,7 +1443,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records breast pain as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "pelvicPain",
@@ -1451,7 +1451,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records pelvic pain as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "vaginalDryness",
@@ -1459,7 +1459,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records vaginal dryness as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "bleedingDuringPregnancy",
@@ -1467,7 +1467,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records bleeding during pregnancy as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "bleedingAfterPregnancy",
@@ -1475,7 +1475,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records bleeding after pregnancy as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "acne",
@@ -1483,7 +1483,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records acne as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "drySkin",
@@ -1491,7 +1491,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records dry skin as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "hairLoss",
@@ -1499,7 +1499,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records hair loss as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "nightSweats",
@@ -1507,7 +1507,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records night sweats as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "sleepChanges",
@@ -1515,7 +1515,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records sleep changes as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "sleepApneaEvent",
@@ -1523,7 +1523,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records sleep apnea as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCategoryTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "bladderIncontinence",
@@ -1531,7 +1531,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A category type that records bladder incontinence as a symptom."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCorrelationTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "bloodPressure",
@@ -1539,7 +1539,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "The sample type representing blood pressure correlation samples"
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCorrelationTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "food",
@@ -1547,7 +1547,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "Food correlation types combine any number of nutritional samples into a single food object."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCharacteristicTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "activityMoveMode",
@@ -1555,7 +1555,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "The activity move mode characteristic."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCharacteristicTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "biologicalSex",
@@ -1563,7 +1563,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "The characteristic representing the user's biological sex."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCharacteristicTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "bloodType",
@@ -1571,7 +1571,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "The characteristic representing the user's blood type."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCharacteristicTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "dateOfBirth",
@@ -1579,7 +1579,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "The characteristic representing the user's date of birth."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCharacteristicTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "fitzpatrickSkinType",
@@ -1587,7 +1587,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "The characteristic representing the user's skin type."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKCharacteristicTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "wheelchairUse",
@@ -1595,7 +1595,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "The characteristic representing the user's wheelchair use status."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKClinicalTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "allergyRecord",
@@ -1603,7 +1603,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A type identifier for records of allergic or intolerant reactions."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKClinicalTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "clinicalNoteRecord",
@@ -1611,7 +1611,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A type identifier for records of clinical notes."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKClinicalTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "conditionRecord",
@@ -1619,7 +1619,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A type identifier for records of a condition, problem, diagnosis, or other event."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKClinicalTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "immunizationRecord",
@@ -1627,7 +1627,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A type identifier for records of the current or historical administration of vaccines."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKClinicalTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "labResultRecord",
@@ -1635,7 +1635,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A type identifier for records of lab results."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKClinicalTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "medicationRecord",
@@ -1643,7 +1643,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A type identifier for records of medication."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKClinicalTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "procedureRecord",
@@ -1651,7 +1651,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A type identifier for records of procedures."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKClinicalTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "vitalSignRecord",
@@ -1659,7 +1659,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A type identifier for records of vital signs."
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKClinicalTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "coverageRecord",
@@ -1667,42 +1667,42 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "A type identifier for records containing information about the user’s insurance coverage."
             )
         ),
-        ._globalVariable(IdentifierConstDef(
+        .globalVariable(IdentifierConstDef(
             identifierName: "HKElectrocardiogramTypeIdentifier",
             rawValue: HKSampleType.electrocardiogramType().identifier,
             docComment: "The electrocardiogram sample type"
         )),
-        ._globalVariable(IdentifierConstDef(
+        .globalVariable(IdentifierConstDef(
             identifierName: "HKAudiogramSampleTypeIdentifier",
             rawValue: HKSampleType.audiogramSampleType().identifier,
             docComment: "The audiogram sample type"
         )),
-        ._globalVariable(IdentifierConstDef(
+        .globalVariable(IdentifierConstDef(
             identifierName: "HKWorkoutTypeIdentifier",
             rawValue: HKSampleType.workoutType().identifier,
             docComment: "The workout sample type"
         )),
-        ._globalVariable(IdentifierConstDef(
+        .globalVariable(IdentifierConstDef(
             identifierName: "HKVisionPrescriptionTypeIdentifier",
             rawValue: HKSampleType.visionPrescriptionType().identifier,
             docComment: "The vision prescription sample type"
         )),
-        ._globalVariable(IdentifierConstDef(
+        .globalVariable(IdentifierConstDef(
             identifierName: "HKDataTypeIdentifierStateOfMind",
             rawValue: HKSampleType.stateOfMindType().identifier,
             docComment: "The state of mind sample type"
         )),
-        ._globalVariable(IdentifierConstDef(
+        .globalVariable(IdentifierConstDef(
             identifierName: "HKDataTypeIdentifierHeartbeatSeries",
             rawValue: HKSeriesType.heartbeat().identifier,
             docComment: "The heartbeat series sample type"
         )),
-        ._globalVariable(IdentifierConstDef(
+        .globalVariable(IdentifierConstDef(
             identifierName: "HKWorkoutRouteTypeIdentifier",
             rawValue: HKSeriesType.workoutRoute().identifier,
             docComment: "The workout route sample type"
         )),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKScoredAssessmentTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "GAD7",
@@ -1710,7 +1710,7 @@ extension _SampleTypeIdentifierDefinition {
                 docComment: "The GAD-7 (generalized anxiery disorder 7) score type"
             )
         ),
-        ._staticProperty(
+        .staticProperty(
             parentStruct: "HKScoredAssessmentTypeIdentifier",
             IdentifierConstDef(
                 identifierName: "PHQ9",

@@ -52,12 +52,12 @@ struct Codegen: ParsableCommand {
     
     @available(macOS 15, *)
     private func makeIdentifierDefsFile() -> String {
-        let staticPropertiesByStructName = _SampleTypeIdentifierDefinition.definitions
-            .reduce(into: [:] as [String: [_SampleTypeIdentifierDefinition.IdentifierConstDef]]) { partialResult, element in
+        let staticPropertiesByStructName = SampleTypeIdentifierDefinition.definitions
+            .reduce(into: [:] as [String: [SampleTypeIdentifierDefinition.IdentifierConstDef]]) { partialResult, element in
                 switch element {
-                case ._globalVariable:
+                case .globalVariable:
                     return
-                case let ._staticProperty(parentStruct, definition):
+                case let .staticProperty(parentStruct, definition):
                     partialResult[parentStruct, default: []].append(definition)
                 }
             }
@@ -77,11 +77,11 @@ struct Codegen: ParsableCommand {
             ])
         }
         
-        for definition in _SampleTypeIdentifierDefinition.definitions {
+        for definition in SampleTypeIdentifierDefinition.definitions {
             switch definition {
-            case ._staticProperty:
+            case .staticProperty:
                 break
-            case ._globalVariable(let definition):
+            case .globalVariable(let definition):
                 file.defineGlobalVariable(definition)
             }
         }
@@ -96,7 +96,7 @@ struct Codegen: ParsableCommand {
 
 
 private struct IdentifierDefinitionsFile: ~Copyable {
-    typealias VariableDef = _SampleTypeIdentifierDefinition.IdentifierConstDef
+    typealias VariableDef = SampleTypeIdentifierDefinition.IdentifierConstDef
     
     private var contents = """
         //
