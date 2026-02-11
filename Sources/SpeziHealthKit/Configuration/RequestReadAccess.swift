@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import HealthKit
 
 
@@ -44,3 +46,5 @@ public struct RequestReadAccess: HealthKitConfigurationComponent {
         // and consequently doesn't need to do anything in here.
     }
 }
+
+#endif

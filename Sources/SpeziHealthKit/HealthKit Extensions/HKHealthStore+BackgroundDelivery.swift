@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import HealthKit
 import OSLog
 import Spezi
@@ -116,3 +118,5 @@ extension HKHealthStore {
         }
     }
 }
+
+#endif

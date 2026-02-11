@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit) && canImport(SwiftUI)
+
 import Charts
 import Foundation
 import HealthKit
@@ -261,3 +263,5 @@ extension Date.FormatStyle {
         return style
     }
 }
+
+#endif

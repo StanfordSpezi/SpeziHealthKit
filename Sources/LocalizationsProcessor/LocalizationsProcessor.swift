@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 // swiftlint:disable file_types_order
 
 import ArgumentParser
@@ -221,3 +223,5 @@ extension URL: @retroactive ExpressibleByArgument {
         self = URL(filePath: argument, relativeTo: .currentDirectory()).absoluteURL
     }
 }
+
+#endif

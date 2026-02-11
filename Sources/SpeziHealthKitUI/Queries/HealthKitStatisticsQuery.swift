@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit) && canImport(SwiftUI)
+
 import Foundation
 import HealthKit
 public import Observation
@@ -296,3 +298,5 @@ extension HKStatistics: @retroactive Identifiable {}
 
 // it's an OptionSet, the Hashable implementation is trivial, we should be fine here...
 extension HKStatisticsOptions: @retroactive Hashable {}
+
+#endif

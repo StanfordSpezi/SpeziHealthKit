@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit) && canImport(SwiftUI)
+
 import Foundation
 import HealthKit
 @_spi(APISupport) public import SpeziHealthKit
@@ -68,3 +70,5 @@ public struct HealthKitCharacteristicQuery<Characteristic: HealthKitCharacterist
         }
     }
 }
+
+#endif

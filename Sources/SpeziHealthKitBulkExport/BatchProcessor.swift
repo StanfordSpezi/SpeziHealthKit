@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import HealthKit
 public import SpeziHealthKit
 
@@ -18,3 +20,5 @@ public protocol BatchProcessor<Output>: Sendable {
     /// Invoked by a ``BulkExportSession``, to process a batch of Health samples.
     func process<Sample>(_ samples: consuming [Sample], of sampleType: SampleType<Sample>) async throws -> Output
 }
+
+#endif

@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import HealthKit
 public import Spezi
 
@@ -56,3 +58,5 @@ public protocol HealthKitConstraint: Standard {
         ofType sampleType: SampleType<Sample>
     ) async
 }
+
+#endif

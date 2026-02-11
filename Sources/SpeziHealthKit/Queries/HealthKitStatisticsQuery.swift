@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import Foundation
 import HealthKit
 import SpeziFoundation
@@ -253,3 +255,5 @@ extension HealthKit {
         return results.map { $0.statisticsCollection.statistics() }
     }
 }
+
+#endif

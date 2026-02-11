@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit) && canImport(SwiftUI)
+
 public import struct SwiftUI.Color
 
 extension HealthChartDrawingConfig {
@@ -22,3 +24,5 @@ extension HealthChartDrawingConfig {
         self.init(chartType: mode, color: color)
     }
 }
+
+#endif

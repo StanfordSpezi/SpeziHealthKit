@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
 import HealthKit
 
 
@@ -167,3 +168,5 @@ extension HealthKitCharacteristicProtocol where Self == HealthKitCharacteristic<
         }
     }
 }
+
+#endif

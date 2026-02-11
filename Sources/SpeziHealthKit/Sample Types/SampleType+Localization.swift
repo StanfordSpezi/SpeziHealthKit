@@ -6,8 +6,10 @@
 // SPDX-License-Identifier: MIT
 //
 
-import Foundation
+public import Foundation
+#if canImport(HealthKit)
 import HealthKit
+#endif
 
 
 extension AnySampleType {
@@ -75,6 +77,7 @@ extension Bundle {
         tables: [LocalizationLookupTable],
         localizations: [Locale.Language]
     ) -> String? {
+        #if canImport(Darwin)
         if #available(macOS 15.4, iOS 18.4, tvOS 18.4, watchOS 11.4, visionOS 2.4, *) {
             let notFound = "NOT_FOUND"
             return localizations.lazy
@@ -84,9 +87,9 @@ extension Bundle {
                         .first { $0 != notFound }
                 }
                 .first
-        } else {
-            return localizedStringForKeyFallback(key: key, tables: tables, localizations: localizations)
         }
+        #endif
+        return localizedStringForKeyFallback(key: key, tables: tables, localizations: localizations)
     }
     
     // ideally this would be directly in the other function, but bc of the #available check we wouldn't be able to test it then.

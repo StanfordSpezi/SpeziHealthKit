@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import HealthKit
 import Spezi
 
@@ -103,3 +105,5 @@ public struct CollectSamples<Sample: _HKSampleWithSampleType>: HealthKitConfigur
         await healthKit.addHealthDataCollector(collector)
     }
 }
+
+#endif

@@ -8,6 +8,8 @@
 
 // swiftlint:disable file_types_order
 
+#if canImport(HealthKit)
+
 import Foundation
 public import HealthKit
 import Spezi
@@ -142,3 +144,5 @@ extension BatchProcessor where Self == IdentityBatchProcessor {
         IdentityBatchProcessor()
     }
 }
+
+#endif

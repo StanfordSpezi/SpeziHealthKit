@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import Foundation
 import HealthKit
 public import Observation
@@ -113,3 +115,5 @@ extension BulkHealthExporter {
         "edu.stanford.spezi.HealthKit.BulkExport.\(id.rawValue)"
     }
 }
+
+#endif

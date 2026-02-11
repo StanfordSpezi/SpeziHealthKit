@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import Foundation
 import class HealthKit.HKQuery
 import SpeziFoundation
@@ -207,3 +209,5 @@ extension HealthKitQueryTimeRange {
         }
     }
 }
+
+#endif

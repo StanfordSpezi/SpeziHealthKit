@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 public import Foundation
 import SpeziHealthKit
 
@@ -104,3 +106,5 @@ extension DateComponents {
         )
     }
 }
+
+#endif

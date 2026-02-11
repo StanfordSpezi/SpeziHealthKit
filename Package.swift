@@ -13,7 +13,7 @@ import class Foundation.ProcessInfo
 import PackageDescription
 
 
-let package = Package(
+var package = Package(
     name: "SpeziHealthKit",
     defaultLocalization: "en",
     platforms: [
@@ -29,7 +29,7 @@ let package = Package(
         .library(name: "SpeziHealthKitUI", targets: ["SpeziHealthKitUI"])
     ],
     dependencies: [
-        .package(url: "https://github.com/StanfordSpezi/Spezi.git", from: "1.8.2"),
+        .package(url: "https://github.com/StanfordSpezi/Spezi.git", from: "1.10.0"),
         .package(url: "https://github.com/StanfordSpezi/SpeziFoundation.git", from: "2.5.2"),
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage.git", from: "2.1.1"),
         .package(url: "https://github.com/apple/swift-algorithms.git", from: "1.2.1"),
@@ -42,7 +42,11 @@ let package = Package(
             dependencies: [
                 .product(name: "Spezi", package: "Spezi"),
                 .product(name: "SpeziFoundation", package: "SpeziFoundation"),
-                .product(name: "SpeziLocalStorage", package: "SpeziStorage"),
+                .product(
+                    name: "SpeziLocalStorage",
+                    package: "SpeziStorage",
+                    condition: .when(platforms: [.macOS, .macCatalyst, .iOS, .tvOS, .watchOS, .visionOS])
+                ),
                 .product(name: "Algorithms", package: "swift-algorithms")
             ],
             exclude: ["Sample Types/SampleTypes.swift.gyb"],
@@ -58,7 +62,11 @@ let package = Package(
             dependencies: [
                 .target(name: "SpeziHealthKit"),
                 .product(name: "SpeziFoundation", package: "SpeziFoundation"),
-                .product(name: "SpeziLocalStorage", package: "SpeziStorage")
+                .product(
+                    name: "SpeziLocalStorage",
+                    package: "SpeziStorage",
+                    condition: .when(platforms: [.macOS, .macCatalyst, .iOS, .tvOS, .watchOS, .visionOS])
+                )
             ],
             swiftSettings: [
                 .enableUpcomingFeature("ExistentialAny"),
@@ -90,16 +98,28 @@ let package = Package(
             resources: [.process("__Snapshots__")],
             swiftSettings: [.enableUpcomingFeature("ExistentialAny")],
             plugins: [] + swiftLintPlugin()
-        ),
-        .executableTarget(
-            name: "LocalizationsProcessor",
-            dependencies: [
-                .target(name: "SpeziHealthKit"),
-                .product(name: "ArgumentParser", package: "swift-argument-parser")
-            ]
         )
     ]
 )
+
+#if canImport(HealthKit)
+package.targets += [
+    .executableTarget(
+        name: "LocalizationsProcessor",
+        dependencies: [
+            .target(name: "SpeziHealthKit"),
+            .product(name: "ArgumentParser", package: "swift-argument-parser")
+        ]
+    ),
+    .executableTarget(
+        name: "Codegen",
+        dependencies: [
+            .target(name: "SpeziHealthKit"),
+            .product(name: "ArgumentParser", package: "swift-argument-parser")
+        ]
+    )
+]
+#endif
 
 
 func swiftLintPlugin() -> [Target.PluginUsage] {

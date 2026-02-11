@@ -6,5 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
 @_documentation(visibility: internal)
 @_exported import HealthKit
+#endif

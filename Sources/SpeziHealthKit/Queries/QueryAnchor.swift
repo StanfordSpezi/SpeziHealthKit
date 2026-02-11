@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import Foundation
 import HealthKit
 
@@ -80,3 +82,5 @@ public struct QueryAnchor: Hashable, Codable, Sendable {
         }
     }
 }
+
+#endif

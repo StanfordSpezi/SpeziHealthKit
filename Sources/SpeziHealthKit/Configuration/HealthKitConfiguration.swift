@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import HealthKit
 import Spezi
 
@@ -101,3 +103,5 @@ extension HKObjectType {
         }
     }
 }
+
+#endif

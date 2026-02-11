@@ -7,7 +7,9 @@
 //
 
 import Foundation
+#if canImport(HealthKit)
 import HealthKit
+#endif
 import SpeziFoundation
 
 
@@ -182,9 +184,13 @@ extension SampleTypeProxy: Codable {
                 case is HKStateOfMindType.Type:
                     self = .stateOfMind(SampleType.stateOfMind)
                 case is HKScoredAssessmentType.Type:
+                    #if canImport(ObjectiveC)
                     let scoredAssessmentType = try catchingNSException {
                         HKScoredAssessmentType(.init(rawValue: sampleTypeIdentifier))
                     }
+                    #else
+                    let scoredAssessmentType = HKScoredAssessmentType(.init(rawValue: sampleTypeIdentifier))
+                    #endif
                     switch scoredAssessmentType {
                     case .init(.GAD7):
                         self = .gad7(SampleType.gad7)

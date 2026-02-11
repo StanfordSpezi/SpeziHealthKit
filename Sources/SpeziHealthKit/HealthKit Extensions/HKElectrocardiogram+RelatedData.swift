@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import HealthKit
 import Spezi
 import SwiftUI
@@ -77,3 +79,5 @@ extension HKElectrocardiogram {
         return measurements
     }
 }
+
+#endif

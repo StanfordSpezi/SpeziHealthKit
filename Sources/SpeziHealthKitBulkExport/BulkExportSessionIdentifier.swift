@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 
 /// Uniquely identifies a ``BulkExportSession``
 public struct BulkExportSessionIdentifier: Hashable, Sendable, RawRepresentable, Codable {
@@ -31,3 +33,5 @@ public struct BulkExportSessionIdentifier: Hashable, Sendable, RawRepresentable,
         try container.encode(rawValue)
     }
 }
+
+#endif
