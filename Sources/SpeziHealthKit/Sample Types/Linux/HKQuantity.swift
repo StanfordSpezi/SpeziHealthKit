@@ -11,26 +11,31 @@
 public import Foundation
 
 
-public final class HKQuantity: NSObject, Sendable {
-    private let unit: HKUnit
+public final class HKQuantity2: NSObject, Sendable {
+    private let unit: HKUnit2
     private let value: Double
     
-    public init(unit: HKUnit, doubleValue: Double) {
+    public init(unit: HKUnit2, doubleValue: Double) {
         self.unit = unit
         self.value = doubleValue
     }
     
-    public func `is`(compatibleWith unit: HKUnit) -> Bool {
-        _notImplemented()
+    public func `is`(compatibleWith unit: HKUnit2) -> Bool {
+        fatalError()
     }
     
-    public func doubleValue(for unit: HKUnit) -> Double {
-        _notImplemented()
+    public func doubleValue(for unit: HKUnit2) -> Double {
+        self.unit.convert(value, to: unit)
     }
     
     public func compare(_ other: HKQuantity) -> ComparisonResult {
-        _notImplemented()
+        fatalError()
     }
 }
 
 #endif
+
+
+//#if !canImport(HealthKit)
+//public typealias HKQuantity = HKQuantity2
+//#endif

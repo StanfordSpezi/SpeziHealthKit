@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
+import Foundation
 @_spi(Testing)
 @testable import SpeziHealthKit
 import Testing
@@ -13,6 +14,7 @@ import Testing
 
 @Suite
 struct SampleTypesTests {
+    #if canImport(HealthKit)
     @Test
     func isSampleType() {
         let quantitySample = HKQuantitySample(
@@ -58,6 +60,7 @@ struct SampleTypesTests {
         #expect(!correlation.is(.activeEnergyBurned))
         #expect(!correlation.is(.sleepAnalysis))
     }
+    #endif
     
     
     @Test

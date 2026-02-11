@@ -45,6 +45,15 @@ jobs:
       buildConfig: ${{ matrix.config }}
       resultBundle: ${{ format('SpeziHealthKit-{0}-{1}.xcresult', matrix.platform.name, matrix.config) }}
       artifactname: ${{ format('SpeziHealthKit-{0}-{1}.xcresult', matrix.platform.name, matrix.config) }}
+  unit_tests_linux:
+    name: Unit Tests (Linux ${{ matrix.config }})
+    uses: StanfordBDHG/.github/.github/workflows/swift-test.yml@v2
+    strategy:
+      matrix:
+        config: [Debug, Release]
+      fail-fast: false
+    with:
+      artifact_name: ${{ format('SpeziHealthKit-Package-Linux-{0}.lcov', matrix.config) }}
   ui_tests:
     name: Build and Test UI Tests ${{ matrix.platform.name }} (${{ matrix.config }})
     uses: StanfordBDHG/.github/.github/workflows/xcodebuild-or-fastlane.yml@v2
@@ -64,9 +73,10 @@ jobs:
       artifactname: ${{ format('TestApp-{0}-{1}.xcresult', matrix.platform.name, matrix.config) }}
   uploadcoveragereport:
     name: Upload Coverage Report
-    needs: [package_tests, ui_tests]
+    needs: [package_tests, ui_tests, unit_tests_linux]
     uses: StanfordBDHG/.github/.github/workflows/create-and-upload-coverage-report.yml@v2
     with:
       coveragereports: SpeziHealthKit-*.xcresult TestApp-*.xcresult
+      coveragereports_lcov: SpeziHealthKit-*.lcov
     secrets:
       token: ${{ secrets.CODECOV_TOKEN }}
