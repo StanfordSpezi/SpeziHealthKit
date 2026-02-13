@@ -144,10 +144,11 @@ extension SampleTypeProxy: Codable {
             }
         }
         #if canImport(ObjectiveC)
-        switch NSClassFromString(sampleTypeClassname) {
+        let resolvedClass = NSClassFromString(sampleTypeClassname)
         #else
-        switch NSClassFromString("SpeziHealthKit.\(sampleTypeClassname)") {
+        let resolvedClass = NSClassFromString("SpeziHealthKit.\(sampleTypeClassname)")
         #endif
+        switch resolvedClass {
         case nil:
             throw SampleTypeDecodingError.unknownSampleTypeClassname(sampleTypeClassname)
         case is HKQuantityType.Type:
