@@ -6,10 +6,9 @@
 // SPDX-License-Identifier: MIT
 //
 
-#if canImport(HealthKit)
-
 public import Foundation
 import SpeziHealthKit
+
 
 /// The earliest date for which the session should collect and export historical Health data.
 public enum ExportSessionStartDate: Hashable, Codable, Sendable {
@@ -55,7 +54,7 @@ extension ExportSessionStartDate {
     }
 }
 
-
+#if canImport(HealthKit)
 extension ExportSessionStartDate {
     func startDate(for sampleType: SampleType<some Any>, in healthKit: HealthKit, relativeTo endDate: Date) async -> Date? {
         switch self {
