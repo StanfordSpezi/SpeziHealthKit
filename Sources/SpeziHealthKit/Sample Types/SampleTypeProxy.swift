@@ -143,7 +143,11 @@ extension SampleTypeProxy: Codable {
                 throw SampleTypeDecodingError.unknownSampleTypeIdentifier(sampleTypeIdentifier)
             }
         }
+        #if canImport(ObjectiveC)
         switch NSClassFromString(sampleTypeClassname) {
+        #else
+        switch NSClassFromString("SpeziHealthKit.\(sampleTypeClassname)") {
+        #endif
         case nil:
             throw SampleTypeDecodingError.unknownSampleTypeClassname(sampleTypeClassname)
         case is HKQuantityType.Type:
@@ -210,7 +214,11 @@ extension SampleTypeProxy: Codable {
     
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.singleValueContainer()
+        #if canImport(ObjectiveC)
         let classname = NSStringFromClass(type(of: underlyingSampleType.hkSampleType))
+        #else
+        let classname = String(describing: type(of: underlyingSampleType.hkSampleType))
+        #endif
         try container.encode("\(classname);\(underlyingSampleType.hkSampleType.identifier)")
     }
 }
