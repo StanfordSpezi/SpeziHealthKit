@@ -13,6 +13,8 @@ import class Foundation.ProcessInfo
 import PackageDescription
 
 
+let enableSwiftLintPlugin = true
+
 var package = Package(
     name: "SpeziHealthKit",
     defaultLocalization: "en",
@@ -35,7 +37,7 @@ var package = Package(
         .package(url: "https://github.com/apple/swift-algorithms.git", from: "1.2.1"),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.17.7"),
         .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.6.1")
-    ] + swiftLintPackage(),
+    ] + swiftLintPackage,
     targets: [
         .target(
             name: "SpeziHealthKit",
@@ -58,7 +60,7 @@ var package = Package(
                 .enableUpcomingFeature("ExistentialAny"),
                 .enableUpcomingFeature("InternalImportsByDefault")
             ],
-            plugins: [] + swiftLintPlugin()
+            plugins: [] + swiftLintPlugin
         ),
         .target(
             name: "SpeziHealthKitBulkExport",
@@ -75,7 +77,7 @@ var package = Package(
                 .enableUpcomingFeature("ExistentialAny"),
                 .enableUpcomingFeature("InternalImportsByDefault")
             ],
-            plugins: [] + swiftLintPlugin()
+            plugins: [] + swiftLintPlugin
         ),
         .target(
             name: "SpeziHealthKitUI",
@@ -87,7 +89,7 @@ var package = Package(
                 .enableUpcomingFeature("ExistentialAny"),
                 .enableUpcomingFeature("InternalImportsByDefault")
             ],
-            plugins: [] + swiftLintPlugin()
+            plugins: [] + swiftLintPlugin
         ),
         .testTarget(
             name: "SpeziHealthKitTests",
@@ -100,7 +102,7 @@ var package = Package(
             ],
             resources: [.process("__Snapshots__")],
             swiftSettings: [.enableUpcomingFeature("ExistentialAny")],
-            plugins: [] + swiftLintPlugin()
+            plugins: [] + swiftLintPlugin
         )
     ]
 )
@@ -126,18 +128,19 @@ package.targets += [
 #endif
 
 
-func swiftLintPlugin() -> [Target.PluginUsage] {
-    // Fully quit Xcode and open again with `open --env SPEZI_DEVELOPMENT_SWIFTLINT /Applications/Xcode.app`
-    if ProcessInfo.processInfo.environment["SPEZI_DEVELOPMENT_SWIFTLINT"] != nil {
-        [.plugin(name: "SwiftLintBuildToolPlugin", package: "SwiftLint")]
+// MARK: SwiftLint support
+
+var swiftLintPlugin: [Target.PluginUsage] {
+    if enableSwiftLintPlugin {
+        [.plugin(name: "SwiftLintBuildToolPlugin", package: "SwiftLintPlugins")]
     } else {
         []
     }
 }
 
-func swiftLintPackage() -> [PackageDescription.Package.Dependency] {
-    if ProcessInfo.processInfo.environment["SPEZI_DEVELOPMENT_SWIFTLINT"] != nil {
-        [.package(url: "https://github.com/realm/SwiftLint.git", from: "0.55.1")]
+var swiftLintPackage: [PackageDescription.Package.Dependency] {
+    if enableSwiftLintPlugin {
+        [.package(url: "https://github.com/SimplyDanny/SwiftLintPlugins.git", from: "0.63.2")]
     } else {
         []
     }

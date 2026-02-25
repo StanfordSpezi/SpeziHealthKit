@@ -12,7 +12,7 @@ import Charts
 import Foundation
 import HealthKit
 public import SpeziFoundation
-public import SpeziHealthKit
+import SpeziHealthKit
 public import SwiftUI
 
 

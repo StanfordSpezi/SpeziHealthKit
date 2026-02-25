@@ -144,9 +144,9 @@ extension SampleTypeProxy: Codable {
             }
         }
         #if canImport(ObjectiveC)
-        let resolvedClass = NSClassFromString(sampleTypeClassname)
+        let resolvedClass: AnyClass? = NSClassFromString(sampleTypeClassname)
         #else
-        let resolvedClass = NSClassFromString("SpeziHealthKit.\(sampleTypeClassname)")
+        let resolvedClass: AnyClass? = NSClassFromString("SpeziHealthKit.\(sampleTypeClassname)")
         #endif
         switch resolvedClass {
         case nil:

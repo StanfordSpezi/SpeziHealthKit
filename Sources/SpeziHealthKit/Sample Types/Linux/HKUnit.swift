@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
-// swiftlint:disable file_types_order missing_docs type_name identifier_name type_contents_order file_length todo all
+// swiftlint:disable file_types_order type_name identifier_name type_contents_order file_length missing_docs
 
 public import Foundation
 
@@ -21,9 +21,9 @@ public let HKUnitMolarMassBloodGlucose = _HKUnitMolarMassBloodGlucose
 ///
 /// Losely inspired by what they seem to be doing.
 @_documentation(visibility: internal)
-public class _HKUnit: NSObject, @unchecked Sendable {
+public final class _HKUnit: NSObject, @unchecked Sendable {
     private static let nullUnit = _HKUnit(
-        factorization: .init(factors: [:]),
+        factorization: .init([:]),
         dimension: .null,
         scaleOffset: 0,
         scaleFactor: 0
@@ -51,11 +51,49 @@ public class _HKUnit: NSObject, @unchecked Sendable {
     }
     
     public func isNull() -> Bool {
-        self == .nullUnit
+        self == .nullUnit || factorization.isNull
     }
     
     override public func isEqual(_ object: Any?) -> Bool {
-        return _compareEq(with: object, on: \.factorization, \.scaleOffset, \.scaleFactor)
+        guard let object = object as? _HKUnit else {
+            return false
+        }
+        return self === object || self.factorization == object.factorization
+    }
+}
+
+
+extension _HKUnit {
+    // MARK: base unit initializers
+    
+    convenience init(dimension: _HKUnit.Dimension, unitString: String, scaleOffset: Double = 0, scaleFactor: Double = 1) {
+        switch dimension.variant {
+        case .base:
+            break // ok
+        case .complex:
+            fatalError("Attempted to construct base unit with complex dimension '\(dimension)'")
+        }
+        self.init(
+            factorization: HKFactorization([.init(dimension: dimension, unitString: unitString): 1]),
+            dimension: dimension,
+            scaleOffset: scaleOffset,
+            scaleFactor: scaleFactor
+        )
+    }
+    
+    convenience init(
+        dimension: _HKUnit.Dimension,
+        unitString: String,
+        metricPrefix: _HKMetricPrefix,
+        scaleOffset: Double = 0,
+        scaleFactor: Double = 1
+    ) {
+        self.init(
+            dimension: dimension,
+            unitString: "\(metricPrefix.prefixString)\(unitString)",
+            scaleOffset: scaleOffset,
+            scaleFactor: scaleFactor * metricPrefix.factor
+        )
     }
 }
 
@@ -83,7 +121,6 @@ extension _HKUnit {
 }
 
 
-
 extension _HKUnit {
     /// Creates a unit as the composition of multiplying a unit with another unit.
     @inlinable public static func * (lhs: _HKUnit, rhs: _HKUnit) -> _HKUnit {
@@ -96,7 +133,7 @@ extension _HKUnit {
     }
     
     public func unitMultiplied(by other: _HKUnit) -> _HKUnit {
-        _HKCompoundUnit(
+        _HKUnit(
             factorization: self.factorization * other.factorization,
             dimension: self.dimension * other.dimension,
             scaleOffset: 0,
@@ -105,7 +142,7 @@ extension _HKUnit {
     }
     
     public func unitDivided(by other: _HKUnit) -> _HKUnit {
-        _HKCompoundUnit(
+        _HKUnit(
             factorization: self.factorization / other.factorization,
             dimension: self.dimension / other.dimension,
             scaleOffset: 0,
@@ -120,7 +157,7 @@ extension _HKUnit {
         case 1:
             self
         default:
-            _HKCompoundUnit(
+            _HKUnit(
                 factorization: self.factorization.raised(to: power),
                 dimension: self.dimension.raised(to: power),
                 scaleOffset: 0,
@@ -159,7 +196,7 @@ extension _HKUnit {
         var factorization: HKFactorization {
             switch variant {
             case .base(let unitString):
-                HKFactorization(factors: [.init(dimension: self, unitString: unitString): 1])
+                HKFactorization([.init(dimension: self, unitString: unitString): 1])
             case .complex(let factorization):
                 factorization
             }
@@ -213,21 +250,21 @@ extension _HKUnit {
 }
 
 
-public enum _HKMetricPrefix: Int, CaseIterable, Sendable {
-    case none = 0
-    case femto = 13
-    case pico = 1
-    case nano = 2
-    case micro = 3
-    case milli = 4
-    case centi = 5
-    case deci = 6
-    case deca = 7
-    case hecto = 8
-    case kilo = 9
-    case mega = 10
-    case giga = 11
-    case tera = 12
+public enum _HKMetricPrefix: CaseIterable, Sendable {
+    case none
+    case femto
+    case pico
+    case nano
+    case micro
+    case milli
+    case centi
+    case deci
+    case deca
+    case hecto
+    case kilo
+    case mega
+    case giga
+    case tera
     
     fileprivate var factor: Double {
         switch self {
@@ -268,37 +305,11 @@ public enum _HKMetricPrefix: Int, CaseIterable, Sendable {
     }
 }
 
-private class _HKBaseUnit: _HKUnit, @unchecked Sendable {
-    init(dimension: _HKUnit.Dimension, unitString: String, scaleOffset: Double = 0, scaleFactor: Double = 1) {
-        switch dimension.variant {
-        case .base:
-            break // ok
-        case .complex:
-            fatalError("Attempted to construct base unit with complex dimension '\(dimension)'")
-        }
-        super.init(
-            factorization: HKFactorization(factors: [.init(dimension: dimension, unitString: unitString): 1]),
-            dimension: dimension,
-            scaleOffset: scaleOffset,
-            scaleFactor: scaleFactor
-        )
-    }
-    
-    convenience init(dimension: _HKUnit.Dimension, unitString: String, metricPrefix: _HKMetricPrefix, scaleOffset: Double = 0, scaleFactor: Double = 1) {
-        self.init(dimension: dimension, unitString: "\(metricPrefix.prefixString)\(unitString)", scaleOffset: scaleOffset, scaleFactor: scaleFactor * metricPrefix.factor)
-    }
-}
-
-
-// TODO do we actually need this?
-private class _HKCompoundUnit: _HKUnit, @unchecked Sendable {
-}
-
 
 // MARK: Factorization
 
 @_spi(Testing)
-public struct HKFactorization: Hashable, CustomStringConvertible, Sendable {
+public struct HKFactorization: Hashable, CustomStringConvertible, /*ExpressibleByDictionaryLiteral,*/ Sendable {
     @_spi(Testing)
     public struct Factor: Hashable, Sendable {
         let dimension: _HKUnit.Dimension
@@ -335,6 +346,10 @@ public struct HKFactorization: Hashable, CustomStringConvertible, Sendable {
     
     public var description: String {
         unitString
+    }
+    
+    var isNull: Bool {
+        factors.isEmpty
     }
     
     public var unitString: String {
@@ -377,7 +392,7 @@ public struct HKFactorization: Hashable, CustomStringConvertible, Sendable {
     }
     
     @_spi(Testing)
-    public init(factors: [Factor: Int]) {
+    public init(_ factors: [Factor: Int]) {
         self.factors = factors.filter { $0.value != 0 }
         for factor in factors.keys {
             precondition(!factor.unitString.isEmpty)
@@ -393,35 +408,39 @@ public struct HKFactorization: Hashable, CustomStringConvertible, Sendable {
         for (unit, exp) in other.factors {
             newFactors[unit, default: 0] += exp
         }
-        return HKFactorization(factors: newFactors)
+        return HKFactorization(newFactors)
     }
     
     func raised(to power: Int) -> Self {
         switch power {
         case 0:
             // Raising anything to 0 creates a dimensionless scalar 1 (Count)
-            HKFactorization(factors: [:])
+            HKFactorization([:])
         case 1:
             self
         default:
-            HKFactorization(factors: factors.mapValues { $0 * power })
+            HKFactorization(factors.mapValues { $0 * power })
         }
     }
     
-    func isCompatible(with other: Self) -> Bool {
-        if self == other {
-            return true
-        }
-        let imp = { (lhs: Self, rhs: Self) -> Bool in
-            lhs.factors.allSatisfy { (factor1, exp1) in
-                rhs.factors.contains { (factor2, exp2) in
-                    exp1 == exp2 && factor1.dimension == factor2.dimension
-                }
+    /// Produces a `HKFactorization` of unitless dimensions, reducing factors with identical dimensions where possible.
+    func reducedToDimensions() -> Self {
+        var newFactors: [Factor: Int] = [:]
+        for (unit, exp) in factors {
+            if let exp2 = newFactors[.init(unitlessDimension: unit.dimension)] {
+                newFactors[.init(unitlessDimension: unit.dimension)] = exp + exp2
+            } else {
+                newFactors[.init(unitlessDimension: unit.dimension)] = exp
             }
         }
-        print(self)
-        print(other)
-        return imp(self, other) && imp(other, self)
+        return HKFactorization(newFactors)
+    }
+    
+    /// Determines whether the factorization is compatible with another one.
+    ///
+    /// Two factorizations are compatible if their unitless reduced forms are equal.
+    func isCompatible(with other: Self) -> Bool {
+        self.reducedToDimensions() == other.reducedToDimensions()
     }
     
     static func * (lhs: Self, rhs: Self) -> Self {
@@ -436,7 +455,9 @@ public struct HKFactorization: Hashable, CustomStringConvertible, Sendable {
 
 // MARK: Parsing
 
-#if true || !canImport(HealthKit)
+// we need this as a workaround, to be able to assign in the initializer
+/// Internal protocol; used to support creating ``_HKUnit`` instances by parsing a string.
+@_documentation(visibility: internal)
 public protocol _HKParsableUnit {}
 
 extension _HKUnit: _HKParsableUnit {}
@@ -450,19 +471,20 @@ extension _HKParsableUnit where Self == _HKUnit {
         self = try! Self.parse(string) // swiftlint:disable:this force_try
     }
 }
-#endif
-
 
 
 extension _HKUnit {
+    /// Creates a unit by parsing a unit string.
     @_spi(APISupport)
     public static func parse(_ input: some StringProtocol) throws -> _HKUnit {
         let syntax = try UnitParser.parse(input: input)
         return unit(for: syntax)
     }
     
-    private static func unit(for node: UnitParser.Node) -> _HKUnit {
+    private static func unit(for node: UnitParser<some Any>.Node) -> _HKUnit { // swiftlint:disable:this cyclomatic_complexity function_body_length
         switch node {
+        case .null:
+            return .nullUnit
         case let .atom(metricPrefix, .SI(siUnit), power):
             let unit = switch siUnit {
             case .mass:
@@ -580,7 +602,7 @@ extension _HKUnit {
     }
 }
 
-private enum UnitParser {
+private struct UnitParser<Input: StringProtocol>: ~Copyable {
     enum Unit {
         case SI(SIUnit)
         case other(String)
@@ -601,7 +623,7 @@ private enum UnitParser {
             case angle
             case illuminance
             
-            init?(_ input: some StringProtocol) {
+            init?(_ input: some StringProtocol) { // swiftlint:disable:this cyclomatic_complexity
                 switch input {
                 case "g":   self = .mass
                 case "m":   self = .length
@@ -633,76 +655,224 @@ private enum UnitParser {
     }
     
     indirect enum Node {
+        case null
         case atom(metricPrefix: _HKMetricPrefix, unit: Unit, power: Int)
         case cons(Node, Node)
         
+        var isNull: Bool {
+            switch self {
+            case .null:
+                true
+            case .atom, .cons:
+                false
+            }
+        }
+        
         func reciprocal() -> Self {
             switch self {
+            case .null:
+                .null // Q should this be allowed?
             case let .atom(metricPrefix, unit, power):
                 .atom(metricPrefix: metricPrefix, unit: unit, power: -power)
             case let .cons(lhs, rhs):
                 .cons(lhs.reciprocal(), rhs.reciprocal())
             }
         }
+        
+        func raised(to power: Int) -> Self {
+            switch self {
+            case .null:
+                .null // Q should this be allowed?
+            case let .atom(metricPrefix, unit, power2):
+                .atom(metricPrefix: metricPrefix, unit: unit, power: power2 * power)
+            case let .cons(lhs, rhs):
+                .cons(lhs.raised(to: power), rhs.raised(to: power))
+            }
+        }
     }
     
     struct ParseError: Error {
-        let position: String.Index
+        let position: Input.Index
         let issue: String
     }
     
-    static func parse(input: some StringProtocol) throws(ParseError) -> Node {
-        if let divIdx1 = input.firstIndex(of: "/"), let divIdx2 = input[divIdx1...].dropFirst().firstIndex(of: "/") {
-            throw .init(position: divIdx2, issue: "Input contains multiple division signs")
-        }
-        return try _parse(input)
+    
+    private let _input: Input
+    private var position: Input.Index
+    
+    private var current: Character? {
+        _input[safe: position]
+    }
+    private var isAtEnd: Bool {
+        position >= _input.endIndex
+    }
+    private var remaining: some StringProtocol {
+        _input[position...]
     }
     
-    private static func _parse(_ input: some StringProtocol) throws(ParseError) -> Node {
-        if let divIdx = input.firstIndex(of: "/") {
-            let denominators = try _parse(input.suffix(from: divIdx).dropFirst())
-            if input[..<divIdx] == "1" {
-                // special case, to support "1/s" syntax
-                return denominators.reciprocal()
+    init(input: Input) {
+        self._input = input
+        self.position = input.startIndex
+    }
+    
+    static func parse(input: Input) throws(ParseError) -> Node {
+        var parser = Self(input: input)
+        return try parser.parseExpr(isAtRoot: true)
+    }
+    
+    private func peek(_ offset: Int = 1) -> Character? {
+        _input[safe: _input.index(position, offsetBy: offset)]
+    }
+    
+    private mutating func advance(by count: Int = 1) {
+        precondition(count > 0)
+        _input.formIndex(&position, offsetBy: count)
+    }
+    
+    private mutating func advance(to newPos: Input.Index) {
+        precondition(newPos > position)
+        position = newPos
+    }
+    
+    private mutating func parseExpr(isAtRoot: Bool) throws (ParseError) -> Node { // swiftlint:disable:this function_body_length cyclomatic_complexity
+        var nodes: [Node] = []
+        loop: while !isAtEnd {
+            let posAtEntry = position
+            if current == "(" {
+                if !nodes.isEmpty {
+                    // we're parsing a paren-expr that follows some other expr.
+                    guard peek(-1) == "·" else {
+                        throw .init(position: position, issue: "Invalid input")
+                    }
+                }
+                let exprPos = position
+                let expr = try parseParenExpr()
+                if expr.isNull && !nodes.isEmpty {
+                    throw .init(position: exprPos, issue: "Invalid '()'")
+                } else if nodes.contains(where: \.isNull) {
+                    throw .init(position: exprPos, issue: "Invalid input: cannot multiply with '()'")
+                } else {
+                    nodes.append(expr)
+                }
+            } else if current == "·" {
+                guard !nodes.isEmpty else {
+                    throw .init(position: position, issue: "Unexpected '·'")
+                }
+                advance()
+            } else if current == "/" || current == "1" && peek() == "/" {
+                guard isAtRoot else {
+                    // we found a non-top-level division
+                    throw .init(position: position, issue: "'/' only allowed at root level")
+                }
+                // we found a top-level division
+                switch (current == "/", nodes.first) {
+                case (true, .none): // '/<rhs>'
+                    throw .init(position: position, issue: "missing lhs for '/'")
+                case (true, .some(let lhsFst)): // '<lhs>/<rhs>'
+                    advance(by: 1)
+                    let lhs = nodes.dropFirst().reduce(lhsFst) { .cons($0, $1) }
+                    let rhs = try parseExpr(isAtRoot: false)
+                    // intentionally returning out of the loop here
+                    return .cons(lhs, rhs.reciprocal())
+                case (false, .none): // '1/<rhs>'
+                    advance(by: 2)
+                    let rhs = try parseExpr(isAtRoot: false)
+                    // intentionally returning out of the loop here
+                    return rhs.reciprocal()
+                case (false, .some(let lhsFst)): // '<lhs>1/<rhs>'
+                    advance(by: 2)
+                    let lhs = nodes.dropFirst().reduce(lhsFst) { .cons($0, $1) }
+                    let rhs = try parseExpr(isAtRoot: false)
+                    // intentionally returning out of the loop here
+                    return .cons(lhs, rhs.reciprocal())
+                }
+            } else if current == ")" {
+                // closing paren expr
+                break loop
             } else {
-                let numerators = try _parse(input[..<divIdx])
-                return .cons(numerators, denominators.reciprocal())
+                let exprPos = position
+                let expr = try parseAtom()
+                if nodes.contains(where: \.isNull) {
+                    throw .init(position: exprPos, issue: "Invalid input: cannot multiply with '()'")
+                } else {
+                    nodes.append(expr)
+                }
             }
+            guard position > posAtEntry else {
+                throw .init(position: position, issue: "Unable to parse")
+            }
+        }
+        guard let fst = nodes.first else {
+            return .null
+        }
+        return nodes.dropFirst().reduce(fst) { .cons($0, $1) }
+    }
+    
+    private mutating func parseParenExpr() throws(ParseError) -> Node {
+        guard current == "(" else {
+            throw .init(position: position, issue: "Expected '('")
+        }
+        advance()
+        if current == ")" {
+            // '()' input
+            advance()
+            return .null
+        }
+        let expr = try parseExpr(isAtRoot: false)
+        guard current == ")" else {
+            throw .init(position: position, issue: "Expected ')'")
+        }
+        advance()
+        if let power = try parseExponentiation() {
+            guard !expr.isNull else {
+                throw .init(position: position, issue: "Invalid exponentiation")
+            }
+            return expr.raised(to: power)
         } else {
-            let rawAtoms = input.split { $0 == "." || $0 == "*" || $0 == "·" }
-            guard !rawAtoms.isEmpty else {
-                throw .init(position: input.startIndex, issue: "Empty input")
-            }
-            // unrolled `rawAtoms.dropFirst().reduce`, bc of https://github.com/swiftlang/swift/issues/75430
-            var node = try _parseAtom(rawAtoms[0])
-            for rawAtom in rawAtoms.dropFirst() {
-                node = .cons(node, try _parse(rawAtom))
-            }
-            return node
+            return expr
         }
     }
     
-    private static func _parseAtom<S: StringProtocol>(_ input: S) throws(ParseError) -> Node {
-        let exponent: Int
-        let unitInput: S.SubSequence
-        if let idx = input.firstIndex(of: "^") {
-            guard let exp = Int(input.suffix(from: idx).dropFirst()) else {
-                throw .init(position: input.index(after: idx), issue: "Unable to parse exponent")
+    private mutating func parseAtom() throws(ParseError) -> Node {
+        let possibleAtomInput = remaining.prefix(while: \.isLetter)
+        let atom: Node? = { () -> Node? in
+            for metricPrefix in _HKMetricPrefix.allCases {
+                let prefixString = metricPrefix.prefixString
+                if possibleAtomInput.starts(with: prefixString), let siUnit = Unit.SIUnit(possibleAtomInput.dropFirst(prefixString.count)) {
+                    return .atom(metricPrefix: metricPrefix, unit: .SI(siUnit), power: 1)
+                }
             }
-            exponent = exp
-            unitInput = input[..<idx]
+            // we were unable to parse the `unitInput` as a metric-prefix-prepended SI unit
+            return .atom(metricPrefix: .none, unit: .other(String(possibleAtomInput)), power: 1)
+        }()
+        guard let atom else {
+            throw .init(position: position, issue: "Unable to parse atom")
+        }
+        advance(by: possibleAtomInput.count)
+        if let exponent = try parseExponentiation() {
+            guard !atom.isNull else {
+                throw .init(position: position, issue: "Invalid exponentiation")
+            }
+            return atom.raised(to: exponent)
         } else {
-            exponent = 1
-            unitInput = input[...]
+            return atom
         }
-        for metricPrefix in _HKMetricPrefix.allCases {
-            let prefixString = metricPrefix.prefixString
-            if unitInput.starts(with: prefixString), let siUnit = Unit.SIUnit(unitInput.dropFirst(prefixString.count)) {
-                return .atom(metricPrefix: metricPrefix, unit: .SI(siUnit), power: exponent)
-            }
+    }
+    
+    /// Parses an exponentation of the form `^n`, if is exists at the current position.
+    ///
+    /// - returns: the power `n`, if an exponentiation exists at the current position. `nil` if no exponentiation exists.
+    private mutating func parseExponentiation() throws(ParseError) -> Int? {
+        guard current == "^" else {
+            return nil
         }
-        // we were unable to parse the `unitInput` as a metric-prefix-prepended SI unit
-        return .atom(metricPrefix: .none, unit: .other(String(unitInput)), power: exponent)
+        advance()
+        let powerInput = remaining.prefix { $0 == "-" || $0.isNumber }
+        guard let power = Int(powerInput) else {
+            throw .init(position: position, issue: "Unable to parse power")
+        }
+        advance(by: powerInput.count)
+        return power
     }
 }
 
@@ -711,7 +881,7 @@ private enum UnitParser {
 
 extension _HKUnit {
     public class func gramUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
-        _HKBaseUnit(dimension: .mass, unitString: "g", metricPrefix: prefix)
+        _HKUnit(dimension: .mass, unitString: "g", metricPrefix: prefix)
     }
     
     public class func gram() -> _HKUnit {
@@ -719,20 +889,19 @@ extension _HKUnit {
     }
     
     public class func ounce() -> _HKUnit {
-        _HKBaseUnit(dimension: .mass, unitString: "oz", scaleFactor: 28.349523125)
+        _HKUnit(dimension: .mass, unitString: "oz", scaleFactor: 28.349523125)
     }
     
     public class func pound() -> _HKUnit {
-        _HKBaseUnit(dimension: .mass, unitString: "lb", scaleFactor: 453.59237)
+        _HKUnit(dimension: .mass, unitString: "lb", scaleFactor: 453.59237)
     }
     
     public class func stone() -> _HKUnit {
-        _HKBaseUnit(dimension: .mass, unitString: "st", scaleFactor: 6350.2931799999997)
+        _HKUnit(dimension: .mass, unitString: "st", scaleFactor: 6350.2931799999997)
     }
     
     public class func moleUnit(with prefix: _HKMetricPrefix, molarMass gramsPerMole: Double) -> _HKUnit {
-        // TODO gramsPerMole as scale factor yes or no?
-        _HKBaseUnit(dimension: .mass, unitString: "mol<\(gramsPerMole)>", metricPrefix: prefix, scaleFactor: gramsPerMole)
+        _HKUnit(dimension: .mass, unitString: "mol<\(gramsPerMole)>", metricPrefix: prefix, scaleFactor: gramsPerMole)
     }
     
     public class func moleUnit(withMolarMass gramsPerMole: Double) -> _HKUnit {
@@ -743,7 +912,7 @@ extension _HKUnit {
 
 extension _HKUnit {
     public class func meterUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
-        _HKBaseUnit(dimension: .length, unitString: "m", metricPrefix: prefix)
+        _HKUnit(dimension: .length, unitString: "m", metricPrefix: prefix)
     }
     
     public class func meter() -> _HKUnit {
@@ -751,26 +920,26 @@ extension _HKUnit {
     }
     
     public class func inch() -> _HKUnit {
-        _HKBaseUnit(dimension: .length, unitString: "in", scaleFactor: 0.0254)
+        _HKUnit(dimension: .length, unitString: "in", scaleFactor: 0.0254)
     }
     
     public class func foot() -> _HKUnit {
-        _HKBaseUnit(dimension: .length, unitString: "ft", scaleFactor: 0.3048)
+        _HKUnit(dimension: .length, unitString: "ft", scaleFactor: 0.3048)
     }
     
     public class func yard() -> _HKUnit {
-        _HKBaseUnit(dimension: .length, unitString: "yd", scaleFactor: 0.9144)
+        _HKUnit(dimension: .length, unitString: "yd", scaleFactor: 0.9144)
     }
     
     public class func mile() -> _HKUnit {
-        _HKBaseUnit(dimension: .length, unitString: "mi", scaleFactor: 1609.344)
+        _HKUnit(dimension: .length, unitString: "mi", scaleFactor: 1609.344)
     }
 }
 
 
 extension _HKUnit {
     public class func literUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
-        _HKBaseUnit(dimension: .volume, unitString: "L", metricPrefix: prefix)
+        _HKUnit(dimension: .volume, unitString: "L", metricPrefix: prefix)
     }
     
     public class func liter() -> _HKUnit {
@@ -778,34 +947,34 @@ extension _HKUnit {
     }
     
     public class func fluidOunceUS() -> _HKUnit {
-        _HKBaseUnit(dimension: .volume, unitString: "fl_oz_us", scaleFactor: 0.0295735295625)
+        _HKUnit(dimension: .volume, unitString: "fl_oz_us", scaleFactor: 0.0295735295625)
     }
     
     public class func fluidOunceImperial() -> _HKUnit {
-        _HKBaseUnit(dimension: .volume, unitString: "fl_oz_imp", scaleFactor: 0.0284130625)
+        _HKUnit(dimension: .volume, unitString: "fl_oz_imp", scaleFactor: 0.0284130625)
     }
     
     public class func pintUS() -> _HKUnit {
-        _HKBaseUnit(dimension: .volume, unitString: "pt_us", scaleFactor: 0.473176473)
+        _HKUnit(dimension: .volume, unitString: "pt_us", scaleFactor: 0.473176473)
     }
     
     public class func pintImperial() -> _HKUnit {
-        _HKBaseUnit(dimension: .volume, unitString: "pt_imp", scaleFactor: 0.56826125)
+        _HKUnit(dimension: .volume, unitString: "pt_imp", scaleFactor: 0.56826125)
     }
     
     public class func cupUS() -> _HKUnit {
-        _HKBaseUnit(dimension: .volume, unitString: "cup_us", scaleFactor: 0.2365882365)
+        _HKUnit(dimension: .volume, unitString: "cup_us", scaleFactor: 0.2365882365)
     }
     
     public class func cupImperial() -> _HKUnit {
-        _HKBaseUnit(dimension: .volume, unitString: "cup_imp", scaleFactor: 0.284130625)
+        _HKUnit(dimension: .volume, unitString: "cup_imp", scaleFactor: 0.284130625)
     }
 }
 
 
 extension _HKUnit {
     public class func pascalUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
-        _HKBaseUnit(dimension: .pressure, unitString: "Pa", metricPrefix: prefix)
+        _HKUnit(dimension: .pressure, unitString: "Pa", metricPrefix: prefix)
     }
     
     public class func pascal() -> _HKUnit {
@@ -813,30 +982,30 @@ extension _HKUnit {
     }
     
     public class func millimeterOfMercury() -> _HKUnit {
-        _HKBaseUnit(dimension: .pressure, unitString: "mmHg", scaleFactor: 133.322387415)
+        _HKUnit(dimension: .pressure, unitString: "mmHg", scaleFactor: 133.322387415)
     }
     
     public class func centimeterOfWater() -> _HKUnit {
-        _HKBaseUnit(dimension: .pressure, unitString: "cmAq", scaleFactor: 98.0665)
+        _HKUnit(dimension: .pressure, unitString: "cmAq", scaleFactor: 98.0665)
     }
     
     public class func atmosphere() -> _HKUnit {
-        _HKBaseUnit(dimension: .pressure, unitString: "atm", scaleFactor: 101325)
+        _HKUnit(dimension: .pressure, unitString: "atm", scaleFactor: 101325)
     }
     
     public class func decibelAWeightedSoundPressureLevel() -> _HKUnit {
-        _HKBaseUnit(dimension: .soundPressureLevel, unitString: "dBASPL", scaleFactor: 1)
+        _HKUnit(dimension: .soundPressureLevel, unitString: "dBASPL", scaleFactor: 1)
     }
     
     public class func inchesOfMercury() -> _HKUnit {
-        _HKBaseUnit(dimension: .pressure, unitString: "inHg", scaleFactor: 3386.38816)
+        _HKUnit(dimension: .pressure, unitString: "inHg", scaleFactor: 3386.38816)
     }
 }
 
 
 extension _HKUnit {
     public class func secondUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
-        _HKBaseUnit(dimension: .time, unitString: "s", metricPrefix: prefix)
+        _HKUnit(dimension: .time, unitString: "s", metricPrefix: prefix)
     }
     
     public class func second() -> _HKUnit {
@@ -844,22 +1013,22 @@ extension _HKUnit {
     }
     
     public class func minute() -> _HKUnit {
-        _HKBaseUnit(dimension: .time, unitString: "min", scaleFactor: 60)
+        _HKUnit(dimension: .time, unitString: "min", scaleFactor: 60)
     }
     
     public class func hour() -> _HKUnit {
-        _HKBaseUnit(dimension: .time, unitString: "hr", scaleFactor: 60 * 60)
+        _HKUnit(dimension: .time, unitString: "hr", scaleFactor: 60 * 60)
     }
     
     public class func day() -> _HKUnit {
-        _HKBaseUnit(dimension: .time, unitString: "d", scaleFactor: 60 * 60 * 24)
+        _HKUnit(dimension: .time, unitString: "d", scaleFactor: 60 * 60 * 24)
     }
 }
 
 
 extension _HKUnit {
     public class func jouleUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
-        _HKBaseUnit(dimension: .energy, unitString: "J", metricPrefix: prefix)
+        _HKUnit(dimension: .energy, unitString: "J", metricPrefix: prefix)
     }
     
     public class func joule() -> _HKUnit {
@@ -867,17 +1036,18 @@ extension _HKUnit {
     }
     
     public class func kilocalorie() -> _HKUnit {
-        _HKBaseUnit(dimension: .energy, unitString: "kcal", scaleFactor: 4184)
+        _HKUnit(dimension: .energy, unitString: "kcal", scaleFactor: 4184)
     }
     
     public class func smallCalorie() -> _HKUnit {
-        _HKBaseUnit(dimension: .energy, unitString: "cal", scaleFactor: 4.184)
+        _HKUnit(dimension: .energy, unitString: "cal", scaleFactor: 4.184)
     }
     
     public class func largeCalorie() -> _HKUnit {
-        _HKBaseUnit(dimension: .energy, unitString: "Cal", scaleFactor: 4184)
+        _HKUnit(dimension: .energy, unitString: "Cal", scaleFactor: 4184)
     }
     
+    @available(*, deprecated, message: "Use smallCalorie or largeCalorie, depending on which you mean")
     public class func calorie() -> _HKUnit {
         .smallCalorie()
     }
@@ -886,27 +1056,26 @@ extension _HKUnit {
 
 extension _HKUnit {
     public class func degreeCelsius() -> _HKUnit {
-        _HKBaseUnit(dimension: .temperature, unitString: "degC", scaleOffset: 273.15, scaleFactor: 1)
+        _HKUnit(dimension: .temperature, unitString: "degC", scaleOffset: 273.15, scaleFactor: 1)
     }
     
     public class func degreeFahrenheit() -> _HKUnit {
-        _HKBaseUnit(dimension: .temperature, unitString: "degF", scaleOffset: (5 / 9) * 459.67, scaleFactor: 5 / 9)
+        _HKUnit(dimension: .temperature, unitString: "degF", scaleOffset: (5 / 9) * 459.67, scaleFactor: 5 / 9)
     }
     
     public class func kelvin() -> _HKUnit {
-//        _HKBaseUnit(dimension: .temperature, unitString: "K")
         kelvinUnit(with: .none)
     }
     
     fileprivate class func kelvinUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
-        _HKBaseUnit(dimension: .temperature, unitString: "K", metricPrefix: prefix)
+        _HKUnit(dimension: .temperature, unitString: "K", metricPrefix: prefix)
     }
 }
 
 
 extension _HKUnit {
     public class func siemenUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
-        _HKBaseUnit(dimension: .conductance, unitString: "S", metricPrefix: prefix)
+        _HKUnit(dimension: .conductance, unitString: "S", metricPrefix: prefix)
     }
     
     public class func siemen() -> _HKUnit {
@@ -917,32 +1086,32 @@ extension _HKUnit {
 
 extension _HKUnit {
     public class func internationalUnit() -> _HKUnit {
-        _HKBaseUnit(dimension: .internationalUnit, unitString: "IU")
+        _HKUnit(dimension: .internationalUnit, unitString: "IU")
     }
 }
 
 
 extension _HKUnit {
     public class func count() -> _HKUnit {
-        _HKBaseUnit(dimension: .null, unitString: "count")
+        _HKUnit(dimension: .null, unitString: "count")
     }
     
     public class func percent() -> _HKUnit {
-        _HKBaseUnit(dimension: .null, unitString: "%")
+        _HKUnit(dimension: .null, unitString: "%")
     }
 }
 
 
 extension _HKUnit {
     public class func decibelHearingLevel() -> _HKUnit {
-        _HKBaseUnit(dimension: .hearingSensitivity, unitString: "dBHL")
+        _HKUnit(dimension: .hearingSensitivity, unitString: "dBHL")
     }
 }
 
 
 extension _HKUnit {
     public class func hertzUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
-        _HKBaseUnit(dimension: .frequency, unitString: "Hz", metricPrefix: prefix)
+        _HKUnit(dimension: .frequency, unitString: "Hz", metricPrefix: prefix)
     }
     
     public class func hertz() -> _HKUnit {
@@ -953,7 +1122,7 @@ extension _HKUnit {
 
 extension _HKUnit {
     public class func voltUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
-        _HKBaseUnit(dimension: .electricPotentialDifference, unitString: "V", metricPrefix: prefix)
+        _HKUnit(dimension: .electricPotentialDifference, unitString: "V", metricPrefix: prefix)
     }
     
     public class func volt() -> _HKUnit {
@@ -964,7 +1133,7 @@ extension _HKUnit {
 
 extension _HKUnit {
     public class func wattUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
-        _HKBaseUnit(dimension: .power, unitString: "W", metricPrefix: prefix)
+        _HKUnit(dimension: .power, unitString: "W", metricPrefix: prefix)
     }
     
     public class func watt() -> _HKUnit {
@@ -975,18 +1144,18 @@ extension _HKUnit {
 
 extension _HKUnit {
     public class func diopter() -> _HKUnit {
-        _HKBaseUnit(dimension: .diopter, unitString: "D")
+        _HKUnit(dimension: .diopter, unitString: "D")
     }
     
     public class func prismDiopter() -> _HKUnit {
-        _HKBaseUnit(dimension: .prismDiopter, unitString: "pD")
+        _HKUnit(dimension: .prismDiopter, unitString: "pD")
     }
 }
 
 
 extension _HKUnit {
     public class func radianAngleUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
-        _HKBaseUnit(dimension: .angle, unitString: "rad", metricPrefix: prefix)
+        _HKUnit(dimension: .angle, unitString: "rad", metricPrefix: prefix)
     }
     
     public class func radianAngle() -> _HKUnit {
@@ -994,14 +1163,14 @@ extension _HKUnit {
     }
     
     public class func degreeAngle() -> _HKUnit {
-        _HKBaseUnit(dimension: .angle, unitString: "deg", scaleFactor: 1 / (180 / .pi))
+        _HKUnit(dimension: .angle, unitString: "deg", scaleFactor: 1 / (180 / .pi))
     }
 }
 
 
 extension _HKUnit {
     public class func luxUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
-        _HKBaseUnit(dimension: .illuminance, unitString: "lx", metricPrefix: prefix)
+        _HKUnit(dimension: .illuminance, unitString: "lx", metricPrefix: prefix)
     }
     
     public class func lux() -> _HKUnit {
@@ -1012,7 +1181,7 @@ extension _HKUnit {
 
 extension _HKUnit {
     public class func appleEffortScore() -> _HKUnit {
-        _HKBaseUnit(dimension: .appleEffortScore, unitString: "appleEffortScore")
+        _HKUnit(dimension: .appleEffortScore, unitString: "appleEffortScore")
     }
 }
 

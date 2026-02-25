@@ -132,6 +132,9 @@ public class HKActivitySummaryType: HKSampleType, @unchecked Sendable {
     fileprivate static let shared = HKActivitySummaryType(identifier: HKActivitySummaryTypeIdentifier)
 }
 
+public class HKMedicationDoseEventType: HKSampleType, @unchecked Sendable {}
+public class HKUserAnnotatedMedicationType: HKObjectType, @unchecked Sendable {}
+
 
 extension HKObjectType {
     @available(*, deprecated, renamed: "HKQuantityType(_:)")
@@ -156,15 +159,19 @@ extension HKObjectType {
     
 //    public class func documentType(forIdentifier identifier: HKDocumentTypeIdentifier) -> HKDocumentType?
     
+    @available(*, unavailable, message: "Not yet implemented")
     public class func seriesType(forIdentifier identifier: String) -> HKSeriesType? {
-        fatalError("TODO")
+        fatalError("Not yet implemented")
     }
     
     public class func workoutType() -> HKWorkoutType {
         HKWorkoutType.shared
     }
     
-//    public class func activitySummaryType() -> HKActivitySummaryType {}
+    @available(*, unavailable, message: "Not yet implemented")
+    public class func activitySummaryType() -> HKActivitySummaryType {
+        fatalError("Not yet implemented")
+    }
     
     public class func audiogramSampleType() -> HKAudiogramSampleType {
         HKAudiogramSampleType.shared
@@ -183,10 +190,17 @@ extension HKObjectType {
         HKStateOfMindType.shared
     }
     
-//    @available(macOS 26.0, *)
-//    public class func medicationDoseEventType() -> HKMedicationDoseEventType
-//    @available(macOS 26.0, *)
-//    public class func userAnnotatedMedicationType() -> HKUserAnnotatedMedicationType
+    @available(macOS 26.0, *)
+    @available(*, unavailable, message: "Not yet implemented")
+    public class func medicationDoseEventType() -> HKMedicationDoseEventType {
+        fatalError("Not yet implemented")
+    }
+    
+    @available(macOS 26.0, *)
+    @available(*, unavailable, message: "Not yet implemented")
+    public class func userAnnotatedMedicationType() -> HKUserAnnotatedMedicationType {
+        fatalError("Not yet implemented")
+    }
 }
 
 
