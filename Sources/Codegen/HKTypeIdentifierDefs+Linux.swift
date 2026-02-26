@@ -10,7 +10,7 @@
 // NOTE: This file was automatically generated and should not be edited.
 // swiftlint:disable all
 
-#if canImport(HealthKit)
+#if os(macOS)
 
 import HealthKit
 
