@@ -178,13 +178,15 @@ private struct IdentifierDefinitionsFile: ~Copyable {
     
     mutating func defineGlobalVariable(_ definition: VariableDef) {
         writeDocComment(definition.docComment)
-        contents += "\npublic let \(definition.identifierName) = \"\(definition.rawValue)\"\n"
+        contents += "public let \(definition.identifierName) = \"\(definition.rawValue)\"\n"
     }
     
     private mutating func writeDocComment(_ text: String) {
-//        for line in text.split(whereSeparator: \.isNewline) {
-//            contents += "\n\(String(repeating: " ", count: currentIndent))/// \(line)"
-//        }
+        let indent = currentIndent
+        contents += "\n"
+        for line in text.split(whereSeparator: \.isNewline) {
+            contents += "\(String(repeating: " ", count: indent))/// \(line)\n"
+        }
     }
 }
 

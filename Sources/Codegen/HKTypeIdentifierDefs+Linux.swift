@@ -33,7 +33,7 @@ public enum SampleTypeIdentifierDefinition: Sendable {
 
 
 extension SampleTypeIdentifierDefinition {
-    @available(iOS 18, macOS 15, tvOS 18, watchOS 11, visionOS 2, *)
+    @available(macOS 15, *)
     public static let definitions: [SampleTypeIdentifierDefinition] = [
         .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",

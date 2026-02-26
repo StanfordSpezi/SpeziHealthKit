@@ -59,7 +59,7 @@ public class HKQuantityType: HKSampleType, @unchecked Sendable {
     }
 }
 
-public class HKCharacteristicType: HKSampleType, @unchecked Sendable {
+public class HKCharacteristicType: HKObjectType, @unchecked Sendable {
     public init(_ identifier: HKCharacteristicTypeIdentifier) {
         super.init(identifier: identifier.rawValue)
     }

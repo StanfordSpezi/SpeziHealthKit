@@ -1362,241 +1362,241 @@ extension SampleType where Sample == HKQuantitySample {
         if identifier == .stepCount {
             self = .stepCount
         } else if identifier == .distanceWalkingRunning {
-            self =  .distanceWalkingRunning
+            self = .distanceWalkingRunning
         } else if identifier == .runningGroundContactTime {
-            self =  .runningGroundContactTime
+            self = .runningGroundContactTime
         } else if identifier == .runningPower {
-            self =  .runningPower
+            self = .runningPower
         } else if identifier == .runningSpeed {
-            self =  .runningSpeed
+            self = .runningSpeed
         } else if identifier == .runningStrideLength {
-            self =  .runningStrideLength
+            self = .runningStrideLength
         } else if identifier == .runningVerticalOscillation {
-            self =  .runningVerticalOscillation
+            self = .runningVerticalOscillation
         } else if identifier == .distanceCycling {
-            self =  .distanceCycling
+            self = .distanceCycling
         } else if identifier == .pushCount {
-            self =  .pushCount
+            self = .pushCount
         } else if identifier == .distanceWheelchair {
-            self =  .distanceWheelchair
+            self = .distanceWheelchair
         } else if identifier == .swimmingStrokeCount {
-            self =  .swimmingStrokeCount
+            self = .swimmingStrokeCount
         } else if identifier == .distanceSwimming {
-            self =  .distanceSwimming
+            self = .distanceSwimming
         } else if identifier == .distanceDownhillSnowSports {
-            self =  .distanceDownhillSnowSports
+            self = .distanceDownhillSnowSports
         } else if identifier == .basalEnergyBurned {
-            self =  .basalEnergyBurned
+            self = .basalEnergyBurned
         } else if identifier == .activeEnergyBurned {
-            self =  .activeEnergyBurned
+            self = .activeEnergyBurned
         } else if identifier == .flightsClimbed {
-            self =  .flightsClimbed
+            self = .flightsClimbed
         } else if identifier == .appleExerciseTime {
-            self =  .appleExerciseTime
+            self = .appleExerciseTime
         } else if identifier == .appleMoveTime {
-            self =  .appleMoveTime
+            self = .appleMoveTime
         } else if identifier == .appleStandTime {
-            self =  .appleStandTime
+            self = .appleStandTime
         } else if identifier == .vo2Max {
-            self =  .vo2Max
+            self = .vo2Max
         } else if identifier == .height {
-            self =  .height
+            self = .height
         } else if identifier == .bodyMass {
-            self =  .bodyMass
+            self = .bodyMass
         } else if identifier == .bodyMassIndex {
-            self =  .bodyMassIndex
+            self = .bodyMassIndex
         } else if identifier == .leanBodyMass {
-            self =  .leanBodyMass
+            self = .leanBodyMass
         } else if identifier == .bodyFatPercentage {
-            self =  .bodyFatPercentage
+            self = .bodyFatPercentage
         } else if identifier == .waistCircumference {
-            self =  .waistCircumference
+            self = .waistCircumference
         } else if identifier == .appleSleepingWristTemperature {
-            self =  .appleSleepingWristTemperature
+            self = .appleSleepingWristTemperature
         } else if identifier == .basalBodyTemperature {
-            self =  .basalBodyTemperature
+            self = .basalBodyTemperature
         } else if identifier == .environmentalAudioExposure {
-            self =  .environmentalAudioExposure
+            self = .environmentalAudioExposure
         } else if identifier == .headphoneAudioExposure {
-            self =  .headphoneAudioExposure
+            self = .headphoneAudioExposure
         } else if identifier == .heartRate {
-            self =  .heartRate
+            self = .heartRate
         } else if identifier == .restingHeartRate {
-            self =  .restingHeartRate
+            self = .restingHeartRate
         } else if identifier == .walkingHeartRateAverage {
-            self =  .walkingHeartRateAverage
+            self = .walkingHeartRateAverage
         } else if identifier == .heartRateVariabilitySDNN {
-            self =  .heartRateVariabilitySDNN
+            self = .heartRateVariabilitySDNN
         } else if identifier == .heartRateRecoveryOneMinute {
-            self =  .heartRateRecoveryOneMinute
+            self = .heartRateRecoveryOneMinute
         } else if identifier == .atrialFibrillationBurden {
-            self =  .atrialFibrillationBurden
+            self = .atrialFibrillationBurden
         } else if identifier == .oxygenSaturation {
-            self =  .bloodOxygen
+            self = .bloodOxygen
         } else if identifier == .bodyTemperature {
-            self =  .bodyTemperature
+            self = .bodyTemperature
         } else if identifier == .bloodPressureDiastolic {
-            self =  .bloodPressureDiastolic
+            self = .bloodPressureDiastolic
         } else if identifier == .bloodPressureSystolic {
-            self =  .bloodPressureSystolic
+            self = .bloodPressureSystolic
         } else if identifier == .respiratoryRate {
-            self =  .respiratoryRate
+            self = .respiratoryRate
         } else if identifier == .bloodGlucose {
-            self =  .bloodGlucose
+            self = .bloodGlucose
         } else if identifier == .electrodermalActivity {
-            self =  .electrodermalActivity
+            self = .electrodermalActivity
         } else if identifier == .forcedExpiratoryVolume1 {
-            self =  .forcedExpiratoryVolume1
+            self = .forcedExpiratoryVolume1
         } else if identifier == .forcedVitalCapacity {
-            self =  .forcedVitalCapacity
+            self = .forcedVitalCapacity
         } else if identifier == .inhalerUsage {
-            self =  .inhalerUsage
+            self = .inhalerUsage
         } else if identifier == .insulinDelivery {
-            self =  .insulinDelivery
+            self = .insulinDelivery
         } else if identifier == .numberOfTimesFallen {
-            self =  .numberOfTimesFallen
+            self = .numberOfTimesFallen
         } else if identifier == .peakExpiratoryFlowRate {
-            self =  .peakExpiratoryFlowRate
+            self = .peakExpiratoryFlowRate
         } else if identifier == .peripheralPerfusionIndex {
-            self =  .peripheralPerfusionIndex
+            self = .peripheralPerfusionIndex
         } else if identifier == .dietaryBiotin {
-            self =  .dietaryBiotin
+            self = .dietaryBiotin
         } else if identifier == .dietaryCaffeine {
-            self =  .dietaryCaffeine
+            self = .dietaryCaffeine
         } else if identifier == .dietaryCalcium {
-            self =  .dietaryCalcium
+            self = .dietaryCalcium
         } else if identifier == .dietaryCarbohydrates {
-            self =  .dietaryCarbohydrates
+            self = .dietaryCarbohydrates
         } else if identifier == .dietaryChloride {
-            self =  .dietaryChloride
+            self = .dietaryChloride
         } else if identifier == .dietaryCholesterol {
-            self =  .dietaryCholesterol
+            self = .dietaryCholesterol
         } else if identifier == .dietaryChromium {
-            self =  .dietaryChromium
+            self = .dietaryChromium
         } else if identifier == .dietaryCopper {
-            self =  .dietaryCopper
+            self = .dietaryCopper
         } else if identifier == .dietaryEnergyConsumed {
-            self =  .dietaryEnergyConsumed
+            self = .dietaryEnergyConsumed
         } else if identifier == .dietaryFatMonounsaturated {
-            self =  .dietaryFatMonounsaturated
+            self = .dietaryFatMonounsaturated
         } else if identifier == .dietaryFatPolyunsaturated {
-            self =  .dietaryFatPolyunsaturated
+            self = .dietaryFatPolyunsaturated
         } else if identifier == .dietaryFatSaturated {
-            self =  .dietaryFatSaturated
+            self = .dietaryFatSaturated
         } else if identifier == .dietaryFatTotal {
-            self =  .dietaryFatTotal
+            self = .dietaryFatTotal
         } else if identifier == .dietaryFiber {
-            self =  .dietaryFiber
+            self = .dietaryFiber
         } else if identifier == .dietaryFolate {
-            self =  .dietaryFolate
+            self = .dietaryFolate
         } else if identifier == .dietaryIodine {
-            self =  .dietaryIodine
+            self = .dietaryIodine
         } else if identifier == .dietaryIron {
-            self =  .dietaryIron
+            self = .dietaryIron
         } else if identifier == .dietaryMagnesium {
-            self =  .dietaryMagnesium
+            self = .dietaryMagnesium
         } else if identifier == .dietaryManganese {
-            self =  .dietaryManganese
+            self = .dietaryManganese
         } else if identifier == .dietaryMolybdenum {
-            self =  .dietaryMolybdenum
+            self = .dietaryMolybdenum
         } else if identifier == .dietaryNiacin {
-            self =  .dietaryNiacin
+            self = .dietaryNiacin
         } else if identifier == .dietaryPantothenicAcid {
-            self =  .dietaryPantothenicAcid
+            self = .dietaryPantothenicAcid
         } else if identifier == .dietaryPhosphorus {
-            self =  .dietaryPhosphorus
+            self = .dietaryPhosphorus
         } else if identifier == .dietaryPotassium {
-            self =  .dietaryPotassium
+            self = .dietaryPotassium
         } else if identifier == .dietaryProtein {
-            self =  .dietaryProtein
+            self = .dietaryProtein
         } else if identifier == .dietaryRiboflavin {
-            self =  .dietaryRiboflavin
+            self = .dietaryRiboflavin
         } else if identifier == .dietarySelenium {
-            self =  .dietarySelenium
+            self = .dietarySelenium
         } else if identifier == .dietarySodium {
-            self =  .dietarySodium
+            self = .dietarySodium
         } else if identifier == .dietarySugar {
-            self =  .dietarySugar
+            self = .dietarySugar
         } else if identifier == .dietaryThiamin {
-            self =  .dietaryThiamin
+            self = .dietaryThiamin
         } else if identifier == .dietaryVitaminA {
-            self =  .dietaryVitaminA
+            self = .dietaryVitaminA
         } else if identifier == .dietaryVitaminB12 {
-            self =  .dietaryVitaminB12
+            self = .dietaryVitaminB12
         } else if identifier == .dietaryVitaminB6 {
-            self =  .dietaryVitaminB6
+            self = .dietaryVitaminB6
         } else if identifier == .dietaryVitaminC {
-            self =  .dietaryVitaminC
+            self = .dietaryVitaminC
         } else if identifier == .dietaryVitaminD {
-            self =  .dietaryVitaminD
+            self = .dietaryVitaminD
         } else if identifier == .dietaryVitaminE {
-            self =  .dietaryVitaminE
+            self = .dietaryVitaminE
         } else if identifier == .dietaryVitaminK {
-            self =  .dietaryVitaminK
+            self = .dietaryVitaminK
         } else if identifier == .dietaryWater {
-            self =  .dietaryWater
+            self = .dietaryWater
         } else if identifier == .dietaryZinc {
-            self =  .dietaryZinc
+            self = .dietaryZinc
         } else if identifier == .bloodAlcoholContent {
-            self =  .bloodAlcoholContent
+            self = .bloodAlcoholContent
         } else if identifier == .numberOfAlcoholicBeverages {
-            self =  .numberOfAlcoholicBeverages
+            self = .numberOfAlcoholicBeverages
         } else if identifier == .appleWalkingSteadiness {
-            self =  .appleWalkingSteadiness
+            self = .appleWalkingSteadiness
         } else if identifier == .sixMinuteWalkTestDistance {
-            self =  .sixMinuteWalkTestDistance
+            self = .sixMinuteWalkTestDistance
         } else if identifier == .walkingSpeed {
-            self =  .walkingSpeed
+            self = .walkingSpeed
         } else if identifier == .walkingStepLength {
-            self =  .walkingStepLength
+            self = .walkingStepLength
         } else if identifier == .walkingAsymmetryPercentage {
-            self =  .walkingAsymmetryPercentage
+            self = .walkingAsymmetryPercentage
         } else if identifier == .walkingDoubleSupportPercentage {
-            self =  .walkingDoubleSupportPercentage
+            self = .walkingDoubleSupportPercentage
         } else if identifier == .stairAscentSpeed {
-            self =  .stairAscentSpeed
+            self = .stairAscentSpeed
         } else if identifier == .stairDescentSpeed {
-            self =  .stairDescentSpeed
+            self = .stairDescentSpeed
         } else if identifier == .uvExposure {
-            self =  .uvExposure
+            self = .uvExposure
         } else if identifier == .underwaterDepth {
-            self =  .underwaterDepth
+            self = .underwaterDepth
         } else if identifier == .waterTemperature {
-            self =  .waterTemperature
+            self = .waterTemperature
         } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *), identifier == .appleSleepingBreathingDisturbances {
-            self =  .appleSleepingBreathingDisturbances
+            self = .appleSleepingBreathingDisturbances
         } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *), identifier == .crossCountrySkiingSpeed {
-            self =  .crossCountrySkiingSpeed
+            self = .crossCountrySkiingSpeed
         } else if identifier == .cyclingCadence {
-            self =  .cyclingCadence
+            self = .cyclingCadence
         } else if identifier == .cyclingFunctionalThresholdPower {
-            self =  .cyclingFunctionalThresholdPower
+            self = .cyclingFunctionalThresholdPower
         } else if identifier == .cyclingPower {
-            self =  .cyclingPower
+            self = .cyclingPower
         } else if identifier == .cyclingSpeed {
-            self =  .cyclingSpeed
+            self = .cyclingSpeed
         } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *), identifier == .distanceCrossCountrySkiing {
-            self =  .distanceCrossCountrySkiing
+            self = .distanceCrossCountrySkiing
         } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *), identifier == .distancePaddleSports {
-            self =  .distancePaddleSports
+            self = .distancePaddleSports
         } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *), identifier == .distanceRowing {
-            self =  .distanceRowing
+            self = .distanceRowing
         } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *), identifier == .distanceSkatingSports {
-            self =  .distanceSkatingSports
+            self = .distanceSkatingSports
         } else if identifier == .environmentalSoundReduction {
-            self =  .environmentalSoundReduction
+            self = .environmentalSoundReduction
         } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *), identifier == .estimatedWorkoutEffortScore {
-            self =  .estimatedWorkoutEffortScore
+            self = .estimatedWorkoutEffortScore
         } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *), identifier == .paddleSportsSpeed {
-            self =  .paddleSportsSpeed
+            self = .paddleSportsSpeed
         } else if identifier == .physicalEffort {
-            self =  .physicalEffort
+            self = .physicalEffort
         } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *), identifier == .rowingSpeed {
-            self =  .rowingSpeed
+            self = .rowingSpeed
         } else if identifier == .timeInDaylight {
-            self =  .timeInDaylight
+            self = .timeInDaylight
         } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *), identifier == .workoutEffortScore {
-            self =  .workoutEffortScore
+            self = .workoutEffortScore
         } else {
             return nil
         }
@@ -2449,139 +2449,139 @@ extension SampleType where Sample == HKCategorySample {
         if identifier == .appleStandHour {
             self = .appleStandHour
         } else if identifier == .lowCardioFitnessEvent {
-            self =  .lowCardioFitnessEvent
+            self = .lowCardioFitnessEvent
         } else if identifier == .menstrualFlow {
-            self =  .menstrualFlow
+            self = .menstrualFlow
         } else if identifier == .intermenstrualBleeding {
-            self =  .intermenstrualBleeding
+            self = .intermenstrualBleeding
         } else if identifier == .infrequentMenstrualCycles {
-            self =  .infrequentMenstrualCycles
+            self = .infrequentMenstrualCycles
         } else if identifier == .irregularMenstrualCycles {
-            self =  .irregularMenstrualCycles
+            self = .irregularMenstrualCycles
         } else if identifier == .persistentIntermenstrualBleeding {
-            self =  .persistentIntermenstrualBleeding
+            self = .persistentIntermenstrualBleeding
         } else if identifier == .prolongedMenstrualPeriods {
-            self =  .prolongedMenstrualPeriods
+            self = .prolongedMenstrualPeriods
         } else if identifier == .cervicalMucusQuality {
-            self =  .cervicalMucusQuality
+            self = .cervicalMucusQuality
         } else if identifier == .ovulationTestResult {
-            self =  .ovulationTestResult
+            self = .ovulationTestResult
         } else if identifier == .progesteroneTestResult {
-            self =  .progesteroneTestResult
+            self = .progesteroneTestResult
         } else if identifier == .sexualActivity {
-            self =  .sexualActivity
+            self = .sexualActivity
         } else if identifier == .contraceptive {
-            self =  .contraceptive
+            self = .contraceptive
         } else if identifier == .pregnancy {
-            self =  .pregnancy
+            self = .pregnancy
         } else if identifier == .pregnancyTestResult {
-            self =  .pregnancyTestResult
+            self = .pregnancyTestResult
         } else if identifier == .lactation {
-            self =  .lactation
+            self = .lactation
         } else if identifier == .environmentalAudioExposureEvent {
-            self =  .environmentalAudioExposureEvent
+            self = .environmentalAudioExposureEvent
         } else if identifier == .headphoneAudioExposureEvent {
-            self =  .headphoneAudioExposureEvent
+            self = .headphoneAudioExposureEvent
         } else if identifier == .lowHeartRateEvent {
-            self =  .lowHeartRateEvent
+            self = .lowHeartRateEvent
         } else if identifier == .highHeartRateEvent {
-            self =  .highHeartRateEvent
+            self = .highHeartRateEvent
         } else if identifier == .irregularHeartRhythmEvent {
-            self =  .irregularHeartRhythmEvent
+            self = .irregularHeartRhythmEvent
         } else if identifier == .appleWalkingSteadinessEvent {
-            self =  .appleWalkingSteadinessEvent
+            self = .appleWalkingSteadinessEvent
         } else if identifier == .mindfulSession {
-            self =  .mindfulSession
+            self = .mindfulSession
         } else if identifier == .sleepAnalysis {
-            self =  .sleepAnalysis
+            self = .sleepAnalysis
         } else if identifier == .toothbrushingEvent {
-            self =  .toothbrushingEvent
+            self = .toothbrushingEvent
         } else if identifier == .handwashingEvent {
-            self =  .handwashingEvent
+            self = .handwashingEvent
         } else if identifier == .abdominalCramps {
-            self =  .abdominalCramps
+            self = .abdominalCramps
         } else if identifier == .bloating {
-            self =  .bloating
+            self = .bloating
         } else if identifier == .constipation {
-            self =  .constipation
+            self = .constipation
         } else if identifier == .diarrhea {
-            self =  .diarrhea
+            self = .diarrhea
         } else if identifier == .heartburn {
-            self =  .heartburn
+            self = .heartburn
         } else if identifier == .nausea {
-            self =  .nausea
+            self = .nausea
         } else if identifier == .vomiting {
-            self =  .vomiting
+            self = .vomiting
         } else if identifier == .appetiteChanges {
-            self =  .appetiteChanges
+            self = .appetiteChanges
         } else if identifier == .chills {
-            self =  .chills
+            self = .chills
         } else if identifier == .dizziness {
-            self =  .dizziness
+            self = .dizziness
         } else if identifier == .fainting {
-            self =  .fainting
+            self = .fainting
         } else if identifier == .fatigue {
-            self =  .fatigue
+            self = .fatigue
         } else if identifier == .fever {
-            self =  .fever
+            self = .fever
         } else if identifier == .generalizedBodyAche {
-            self =  .generalizedBodyAche
+            self = .generalizedBodyAche
         } else if identifier == .hotFlashes {
-            self =  .hotFlashes
+            self = .hotFlashes
         } else if identifier == .chestTightnessOrPain {
-            self =  .chestTightnessOrPain
+            self = .chestTightnessOrPain
         } else if identifier == .coughing {
-            self =  .coughing
+            self = .coughing
         } else if identifier == .rapidPoundingOrFlutteringHeartbeat {
-            self =  .rapidPoundingOrFlutteringHeartbeat
+            self = .rapidPoundingOrFlutteringHeartbeat
         } else if identifier == .shortnessOfBreath {
-            self =  .shortnessOfBreath
+            self = .shortnessOfBreath
         } else if identifier == .skippedHeartbeat {
-            self =  .skippedHeartbeat
+            self = .skippedHeartbeat
         } else if identifier == .wheezing {
-            self =  .wheezing
+            self = .wheezing
         } else if identifier == .lowerBackPain {
-            self =  .lowerBackPain
+            self = .lowerBackPain
         } else if identifier == .headache {
-            self =  .headache
+            self = .headache
         } else if identifier == .memoryLapse {
-            self =  .memoryLapse
+            self = .memoryLapse
         } else if identifier == .moodChanges {
-            self =  .moodChanges
+            self = .moodChanges
         } else if identifier == .lossOfSmell {
-            self =  .lossOfSmell
+            self = .lossOfSmell
         } else if identifier == .lossOfTaste {
-            self =  .lossOfTaste
+            self = .lossOfTaste
         } else if identifier == .runnyNose {
-            self =  .runnyNose
+            self = .runnyNose
         } else if identifier == .soreThroat {
-            self =  .soreThroat
+            self = .soreThroat
         } else if identifier == .sinusCongestion {
-            self =  .sinusCongestion
+            self = .sinusCongestion
         } else if identifier == .breastPain {
-            self =  .breastPain
+            self = .breastPain
         } else if identifier == .pelvicPain {
-            self =  .pelvicPain
+            self = .pelvicPain
         } else if identifier == .vaginalDryness {
-            self =  .vaginalDryness
+            self = .vaginalDryness
         } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *), identifier == .bleedingDuringPregnancy {
-            self =  .bleedingDuringPregnancy
+            self = .bleedingDuringPregnancy
         } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *), identifier == .bleedingAfterPregnancy {
-            self =  .bleedingAfterPregnancy
+            self = .bleedingAfterPregnancy
         } else if identifier == .acne {
-            self =  .acne
+            self = .acne
         } else if identifier == .drySkin {
-            self =  .drySkin
+            self = .drySkin
         } else if identifier == .hairLoss {
-            self =  .hairLoss
+            self = .hairLoss
         } else if identifier == .nightSweats {
-            self =  .nightSweats
+            self = .nightSweats
         } else if identifier == .sleepChanges {
-            self =  .sleepChanges
+            self = .sleepChanges
         } else if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *), identifier == .sleepApneaEvent {
-            self =  .sleepApneaEvent
+            self = .sleepApneaEvent
         } else if identifier == .bladderIncontinence {
-            self =  .bladderIncontinence
+            self = .bladderIncontinence
         } else {
             return nil
         }
@@ -2708,7 +2708,7 @@ extension SampleType where Sample == HKCorrelation {
         if identifier == .bloodPressure {
             self = .bloodPressure
         } else if identifier == .food {
-            self =  .food
+            self = .food
         } else {
             return nil
         }
@@ -2832,21 +2832,21 @@ extension SampleType where Sample == HKClinicalRecord {
         if identifier == .allergyRecord {
             self = .allergyRecord
         } else if identifier == .clinicalNoteRecord {
-            self =  .clinicalNoteRecord
+            self = .clinicalNoteRecord
         } else if identifier == .conditionRecord {
-            self =  .conditionRecord
+            self = .conditionRecord
         } else if identifier == .immunizationRecord {
-            self =  .immunizationRecord
+            self = .immunizationRecord
         } else if identifier == .labResultRecord {
-            self =  .labResultRecord
+            self = .labResultRecord
         } else if identifier == .medicationRecord {
-            self =  .medicationRecord
+            self = .medicationRecord
         } else if identifier == .procedureRecord {
-            self =  .procedureRecord
+            self = .procedureRecord
         } else if identifier == .vitalSignRecord {
-            self =  .vitalSignRecord
+            self = .vitalSignRecord
         } else if identifier == .coverageRecord {
-            self =  .coverageRecord
+            self = .coverageRecord
         } else {
             return nil
         }

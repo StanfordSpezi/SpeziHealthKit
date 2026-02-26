@@ -81,7 +81,7 @@ def make_at_available(availability: Availability) -> str:
             self = .${types[0].property_name}
         % for ty in types[1:]:
         } else if ${make_hashtag_available(ty.availability, trailing_comma=True)}identifier == .${ty.identifier} {
-            self =  .${ty.property_name}
+            self = .${ty.property_name}
         % end
         } else {
             return nil
