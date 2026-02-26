@@ -10,6 +10,7 @@
 
 import Algorithms
 import Foundation
+import SpeziFoundation
 @_spi(APISupport) @_spi(Testing)
 @testable import SpeziHealthKit
 import Testing
@@ -233,12 +234,12 @@ struct HKUnitTests {
     }
     
     
-    @Test func unitConstruction() {
+    @Test func unitConstruction() throws {
         // m^4·atm^2·GL/in^2
         // in^2·atm^2·GL
         
-        #expect(HKUnitA(from: "m^4·atm^2·GL/in^2") == HKUnitA(from: "(m^2·atm)^2·GL/in^2"))
-        #expect(HKUnitB(from: "m^4·atm^2·GL/in^2") == HKUnitB(from: "(m^2·atm)^2·GL/in^2"))
+        #expect(try HKUnitA.parse("m^4·atm^2·GL/in^2") == HKUnitA.parse("(m^2·atm)^2·GL/in^2"))
+        #expect(try HKUnitB.parse("m^4·atm^2·GL/in^2") == HKUnitB.parse("(m^2·atm)^2·GL/in^2"))
         
         do {
             var unit = HKUnitB.meter()
@@ -295,7 +296,7 @@ struct HKUnitTests {
         }
         
         do {
-            let unit = HKUnitB(from: "GL/in")
+            let unit = try HKUnitB.parse("GL/in")
             #expect(unit.factorization == HKFactorization([
                 .init(dimension: .volume, unitString: "GL"): 1,
                 .init(dimension: .length, unitString: "in"): -1
@@ -304,7 +305,7 @@ struct HKUnitTests {
             #expect(unit.scaleFactor == 1e+09 * (1 / 0.0254))
         }
         do {
-            let unit = HKUnitB(from: "GL/in^2")
+            let unit = try HKUnitB.parse("GL/in^2")
             #expect(unit.factorization == HKFactorization([
                 .init(dimension: .volume, unitString: "GL"): 1,
                 .init(dimension: .length, unitString: "in"): -2
@@ -313,7 +314,7 @@ struct HKUnitTests {
             #expect(unit.scaleFactor == 1e+09 * (1 / (0.0254 * 0.0254)))
         }
         do {
-            let unit = HKUnitB(from: "atm·GL/in^2")
+            let unit = try HKUnitB.parse("atm·GL/in^2")
             #expect(unit.factorization == HKFactorization([
                 .init(dimension: .volume, unitString: "GL"): 1,
                 .init(dimension: .pressure, unitString: "atm"): 1,
@@ -323,7 +324,7 @@ struct HKUnitTests {
             #expect(unit.scaleFactor == 1e+09 * (101325) * (1 / (0.0254 * 0.0254)))
         }
         do {
-            let unit = HKUnitB(from: "atm^2·GL/in^2")
+            let unit = try HKUnitB.parse("atm^2·GL/in^2")
             #expect(unit.factorization == HKFactorization([
                 .init(dimension: .volume, unitString: "GL"): 1,
                 .init(dimension: .pressure, unitString: "atm"): 2,
@@ -333,7 +334,7 @@ struct HKUnitTests {
             #expect(unit.scaleFactor == 1e+09 * (101325 as Double * 101325) * (1 / (0.0254 * 0.0254)))
         }
         do {
-            let unit = HKUnitB(from: "m·atm^2·GL/in^2")
+            let unit = try HKUnitB.parse("m·atm^2·GL/in^2")
             #expect(unit.factorization == HKFactorization([
                 .init(dimension: .length, unitString: "m"): 1,
                 .init(dimension: .volume, unitString: "GL"): 1,
@@ -344,7 +345,7 @@ struct HKUnitTests {
             #expect(unit.scaleFactor == 1e+09 * 1 * (101325 as Double * 101325) * (1 / (0.0254 * 0.0254)))
         }
         do {
-            let unit = HKUnitB(from: "m^4·atm^2·GL/in^2")
+            let unit = try HKUnitB.parse("m^4·atm^2·GL/in^2")
             #expect(unit.factorization == HKFactorization([
                 .init(dimension: .length, unitString: "m"): 4,
                 .init(dimension: .volume, unitString: "GL"): 1,
@@ -360,7 +361,7 @@ struct HKUnitTests {
         }
         
         do {
-            let unit = HKUnitB(from: "m^4·atm^2·GL/in^2")
+            let unit = try HKUnitB.parse("m^4·atm^2·GL/in^2")
             #expect(unit.scaleOffset == 0)
             #expect(unit.factorization == HKFactorization([
                 .init(dimension: .length, unitString: "m"): 4,
@@ -373,16 +374,16 @@ struct HKUnitTests {
         }
         
         do {
-            let unit1 = HKUnitB(from: "m^4·Pa^2·GL/m^2")
-            let unit2 = HKUnitB(from: "m^2·Pa^2·GL")
+            let unit1 = try HKUnitB.parse("m^4·Pa^2·GL/m^2")
+            let unit2 = try HKUnitB.parse("m^2·Pa^2·GL")
             #expect(unit1 == unit2)
             #expect(unit1.scaleOffset == unit2.scaleOffset)
             #expect(unit1.scaleFactor == unit2.scaleFactor)
         }
         
         do {
-            let unit1 = HKUnitB(from: "m^4·atm^2·GL/in^2")
-            let unit2 = HKUnitB(from: "m^4·Pa^2·GL/m^2")
+            let unit1 = try HKUnitB.parse("m^4·atm^2·GL/in^2")
+            let unit2 = try HKUnitB.parse("m^4·Pa^2·GL/m^2")
             #expect(unit1.isCompatible(with: unit2))
             #expect(unit1.convert(12.7, to: unit2) == 202101488681102.343750)
             #expect(unit1.convertFromBaseUnit(unit1.convertToBaseUnit(12.71)) == 12.71)
@@ -390,8 +391,8 @@ struct HKUnitTests {
         }
         
         do {
-            let unit1 = HKUnitB(from: "m^4·atm^2·GL")
-            let unit2 = HKUnitB(from: "m^4·Pa^2·GL")
+            let unit1 = try HKUnitB.parse("m^4·atm^2·GL")
+            let unit2 = try HKUnitB.parse("m^4·Pa^2·GL")
             #expect(unit1.isCompatible(with: unit2))
             #expect(unit1.convert(12.7, to: unit2) == 130387796437.499985)
             #expect(unit2.convertFromBaseUnit(unit2.convertToBaseUnit(12.71)) == 12.71)
@@ -515,79 +516,79 @@ extension HKUnitTests {
     }
     
     
-    @Test func parsing() async throws {
+    @Test func parsing() throws {
         // null unit
-        #expect(HKUnitA(from: "").isNull())
-        #expect(HKUnitB(from: "").isNull())
-        #expect(HKUnitA(from: "()").isNull())
-        #expect(HKUnitB(from: "()").isNull())
+        #expect(try HKUnitA.parse("").isNull())
+        #expect(try HKUnitB.parse("").isNull())
+        #expect(try HKUnitA.parse("()").isNull())
+        #expect(try HKUnitB.parse("()").isNull())
         
-        #expect(HKUnitA(from: "(())").isNull())
-        #expect(HKUnitB(from: "(())").isNull())
+        #expect(try HKUnitA.parse("(())").isNull())
+        #expect(try HKUnitB.parse("(())").isNull())
         
-        #expect(HKUnitA(from: "((()))").isNull())
-        #expect(HKUnitB(from: "((()))").isNull())
+        #expect(try HKUnitA.parse("((()))").isNull())
+        #expect(try HKUnitB.parse("((()))").isNull())
         
-        await #expect(processExitsWith: .failure) {
-            _ = HKUnitA(from: "()·()")
+        #expect(throws: (any Error).self) {
+            _ = try HKUnitA.parse("()·()")
         }
-        await #expect(processExitsWith: .failure) {
-            _ = HKUnitB(from: "()·()")
-        }
-        
-        await #expect(processExitsWith: .failure) {
-            _ = HKUnitA(from: "()·m")
-        }
-        await #expect(processExitsWith: .failure) {
-            _ = HKUnitB(from: "()·m")
+        #expect(throws: (any Error).self) {
+            _ = try HKUnitB.parse("()·()")
         }
         
-        await #expect(processExitsWith: .failure) {
-            _ = HKUnitA(from: "m·()")
+        #expect(throws: (any Error).self) {
+            _ = try HKUnitA.parse("()·m")
         }
-        await #expect(processExitsWith: .failure) {
-            _ = HKUnitB(from: "m·()")
-        }
-        
-        #expect(HKUnitA(from: "m/m").isNull())
-        #expect(HKUnitB(from: "m/m").isNull())
-        
-        #expect(HKUnitA(from: "(m)·(m)") == HKUnitA(from: "m·m"))
-        #expect(HKUnitB(from: "(m)·(m)") == HKUnitB(from: "m·m"))
-        
-        await #expect(processExitsWith: .failure) {
-            _ = HKUnitA(from: "(m)(m)")
-        }
-        await #expect(processExitsWith: .failure) {
-            _ = HKUnitB(from: "(m)(m)")
+        #expect(throws: (any Error).self) {
+            _ = try HKUnitB.parse("()·m")
         }
         
-        await #expect(processExitsWith: .failure) {
-            _ = HKUnitA(from: "m(m)")
+        #expect(throws: (any Error).self) {
+            _ = try HKUnitA.parse("m·()")
         }
-        await #expect(processExitsWith: .failure) {
-            _ = HKUnitB(from: "m(m)")
-        }
-        
-        await #expect(processExitsWith: .failure) {
-            _ = HKUnitA(from: "()^2")
-        }
-        await #expect(processExitsWith: .failure) {
-            _ = HKUnitB(from: "()^2")
+        #expect(throws: (any Error).self) {
+            _ = try HKUnitB.parse("m·()")
         }
         
-        #expect(HKUnitA(from: "m·1/s") == HKUnitA(from: "m/s"))
-        #expect(HKUnitB(from: "m·1/s") == HKUnitB(from: "m/s"))
+        #expect(try HKUnitA.parse("m/m").isNull())
+        #expect(try HKUnitB.parse("m/m").isNull())
         
-        await #expect(processExitsWith: .failure) {
-            _ = HKUnitA(from: "/s")
+        #expect(try HKUnitA.parse("(m)·(m)") == HKUnitA.parse("m·m"))
+        #expect(try HKUnitB.parse("(m)·(m)") == HKUnitB.parse("m·m"))
+        
+        #expect(throws: (any Error).self) {
+            _ = try HKUnitA.parse("(m)(m)")
         }
-        await #expect(processExitsWith: .failure) {
-            _ = HKUnitB(from: "/s")
+        #expect(throws: (any Error).self) {
+            _ = try HKUnitB.parse("(m)(m)")
+        }
+        
+        #expect(throws: (any Error).self) {
+            _ = try HKUnitA.parse("m(m)")
+        }
+        #expect(throws: (any Error).self) {
+            _ = try HKUnitB.parse("m(m)")
+        }
+        
+        #expect(throws: (any Error).self) {
+            _ = try HKUnitA.parse("()^2")
+        }
+        #expect(throws: (any Error).self) {
+            _ = try HKUnitB.parse("()^2")
+        }
+        
+        #expect(try HKUnitA.parse("m·1/s") == HKUnitA.parse("m/s"))
+        #expect(try HKUnitB.parse("m·1/s") == HKUnitB.parse("m/s"))
+        
+        #expect(throws: (any Error).self) {
+            _ = try HKUnitA.parse("/s")
+        }
+        #expect(throws: (any Error).self) {
+            _ = try HKUnitB.parse("/s")
         }
         
         for entry in Self.unitStringPairs {
-            let parsedA = HKUnitA(from: entry.input)
+            let parsedA = try HKUnitA.parse(entry.input)
             #expect(parsedA == entry.unitA)
             let parsedB = try HKUnitB.parse(entry.input)
             #expect(parsedB.factorization == entry.unitB.factorization)
@@ -599,67 +600,67 @@ extension HKUnitTests {
             #expect(parsedB == entry.unitB)
         }
         
-        #expect(HKUnitB(from: "1/s") == .second().reciprocal())
-        #expect(HKUnitB(from: "s^-1") == .second().reciprocal())
-        #expect(HKUnitB(from: "s^-2") == .second().unitRaised(toPower: -2))
-        #expect(HKUnitB(from: "1/s^2") == .second().unitRaised(toPower: -2))
-        #expect(HKUnitB(from: "s^-2").unitString == "1/s^2")
+        #expect(try HKUnitB.parse("1/s") == .second().reciprocal())
+        #expect(try HKUnitB.parse("s^-1") == .second().reciprocal())
+        #expect(try HKUnitB.parse("s^-2") == .second().unitRaised(toPower: -2))
+        #expect(try HKUnitB.parse("1/s^2") == .second().unitRaised(toPower: -2))
+        #expect(try HKUnitB.parse("s^-2").unitString == "1/s^2")
         
         // Q: does HealthKit allow parentheses when parsing unit strings? (A: yes)
-        #expect(HKUnitA(from: "m^4·atm^2·GL/in^2") == HKUnitA(from: "(m^2·atm)^2·GL/in^2"))
-        #expect(HKUnitB(from: "m^4·atm^2·GL/in^2") == HKUnitB(from: "(m^2·atm)^2·GL/in^2"))
+        #expect(try HKUnitA.parse("m^4·atm^2·GL/in^2") == HKUnitA.parse("(m^2·atm)^2·GL/in^2"))
+        #expect(try HKUnitB.parse("m^4·atm^2·GL/in^2") == HKUnitB.parse("(m^2·atm)^2·GL/in^2"))
         
         // Q: does HealthKit allow nested parentheses when parsing unit strings?
-        #expect(HKUnitA(from: "m^4·atm^4·GL/in^2") == HKUnitA(from: "((m·atm)^2)^2·GL/in^2"))
-        #expect(HKUnitB(from: "m^4·atm^4·GL/in^2") == HKUnitB(from: "((m·atm)^2)^2·GL/in^2"))
+        #expect(try HKUnitA.parse("m^4·atm^4·GL/in^2") == HKUnitA.parse("((m·atm)^2)^2·GL/in^2"))
+        #expect(try HKUnitB.parse("m^4·atm^4·GL/in^2") == HKUnitB.parse("((m·atm)^2)^2·GL/in^2"))
         
         // Q: does HealthKit allow parentheses containing fractions when parsing unit strings? (A: no)
-        await #expect(processExitsWith: .failure) {
-            #expect(HKUnitA(from: "m^2·atm^2/in^2") == HKUnitA(from: "(m·atm/in^4)^2"))
+        #expect(throws: (any Error).self) {
+            _ = try HKUnitA.parse("(m·atm/in^4)^2")
         }
-        await #expect(processExitsWith: .failure) {
-            #expect(HKUnitB(from: "m^2·atm^2/in^2") == HKUnitB(from: "(m·atm/in^4)^2"))
+        #expect(throws: (any Error).self) {
+            _ = try HKUnitB.parse("(m·atm/in^4)^2")
         }
         
         // Q: does HealthKit allow multiple exponentiations it not nested? (no)
-        await #expect(processExitsWith: .failure) {
-            #expect(HKUnitA(from: "m^2^2") == HKUnitA(from: "m^4"))
+        #expect(throws: (any Error).self) {
+            _ = try HKUnitA.parse("m^2^2")
         }
-        await #expect(processExitsWith: .failure) {
-            #expect(HKUnitB(from: "m^2^2") == HKUnitB(from: "m^4"))
+        #expect(throws: (any Error).self) {
+            _ = try HKUnitB.parse("m^2^2")
         }
         
         // Q: does HealthKit allow multiple exponentiations it nested? (yes)
-        #expect(HKUnitA(from: "(m^2)^2") == HKUnitA(from: "m^4"))
-        #expect(HKUnitB(from: "(m^2)^2") == HKUnitB(from: "m^4"))
+        #expect(try HKUnitA.parse("(m^2)^2") == HKUnitA.parse("m^4"))
+        #expect(try HKUnitB.parse("(m^2)^2") == HKUnitB.parse("m^4"))
         
         // Q: does HealthKit allow ^1 and ^0?
-        #expect(HKUnitA(from: "m^1") == HKUnitA(from: "m"))
-        #expect(HKUnitB(from: "m^1") == HKUnitB(from: "m"))
-        #expect(HKUnitA(from: "m^0") == HKUnitA(from: "()"))
-        #expect(HKUnitB(from: "m^0") == HKUnitB(from: "()"))
+        #expect(try HKUnitA.parse("m^1") == HKUnitA.parse("m"))
+        #expect(try HKUnitB.parse("m^1") == HKUnitB.parse("m"))
+        #expect(try HKUnitA.parse("m^0") == HKUnitA.parse("()"))
+        #expect(try HKUnitB.parse("m^0") == HKUnitB.parse("()"))
         
         // Q: does HealthKit allow parentheses for grouping?
-        #expect(HKUnitA(from: "(m)") == HKUnitA(from: "m"))
-        #expect(HKUnitB(from: "(m)") == HKUnitB(from: "m"))
-        #expect(HKUnitA(from: "((m))") == HKUnitA(from: "m"))
-        #expect(HKUnitB(from: "((m))") == HKUnitB(from: "m"))
-        #expect(HKUnitA(from: "(((m)))") == HKUnitA(from: "m"))
-        #expect(HKUnitB(from: "(((m)))") == HKUnitB(from: "m"))
+        #expect(try HKUnitA.parse("(m)") == HKUnitA.parse("m"))
+        #expect(try HKUnitB.parse("(m)") == HKUnitB.parse("m"))
+        #expect(try HKUnitA.parse("((m))") == HKUnitA.parse("m"))
+        #expect(try HKUnitB.parse("((m))") == HKUnitB.parse("m"))
+        #expect(try HKUnitA.parse("(((m)))") == HKUnitA.parse("m"))
+        #expect(try HKUnitB.parse("(((m)))") == HKUnitB.parse("m"))
         
         // Q: does HealthKit allow multiplication with a paren-expr?
-        #expect(HKUnitA(from: "atm·(m·L)^2") == HKUnitA(from: "atm·m^2·L^2"))
-        #expect(HKUnitB(from: "atm·(m·L)^2") == HKUnitB(from: "atm·m^2·L^2"))
-        #expect(HKUnitA(from: "atm·(m·L)") == HKUnitA(from: "atm·m·L"))
-        #expect(HKUnitB(from: "atm·(m·L)") == HKUnitB(from: "atm·m·L"))
-        #expect(HKUnitA(from: "(atm·m)·L") == HKUnitA(from: "atm·m·L"))
-        #expect(HKUnitB(from: "(atm·m)·L") == HKUnitB(from: "atm·m·L"))
+        #expect(try HKUnitA.parse("atm·(m·L)^2") == HKUnitA.parse("atm·m^2·L^2"))
+        #expect(try HKUnitB.parse("atm·(m·L)^2") == HKUnitB.parse("atm·m^2·L^2"))
+        #expect(try HKUnitA.parse("atm·(m·L)") == HKUnitA.parse("atm·m·L"))
+        #expect(try HKUnitB.parse("atm·(m·L)") == HKUnitB.parse("atm·m·L"))
+        #expect(try HKUnitA.parse("(atm·m)·L") == HKUnitA.parse("atm·m·L"))
+        #expect(try HKUnitB.parse("(atm·m)·L") == HKUnitB.parse("atm·m·L"))
         
         do {
-            #expect(HKUnitA(from: "m^4·atm^2·GL/m^2") == HKUnitA(from: "m^2·atm^2·GL"))
-            #expect(HKUnitB(from: "m^4·atm^2·GL/m^2") == HKUnitB(from: "m^2·atm^2·GL"))
-            NSLog("%f\n", HKUnitB(from: "m^4·atm^2·GL/m^2").scaleFactor)
-            NSLog("%f\n", HKUnitB(from: "m^2·atm^2·GL").scaleFactor)
+            #expect(try HKUnitA.parse("m^4·atm^2·GL/m^2") == HKUnitA.parse("m^2·atm^2·GL"))
+            #expect(try HKUnitB.parse("m^4·atm^2·GL/m^2") == HKUnitB.parse("m^2·atm^2·GL"))
+            NSLog("%f\n", try HKUnitB.parse("m^4·atm^2·GL/m^2").scaleFactor)
+            NSLog("%f\n", try HKUnitB.parse("m^2·atm^2·GL").scaleFactor)
             
             let units: [HKUnitB] = [
                 .init(from: "in^2·atm^2·GL"),
@@ -678,6 +679,12 @@ extension HKUnitTests {
 
 #if canImport(HealthKit)
 extension HKUnit {
+    fileprivate static func parse(_ input: String) throws -> HKUnit {
+        try catchingNSException {
+            HKUnit(from: input)
+        }
+    }
+    
     fileprivate func convert(_ value: Double, to newUnit: HKUnit) -> Double {
         HKQuantity(unit: self, doubleValue: value).doubleValue(for: newUnit)
     }

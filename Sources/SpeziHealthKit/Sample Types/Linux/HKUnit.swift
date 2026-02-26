@@ -835,6 +835,9 @@ private struct UnitParser<Input: StringProtocol>: ~Copyable {
     
     private mutating func parseAtom() throws(ParseError) -> Node {
         let possibleAtomInput = remaining.prefix(while: \.isLetter)
+        guard !possibleAtomInput.isEmpty else {
+            throw ParseError(position: position, issue: "Unable to parse atom")
+        }
         let atom: Node? = { () -> Node? in
             for metricPrefix in _HKMetricPrefix.allCases {
                 let prefixString = metricPrefix.prefixString
