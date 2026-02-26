@@ -32,7 +32,51 @@ struct HKUnitTests {
     // as a result of them using NSMapTable, and how they allocate their unique unit instances),
     // but our unit strings are not stable, which makes them difficult to compare.
     // "stable" here referring to the unit strings having a well-defined, stable order for e.g. multiplication terms.
-    private static let enableUnitStringTests = false
+    private let enableUnitStringTests = false
+    
+    private let hasHealthKit: Bool = {
+        #if canImport(HealthKit)
+        true
+        #else
+        false
+        #endif
+    }()
+    
+    
+    @Test
+    func unitCompatibility() throws {
+        func _checkCompatible(_ unit1String: String, _ unit2String: String, expected: Bool) throws {
+            let unitA1 = try HKUnitA.parse(unit1String)
+            let unitA2 = try HKUnitA.parse(unit2String)
+            let unitB1 = try HKUnitB.parse(unit1String)
+            let unitB2 = try HKUnitB.parse(unit2String)
+            #expect(unitA1.isCompatible(with: unitA1))
+            #expect(unitA1.isCompatible(with: unitA2) == expected, "\(unitA1) vs \(unitA2)")
+            #expect(unitA2.isCompatible(with: unitA1) == expected, "\(unitA2) vs \(unitA1)")
+            #expect(unitA2.isCompatible(with: unitA2))
+            #expect(unitB1.isCompatible(with: unitB1))
+            #expect(unitB1.isCompatible(with: unitB2) == expected, "\(unitB1) vs \(unitB2)")
+            #expect(unitB2.isCompatible(with: unitB1) == expected, "\(unitB2) vs \(unitB1)")
+            #expect(unitB2.isCompatible(with: unitB2))
+        }
+        func expectCompatible(_ unit1String: String, _ unit2String: String) throws {
+            try _checkCompatible(unit1String, unit2String, expected: true)
+        }
+        func expectNotCompatible(_ unit1String: String, _ unit2String: String) throws {
+            try _checkCompatible(unit1String, unit2String, expected: false)
+        }
+        #expect(HKUnitA.count().isCompatible(with: .percent()))
+        #expect(HKUnitA.percent().isCompatible(with: .count()))
+        
+        #expect(HKUnitB.count().isCompatible(with: .percent()))
+        #expect(HKUnitB.percent().isCompatible(with: .count()))
+        
+        try expectCompatible("%/m", "count/m")
+        try expectCompatible("%/m", "count/in")
+        try expectCompatible("%/m", "count/ft")
+        try expectNotCompatible("%/m", "%/m^2")
+    }
+    
     
     @Test
     func quantityConversion() {
@@ -60,13 +104,13 @@ struct HKUnitTests {
         do {
             let unitA1: HKUnitA = .degreeCelsius() * .meter()
             let unitB1: HKUnitB = .degreeCelsius() * .meter()
-            if Self.enableUnitStringTests {
+            if enableUnitStringTests {
                 #expect(unitA1.unitString == "degC·m")
                 #expect(unitB1.unitString == "degC·m")
             }
             let unitA2: HKUnitA = .degreeFahrenheit() * .meter()
             let unitB2: HKUnitB = .degreeFahrenheit() * .meter()
-            if Self.enableUnitStringTests {
+            if enableUnitStringTests {
                 #expect(unitA2.unitString == "m·degF")
                 #expect(unitB2.unitString == "m·degF")
             }
@@ -79,19 +123,19 @@ struct HKUnitTests {
         do {
             let unitA1: HKUnitA = .meter() / .second().unitRaised(toPower: 2)
             let unitB1: HKUnitB = .meter() / .second().unitRaised(toPower: 2)
-            if Self.enableUnitStringTests {
+            if enableUnitStringTests {
                 #expect(unitA1.unitString == "m/s^2")
             }
             #expect(unitB1.factorization == HKFactorization([
                 .init(dimension: .length, unitString: "m"): 1,
                 .init(dimension: .time, unitString: "s"): -2
             ]))
-            if Self.enableUnitStringTests {
+            if enableUnitStringTests {
                 #expect(unitB1.unitString == "m/s^2")
             }
             let unitA2: HKUnitA = .meterUnit(with: .centi) / .second().unitRaised(toPower: 2)
             let unitB2: HKUnitB = .meterUnit(with: .centi) / .second().unitRaised(toPower: 2)
-            if Self.enableUnitStringTests {
+            if enableUnitStringTests {
                 #expect(unitA2.unitString == "cm/s^2")
                 #expect(unitB2.unitString == "cm/s^2")
             }
@@ -105,7 +149,7 @@ struct HKUnitTests {
             let unitB1: HKUnitB = ((.meter().unitRaised(toPower: 4) / .inch().unitRaised(toPower: 2)) * .literUnit(with: .giga)) / .atmosphere().unitRaised(toPower: -2)
             let unitA2: HKUnitA = ((.inch().unitRaised(toPower: 4) / .inch().unitRaised(toPower: 2)) * .literUnit(with: .giga)) / .atmosphere().unitRaised(toPower: -2)
             let unitB2: HKUnitB = ((.inch().unitRaised(toPower: 4) / .inch().unitRaised(toPower: 2)) * .literUnit(with: .giga)) / .atmosphere().unitRaised(toPower: -2)
-            if Self.enableUnitStringTests {
+            if enableUnitStringTests {
                 #expect(unitA1.unitString == "m^4·atm^2·GL/in^2")
                 #expect(unitB1.unitString == "m^4·atm^2·GL/in^2")
                 #expect(unitA2.unitString == "in^2·atm^2·GL")
@@ -182,7 +226,7 @@ struct HKUnitTests {
     /// Tests that some properties (in a logical sense) of the two types are identical
     @Test
     func properties() {
-        guard Self.enableUnitStringTests else {
+        guard enableUnitStringTests else {
             return
         }
         func checkOrderMul(unitsA inputsA: HKUnitA..., unitsB inputsB: HKUnitB...) {
@@ -436,7 +480,9 @@ struct HKUnitTests {
         #expect(HKUnitA._nullUnit.isCompatible(with: ._nullUnit))
         #expect(HKUnitB._nullUnit.isCompatible(with: ._nullUnit))
         
-        #expect(HKUnitA._nullUnit.isCompatible(with: .count()))
+        if hasHealthKit {
+            #expect(HKUnitA._nullUnit.isCompatible(with: .count()))
+        }
         #expect(!HKUnitB._nullUnit.isCompatible(with: .count()))
         
         #expect(HKUnitB._nullUnit.factorization == HKFactorization([:]))
@@ -445,10 +491,14 @@ struct HKUnitTests {
             .init(unitlessDimension: .null): 1
         ]))
         
-        #expect(HKUnitA._nullUnit.isCompatible(with: .count().unitRaised(toPower: 2)))
+        if hasHealthKit {
+            #expect(HKUnitA._nullUnit.isCompatible(with: .count().unitRaised(toPower: 2)))
+        }
         #expect(!HKUnitB._nullUnit.isCompatible(with: .count().unitRaised(toPower: 2)))
         
-        #expect(HKUnitA._nullUnit.isCompatible(with: .percent()))
+        if hasHealthKit {
+            #expect(HKUnitA._nullUnit.isCompatible(with: .percent()))
+        }
         #expect(!HKUnitB._nullUnit.isCompatible(with: .percent()))
         
         #expect(HKUnitA.count().isCompatible(with: .percent()))
@@ -479,17 +529,12 @@ struct HKUnitTests {
         #expect(!(HKUnitA.percent() / .count()).isNull())
         #expect(!(HKUnitB.percent() / .count()).isNull())
         
-        #expect(HKQuantityA(unit: ._nullUnit, doubleValue: 1).doubleValue(for: .count()) == 1)
-        #expect(HKQuantityA(unit: ._nullUnit, doubleValue: 1).doubleValue(for: .percent()) == 1)
-        
-        #expect(HKQuantityA(unit: .count(), doubleValue: 1.1).doubleValue(for: .percent()) == 1.1)
-        #expect(HKQuantityA(unit: .percent(), doubleValue: 0.5).doubleValue(for: .count()) == 0.5)
-        
-        #expect(HKUnitA.count().isCompatible(with: .percent()))
-        #expect(HKUnitA.percent().isCompatible(with: .count()))
-        
-        #expect(HKUnitA(from: "%/m").isCompatible(with: HKUnitA(from: "count/m")))
-        #expect(HKUnitA(from: "%/m").isCompatible(with: HKUnitA(from: "count/in")))
+        if hasHealthKit {
+            #expect(HKQuantityA(unit: ._nullUnit, doubleValue: 1).doubleValue(for: .count()) == 1)
+            #expect(HKQuantityA(unit: ._nullUnit, doubleValue: 1).doubleValue(for: .percent()) == 1)
+            #expect(HKQuantityA(unit: .count(), doubleValue: 1.1).doubleValue(for: .percent()) == 1.1)
+            #expect(HKQuantityA(unit: .percent(), doubleValue: 0.5).doubleValue(for: .count()) == 0.5)
+        }
         
         for (exp1, exp2) in product(-10...10, -10...10) {
             #expect(HKUnitA._nullUnit.unitRaised(toPower: exp1) == ._nullUnit.unitRaised(toPower: exp2))
@@ -612,7 +657,7 @@ extension HKUnitTests {
     
     @Test
     func unitString() {
-        guard Self.enableUnitStringTests else {
+        guard enableUnitStringTests else {
             return
         }
         // HealthKit keeps the order when constructing its unitString
@@ -673,6 +718,13 @@ extension HKUnitTests {
             #expect(try HKUnitB.parse(unitString1) == HKUnitB.parse(unitString2))
         }
         
+        func expectEqual(_ unitString: String, _ unitA: HKUnitA, _ unitB: HKUnitB) throws {
+            let parsedUnitA = try HKUnitA.parse(unitString)
+            let parsedUnitB = try HKUnitB.parse(unitString)
+            #expect(parsedUnitA == unitA)
+            #expect(parsedUnitB == unitB)
+        }
+        
         func expectFailsToParse(_ unitString: String) {
             #expect(throws: (any Error).self) {
                 try HKUnitA.parse(unitString)
@@ -720,10 +772,39 @@ extension HKUnitTests {
             #expect(parsedB == entry.unitB)
         }
         
-        #expect(try HKUnitB.parse("1/s") == .second().reciprocal())
-        #expect(try HKUnitB.parse("s^-1") == .second().reciprocal())
-        #expect(try HKUnitB.parse("s^-2") == .second().unitRaised(toPower: -2))
-        #expect(try HKUnitB.parse("1/s^2") == .second().unitRaised(toPower: -2))
+        try expectEqual(
+            "1/s",
+            .second().reciprocal(),
+            .second().reciprocal()
+        )
+        try expectEqual(
+            "s^-1",
+            .second().reciprocal(),
+            .second().reciprocal()
+        )
+        try expectEqual(
+            "s^-2",
+            .second().unitRaised(toPower: -2),
+            .second().unitRaised(toPower: -2)
+        )
+        try expectEqual(
+            "1/s^2",
+            .second().unitRaised(toPower: -2),
+            .second().unitRaised(toPower: -2)
+        )
+        try expectEqual(
+            "%/m",
+            .percent() / .meter(),
+            .percent() / .meter()
+        )
+        
+        #expect(throws: (any Error).self) {
+            try HKUnitA.parse("percent")
+        }
+        #expect(throws: (any Error).self) {
+            try HKUnitB.parse("percent")
+        }
+        
         #expect(try HKUnitB.parse("s^-2").unitString == "1/s^2")
         
         // Q: does HealthKit allow parentheses when parsing unit strings? (A: yes)

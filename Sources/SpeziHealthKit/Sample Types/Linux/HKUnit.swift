@@ -475,14 +475,35 @@ extension _HKParsableUnit where Self == _HKUnit {
 
 
 extension _HKUnit {
-    /// Creates a unit by parsing a unit string.
-    @_spi(APISupport)
-    public static func parse(_ input: some StringProtocol) throws -> _HKUnit {
-        let syntax = try UnitParser.parse(input: input)
-        return unit(for: syntax)
+    private struct ParseError: LocalizedError {
+        let issue: String
+        let input: String
+        
+        var errorDescription: String? {
+            "\(issue) (input: '\(input)')"
+        }
     }
     
-    private static func unit(for node: UnitParser<some Any>.Node) -> _HKUnit { // swiftlint:disable:this cyclomatic_complexity function_body_length
+    /// Creates a unit by parsing a unit string.
+    @_spi(APISupport)
+    public static func parse<S: StringProtocol>(_ input: S) throws -> _HKUnit {
+        let syntax: UnitParser<S>.Node
+        do {
+            syntax = try UnitParser.parse(input: input)
+        } catch {
+            throw ParseError(issue: error.issue, input: String(input))
+        }
+        return try unit(for: syntax, from: input)
+    }
+    
+    /// Constructs a ``_HKUnit`` from a parsed unit string.
+    ///
+    /// - parameter node: The parse result
+    /// - parameter input: The original unit string from which `node` was parsed. Used for error reporting.
+    private static func unit( // swiftlint:disable:this cyclomatic_complexity function_body_length
+        for node: UnitParser<some Any>.Node,
+        from input: some StringProtocol
+    ) throws -> _HKUnit {
         switch node {
         case .null:
             return .nullUnit
@@ -519,7 +540,12 @@ extension _HKUnit {
             }
             return unit.unitRaised(toPower: power)
         case let .atom(metricPrefix, unit: .other(unitString), power):
-            precondition(metricPrefix == .none, "")
+            guard metricPrefix == .none else {
+                throw ParseError(
+                    issue: "Found metric prefix '\(metricPrefix.prefixString)' for non-SI unit '\(unitString)'",
+                    input: String(input)
+                )
+            }
             let unit: _HKUnit? = switch unitString {
             // Mass
             case "oz":
@@ -594,11 +620,14 @@ extension _HKUnit {
                 nil
             }
             guard let unit else {
-                fatalError("Unhandled non-SI unit '\(unitString)'")
+                throw ParseError(
+                    issue: "Unhandled non-SI unit '\(unitString)'",
+                    input: String(input)
+                )
             }
             return unit.unitRaised(toPower: power)
         case let .cons(lhs, rhs):
-            return unit(for: lhs) * unit(for: rhs)
+            return try unit(for: lhs, from: input) * unit(for: rhs, from: input)
         }
     }
 }
@@ -693,8 +722,8 @@ private struct UnitParser<Input: StringProtocol>: ~Copyable {
     }
     
     struct ParseError: Error {
-        let position: Input.Index
         let issue: String
+        let position: Input.Index
     }
     
     
@@ -735,6 +764,10 @@ private struct UnitParser<Input: StringProtocol>: ~Copyable {
         position = newPos
     }
     
+    private func parseError(at pos: Input.Index? = nil, issue: String) -> ParseError {
+        ParseError(issue: issue, position: pos ?? position)
+    }
+    
     private mutating func parseExpr(isAtRoot: Bool) throws (ParseError) -> Node { // swiftlint:disable:this function_body_length cyclomatic_complexity
         var nodes: [Node] = []
         loop: while !isAtEnd {
@@ -743,32 +776,32 @@ private struct UnitParser<Input: StringProtocol>: ~Copyable {
                 if !nodes.isEmpty {
                     // we're parsing a paren-expr that follows some other expr.
                     guard peek(-1) == "·" else {
-                        throw .init(position: position, issue: "Invalid input")
+                        throw parseError(issue: "Invalid input")
                     }
                 }
                 let exprPos = position
                 let expr = try parseParenExpr()
                 if expr.isNull && !nodes.isEmpty {
-                    throw .init(position: exprPos, issue: "Invalid '()'")
+                    throw parseError(at: exprPos, issue: "Invalid '()'")
                 } else if nodes.contains(where: \.isNull) {
-                    throw .init(position: exprPos, issue: "Invalid input: cannot multiply with '()'")
+                    throw parseError(at: exprPos, issue: "Invalid input: cannot multiply with '()'")
                 } else {
                     nodes.append(expr)
                 }
             } else if current == "·" {
                 guard !nodes.isEmpty else {
-                    throw .init(position: position, issue: "Unexpected '·'")
+                    throw parseError(at: position, issue: "Unexpected '·'")
                 }
                 advance()
             } else if current == "/" || current == "1" && peek() == "/" {
                 guard isAtRoot else {
                     // we found a non-top-level division
-                    throw .init(position: position, issue: "'/' only allowed at root level")
+                    throw parseError(at: position, issue: "'/' only allowed at root level")
                 }
                 // we found a top-level division
                 switch (current == "/", nodes.first) {
                 case (true, .none): // '/<rhs>'
-                    throw .init(position: position, issue: "missing lhs for '/'")
+                    throw parseError(at: position, issue: "missing lhs for '/'")
                 case (true, .some(let lhsFst)): // '<lhs>/<rhs>'
                     advance(by: 1)
                     let lhs = nodes.dropFirst().reduce(lhsFst) { .cons($0, $1) }
@@ -794,13 +827,13 @@ private struct UnitParser<Input: StringProtocol>: ~Copyable {
                 let exprPos = position
                 let expr = try parseAtom()
                 if nodes.contains(where: \.isNull) {
-                    throw .init(position: exprPos, issue: "Invalid input: cannot multiply with '()'")
+                    throw parseError(at: exprPos, issue: "Invalid input: cannot multiply with '()'")
                 } else {
                     nodes.append(expr)
                 }
             }
             guard position > posAtEntry else {
-                throw .init(position: position, issue: "Unable to parse")
+                throw parseError(issue: "Unable to parse")
             }
         }
         guard let fst = nodes.first else {
@@ -811,7 +844,7 @@ private struct UnitParser<Input: StringProtocol>: ~Copyable {
     
     private mutating func parseParenExpr() throws(ParseError) -> Node {
         guard current == "(" else {
-            throw .init(position: position, issue: "Expected '('")
+            throw parseError(issue: "Expected '('")
         }
         advance()
         if current == ")" {
@@ -821,12 +854,12 @@ private struct UnitParser<Input: StringProtocol>: ~Copyable {
         }
         let expr = try parseExpr(isAtRoot: false)
         guard current == ")" else {
-            throw .init(position: position, issue: "Expected ')'")
+            throw parseError(issue: "Expected ')'")
         }
         advance()
         if let power = try parseExponentiation() {
             guard !expr.isNull else {
-                throw .init(position: position, issue: "Invalid exponentiation")
+                throw parseError(issue: "Invalid exponentiation")
             }
             return expr.raised(to: power)
         } else {
@@ -837,7 +870,12 @@ private struct UnitParser<Input: StringProtocol>: ~Copyable {
     private mutating func parseAtom() throws(ParseError) -> Node {
         let possibleAtomInput = remaining.prefix(while: \.isLetter)
         guard !possibleAtomInput.isEmpty else {
-            throw ParseError(position: position, issue: "Unable to parse atom")
+            // percent needs special handling bc it isn't covered by the prefix selection predicate above
+            if remaining.starts(with: "%") {
+                advance()
+                return .atom(metricPrefix: .none, unit: .other("%"), power: 1)
+            }
+            throw parseError(issue: "Unable to parse atom")
         }
         let atom: Node? = { () -> Node? in
             for metricPrefix in _HKMetricPrefix.allCases {
@@ -850,12 +888,12 @@ private struct UnitParser<Input: StringProtocol>: ~Copyable {
             return .atom(metricPrefix: .none, unit: .other(String(possibleAtomInput)), power: 1)
         }()
         guard let atom else {
-            throw .init(position: position, issue: "Unable to parse atom")
+            throw parseError(issue: "Unable to parse atom")
         }
         advance(by: possibleAtomInput.count)
         if let exponent = try parseExponentiation() {
             guard !atom.isNull else {
-                throw .init(position: position, issue: "Invalid exponentiation")
+                throw parseError(issue: "Invalid exponentiation")
             }
             return atom.raised(to: exponent)
         } else {
@@ -873,7 +911,7 @@ private struct UnitParser<Input: StringProtocol>: ~Copyable {
         advance()
         let powerInput = remaining.prefix { $0 == "-" || $0.isNumber }
         guard let power = Int(powerInput) else {
-            throw .init(position: position, issue: "Unable to parse power")
+            throw parseError(issue: "Unable to parse power")
         }
         advance(by: powerInput.count)
         return power
