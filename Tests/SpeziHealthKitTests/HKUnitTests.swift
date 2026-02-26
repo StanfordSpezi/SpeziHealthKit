@@ -45,7 +45,7 @@ struct HKUnitTests {
     
     @Test
     func unitCompatibility() throws {
-        func _checkCompatible(_ unit1String: String, _ unit2String: String, expected: Bool) throws {
+        func _checkCompatible(_ unit1String: String, _ unit2String: String, expected: Bool) throws { // swiftlint:disable:this identifier_name
             let unitA1 = try HKUnitA.parse(unit1String)
             let unitA2 = try HKUnitA.parse(unit2String)
             let unitB1 = try HKUnitB.parse(unit1String)
