@@ -1,7 +1,7 @@
 //
 // This source file is part of the Stanford Spezi open-source project
 //
-// SPDX-FileCopyrightText: 2025 Stanford University and the project authors (see CONTRIBUTORS.md)
+// SPDX-FileCopyrightText: 2026 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
 // SPDX-License-Identifier: MIT
 //
@@ -92,9 +92,14 @@
 "HKClinicalTypeIdentifierProcedureRecord" = "Operaciones";
 "HKClinicalTypeIdentifierVitalSignRecord" = "Constantes vitales";
 "HKCorrelationTypeIdentifierBloodPressure" = "Tensión arterial";
+"HKCorrelationTypeIdentifierFood" = "Nutrición";
+"HKDataTypeIdentifierAudiogram" = "Audiograma";
 "HKDataTypeIdentifierAudiogram" = "Audiograma";
 "HKDataTypeIdentifierElectrocardiogram" = "Electrocardiogramas (ECG)";
+"HKDataTypeIdentifierElectrocardiogram" = "Electrocardiogramas (ECG)";
 "HKDataTypeIdentifierHeartbeatSeries" = "Mediciones entre latidos";
+"HKDataTypeIdentifierHeartbeatSeries" = "Mediciones entre latidos";
+"HKDataTypeStateOfMind" = "Estado de ánimo";
 "HKDataTypeStateOfMind" = "Estado de ánimo";
 "HKQuantityTypeIdentifierActiveEnergyBurned" = "Energía en actividad";
 "HKQuantityTypeIdentifierAppleExerciseTime" = "Minutos de ejercicio";
@@ -216,7 +221,12 @@
 "HKQuantityTypeIdentifierWaterTemperature" = "Temperatura del agua";
 "HKQuantityTypeIdentifierWorkoutEffortScore" = "Puntuación del esfuerzo";
 "HKScoredAssessmentTypeIdentifierGAD7" = "Riesgo de ansiedad";
+"HKScoredAssessmentTypeIdentifierGAD7" = "Riesgo de ansiedad";
+"HKScoredAssessmentTypeIdentifierPHQ9" = "Riesgo de depresión";
 "HKScoredAssessmentTypeIdentifierPHQ9" = "Riesgo de depresión";
 "HKVisionPrescriptionTypeIdentifier" = "Receta de graduación óptica";
+"HKVisionPrescriptionTypeIdentifier" = "Receta de graduación óptica";
 "HKWorkoutRouteTypeIdentifier" = "Rutas de entreno";
+"HKWorkoutRouteTypeIdentifier" = "Rutas de entreno";
+"HKWorkoutTypeIdentifier" = "Entrenos";
 "HKWorkoutTypeIdentifier" = "Entrenos";

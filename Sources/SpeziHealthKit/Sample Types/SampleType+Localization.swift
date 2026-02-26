@@ -102,8 +102,13 @@ extension Bundle {
     ) -> String? {
         let tables = tables.isEmpty ? [.default] : tables
         for language in Bundle.preferredLocalizations(from: localizations.map(\.minimalIdentifier)) {
-            guard let lproj = self.url(forResource: language.replacingOccurrences(of: "-", with: "_"), withExtension: "lproj"),
-                  let bundle = Bundle(url: lproj) else {
+            let candidates = [
+                // for some reason SPM packages compiled via xcodebuild keep the names of the lproj folders unchanged (eg "en_GB.lproj"),
+                // but compiling with `swift build` lowercases them, so we need to check for both.
+                self.url(forResource: language.replacingOccurrences(of: "-", with: "_"), withExtension: "lproj"),
+                self.url(forResource: language.replacingOccurrences(of: "-", with: "_").lowercased(), withExtension: "lproj")
+            ]
+            guard let lproj = candidates.compactMap(\.self).first, let bundle = Bundle(url: lproj) else {
                 continue
             }
             if let title = bundle.localizedString(forKey: key, tables: tables) {

@@ -1,7 +1,7 @@
 //
 // This source file is part of the Stanford Spezi open-source project
 //
-// SPDX-FileCopyrightText: 2025 Stanford University and the project authors (see CONTRIBUTORS.md)
+// SPDX-FileCopyrightText: 2026 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
 // SPDX-License-Identifier: MIT
 //
@@ -92,9 +92,14 @@
 "HKClinicalTypeIdentifierProcedureRecord" = "Eingriffe";
 "HKClinicalTypeIdentifierVitalSignRecord" = "Klinische Vitalzeichen";
 "HKCorrelationTypeIdentifierBloodPressure" = "Blutdruck";
+"HKCorrelationTypeIdentifierFood" = "Ernährung";
+"HKDataTypeIdentifierAudiogram" = "Audiogramm";
 "HKDataTypeIdentifierAudiogram" = "Audiogramm";
 "HKDataTypeIdentifierElectrocardiogram" = "Elektrokardiogramme (EKG)";
+"HKDataTypeIdentifierElectrocardiogram" = "Elektrokardiogramme (EKG)";
 "HKDataTypeIdentifierHeartbeatSeries" = "Schlag-zu-Schlag-Messungen";
+"HKDataTypeIdentifierHeartbeatSeries" = "Schlag-zu-Schlag-Messungen";
+"HKDataTypeStateOfMind" = "Gemütszustand";
 "HKDataTypeStateOfMind" = "Gemütszustand";
 "HKQuantityTypeIdentifierActiveEnergyBurned" = "Aktivitätsenergie";
 "HKQuantityTypeIdentifierAppleExerciseTime" = "Trainingsminuten";
@@ -102,7 +107,7 @@
 "HKQuantityTypeIdentifierAppleSleepingBreathingDisturbances" = "Atemstörungen";
 "HKQuantityTypeIdentifierAppleSleepingWristTemperature" = "Temperatur am Handgelenk";
 "HKQuantityTypeIdentifierAppleStandTime" = "Stehminuten";
-"HKQuantityTypeIdentifierAppleWalkingSteadiness" = "Stabilität beim Gehen";
+"HKQuantityTypeIdentifierAppleWalkingSteadiness" = "Gehstabilität";
 "HKQuantityTypeIdentifierAtrialFibrillationBurden" = "Vorhofflimmern-Protokoll";
 "HKQuantityTypeIdentifierBasalBodyTemperature" = "Basaltemperatur";
 "HKQuantityTypeIdentifierBasalEnergyBurned" = "Ruheenergie";
@@ -216,7 +221,12 @@
 "HKQuantityTypeIdentifierWaterTemperature" = "Wassertemperatur";
 "HKQuantityTypeIdentifierWorkoutEffortScore" = "Stand der Trainingsanstrengung";
 "HKScoredAssessmentTypeIdentifierGAD7" = "Angststörungsrisiko";
+"HKScoredAssessmentTypeIdentifierGAD7" = "Angststörungsrisiko";
+"HKScoredAssessmentTypeIdentifierPHQ9" = "Depressionsrisiko";
 "HKScoredAssessmentTypeIdentifierPHQ9" = "Depressionsrisiko";
 "HKVisionPrescriptionTypeIdentifier" = "Augenärztliches Rezept";
+"HKVisionPrescriptionTypeIdentifier" = "Augenärztliches Rezept";
 "HKWorkoutRouteTypeIdentifier" = "Trainingsstrecken";
+"HKWorkoutRouteTypeIdentifier" = "Trainingsstrecken";
+"HKWorkoutTypeIdentifier" = "Trainings";
 "HKWorkoutTypeIdentifier" = "Trainings";

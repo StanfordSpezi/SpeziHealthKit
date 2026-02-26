@@ -13,7 +13,7 @@ import class Foundation.ProcessInfo
 import PackageDescription
 
 
-let enableSwiftLintPlugin = true
+let enableSwiftLintPlugin = false
 
 var package = Package(
     name: "SpeziHealthKit",
@@ -55,7 +55,16 @@ var package = Package(
                 "Sample Types/SampleTypeDefs.py",
                 "Sample Types/SampleTypes.swift.gyb"
             ],
-            resources: [.process("Resources")],
+            resources: [
+                .process("Resources"),
+//                .process("Resources/Localizable.xcstrings"),
+//                .copy("Resources/de.lproj"),
+//                .copy("Resources/en.lproj"),
+//                .copy("Resources/en_GB.lproj"),
+//                .copy("Resources/es.lproj"),
+//                .copy("Resources/es_US.lproj"),
+//                .copy("Resources/fr.lproj")
+            ],
             swiftSettings: [
                 .enableUpcomingFeature("ExistentialAny"),
                 .enableUpcomingFeature("InternalImportsByDefault")

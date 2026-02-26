@@ -40,12 +40,11 @@ struct LocalizationEntry: Hashable {
 
 @main
 struct LocalizationsProcessor: ParsableCommand {
-    static var configuration: CommandConfiguration {
-        CommandConfiguration(
-            abstract: "Generate localized string catalogues for HealthKit data types",
-            version: "0.1.0"
-        )
-    }
+    static let configuration = CommandConfiguration(
+        abstract: "Generate localized string catalogues for HealthKit data types",
+        version: "0.1.0"
+    )
+    
     @Flag(name: .short, help: "Enable extended logging")
     var verbose = false
     
@@ -141,6 +140,16 @@ private struct Localizations {
                         table: url.deletingPathExtension().lastPathComponent
                     ))
                 }
+                for (key, entries) in Self.hardcodedMappings {
+                    guard let value = entries[locale.identifier] else {
+                        continue
+                    }
+                    mergedTable[locale, default: [:]][key, default: []].append(.init(
+                        key: key,
+                        value: value,
+                        table: ""
+                    ))
+                }
             }
         }
         guard let referenceLoctable = mergedLoctables[.init(identifier: Locale.current.language.minimalIdentifier)] else {
@@ -155,7 +164,9 @@ private struct Localizations {
             HKClinicalType(.medicationRecord): "MEDICATION_RECORDS",
             HKClinicalType(.procedureRecord): "PROCEDURE_RECORDS",
             HKClinicalType(.vitalSignRecord): "VITAL_SIGN_RECORDS",
-            HKClinicalType(.coverageRecord): "INSURANCE_RECORDS"
+            HKClinicalType(.coverageRecord): "INSURANCE_RECORDS",
+            // for some reason `HKCorrelationType(.food)` has a -hk_localizedName, but .food does not...
+            HKCorrelationType(.food): "HKCorrelationTypeIdentifierFood"
         ]
         displayNameKeys = allObjectTypes.reduce(into: hardcodedNameKeys) { keys, type in
             guard !keys.keys.contains(type) else {
@@ -204,6 +215,31 @@ private struct Localizations {
         }
         return potentialTitles.first?.value
     }
+}
+
+
+extension Localizations {
+    /// mapping of localization keys to lang-value dictionaries
+    private static let hardcodedMappings: [String: [String: String]] = [
+        "HKCorrelationTypeIdentifierFood": [
+            "en": "Nutrition",
+            "en_GB": "Nutrition",
+            "fr": "Nutrition",
+            "de": "Ernährung",
+            "es": "Nutrición",
+            "es_US": "Nutrición"
+        ]
+    ]
+}
+
+
+extension Locale.Language {
+    static let english = Locale.Language(identifier: "en")
+    static let englishUK = Locale.Language(identifier: "en_GB")
+    static let german = Locale.Language(identifier: "de")
+    static let french = Locale.Language(identifier: "fr")
+    static let spanish = Locale.Language(identifier: "es")
+    static let spanishUS = Locale.Language(identifier: "es_US")
 }
 
 
