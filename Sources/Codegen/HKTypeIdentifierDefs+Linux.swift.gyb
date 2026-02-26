@@ -20,7 +20,7 @@ from SampleTypeDefs import *
 // NOTE: This file was automatically generated and should not be edited.
 // swiftlint:disable all
 
-#if os(macOS)
+#if canImport(HealthKit)
 
 import HealthKit
 
@@ -52,7 +52,7 @@ struct_based_defs = [
 }%
 
 extension SampleTypeIdentifierDefinition {
-    @available(macOS 15, *)
+    @available(iOS 18, macOS 15, tvOS 18, watchOS 11, visionOS 2, *)
     public static let definitions: [SampleTypeIdentifierDefinition] = [
         % for (typename, types) in struct_based_defs:
         % for type in types:
