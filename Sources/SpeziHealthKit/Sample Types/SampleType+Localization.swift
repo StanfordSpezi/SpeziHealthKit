@@ -115,10 +115,7 @@ extension Bundle {
                 return title
             }
         }
-        if tables.contains(.default), let title = self.localizedString(forKey: key, tables: [.default]) {
-            return title
-        } else {
-            return nil
-        }
+        // To match the behaviour of apple's implementation
+        return self.localizedString(forKey: key, tables: tables)
     }
 }

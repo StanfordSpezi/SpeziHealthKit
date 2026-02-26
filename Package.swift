@@ -56,14 +56,10 @@ var package = Package(
                 "Sample Types/SampleTypes.swift.gyb"
             ],
             resources: [
-                .process("Resources"),
-//                .process("Resources/Localizable.xcstrings"),
-//                .copy("Resources/de.lproj"),
-//                .copy("Resources/en.lproj"),
-//                .copy("Resources/en_GB.lproj"),
-//                .copy("Resources/es.lproj"),
-//                .copy("Resources/es_US.lproj"),
-//                .copy("Resources/fr.lproj")
+                // NOTE: the SpeziHealthKit target intentionally does not contain any xcstrings files,
+                // since these would, when building with `swift build` instead of `xcodebuild`, conflict
+                // with the lproj folders we have for the sample type display title localizations.
+                .process("Resources")
             ],
             swiftSettings: [
                 .enableUpcomingFeature("ExistentialAny"),

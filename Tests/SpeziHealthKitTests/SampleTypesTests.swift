@@ -121,17 +121,24 @@ struct SampleTypesTests {
     @Test
     func bundleLocalizationUtils() throws {
         let bundle = HealthKit.bundle
-        func fallbackKey(key: String, tables: [Bundle.LocalizationLookupTable], localizations: [Locale.Language]) -> String? {
+        #expect(bundle.developmentLocalization == "en")
+        
+        func fallbackKey(
+            key: String,
+            tables: [Bundle.LocalizationLookupTable],
+            localizations: [Locale.Language]
+        ) -> String? {
             let primary = bundle.localizedString(forKey: key, tables: tables, localizations: localizations)
             let fallback = bundle.localizedStringForKeyFallback(key: key, tables: tables, localizations: localizations)
             #expect(primary == fallback)
             return fallback
         }
+        
         #expect(fallbackKey(
             key: SampleType.food.id,
             tables: [.custom("Localizable-HKTypes")],
             localizations: [.init(identifier: "en")]
-        ) == nil)
+        ) == "Nutrition")
         #expect(fallbackKey(
             key: SampleType.food.id,
             tables: [.custom("Localizable-HKTypes"), .default],
@@ -141,7 +148,7 @@ struct SampleTypesTests {
             key: SampleType.food.id,
             tables: [.default],
             localizations: [.init(identifier: "en")]
-        ) == "Nutrition")
+        ) == nil)
         #expect(fallbackKey(
             key: SampleType.food.id,
             tables: [.custom("Localizable-HKTypes"), .default],

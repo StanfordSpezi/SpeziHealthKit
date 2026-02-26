@@ -35,7 +35,7 @@ struct Codegen: ParsableCommand {
                    and also (as a Swift expression, so that we can access the actual value when processing all of this) the underlying identifier
                    raw value.
                    This tool then processes the sample type identifier properties/variables in this array, and generates the actual Swift file
-                   containing the fully resolved definitions, for use on Linux. 
+                   containing the fully resolved definitions, for use on Linux.
                 """,
             version: "0.1.0"
         )
