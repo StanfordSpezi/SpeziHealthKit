@@ -513,7 +513,7 @@ struct HKUnitTests {
         #expect((HKUnitA.inch() / .inch()).isNull())
         #expect((HKUnitB.inch() / .inch()).isNull())
         
-        if #available(macOS 15.0, *) {
+        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
             #expect(!HKUnitA._nullUnit.isCompatible(with: .appleEffortScore()))
             #expect(!HKUnitB._nullUnit.isCompatible(with: .appleEffortScore()))
         }
