@@ -19,10 +19,12 @@ public let HKUnitMolarMassBloodGlucose = _HKUnitMolarMassBloodGlucose
 
 /// `HKUnit` API.
 ///
-/// Losely inspired by what they seem to be doing.
+/// Loosely inspired by what they seem to be doing.
 @_documentation(visibility: internal)
 public final class _HKUnit: NSObject, @unchecked Sendable {
     private static let nullUnit = _HKUnit(
+        // NOTE: HealthKit represents the null unit as having a factorization of `null: 1`.
+        // We diverge from this, instead giving it an empty factorization.
         factorization: .init([:]),
         dimension: .null,
         scaleOffset: 0,
@@ -353,7 +355,7 @@ public struct HKFactorization: Hashable, CustomStringConvertible, /*ExpressibleB
     }
     
     public var unitString: String {
-        guard !factors.isEmpty else {
+        guard !isNull else {
             return "()"
         }
         func unitString(_ factors: some Sequence<(Factor, Int)>) -> String {
@@ -414,7 +416,6 @@ public struct HKFactorization: Hashable, CustomStringConvertible, /*ExpressibleB
     func raised(to power: Int) -> Self {
         switch power {
         case 0:
-            // Raising anything to 0 creates a dimensionless scalar 1 (Count)
             HKFactorization([:])
         case 1:
             self

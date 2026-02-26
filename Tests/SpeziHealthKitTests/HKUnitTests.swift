@@ -10,17 +10,20 @@
 
 import Algorithms
 import Foundation
+#if canImport(ObjectiveC)
+import ObjectiveC
+#endif
 import SpeziFoundation
 @_spi(APISupport) @_spi(Testing)
 @testable import SpeziHealthKit
 import Testing
 
 
-/// Tests for `HKUnit`; not "HK UnitTests"
+/// (HKUnit) Tests, not HK (UnitTests).
 @Suite(.serialized)
 struct HKUnitTests {
-    private typealias HKUnitA = HKUnit
-    private typealias HKUnitB = _HKUnit
+    fileprivate typealias HKUnitA = HKUnit
+    fileprivate typealias HKUnitB = _HKUnit
     
     private typealias HKQuantityA = HKQuantity
     private typealias HKQuantityB = _HKQuantity
@@ -52,7 +55,8 @@ struct HKUnitTests {
     }
     
     
-    @Test func quantityConversionComplex() {
+    @Test
+    func quantityConversionComplex() {
         do {
             let unitA1: HKUnitA = .degreeCelsius() * .meter()
             let unitB1: HKUnitB = .degreeCelsius() * .meter()
@@ -238,7 +242,8 @@ struct HKUnitTests {
     }
     
     
-    @Test func unitConstruction() throws {
+    @Test
+    func unitConstruction() throws {
         // m^4·atm^2·GL/in^2
         // in^2·atm^2·GL
         
@@ -402,7 +407,143 @@ struct HKUnitTests {
             #expect(unit2.convertFromBaseUnit(unit2.convertToBaseUnit(12.71)) == 12.71)
         }
     }
+    
+    
+    // MARK: null unit tests
+    
+    @Test func nullUnit() {
+        #expect(HKUnitA._nullUnit.isNull())
+        #expect(HKUnitB._nullUnit.isNull())
+        
+        #expect(HKUnitA._nullUnit.unitString == "()")
+        #expect(HKUnitB._nullUnit.unitString == "()")
+        
+        #expect((HKUnitA.meter() / .meter()).isNull())
+        #expect((HKUnitB.meter() / .meter()).isNull())
+        
+        #expect((HKUnitA.meter() / .meter()).unitString == "()")
+        #expect((HKUnitB.meter() / .meter()).unitString == "()")
+        
+        #expect(!(HKUnitA.meter() / .inch()).isNull())
+        #expect(!(HKUnitB.meter() / .inch()).isNull())
+        
+        // lmao https://developer.apple.com/documentation/healthkit/hkunit/isnull()
+        #expect(!HKUnitA(from: "dL/L").isNull())
+        #expect(!HKUnitB(from: "dL/L").isNull())
+        #expect(!(HKUnitA.literUnit(with: .deci) / .liter()).isNull())
+        #expect(!(HKUnitB.literUnit(with: .deci) / .liter()).isNull())
+        
+        #expect(HKUnitA._nullUnit.isCompatible(with: ._nullUnit))
+        #expect(HKUnitB._nullUnit.isCompatible(with: ._nullUnit))
+        
+        #expect(HKUnitA._nullUnit.isCompatible(with: .count()))
+        #expect(!HKUnitB._nullUnit.isCompatible(with: .count()))
+        
+        #expect(HKUnitB._nullUnit.factorization == HKFactorization([:]))
+        #expect(HKUnitB._nullUnit.factorization.reducedToDimensions() == HKFactorization([:]))
+        #expect(HKUnitB.count().factorization.reducedToDimensions() == HKFactorization([
+            .init(unitlessDimension: .null): 1
+        ]))
+        
+        #expect(HKUnitA._nullUnit.isCompatible(with: .count().unitRaised(toPower: 2)))
+        #expect(!HKUnitB._nullUnit.isCompatible(with: .count().unitRaised(toPower: 2)))
+        
+        #expect(HKUnitA._nullUnit.isCompatible(with: .percent()))
+        #expect(!HKUnitB._nullUnit.isCompatible(with: .percent()))
+        
+        #expect(HKUnitA.count().isCompatible(with: .percent()))
+        #expect(HKUnitB.count().isCompatible(with: .percent()))
+        
+        #expect(HKUnitA.percent().isCompatible(with: .count()))
+        #expect(HKUnitB.percent().isCompatible(with: .count()))
+        
+        #expect(HKUnitA._nullUnit.unitRaised(toPower: 2).isNull())
+        #expect(HKUnitB._nullUnit.unitRaised(toPower: 2).isNull())
+        
+        #expect((HKUnitA.inch() / .inch()).isNull())
+        #expect((HKUnitB.inch() / .inch()).isNull())
+        
+        if #available(macOS 15.0, *) {
+            #expect(!HKUnitA._nullUnit.isCompatible(with: .appleEffortScore()))
+            #expect(!HKUnitB._nullUnit.isCompatible(with: .appleEffortScore()))
+        }
+        
+        #expect(!HKUnitA._nullUnit.isCompatible(with: .internationalUnit()))
+        #expect(!HKUnitB._nullUnit.isCompatible(with: .internationalUnit()))
+        
+        #expect(!HKUnitA._nullUnit.isCompatible(with: .inch()))
+        #expect(!HKUnitB._nullUnit.isCompatible(with: .inch()))
+        
+        #expect(!(HKUnitA.count() / .percent()).isNull())
+        #expect(!(HKUnitB.count() / .percent()).isNull())
+        #expect(!(HKUnitA.percent() / .count()).isNull())
+        #expect(!(HKUnitB.percent() / .count()).isNull())
+        
+        #expect(HKQuantityA(unit: ._nullUnit, doubleValue: 1).doubleValue(for: .count()) == 1)
+        #expect(HKQuantityA(unit: ._nullUnit, doubleValue: 1).doubleValue(for: .percent()) == 1)
+        
+        #expect(HKQuantityA(unit: .count(), doubleValue: 1.1).doubleValue(for: .percent()) == 1.1)
+        #expect(HKQuantityA(unit: .percent(), doubleValue: 0.5).doubleValue(for: .count()) == 0.5)
+        
+        #expect(HKUnitA.count().isCompatible(with: .percent()))
+        #expect(HKUnitA.percent().isCompatible(with: .count()))
+        
+        #expect(HKUnitA(from: "%/m").isCompatible(with: HKUnitA(from: "count/m")))
+        #expect(HKUnitA(from: "%/m").isCompatible(with: HKUnitA(from: "count/in")))
+        
+        for (exp1, exp2) in product(-10...10, -10...10) {
+            #expect(HKUnitA._nullUnit.unitRaised(toPower: exp1) == ._nullUnit.unitRaised(toPower: exp2))
+            #expect(HKUnitA._nullUnit.unitRaised(toPower: exp1).isCompatible(with: ._nullUnit.unitRaised(toPower: exp2)))
+            #expect(HKUnitB._nullUnit.unitRaised(toPower: exp1) == ._nullUnit.unitRaised(toPower: exp2))
+            #expect(HKUnitB._nullUnit.unitRaised(toPower: exp1).isCompatible(with: ._nullUnit.unitRaised(toPower: exp2)))
+        }
+    }
+    
+    
+    @Test
+    func nullUnitDivision() throws {
+        #expect(!(HKUnitA.liter() / ._nullUnit).isNull())
+        #expect((HKUnitA.liter() / ._nullUnit).unitString == "L")
+        #expect(!(HKUnitB.liter() / ._nullUnit).isNull())
+        #expect((HKUnitB.liter() / ._nullUnit).unitString == "L")
+        
+        #expect(!(HKUnitA._nullUnit / .liter()).isNull())
+        #expect((HKUnitA._nullUnit / .liter()).unitString == "1/L")
+        #expect(!(HKUnitB._nullUnit / .liter()).isNull())
+        #expect((HKUnitB._nullUnit / .liter()).unitString == "1/L")
+    }
+    
+    
+    @Test
+    func nullUnitMultiplication() throws {
+        #expect(!(HKUnitA.liter() * ._nullUnit).isNull())
+        #expect((HKUnitA.liter() * ._nullUnit).unitString == "L")
+        #expect(!(HKUnitB.liter() * ._nullUnit).isNull())
+        #expect((HKUnitB.liter() * ._nullUnit).unitString == "L")
+        
+        #expect(!(HKUnitA._nullUnit * .liter()).isNull())
+        #expect((HKUnitA._nullUnit * .liter()).unitString == "L")
+        #expect(!(HKUnitB._nullUnit * .liter()).isNull())
+        #expect((HKUnitB._nullUnit * .liter()).unitString == "L")
+    }
+    
+    
+    @Test
+    func nullUnitPower() throws {
+        #expect(HKUnitA._nullUnit.unitRaised(toPower: 12).isNull())
+        #expect(HKUnitB._nullUnit.unitRaised(toPower: 12).isNull())
+        
+        #expect(HKUnitA._nullUnit.unitRaised(toPower: -12).isNull())
+        #expect(HKUnitB._nullUnit.unitRaised(toPower: -12).isNull())
+        
+        #expect(HKUnitA._nullUnit.unitRaised(toPower: 12) == ._nullUnit)
+        #expect(HKUnitB._nullUnit.unitRaised(toPower: 12) == ._nullUnit)
+        
+        #expect(HKUnitA._nullUnit.unitRaised(toPower: -12) == ._nullUnit)
+        #expect(HKUnitB._nullUnit.unitRaised(toPower: -12) == ._nullUnit)
+    }
 }
+
 
 extension HKUnitTests {
     private struct UnitStringPair {
@@ -520,10 +661,11 @@ extension HKUnitTests {
     }
     
     
-    @Test func parsing() throws {
+    @Test
+    func parsing() throws {
         func expectNull(_ unitString: String) throws {
-            try HKUnitA.parse(unitString).isNull()
-            try HKUnitB.parse(unitString).isNull()
+            #expect(try HKUnitA.parse(unitString).isNull())
+            #expect(try HKUnitB.parse(unitString).isNull())
         }
         
         func expectEqual(_ unitString1: String, _ unitString2: String) throws {
@@ -566,7 +708,9 @@ extension HKUnitTests {
         for entry in Self.unitStringPairs {
             let parsedA = try HKUnitA.parse(entry.input)
             #expect(parsedA == entry.unitA)
+            #expect(parsedA.unitRaised(toPower: 12) / parsedA.unitRaised(toPower: -12) == parsedA.unitRaised(toPower: 24))
             let parsedB = try HKUnitB.parse(entry.input)
+            #expect(parsedB.unitRaised(toPower: 12) / parsedB.unitRaised(toPower: -12) == parsedB.unitRaised(toPower: 24))
             #expect(parsedB.factorization == entry.unitB.factorization)
             #expect(parsedB.scaleOffset == entry.unitB.scaleOffset, "'\(entry.input)', parsed into '\(parsedB.factorization)'")
             #expect(
@@ -632,6 +776,12 @@ extension HKUnitTests {
 
 
 #if canImport(HealthKit)
+extension HKUnitTests.HKUnitA {
+    fileprivate static var _nullUnit: HKUnit {
+        .meter() / .meter()
+    }
+}
+
 extension HKUnit {
     fileprivate static func parse(_ input: String) throws -> HKUnit {
         try catchingNSException {
@@ -642,8 +792,41 @@ extension HKUnit {
     fileprivate func convert(_ value: Double, to newUnit: HKUnit) -> Double {
         HKQuantity(unit: self, doubleValue: value).doubleValue(for: newUnit)
     }
+    
     fileprivate func isCompatible(with other: HKUnit) -> Bool {
-        HKQuantity(unit: self, doubleValue: 1).is(compatibleWith: other)
+        let ret0 = isCompatible0(with: other)
+        let ret1 = isCompatible1(with: other)
+        #expect(ret0 == ret1)
+        return ret0
+    }
+    
+    fileprivate func isCompatible1(with other: HKUnit) -> Bool {
+        HKQuantity(unit: self, doubleValue: 12.9).is(compatibleWith: other)
+    }
+    
+    // - (bool)_isCompatibleWithUnit:(id)arg1;
+    fileprivate func isCompatible0(with other: HKUnit) -> Bool {
+        let sel = Selector(("_isCompatibleWithUnit:"))
+        let handle = dlopen(nil, RTLD_NOW)
+        guard let handle else {
+            fatalError("wtf?")
+        }
+        defer {
+            dlclose(handle)
+        }
+        // swiftlint:disable:next identifier_name
+        guard let objc_msgSend = dlsym(handle, "objc_msgSend") else {
+            fatalError("wtf??")
+        }
+        let msgSend = unsafeBitCast(objc_msgSend, to: (@convention(c) (HKUnit, Selector, HKUnit) -> ObjCBool).self)
+        return msgSend(self, sel, other).boolValue
     }
 }
 #endif
+
+
+extension HKUnitTests.HKUnitB {
+    fileprivate static var _nullUnit: HKUnitTests.HKUnitB {
+        .meter() / .meter()
+    }
+}
