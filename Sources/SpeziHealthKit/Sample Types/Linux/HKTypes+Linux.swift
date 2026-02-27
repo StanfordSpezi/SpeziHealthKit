@@ -44,8 +44,22 @@ public class HKPHQ9Assessment: HKScoredAssessment, @unchecked Sendable {}
 public class HKObjectType: NSObject, @unchecked Sendable {
     public let identifier: String
     
+    override public var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(ObjectIdentifier(type(of: self)))
+        hasher.combine(identifier)
+        return hasher.finalize()
+    }
+    
     fileprivate init(identifier: String) {
         self.identifier = identifier
+    }
+    
+    override public func isEqual(_ object: Any?) -> Bool {
+        guard let object = object as? HKObjectType else {
+            return false
+        }
+        return self === object || type(of: self) == type(of: object) && self.identifier == object.identifier
     }
 }
 
