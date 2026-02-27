@@ -9,6 +9,7 @@
 // swiftlint:disable file_types_order type_name identifier_name type_contents_order file_length missing_docs
 
 public import Foundation
+private import SpeziFoundation
 
 #if !canImport(HealthKit)
 public typealias HKUnit = _HKUnit
@@ -55,6 +56,17 @@ public final class _HKUnit: NSObject, @unchecked Sendable {
     public func isNull() -> Bool {
         self == .nullUnit || factorization.isNull
     }
+}
+
+
+extension _HKUnit {
+    override public var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(factorization)
+        hasher.combine(scaleOffset)
+        hasher.combine(scaleFactor)
+        return hasher.finalize()
+    }
     
     override public func isEqual(_ object: Any?) -> Bool {
         guard let object = object as? _HKUnit else {
@@ -66,31 +78,59 @@ public final class _HKUnit: NSObject, @unchecked Sendable {
 
 
 extension _HKUnit {
-    // MARK: base unit initializers
+    // MARK: base unit construction
     
-    convenience init(dimension: _HKUnit.Dimension, unitString: String, scaleOffset: Double = 0, scaleFactor: Double = 1) {
+    private struct BaseUnitDescriptor: Hashable {
+        let dimension: Dimension
+        let unitString: String
+        let scaleOffset: Double
+        let scaleFactor: Double
+    }
+    
+    private static let baseUnitsCacheLock = RWLock()
+    nonisolated(unsafe) private static var _baseUnitsCache: [BaseUnitDescriptor: _HKUnit] = [:]
+    
+    fileprivate static func baseUnit(
+        dimension: _HKUnit.Dimension,
+        unitString: String,
+        scaleOffset: Double = 0,
+        scaleFactor: Double = 1
+    ) -> _HKUnit {
         switch dimension.variant {
         case .base:
-            break // ok
+            return baseUnitsCacheLock.withWriteLock {
+                let descriptor = BaseUnitDescriptor(
+                    dimension: dimension,
+                    unitString: unitString,
+                    scaleOffset: scaleOffset,
+                    scaleFactor: scaleFactor
+                )
+                if let unit = _baseUnitsCache[descriptor] {
+                    return unit
+                } else {
+                    let unit = _HKUnit(
+                        factorization: HKFactorization([.init(dimension: dimension, unitString: unitString): 1]),
+                        dimension: dimension,
+                        scaleOffset: scaleOffset,
+                        scaleFactor: scaleFactor
+                    )
+                    _baseUnitsCache[descriptor] = unit
+                    return unit
+                }
+            }
         case .complex:
             fatalError("Attempted to construct base unit with complex dimension '\(dimension)'")
         }
-        self.init(
-            factorization: HKFactorization([.init(dimension: dimension, unitString: unitString): 1]),
-            dimension: dimension,
-            scaleOffset: scaleOffset,
-            scaleFactor: scaleFactor
-        )
     }
     
-    convenience init(
+    fileprivate static func baseUnit(
         dimension: _HKUnit.Dimension,
         unitString: String,
         metricPrefix: _HKMetricPrefix,
         scaleOffset: Double = 0,
         scaleFactor: Double = 1
-    ) {
-        self.init(
+    ) -> _HKUnit {
+        baseUnit(
             dimension: dimension,
             unitString: "\(metricPrefix.prefixString)\(unitString)",
             scaleOffset: scaleOffset,
@@ -922,330 +962,310 @@ private struct UnitParser<Input: StringProtocol>: ~Copyable {
 // MARK: Base Unit Definitions
 
 extension _HKUnit {
-    public class func gramUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
-        _HKUnit(dimension: .mass, unitString: "g", metricPrefix: prefix)
+    public static func gramUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
+        baseUnit(dimension: .mass, unitString: "g", metricPrefix: prefix)
     }
     
-    public class func gram() -> _HKUnit {
+    public static func gram() -> _HKUnit {
         gramUnit(with: .none)
     }
     
-    public class func ounce() -> _HKUnit {
-        _HKUnit(dimension: .mass, unitString: "oz", scaleFactor: 28.349523125)
+    public static func ounce() -> _HKUnit {
+        baseUnit(dimension: .mass, unitString: "oz", scaleFactor: 28.349523125)
     }
     
-    public class func pound() -> _HKUnit {
-        _HKUnit(dimension: .mass, unitString: "lb", scaleFactor: 453.59237)
+    public static func pound() -> _HKUnit {
+        baseUnit(dimension: .mass, unitString: "lb", scaleFactor: 453.59237)
     }
     
-    public class func stone() -> _HKUnit {
-        _HKUnit(dimension: .mass, unitString: "st", scaleFactor: 6350.2931799999997)
+    public static func stone() -> _HKUnit {
+        baseUnit(dimension: .mass, unitString: "st", scaleFactor: 6350.2931799999997)
     }
     
-    public class func moleUnit(with prefix: _HKMetricPrefix, molarMass gramsPerMole: Double) -> _HKUnit {
-        _HKUnit(dimension: .mass, unitString: "mol<\(gramsPerMole)>", metricPrefix: prefix, scaleFactor: gramsPerMole)
+    public static func moleUnit(with prefix: _HKMetricPrefix, molarMass gramsPerMole: Double) -> _HKUnit {
+        baseUnit(dimension: .mass, unitString: "mol<\(gramsPerMole)>", metricPrefix: prefix, scaleFactor: gramsPerMole)
     }
     
-    public class func moleUnit(withMolarMass gramsPerMole: Double) -> _HKUnit {
+    public static func moleUnit(withMolarMass gramsPerMole: Double) -> _HKUnit {
         moleUnit(with: .none, molarMass: gramsPerMole)
     }
 }
 
 
 extension _HKUnit {
-    public class func meterUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
-        _HKUnit(dimension: .length, unitString: "m", metricPrefix: prefix)
+    public static func meterUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
+        baseUnit(dimension: .length, unitString: "m", metricPrefix: prefix)
     }
     
-    public class func meter() -> _HKUnit {
+    public static func meter() -> _HKUnit {
         meterUnit(with: .none)
     }
     
-    public class func inch() -> _HKUnit {
-        _HKUnit(dimension: .length, unitString: "in", scaleFactor: 0.0254)
+    public static func inch() -> _HKUnit {
+        baseUnit(dimension: .length, unitString: "in", scaleFactor: 0.0254)
     }
     
-    public class func foot() -> _HKUnit {
-        _HKUnit(dimension: .length, unitString: "ft", scaleFactor: 0.3048)
+    public static func foot() -> _HKUnit {
+        baseUnit(dimension: .length, unitString: "ft", scaleFactor: 0.3048)
     }
     
-    public class func yard() -> _HKUnit {
-        _HKUnit(dimension: .length, unitString: "yd", scaleFactor: 0.9144)
+    public static func yard() -> _HKUnit {
+        baseUnit(dimension: .length, unitString: "yd", scaleFactor: 0.9144)
     }
     
-    public class func mile() -> _HKUnit {
-        _HKUnit(dimension: .length, unitString: "mi", scaleFactor: 1609.344)
+    public static func mile() -> _HKUnit {
+        baseUnit(dimension: .length, unitString: "mi", scaleFactor: 1609.344)
     }
 }
 
 
 extension _HKUnit {
-    public class func literUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
-        _HKUnit(dimension: .volume, unitString: "L", metricPrefix: prefix)
+    public static func literUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
+        baseUnit(dimension: .volume, unitString: "L", metricPrefix: prefix)
     }
     
-    public class func liter() -> _HKUnit {
+    public static func liter() -> _HKUnit {
         literUnit(with: .none)
     }
     
-    public class func fluidOunceUS() -> _HKUnit {
-        _HKUnit(dimension: .volume, unitString: "fl_oz_us", scaleFactor: 0.0295735295625)
+    public static func fluidOunceUS() -> _HKUnit {
+        baseUnit(dimension: .volume, unitString: "fl_oz_us", scaleFactor: 0.0295735295625)
     }
     
-    public class func fluidOunceImperial() -> _HKUnit {
-        _HKUnit(dimension: .volume, unitString: "fl_oz_imp", scaleFactor: 0.0284130625)
+    public static func fluidOunceImperial() -> _HKUnit {
+        baseUnit(dimension: .volume, unitString: "fl_oz_imp", scaleFactor: 0.0284130625)
     }
     
-    public class func pintUS() -> _HKUnit {
-        _HKUnit(dimension: .volume, unitString: "pt_us", scaleFactor: 0.473176473)
+    public static func pintUS() -> _HKUnit {
+        baseUnit(dimension: .volume, unitString: "pt_us", scaleFactor: 0.473176473)
     }
     
-    public class func pintImperial() -> _HKUnit {
-        _HKUnit(dimension: .volume, unitString: "pt_imp", scaleFactor: 0.56826125)
+    public static func pintImperial() -> _HKUnit {
+        baseUnit(dimension: .volume, unitString: "pt_imp", scaleFactor: 0.56826125)
     }
     
-    public class func cupUS() -> _HKUnit {
-        _HKUnit(dimension: .volume, unitString: "cup_us", scaleFactor: 0.2365882365)
+    public static func cupUS() -> _HKUnit {
+        baseUnit(dimension: .volume, unitString: "cup_us", scaleFactor: 0.2365882365)
     }
     
-    public class func cupImperial() -> _HKUnit {
-        _HKUnit(dimension: .volume, unitString: "cup_imp", scaleFactor: 0.284130625)
+    public static func cupImperial() -> _HKUnit {
+        baseUnit(dimension: .volume, unitString: "cup_imp", scaleFactor: 0.284130625)
     }
 }
 
 
 extension _HKUnit {
-    public class func pascalUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
-        _HKUnit(dimension: .pressure, unitString: "Pa", metricPrefix: prefix)
+    public static func pascalUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
+        baseUnit(dimension: .pressure, unitString: "Pa", metricPrefix: prefix)
     }
     
-    public class func pascal() -> _HKUnit {
+    public static func pascal() -> _HKUnit {
         pascalUnit(with: .none)
     }
     
-    public class func millimeterOfMercury() -> _HKUnit {
-        _HKUnit(dimension: .pressure, unitString: "mmHg", scaleFactor: 133.322387415)
+    public static func millimeterOfMercury() -> _HKUnit {
+        baseUnit(dimension: .pressure, unitString: "mmHg", scaleFactor: 133.322387415)
     }
     
-    public class func centimeterOfWater() -> _HKUnit {
-        _HKUnit(dimension: .pressure, unitString: "cmAq", scaleFactor: 98.0665)
+    public static func centimeterOfWater() -> _HKUnit {
+        baseUnit(dimension: .pressure, unitString: "cmAq", scaleFactor: 98.0665)
     }
     
-    public class func atmosphere() -> _HKUnit {
-        _HKUnit(dimension: .pressure, unitString: "atm", scaleFactor: 101325)
+    public static func atmosphere() -> _HKUnit {
+        baseUnit(dimension: .pressure, unitString: "atm", scaleFactor: 101325)
     }
     
-    public class func decibelAWeightedSoundPressureLevel() -> _HKUnit {
-        _HKUnit(dimension: .soundPressureLevel, unitString: "dBASPL", scaleFactor: 1)
+    public static func decibelAWeightedSoundPressureLevel() -> _HKUnit {
+        baseUnit(dimension: .soundPressureLevel, unitString: "dBASPL", scaleFactor: 1)
     }
     
-    public class func inchesOfMercury() -> _HKUnit {
-        _HKUnit(dimension: .pressure, unitString: "inHg", scaleFactor: 3386.38816)
+    public static func inchesOfMercury() -> _HKUnit {
+        baseUnit(dimension: .pressure, unitString: "inHg", scaleFactor: 3386.38816)
     }
 }
 
 
 extension _HKUnit {
-    public class func secondUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
-        _HKUnit(dimension: .time, unitString: "s", metricPrefix: prefix)
+    public static func secondUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
+        baseUnit(dimension: .time, unitString: "s", metricPrefix: prefix)
     }
     
-    public class func second() -> _HKUnit {
+    public static func second() -> _HKUnit {
         secondUnit(with: .none)
     }
     
-    public class func minute() -> _HKUnit {
-        _HKUnit(dimension: .time, unitString: "min", scaleFactor: 60)
+    public static func minute() -> _HKUnit {
+        baseUnit(dimension: .time, unitString: "min", scaleFactor: 60)
     }
     
-    public class func hour() -> _HKUnit {
-        _HKUnit(dimension: .time, unitString: "hr", scaleFactor: 60 * 60)
+    public static func hour() -> _HKUnit {
+        baseUnit(dimension: .time, unitString: "hr", scaleFactor: 60 * 60)
     }
     
-    public class func day() -> _HKUnit {
-        _HKUnit(dimension: .time, unitString: "d", scaleFactor: 60 * 60 * 24)
+    public static func day() -> _HKUnit {
+        baseUnit(dimension: .time, unitString: "d", scaleFactor: 60 * 60 * 24)
     }
 }
 
 
 extension _HKUnit {
-    public class func jouleUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
-        _HKUnit(dimension: .energy, unitString: "J", metricPrefix: prefix)
+    public static func jouleUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
+        baseUnit(dimension: .energy, unitString: "J", metricPrefix: prefix)
     }
     
-    public class func joule() -> _HKUnit {
+    public static func joule() -> _HKUnit {
         jouleUnit(with: .none)
     }
     
-    public class func kilocalorie() -> _HKUnit {
-        _HKUnit(dimension: .energy, unitString: "kcal", scaleFactor: 4184)
+    public static func kilocalorie() -> _HKUnit {
+        baseUnit(dimension: .energy, unitString: "kcal", scaleFactor: 4184)
     }
     
-    public class func smallCalorie() -> _HKUnit {
-        _HKUnit(dimension: .energy, unitString: "cal", scaleFactor: 4.184)
+    public static func smallCalorie() -> _HKUnit {
+        baseUnit(dimension: .energy, unitString: "cal", scaleFactor: 4.184)
     }
     
-    public class func largeCalorie() -> _HKUnit {
-        _HKUnit(dimension: .energy, unitString: "Cal", scaleFactor: 4184)
+    public static func largeCalorie() -> _HKUnit {
+        baseUnit(dimension: .energy, unitString: "Cal", scaleFactor: 4184)
     }
     
     @available(*, deprecated, message: "Use smallCalorie or largeCalorie, depending on which you mean")
-    public class func calorie() -> _HKUnit {
+    public static func calorie() -> _HKUnit {
         .smallCalorie()
     }
 }
 
 
 extension _HKUnit {
-    public class func degreeCelsius() -> _HKUnit {
-        _HKUnit(dimension: .temperature, unitString: "degC", scaleOffset: 273.15, scaleFactor: 1)
+    public static func degreeCelsius() -> _HKUnit {
+        baseUnit(dimension: .temperature, unitString: "degC", scaleOffset: 273.15, scaleFactor: 1)
     }
     
-    public class func degreeFahrenheit() -> _HKUnit {
-        _HKUnit(dimension: .temperature, unitString: "degF", scaleOffset: (5 / 9) * 459.67, scaleFactor: 5 / 9)
+    public static func degreeFahrenheit() -> _HKUnit {
+        baseUnit(dimension: .temperature, unitString: "degF", scaleOffset: (5 / 9) * 459.67, scaleFactor: 5 / 9)
     }
     
-    public class func kelvin() -> _HKUnit {
+    public static func kelvin() -> _HKUnit {
         kelvinUnit(with: .none)
     }
     
-    fileprivate class func kelvinUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
-        _HKUnit(dimension: .temperature, unitString: "K", metricPrefix: prefix)
+    fileprivate static func kelvinUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
+        baseUnit(dimension: .temperature, unitString: "K", metricPrefix: prefix)
     }
 }
 
 
 extension _HKUnit {
-    public class func siemenUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
-        _HKUnit(dimension: .conductance, unitString: "S", metricPrefix: prefix)
+    public static func siemenUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
+        baseUnit(dimension: .conductance, unitString: "S", metricPrefix: prefix)
     }
     
-    public class func siemen() -> _HKUnit {
+    public static func siemen() -> _HKUnit {
         siemenUnit(with: .none)
     }
 }
 
 
 extension _HKUnit {
-    public class func internationalUnit() -> _HKUnit {
-        _HKUnit(dimension: .internationalUnit, unitString: "IU")
+    public static func internationalUnit() -> _HKUnit {
+        baseUnit(dimension: .internationalUnit, unitString: "IU")
     }
 }
 
 
 extension _HKUnit {
-    public class func count() -> _HKUnit {
-        _HKUnit(dimension: .null, unitString: "count")
+    public static func count() -> _HKUnit {
+        baseUnit(dimension: .null, unitString: "count")
     }
     
-    public class func percent() -> _HKUnit {
-        _HKUnit(dimension: .null, unitString: "%")
+    public static func percent() -> _HKUnit {
+        baseUnit(dimension: .null, unitString: "%")
     }
 }
 
 
 extension _HKUnit {
-    public class func decibelHearingLevel() -> _HKUnit {
-        _HKUnit(dimension: .hearingSensitivity, unitString: "dBHL")
+    public static func decibelHearingLevel() -> _HKUnit {
+        baseUnit(dimension: .hearingSensitivity, unitString: "dBHL")
     }
 }
 
 
 extension _HKUnit {
-    public class func hertzUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
-        _HKUnit(dimension: .frequency, unitString: "Hz", metricPrefix: prefix)
+    public static func hertzUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
+        baseUnit(dimension: .frequency, unitString: "Hz", metricPrefix: prefix)
     }
     
-    public class func hertz() -> _HKUnit {
+    public static func hertz() -> _HKUnit {
         hertzUnit(with: .none)
     }
 }
 
 
 extension _HKUnit {
-    public class func voltUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
-        _HKUnit(dimension: .electricPotentialDifference, unitString: "V", metricPrefix: prefix)
+    public static func voltUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
+        baseUnit(dimension: .electricPotentialDifference, unitString: "V", metricPrefix: prefix)
     }
     
-    public class func volt() -> _HKUnit {
+    public static func volt() -> _HKUnit {
         voltUnit(with: .none)
     }
 }
 
 
 extension _HKUnit {
-    public class func wattUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
-        _HKUnit(dimension: .power, unitString: "W", metricPrefix: prefix)
+    public static func wattUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
+        baseUnit(dimension: .power, unitString: "W", metricPrefix: prefix)
     }
     
-    public class func watt() -> _HKUnit {
+    public static func watt() -> _HKUnit {
         wattUnit(with: .none)
     }
 }
 
 
 extension _HKUnit {
-    public class func diopter() -> _HKUnit {
-        _HKUnit(dimension: .diopter, unitString: "D")
+    public static func diopter() -> _HKUnit {
+        baseUnit(dimension: .diopter, unitString: "D")
     }
     
-    public class func prismDiopter() -> _HKUnit {
-        _HKUnit(dimension: .prismDiopter, unitString: "pD")
+    public static func prismDiopter() -> _HKUnit {
+        baseUnit(dimension: .prismDiopter, unitString: "pD")
     }
 }
 
 
 extension _HKUnit {
-    public class func radianAngleUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
-        _HKUnit(dimension: .angle, unitString: "rad", metricPrefix: prefix)
+    public static func radianAngleUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
+        baseUnit(dimension: .angle, unitString: "rad", metricPrefix: prefix)
     }
     
-    public class func radianAngle() -> _HKUnit {
+    public static func radianAngle() -> _HKUnit {
         radianAngleUnit(with: .none)
     }
     
-    public class func degreeAngle() -> _HKUnit {
-        _HKUnit(dimension: .angle, unitString: "deg", scaleFactor: 1 / (180 / .pi))
+    public static func degreeAngle() -> _HKUnit {
+        baseUnit(dimension: .angle, unitString: "deg", scaleFactor: 1 / (180 / .pi))
     }
 }
 
 
 extension _HKUnit {
-    public class func luxUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
-        _HKUnit(dimension: .illuminance, unitString: "lx", metricPrefix: prefix)
+    public static func luxUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
+        baseUnit(dimension: .illuminance, unitString: "lx", metricPrefix: prefix)
     }
     
-    public class func lux() -> _HKUnit {
+    public static func lux() -> _HKUnit {
         luxUnit(with: .none)
     }
 }
 
 
 extension _HKUnit {
-    public class func appleEffortScore() -> _HKUnit {
-        _HKUnit(dimension: .appleEffortScore, unitString: "appleEffortScore")
+    public static func appleEffortScore() -> _HKUnit {
+        baseUnit(dimension: .appleEffortScore, unitString: "appleEffortScore")
     }
 }
 
 
 public let _HKUnitMolarMassBloodGlucose: Double = 180.15588000005408
-
-
-// MARK: Utils
-
-extension NSObjectProtocol {
-    fileprivate func _compareEq<each Value: Equatable>(with other: Any?, on keyPath: repeat KeyPath<Self, each Value>) -> Bool {
-        guard let other = other as? Self else {
-            return false
-        }
-        if ObjectIdentifier(self) == ObjectIdentifier(other) {
-            return true
-        }
-        for keyPath in repeat each keyPath {
-            guard self[keyPath: keyPath] == other[keyPath: keyPath] else {
-                return false
-            }
-        }
-        return true
-    }
-}

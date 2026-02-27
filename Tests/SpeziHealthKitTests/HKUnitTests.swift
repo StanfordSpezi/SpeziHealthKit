@@ -233,16 +233,13 @@ struct HKUnitTests {
             let unitsA = inputsA.permutations().map {
                 $0.dropFirst().reduce($0[0]) { $0 * $1 }
             }
-            print("unitsA: \(unitsA)")
             for unit in unitsA.dropFirst() {
                 #expect(unit == unitsA[0])
-                print(unit.unitString, unitsA[0].unitString)
                 #expect(unit.unitString == unitsA[0].unitString)
             }
             let unitsB = inputsB.permutations().map {
                 $0.dropFirst().reduce($0[0]) { $0 * $1 }
             }
-            print("unitsB: \(unitsB)")
             for unit in unitsB.dropFirst() {
                 #expect(unit == unitsB[0])
             }
@@ -407,10 +404,6 @@ struct HKUnitTests {
             ]))
             #expect(unit.scaleOffset == 0)
             #expect(unit.scaleFactor == 1e+09 * (1 as Double * 1 * 1 * 1) * (101325 as Double * 101325) * (1 / (0.0254 * 0.0254)))
-            print(
-                "DA NUMBA",
-                (1e+09 as Double * (1 as Double * 1 * 1 * 1) * (101325 as Double * 101325) * (1 as Double / (0.0254 as Double * 0.0254))) as Double
-            )
         }
         
         do {
@@ -450,6 +443,15 @@ struct HKUnitTests {
             #expect(unit1.convert(12.7, to: unit2) == 130387796437.499985)
             #expect(unit2.convertFromBaseUnit(unit2.convertToBaseUnit(12.71)) == 12.71)
         }
+    }
+    
+    
+    @Test
+    func baseUnitPointerIdentity() throws {
+        // swiftlint:disable identical_operands
+        #expect(HKUnitB.meter() === HKUnitB.meter())
+        #expect(HKUnitB.inch() === HKUnitB.inch())
+        // swiftlint:enable identical_operands
     }
     
     
@@ -586,6 +588,18 @@ struct HKUnitTests {
         
         #expect(HKUnitA._nullUnit.unitRaised(toPower: -12) == ._nullUnit)
         #expect(HKUnitB._nullUnit.unitRaised(toPower: -12) == ._nullUnit)
+    }
+    
+    
+    // MARK: Other
+    
+    @Test
+    func hashing() throws {
+        #expect(Set([try HKUnitA.parse("m/s^2"), try HKUnitA.parse("m·s^-2")]).count == 1)
+        #expect(Set([try HKUnitB.parse("m/s^2"), try HKUnitB.parse("m·s^-2")]).count == 1)
+        
+        #expect(Set([try HKUnitA.parse("m/s^2"), try HKUnitA.parse("m·s^-1")]).count == 2)
+        #expect(Set([try HKUnitB.parse("m/s^2"), try HKUnitB.parse("m·s^-1")]).count == 2)
     }
 }
 
@@ -770,6 +784,9 @@ extension HKUnitTests {
                 "got \(parsedB.scaleFactor); expected \(entry.unitB.scaleFactor) ('\(entry.input)', parsed into '\(parsedB.factorization)')"
             )
             #expect(parsedB == entry.unitB)
+            
+            #expect(parsedA.description == parsedA.unitString)
+            #expect(parsedB.description == parsedB.unitString)
         }
         
         try expectEqual(
@@ -838,9 +855,6 @@ extension HKUnitTests {
         
         do {
             try expectEqual("m^4·atm^2·GL/m^2", "m^2·atm^2·GL")
-            NSLog("%f\n", try HKUnitB.parse("m^4·atm^2·GL/m^2").scaleFactor)
-            NSLog("%f\n", try HKUnitB.parse("m^2·atm^2·GL").scaleFactor)
-            
             let units: [HKUnitB] = [
                 .init(from: "in^2·atm^2·GL"),
                 ((.inch().unitRaised(toPower: 4) / .inch().unitRaised(toPower: 2)) * .literUnit(with: .giga)) / .atmosphere().unitRaised(toPower: -2),
@@ -848,7 +862,6 @@ extension HKUnitTests {
                 .inch().unitRaised(toPower: 2) * .literUnit(with: .giga) * .atmosphere().unitRaised(toPower: 2)
             ]
             for unit in units {
-                NSLog("%f\n", unit.scaleFactor)
                 #expect(unit.factorization == units[0].factorization)
             }
         }
