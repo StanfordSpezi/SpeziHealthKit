@@ -1309,7 +1309,7 @@ other_sample_types = [
         availability=Availability(iOS='18.0', watchOS='11.0', macOS='15.0', visionOS='2.0'),
         sampleTypePropertyName='gad7',
         hkSampleClass='HKGAD7Assessment',
-        doc='The GAD-7 (generalized anxiery disorder 7) score type',
+        doc='The GAD-7 (generalized anxiety disorder 7) score type',
         hkSampleType='HKScoredAssessmentType(.GAD7)',
         variant='.other',
         identifier_def='HKScoredAssessmentTypeIdentifier.GAD7'

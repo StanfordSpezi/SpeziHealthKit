@@ -669,7 +669,7 @@ public struct HKScoredAssessmentTypeIdentifier: Hashable, RawRepresentable, Send
         self.rawValue = rawValue
     }
 
-    /// The GAD-7 (generalized anxiery disorder 7) score type
+    /// The GAD-7 (generalized anxiety disorder 7) score type
     public static let GAD7 = Self(rawValue: "HKScoredAssessmentTypeIdentifierGAD7")
 
     /// The PHQ-9 (nine-item Patient Health Questionnaire) score type

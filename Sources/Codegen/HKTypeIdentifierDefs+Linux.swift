@@ -1707,7 +1707,7 @@ extension SampleTypeIdentifierDefinition {
             IdentifierConstDef(
                 identifierName: "GAD7",
                 rawValue: HKScoredAssessmentType(.GAD7).identifier,
-                docComment: "The GAD-7 (generalized anxiery disorder 7) score type"
+                docComment: "The GAD-7 (generalized anxiety disorder 7) score type"
             )
         ),
         .staticProperty(

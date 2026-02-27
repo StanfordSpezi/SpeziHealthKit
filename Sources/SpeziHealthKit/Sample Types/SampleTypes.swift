@@ -2989,7 +2989,7 @@ extension SampleType where Sample == HKWorkoutRoute {
 
 @available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
 extension SampleType where Sample == HKGAD7Assessment {
-    /// The GAD-7 (generalized anxiery disorder 7) score type
+    /// The GAD-7 (generalized anxiety disorder 7) score type
     @inlinable public static var gad7: SampleType<HKGAD7Assessment> {
         SampleTypeCache.get(
             identifier: HKScoredAssessmentType(.GAD7).identifier,

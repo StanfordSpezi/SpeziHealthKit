@@ -167,7 +167,7 @@ struct SampleTypesTests {
         let sampleType = SampleTypeProxy(.heartburn)
         switch sampleType {
         case .category(.heartburn):
-            #expect(true)
+            #expect(Bool(true))
         default:
             Issue.record("Pattern matching failed.")
         }

@@ -46,6 +46,14 @@ public final class _HKUnit: NSObject, @unchecked Sendable {
         unitString
     }
     
+    override public var hash: Int {
+        var hasher = Hasher()
+        hasher.combine(factorization)
+        hasher.combine(scaleOffset)
+        hasher.combine(scaleFactor)
+        return hasher.finalize()
+    }
+    
     fileprivate init(factorization: HKFactorization, dimension: Dimension, scaleOffset: Double, scaleFactor: Double) {
         self.factorization = factorization
         self.dimension = dimension
@@ -55,17 +63,6 @@ public final class _HKUnit: NSObject, @unchecked Sendable {
     
     public func isNull() -> Bool {
         self == .nullUnit || factorization.isNull
-    }
-}
-
-
-extension _HKUnit {
-    override public var hash: Int {
-        var hasher = Hasher()
-        hasher.combine(factorization)
-        hasher.combine(scaleOffset)
-        hasher.combine(scaleFactor)
-        return hasher.finalize()
     }
     
     override public func isEqual(_ object: Any?) -> Bool {

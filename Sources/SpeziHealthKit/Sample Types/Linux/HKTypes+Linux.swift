@@ -142,7 +142,7 @@ public class HKDocumentType: HKSampleType, @unchecked Sendable {
 }
 
 
-public class HKActivitySummaryType: HKSampleType, @unchecked Sendable {
+public class HKActivitySummaryType: HKObjectType, @unchecked Sendable {
     fileprivate static let shared = HKActivitySummaryType(identifier: HKActivitySummaryTypeIdentifier)
 }
 
@@ -152,67 +152,67 @@ public class HKUserAnnotatedMedicationType: HKObjectType, @unchecked Sendable {}
 
 extension HKObjectType {
     @available(*, deprecated, renamed: "HKQuantityType(_:)")
-    public class func quantityType(forIdentifier identifier: HKQuantityTypeIdentifier) -> HKQuantityType? {
+    public static func quantityType(forIdentifier identifier: HKQuantityTypeIdentifier) -> HKQuantityType? {
         HKQuantityType(identifier)
     }
     
     @available(*, deprecated, renamed: "HKCategoryType(_:)")
-    public class func categoryType(forIdentifier identifier: HKCategoryTypeIdentifier) -> HKCategoryType? {
+    public static func categoryType(forIdentifier identifier: HKCategoryTypeIdentifier) -> HKCategoryType? {
         HKCategoryType(identifier)
     }
     
     @available(*, deprecated, renamed: "HKCharacteristicType(_:)")
-    public class func characteristicType(forIdentifier identifier: HKCharacteristicTypeIdentifier) -> HKCharacteristicType? {
+    public static func characteristicType(forIdentifier identifier: HKCharacteristicTypeIdentifier) -> HKCharacteristicType? {
         HKCharacteristicType(identifier)
     }
     
     @available(*, deprecated, renamed: "HKCorrelationType(_:)")
-    public class func correlationType(forIdentifier identifier: HKCorrelationTypeIdentifier) -> HKCorrelationType? {
+    public static func correlationType(forIdentifier identifier: HKCorrelationTypeIdentifier) -> HKCorrelationType? {
         HKCorrelationType(identifier)
     }
     
-//    public class func documentType(forIdentifier identifier: HKDocumentTypeIdentifier) -> HKDocumentType?
+//    public static func documentType(forIdentifier identifier: HKDocumentTypeIdentifier) -> HKDocumentType?
     
     @available(*, unavailable, message: "Not yet implemented")
-    public class func seriesType(forIdentifier identifier: String) -> HKSeriesType? {
+    public static func seriesType(forIdentifier identifier: String) -> HKSeriesType? {
         fatalError("Not yet implemented")
     }
     
-    public class func workoutType() -> HKWorkoutType {
+    public static func workoutType() -> HKWorkoutType {
         HKWorkoutType.shared
     }
     
     @available(*, unavailable, message: "Not yet implemented")
-    public class func activitySummaryType() -> HKActivitySummaryType {
+    public static func activitySummaryType() -> HKActivitySummaryType {
         fatalError("Not yet implemented")
     }
     
-    public class func audiogramSampleType() -> HKAudiogramSampleType {
+    public static func audiogramSampleType() -> HKAudiogramSampleType {
         HKAudiogramSampleType.shared
     }
     
-    public class func electrocardiogramType() -> HKElectrocardiogramType {
+    public static func electrocardiogramType() -> HKElectrocardiogramType {
         HKElectrocardiogramType.shared
     }
     
     
-    public class func visionPrescriptionType() -> HKPrescriptionType {
+    public static func visionPrescriptionType() -> HKPrescriptionType {
         HKPrescriptionType.visionPrescriptionType
     }
     
-    public class func stateOfMindType() -> HKStateOfMindType {
+    public static func stateOfMindType() -> HKStateOfMindType {
         HKStateOfMindType.shared
     }
     
     @available(macOS 26.0, *)
     @available(*, unavailable, message: "Not yet implemented")
-    public class func medicationDoseEventType() -> HKMedicationDoseEventType {
+    public static func medicationDoseEventType() -> HKMedicationDoseEventType {
         fatalError("Not yet implemented")
     }
     
     @available(macOS 26.0, *)
     @available(*, unavailable, message: "Not yet implemented")
-    public class func userAnnotatedMedicationType() -> HKUserAnnotatedMedicationType {
+    public static func userAnnotatedMedicationType() -> HKUserAnnotatedMedicationType {
         fatalError("Not yet implemented")
     }
 }
@@ -223,7 +223,7 @@ extension HKSeriesType {
         HKSeriesType.sharedWorkoutRouteType
     }
     
-    public class func heartbeat() -> HKSeriesType {
+    public static func heartbeat() -> HKSeriesType {
         HKSeriesType.sharedHeartbeatSeriesType
     }
 }
