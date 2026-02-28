@@ -47,11 +47,7 @@ public final class _HKUnit: NSObject, @unchecked Sendable {
     }
     
     override public var hash: Int {
-        var hasher = Hasher()
-        hasher.combine(factorization)
-        hasher.combine(scaleOffset)
-        hasher.combine(scaleFactor)
-        return hasher.finalize()
+        factorization.hashValue
     }
     
     fileprivate init(factorization: HKFactorization, dimension: Dimension, scaleOffset: Double, scaleFactor: Double) {
@@ -650,7 +646,7 @@ extension _HKUnit {
             // Energy
             case "cal":
                 Self.smallCalorie()
-            case "kcal":
+            case "kcal", "Cal":
                 Self.largeCalorie()
             // Temperature
             case "degC":
@@ -884,6 +880,9 @@ private struct UnitParser<Input: StringProtocol>: ~Copyable { // swiftlint:disab
                     return .cons(lhs, rhs.reciprocal())
                 }
             } else if current == ")" {
+                if isAtRoot {
+                    throw parseError(issue: "Unexpected ')'")
+                }
                 // closing paren expr
                 break loop
             } else {
@@ -932,7 +931,7 @@ private struct UnitParser<Input: StringProtocol>: ~Copyable { // swiftlint:disab
     
     private mutating func parseAtom() throws(ParseError) -> Node { // swiftlint:disable:this cyclomatic_complexity
         let possibleAtomInput = try { () throws(ParseError) -> Input.SubSequence in
-            let candidate = remaining.prefix(while: \.isLetter)
+            let candidate = remaining.prefix { $0.isLetter || $0 == "_" }
             guard !candidate.isEmpty else {
                 // handled below
                 return candidate
@@ -963,7 +962,6 @@ private struct UnitParser<Input: StringProtocol>: ~Copyable { // swiftlint:disab
             for metricPrefix in _HKMetricPrefix.allCases {
                 let prefixString = metricPrefix.prefixString
                 if possibleAtomInput.starts(with: prefixString), let siUnit = Unit.SIUnit(possibleAtomInput.dropFirst(prefixString.count)) {
-                    print("siUnit: \(siUnit)")
                     return .atom(metricPrefix: metricPrefix, unit: .SI(siUnit), power: 1)
                 }
             }

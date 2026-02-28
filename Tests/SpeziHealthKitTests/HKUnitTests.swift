@@ -818,6 +818,10 @@ extension HKUnitTests {
             }
         }
         
+        // invalid
+        expectFailsToParse("(")
+        expectFailsToParse(")")
+        
         // null unit
         try expectNull("")
         try expectNull("()")
@@ -937,6 +941,18 @@ extension HKUnitTests {
         }
         
         try expectEqual("m*m", "m·m")
+        
+        try expectEqual("cup_us", .cupUS(), .cupUS())
+        expectFailsToParse("km<123>")
+        
+        #expect(try HKUnitA.parse(HKUnitA.largeCalorie().unitString) == HKUnitA.largeCalorie())
+        #expect(try HKUnitB.parse(HKUnitB.largeCalorie().unitString) == HKUnitB.largeCalorie())
+        
+        #expect(try HKUnitA.parse(HKUnitA.smallCalorie().unitString) == HKUnitA.smallCalorie())
+        #expect(try HKUnitB.parse(HKUnitB.smallCalorie().unitString) == HKUnitB.smallCalorie())
+        
+        #expect(try HKUnitA.parse(HKUnitA.calorie().unitString) == HKUnitA.calorie())
+        #expect(try HKUnitB.parse(HKUnitB.calorie().unitString) == HKUnitB.calorie())
         
         // mol
         expectFailsToParse("mol<>")
