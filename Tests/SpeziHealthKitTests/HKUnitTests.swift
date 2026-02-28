@@ -94,6 +94,12 @@ struct HKUnitTests {
         
         try expectCompatible("W", "J/s", healthKitExpectedFailure: "FB22085099")
         try expectCompatible("kW", "J/s", healthKitExpectedFailure: "FB22085099")
+        
+        try expectCompatible("mol", "mol")
+        try expectCompatible("Gmol", "kmol")
+        try expectCompatible("mol<123>", "kmol<123>")
+        try expectCompatible("mol<123>", "mol<456>")
+        try expectCompatible("mol<123>", "kmol<456>")
     }
     
     
@@ -931,6 +937,25 @@ extension HKUnitTests {
         }
         
         try expectEqual("m*m", "m·m")
+        
+        // mol
+        expectFailsToParse("mol<>")
+        #expect(try HKUnitA.parse("mol") != HKUnitA.moleUnit(withMolarMass: HKUnitMolarMassBloodGlucose))
+        #expect(try HKUnitB.parse("mol") != HKUnitB.moleUnit(withMolarMass: HKUnitMolarMassBloodGlucose))
+        try expectEqual("mol<1234>", .moleUnit(withMolarMass: 1234), .moleUnit(withMolarMass: 1234))
+        try expectEqual("Gmol<1234>", .moleUnit(with: .giga, molarMass: 1234), .moleUnit(with: .giga, molarMass: 1234))
+    }
+    
+    
+    @Test
+    func mole() throws {
+        #expect(try HKUnitB.parse("mol") == HKUnitB.masslessMole(with: .none))
+        #expect(try HKUnitB.parse("Gmol") == HKUnitB.masslessMole(with: .giga))
+        #expect(try HKUnitB.parse("mol<123>") == HKUnitB.moleUnit(withMolarMass: 123))
+        #expect(try HKUnitB.parse("Gmol<123>") == HKUnitB.moleUnit(with: .giga, molarMass: 123))
+        #expect(try HKUnitB.parse("mol<123.45>") == HKUnitB.moleUnit(withMolarMass: 123.45))
+        #expect(try HKUnitB.parse("Gmol<123.45>") == HKUnitB.moleUnit(with: .giga, molarMass: 123.45))
+        #expect(try HKUnitB.parse("mol<18.02>").convert(2, to: .gram()).isApproximatelyEqual(to: 36.04))
     }
 }
 

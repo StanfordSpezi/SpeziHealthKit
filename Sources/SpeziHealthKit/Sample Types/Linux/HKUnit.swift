@@ -273,6 +273,8 @@ extension _HKUnit {
         static let diopter = Self(base: "Diopter")
         static let prismDiopter = Self(base: "PrismDiopter")
         static let appleEffortScore = Self(base: "AppleEffortScore")
+        /// A dimension that represents a mass-less mol.
+        static let masslessMole = Self(base: "Mol")
         
         static func * (lhs: Self, rhs: Self) -> Self {
             Self(complex: lhs.factorization * rhs.factorization)
@@ -578,7 +580,9 @@ extension _HKUnit {
                 Self.siemenUnit(with: metricPrefix)
             case .frequency:
                 Self.hertzUnit(with: metricPrefix)
-            case .molarMass(gramsPerMole: let gramsPerMole):
+            case .molarMass(gramsPerMole: .none):
+                Self.masslessMole(with: metricPrefix)
+            case .molarMass(gramsPerMole: .some(let gramsPerMole)):
                 Self.moleUnit(with: metricPrefix, molarMass: gramsPerMole)
             case .electricalPotentialDifference:
                 Self.voltUnit(with: metricPrefix)
@@ -698,7 +702,7 @@ private struct UnitParser<Input: StringProtocol>: ~Copyable { // swiftlint:disab
             case temperature
             case electricalConductance
             case frequency
-            case molarMass(gramsPerMole: Double)
+            case molarMass(gramsPerMole: Double?)
             case electricalPotentialDifference
             case power
             case angle
@@ -721,12 +725,19 @@ private struct UnitParser<Input: StringProtocol>: ~Copyable { // swiftlint:disab
                 case "rad": self = .angle
                 case "lx":  self = .illuminance
                 default:
-                    if input.starts(with: "mol"),
-                       let idx1 = input.firstIndex(of: "<"),
-                       let idx2 = input.lastIndex(of: ">"),
-                       idx2 == input.index(before: input.endIndex),
-                       let gramsPerMol = Double(input[input.index(after: idx1)..<idx2]) {
-                        self = .molarMass(gramsPerMole: gramsPerMol)
+                    if input.starts(with: "mol") {
+                        if let idx1 = input.firstIndex(of: "<"),
+                           idx1 == input.dropFirst(3).startIndex,
+                           let idx2 = input.lastIndex(of: ">"),
+                           idx2 == input.index(before: input.endIndex) {
+                            guard let gramsPerMol = Double(input[input.index(after: idx1)..<idx2]) else {
+                                return nil
+                            }
+                            self = .molarMass(gramsPerMole: gramsPerMol)
+                        } else {
+                            // 'mol' w/out a '<x.y>' suffix is parsed into the massless molar unit.
+                            self = .molarMass(gramsPerMole: nil)
+                        }
                     } else {
                         return nil
                     }
@@ -788,7 +799,7 @@ private struct UnitParser<Input: StringProtocol>: ~Copyable { // swiftlint:disab
     private var isAtEnd: Bool {
         position >= _input.endIndex
     }
-    private var remaining: some StringProtocol {
+    private var remaining: Input.SubSequence {
         _input[position...]
     }
     
@@ -919,8 +930,27 @@ private struct UnitParser<Input: StringProtocol>: ~Copyable { // swiftlint:disab
         }
     }
     
-    private mutating func parseAtom() throws(ParseError) -> Node {
-        let possibleAtomInput = remaining.prefix(while: \.isLetter)
+    private mutating func parseAtom() throws(ParseError) -> Node { // swiftlint:disable:this cyclomatic_complexity
+        let possibleAtomInput = try { () throws(ParseError) -> Input.SubSequence in
+            let candidate = remaining.prefix(while: \.isLetter)
+            guard !candidate.isEmpty else {
+                // handled below
+                return candidate
+            }
+            if remaining.dropFirst(candidate.count).first == "<" {
+                // `unit<spec>`?
+                let numberPart = remaining.dropFirst(candidate.count + 1).prefix { $0.isWholeNumber || $0 == "." }
+                guard !numberPart.isEmpty else {
+                    throw parseError(at: remaining.dropFirst(candidate.count).startIndex, issue: "Empty '<>' specifier")
+                }
+                guard remaining[safe: numberPart.endIndex] == ">" else {
+                    throw parseError(at: numberPart.startIndex, issue: "Unable to find matching '<'")
+                }
+                return remaining[candidate.startIndex...numberPart.endIndex]
+            } else {
+                return candidate
+            }
+        }()
         guard !possibleAtomInput.isEmpty else {
             // percent needs special handling bc it isn't covered by the prefix selection predicate above
             if remaining.starts(with: "%") {
@@ -933,6 +963,7 @@ private struct UnitParser<Input: StringProtocol>: ~Copyable { // swiftlint:disab
             for metricPrefix in _HKMetricPrefix.allCases {
                 let prefixString = metricPrefix.prefixString
                 if possibleAtomInput.starts(with: prefixString), let siUnit = Unit.SIUnit(possibleAtomInput.dropFirst(prefixString.count)) {
+                    print("siUnit: \(siUnit)")
                     return .atom(metricPrefix: metricPrefix, unit: .SI(siUnit), power: 1)
                 }
             }
@@ -1001,6 +1032,11 @@ extension _HKUnit {
     public static func moleUnit(withMolarMass gramsPerMole: Double) -> _HKUnit {
         moleUnit(with: .none, molarMass: gramsPerMole)
     }
+    
+    @_spi(Testing)
+    public static func masslessMole(with prefix: _HKMetricPrefix) -> _HKUnit {
+        baseUnit(dimension: .masslessMole, unitString: "mol", metricPrefix: prefix)
+    }
 }
 
 
@@ -1033,7 +1069,6 @@ extension _HKUnit {
 
 extension _HKUnit {
     public static func literUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
-//        baseUnit(dimension: .volume, unitString: "L", metricPrefix: prefix)
         baseUnit(dimension: .volume, unitString: "L", metricPrefix: prefix, scaleFactor: 0.001)
     }
     
