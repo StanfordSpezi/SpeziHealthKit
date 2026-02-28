@@ -289,14 +289,12 @@ struct HKUnitTests {
     
     @Test
     func powerAssociativity() {
-        do {
-            let unitA1: HKUnitA = (.meter().unitRaised(toPower: 2) * .liter().unitRaised(toPower: 3)).unitRaised(toPower: 5)
-            let unitA2: HKUnitA = .meter().unitRaised(toPower: 10) * .liter().unitRaised(toPower: 15)
-            #expect(unitA1 == unitA2)
-            let unitB1: HKUnitB = (.meter().unitRaised(toPower: 2) * .liter().unitRaised(toPower: 3)).unitRaised(toPower: 5)
-            let unitB2: HKUnitB = .meter().unitRaised(toPower: 10) * .liter().unitRaised(toPower: 15)
-            #expect(unitB1 == unitB2)
-        }
+        let unitA1: HKUnitA = (.meter().unitRaised(toPower: 2) * .liter().unitRaised(toPower: 3)).unitRaised(toPower: 5)
+        let unitA2: HKUnitA = .meter().unitRaised(toPower: 10) * .liter().unitRaised(toPower: 15)
+        #expect(unitA1 == unitA2)
+        let unitB1: HKUnitB = (.meter().unitRaised(toPower: 2) * .liter().unitRaised(toPower: 3)).unitRaised(toPower: 5)
+        let unitB2: HKUnitB = .meter().unitRaised(toPower: 10) * .liter().unitRaised(toPower: 15)
+        #expect(unitB1 == unitB2)
     }
     
     
