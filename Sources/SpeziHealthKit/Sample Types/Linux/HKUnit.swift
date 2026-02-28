@@ -153,7 +153,7 @@ extension _HKUnit {
     }
     
     func convert(_ value: Double, to other: _HKUnit) -> Double {
-        precondition(self.isCompatible(with: other), "Attempted to convert between incompatible units '\(self)' and \(other)")
+        precondition(self.isCompatible(with: other), "Attempted to convert between incompatible units '\(self)' and '\(other)'")
         let inBaseUnit = self.convertToBaseUnit(value)
         return other.convertFromBaseUnit(inBaseUnit)
     }
@@ -217,7 +217,7 @@ extension _HKUnit {
     @_spi(Testing)
     public struct Dimension: Hashable, CustomStringConvertible, Sendable {
         enum Variant: Hashable, Sendable {
-            case base(_ unitString: String)
+            case base(_ unitString: String, reducedForm: HKFactorization?)
             case complex(HKFactorization)
         }
         
@@ -225,7 +225,7 @@ extension _HKUnit {
         
         var unitString: String {
             switch variant {
-            case .base(let unitString):
+            case .base(let unitString, reducedForm: _):
                 unitString
             case .complex(let factorization):
                 factorization.unitString
@@ -234,7 +234,7 @@ extension _HKUnit {
         
         var factorization: HKFactorization {
             switch variant {
-            case .base(let unitString):
+            case .base(let unitString, reducedForm: _):
                 HKFactorization([.init(dimension: self, unitString: unitString): 1])
             case .complex(let factorization):
                 factorization
@@ -245,8 +245,8 @@ extension _HKUnit {
             unitString
         }
         
-        private init(base unitString: String) {
-            variant = .base(unitString)
+        private init(base unitString: String, reducedForm: Dimension? = nil) {
+            variant = .base(unitString, reducedForm: reducedForm?.factorization.reducedToDimensions())
         }
         
         private init(complex factorization: HKFactorization) {
@@ -258,13 +258,13 @@ extension _HKUnit {
         static let length = Self(base: "Length")
         static let mass = Self(base: "Mass")
         static let temperature = Self(base: "Temperature")
-        static let volume = Self(base: "Volume")
-        static let pressure = Self(base: "Pressure")
-        static let energy = Self(base: "Energy")
+        static let volume = Self(base: "Volume", reducedForm: length.raised(to: 3))
+        static let pressure = Self(base: "Pressure", reducedForm: mass / (time.raised(to: 2) * length))
+        static let energy = Self(base: "Energy", reducedForm: pressure * volume)
         static let conductance = Self(base: "Conductance")
-        static let frequency = Self(base: "Frequency")
+        static let frequency = Self(base: "Frequency", reducedForm: time.raised(to: -1))
         static let electricPotentialDifference = Self(base: "ElectricPotentialDifference")
-        static let power = Self(base: "Power")
+        static let power = Self(base: "Power", reducedForm: energy / time)
         static let angle = Self(base: "Angle")
         static let illuminance = Self(base: "Illuminance")
         static let soundPressureLevel = Self(base: "SoundPressureLevel")
@@ -348,7 +348,7 @@ public enum _HKMetricPrefix: CaseIterable, Sendable {
 // MARK: Factorization
 
 @_spi(Testing)
-public struct HKFactorization: Hashable, CustomStringConvertible, /*ExpressibleByDictionaryLiteral,*/ Sendable {
+public struct HKFactorization: Hashable, CustomStringConvertible, ExpressibleByDictionaryLiteral, Sendable {
     @_spi(Testing)
     public struct Factor: Hashable, Sendable {
         let dimension: _HKUnit.Dimension
@@ -361,7 +361,7 @@ public struct HKFactorization: Hashable, CustomStringConvertible, /*ExpressibleB
         /// - parameter dimension: Must be a base dimension!
         init(unitlessDimension dimension: _HKUnit.Dimension) {
             switch dimension.variant {
-            case .base(let unitString):
+            case .base(let unitString, reducedForm: _):
                 self.dimension = dimension
                 self.unitString = unitString
             case .complex:
@@ -430,12 +430,25 @@ public struct HKFactorization: Hashable, CustomStringConvertible, /*ExpressibleB
         }
     }
     
+    /// Constructs a factorization from a sequence of elements.
+    ///
+    /// The `factor^exp` pairs in `inputs` are interpreted as a multiplicative term; any factors that appear multiple times are multiplied onto each other.
     @_spi(Testing)
-    public init(_ factors: [Factor: Int]) {
-        self.factors = factors.filter { $0.value != 0 }
+    public init(_ inputs: some Sequence<(key: Factor, value: Int)>) {
+        factors = inputs
+            .reduce(into: [:]) { factors, elem in
+                let (factor, exp) = elem
+                factors[factor, default: 0] += exp
+            }
+            .filter { $0.value != 0 }
         for factor in factors.keys {
             precondition(!factor.unitString.isEmpty)
         }
+    }
+    
+    @_spi(Testing)
+    public init(dictionaryLiteral elements: (Factor, Int)...) {
+        self.init(elements)
     }
     
     func reciprocal() -> HKFactorization {
@@ -463,15 +476,16 @@ public struct HKFactorization: Hashable, CustomStringConvertible, /*ExpressibleB
     
     /// Produces a `HKFactorization` of unitless dimensions, reducing factors with identical dimensions where possible.
     func reducedToDimensions() -> Self {
-        var newFactors: [Factor: Int] = [:]
-        for (unit, exp) in factors {
-            if let exp2 = newFactors[.init(unitlessDimension: unit.dimension)] {
-                newFactors[.init(unitlessDimension: unit.dimension)] = exp + exp2
-            } else {
-                newFactors[.init(unitlessDimension: unit.dimension)] = exp
+        HKFactorization(factors.flatMap { factor, exp -> [(Factor, Int)] in
+            switch factor.dimension.variant {
+            case .base(_, reducedForm: .none):
+                return [(.init(unitlessDimension: factor.dimension), exp)]
+            case .base(_, reducedForm: .some(let reducedForm)):
+                return Array((reducedForm.raised(to: exp)).factors)
+            case .complex:
+                fatalError("unreachable?")
             }
-        }
-        return HKFactorization(newFactors)
+        })
     }
     
     /// Determines whether the factorization is compatible with another one.
@@ -669,7 +683,7 @@ extension _HKUnit {
     }
 }
 
-private struct UnitParser<Input: StringProtocol>: ~Copyable {
+private struct UnitParser<Input: StringProtocol>: ~Copyable { // swiftlint:disable:this type_body_length
     enum Unit {
         case SI(SIUnit)
         case other(String)
@@ -763,6 +777,7 @@ private struct UnitParser<Input: StringProtocol>: ~Copyable {
         let position: Input.Index
     }
     
+    private let multiplicationSeparators: Set<Character> = ["·", "*", "."]
     
     private let _input: Input
     private var position: Input.Index
@@ -812,7 +827,7 @@ private struct UnitParser<Input: StringProtocol>: ~Copyable {
             if current == "(" {
                 if !nodes.isEmpty {
                     // we're parsing a paren-expr that follows some other expr.
-                    guard peek(-1) == "·" else {
+                    guard let prev = peek(-1), multiplicationSeparators.contains(prev) else {
                         throw parseError(issue: "Invalid input")
                     }
                 }
@@ -825,9 +840,9 @@ private struct UnitParser<Input: StringProtocol>: ~Copyable {
                 } else {
                     nodes.append(expr)
                 }
-            } else if current == "·" {
+            } else if let current, multiplicationSeparators.contains(current) {
                 guard !nodes.isEmpty else {
-                    throw parseError(at: position, issue: "Unexpected '·'")
+                    throw parseError(at: position, issue: "Unexpected '\(current)'")
                 }
                 advance()
             } else if current == "/" || current == "1" && peek() == "/" {
@@ -1018,7 +1033,8 @@ extension _HKUnit {
 
 extension _HKUnit {
     public static func literUnit(with prefix: _HKMetricPrefix) -> _HKUnit {
-        baseUnit(dimension: .volume, unitString: "L", metricPrefix: prefix)
+//        baseUnit(dimension: .volume, unitString: "L", metricPrefix: prefix)
+        baseUnit(dimension: .volume, unitString: "L", metricPrefix: prefix, scaleFactor: 0.001)
     }
     
     public static func liter() -> _HKUnit {

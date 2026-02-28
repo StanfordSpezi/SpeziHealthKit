@@ -43,38 +43,57 @@ struct HKUnitTests {
     }()
     
     
-    @Test
-    func unitCompatibility() throws {
-        func _checkCompatible(_ unit1String: String, _ unit2String: String, expected: Bool) throws { // swiftlint:disable:this identifier_name
+    @Test func unitCompatibility() throws {
+        func _checkCompatible( // swiftlint:disable:this identifier_name
+            _ unit1String: String,
+            _ unit2String: String,
+            expected: Bool,
+            healthKitExpectedFailure: String? = nil
+        ) throws {
             let unitA1 = try HKUnitA.parse(unit1String)
             let unitA2 = try HKUnitA.parse(unit2String)
             let unitB1 = try HKUnitB.parse(unit1String)
             let unitB2 = try HKUnitB.parse(unit2String)
-            #expect(unitA1.isCompatible(with: unitA1))
-            #expect(unitA1.isCompatible(with: unitA2) == expected, "\(unitA1) vs \(unitA2)")
-            #expect(unitA2.isCompatible(with: unitA1) == expected, "\(unitA2) vs \(unitA1)")
-            #expect(unitA2.isCompatible(with: unitA2))
+            let hkImp = {
+                #expect(unitA1.isCompatible(with: unitA1))
+                #expect(unitA1.isCompatible(with: unitA2) == expected, "\(unitA1) vs \(unitA2)")
+                #expect(unitA2.isCompatible(with: unitA1) == expected, "\(unitA2) vs \(unitA1)")
+                #expect(unitA2.isCompatible(with: unitA2))
+            }
+            if hasHealthKit, let healthKitExpectedFailure {
+                withKnownIssue("\(healthKitExpectedFailure)") {
+                    hkImp()
+                }
+            } else {
+                hkImp()
+            }
             #expect(unitB1.isCompatible(with: unitB1))
             #expect(unitB1.isCompatible(with: unitB2) == expected, "\(unitB1) vs \(unitB2)")
             #expect(unitB2.isCompatible(with: unitB1) == expected, "\(unitB2) vs \(unitB1)")
             #expect(unitB2.isCompatible(with: unitB2))
         }
-        func expectCompatible(_ unit1String: String, _ unit2String: String) throws {
-            try _checkCompatible(unit1String, unit2String, expected: true)
+        func expectCompatible(_ unit1String: String, _ unit2String: String, healthKitExpectedFailure: String? = nil) throws {
+            try _checkCompatible(unit1String, unit2String, expected: true, healthKitExpectedFailure: healthKitExpectedFailure)
         }
-        func expectNotCompatible(_ unit1String: String, _ unit2String: String) throws {
-            try _checkCompatible(unit1String, unit2String, expected: false)
+        func expectNotCompatible(_ unit1String: String, _ unit2String: String, healthKitExpectedFailure: String? = nil) throws {
+            try _checkCompatible(unit1String, unit2String, expected: false, healthKitExpectedFailure: healthKitExpectedFailure)
         }
-        #expect(HKUnitA.count().isCompatible(with: .percent()))
-        #expect(HKUnitA.percent().isCompatible(with: .count()))
         
-        #expect(HKUnitB.count().isCompatible(with: .percent()))
-        #expect(HKUnitB.percent().isCompatible(with: .count()))
+        try expectCompatible("%", "count")
+        
+        try expectCompatible("cm", "m")
         
         try expectCompatible("%/m", "count/m")
         try expectCompatible("%/m", "count/in")
         try expectCompatible("%/m", "count/ft")
         try expectNotCompatible("%/m", "%/m^2")
+        
+        try expectCompatible("m^3", "L")
+        try expectCompatible("m^2·in", "L")
+        try expectCompatible("m·km·mm", "L")
+        
+        try expectCompatible("W", "J/s", healthKitExpectedFailure: "FB22085099")
+        try expectCompatible("kW", "J/s", healthKitExpectedFailure: "FB22085099")
     }
     
     
@@ -100,7 +119,23 @@ struct HKUnitTests {
     
     
     @Test
-    func quantityConversionComplex() {
+    func quantityConversionComplex() throws {
+        func testConversion(_ unit1String: String, unit2String: String, input: Double, result expected: Double) throws {
+            let unitA1 = try HKUnitA.parse(unit1String)
+            let unitA2 = try HKUnitA.parse(unit2String)
+            let resultAL = unitA1.convert(input, to: unitA2)
+            #expect(resultAL.isApproximatelyEqual(to: expected), "from \(unitA1) to \(unitA2)")
+            let resultAR = unitA2.convert(expected, to: unitA1)
+            #expect(resultAR.isApproximatelyEqual(to: input), "from \(unitA2) to \(unitA1)")
+            
+            let unitB1 = try HKUnitB.parse(unit1String)
+            let unitB2 = try HKUnitB.parse(unit2String)
+            let resultBL = unitB1.convert(input, to: unitB2)
+            #expect(resultBL.isApproximatelyEqual(to: expected), "from \(unitB1) to \(unitB2)")
+            let resultBR = unitB2.convert(expected, to: unitB1)
+            #expect(resultBR.isApproximatelyEqual(to: input), "from \(unitB2) to \(unitB1)")
+        }
+        
         do {
             let unitA1: HKUnitA = .degreeCelsius() * .meter()
             let unitB1: HKUnitB = .degreeCelsius() * .meter()
@@ -168,19 +203,17 @@ struct HKUnitTests {
                 .init(dimension: .pressure, unitString: "atm"): 2,
                 .init(dimension: .volume, unitString: "GL"): 1
             ]))
-            #expect(unitB1.factorization.reducedToDimensions() == HKFactorization([
-                .init(unitlessDimension: .length): 2,
-                .init(unitlessDimension: .pressure): 2,
-                .init(unitlessDimension: .volume): 1
-            ]))
-            #expect(unitB2.factorization.reducedToDimensions() == HKFactorization([
-                .init(unitlessDimension: .length): 2,
-                .init(unitlessDimension: .pressure): 2,
-                .init(unitlessDimension: .volume): 1
-            ]))
-            //            #expect(unitA1.convert(12.7, to: unitA2) == 0)
-            //            #expect(unitB1.convert(12.7, to: unitB2) == 0)
         }
+        
+        try testConversion("m^3", unit2String: "L", input: 1, result: 1000)
+        try testConversion("mL", unit2String: "L", input: 1000, result: 1)
+        try testConversion("mL", unit2String: "L", input: 500, result: 0.5)
+        
+        #expect(try HKUnitA.parse("m^4·atm^2·GL/in^2").isCompatible(with: HKUnitA.parse("(m^2·atm)^2·GL/in^2")))
+        #expect(try HKUnitB.parse("m^4·atm^2·GL/in^2").isCompatible(with: HKUnitB.parse("(m^2·atm)^2·GL/in^2")))
+        #expect(try HKUnitA.parse("m^4·atm^2·GL/in^2").isCompatible(with: HKUnitA.parse("in^2·atm^2·GL")))
+        #expect(try HKUnitB.parse("m^4·atm^2·GL/in^2").isCompatible(with: HKUnitB.parse("in^2·atm^2·GL")))
+        try testConversion("m^4·atm^2·GL/in^2", unit2String: "in^2·atm^2·GL", input: 12.7, result: 30511872.047366135)
     }
     
     
@@ -291,6 +324,12 @@ struct HKUnitTests {
         #expect(try HKUnitA.parse("m^4·atm^2·GL/in^2") == HKUnitA.parse("(m^2·atm)^2·GL/in^2"))
         #expect(try HKUnitB.parse("m^4·atm^2·GL/in^2") == HKUnitB.parse("(m^2·atm)^2·GL/in^2"))
         
+        #expect(try HKUnitA.parse("m^4·atm^2·GL/in^2").isCompatible(with: HKUnitA.parse("(m^2·atm)^2·GL/in^2")))
+        #expect(try HKUnitB.parse("m^4·atm^2·GL/in^2").isCompatible(with: HKUnitB.parse("(m^2·atm)^2·GL/in^2")))
+        
+        #expect(try HKUnitA.parse("m^4·atm^2·GL/in^2").isCompatible(with: HKUnitA.parse("in^2·atm^2·GL")))
+        #expect(try HKUnitB.parse("m^4·atm^2·GL/in^2").isCompatible(with: HKUnitB.parse("in^2·atm^2·GL")))
+        
         do {
             var unit = HKUnitB.meter()
             #expect(unit.scaleOffset == 0)
@@ -310,39 +349,36 @@ struct HKUnitTests {
             
             unit = unit * .literUnit(with: .giga)
             #expect(unit.scaleOffset == 0)
-            #expect(unit.scaleFactor == pow(101325, 2) * 1e+09)
+            #expect(unit.scaleFactor == pow(101325, 2) * 1e+06)
             
             unit = unit / .inch().unitRaised(toPower: 2)
             #expect(unit.scaleOffset == 0)
-            #expect(unit.scaleFactor == (pow(101325, 2) * 1e+09) / pow(HKUnitB.inch().scaleFactor, 2))
-            #expect(unit.scaleFactor == (10266755625 * 1e+09) / 0.00064516)
+            #expect(unit.scaleFactor == (pow(101325, 2) * 1e+06) / pow(HKUnitB.inch().scaleFactor, 2))
+            #expect(unit.scaleFactor == (10266755625 * 1e+06) / 0.00064516)
         }
         
         do {
             // GL * atm^2 * in^2
             var unit: HKUnitB = .literUnit(with: .giga)
             #expect(unit.scaleOffset == 0)
-            #expect(unit.scaleFactor == 1e+09)
+            #expect(unit.scaleFactor == 1e+06)
             
             unit = unit * .atmosphere().unitRaised(toPower: 2)
             #expect(unit.scaleOffset == 0)
-            #expect(unit.scaleFactor == 1e+09 * 101325 * 101325)
-            #expect(unit.scaleFactor == 1.0266755625e19)
+            #expect(unit.scaleFactor == 1e+06 * 101325 * 101325)
+            #expect(unit.scaleFactor == 1.0266755625e16)
             #expect(HKUnitB.atmosphere().scaleFactor == 101325)
             #expect(HKUnitB.atmosphere().unitRaised(toPower: 2).scaleFactor == 101325 * 101325)
             
             unit = unit * .inch().unitRaised(toPower: 2)
             #expect(unit.scaleOffset == 0)
-            #expect(unit.scaleFactor == 1e+09 * 101325 * 101325 * 0.0254 * 0.0254)
-            #expect(unit.scaleFactor == (1e+09 as Double * (101325 as Double * 101325 as Double)) * (0.0254 as Double * 0.0254 as Double))
-            #expect(unit.scaleFactor.isApproximatelyEqual(to: 6623700059025000))
+            #expect(unit.scaleFactor == 1e+06 * 101325 * 101325 * 0.0254 * 0.0254)
+            #expect(unit.scaleFactor == (1e+06 as Double * (101325 as Double * 101325 as Double)) * (0.0254 as Double * 0.0254 as Double))
+            #expect(unit.scaleFactor.isApproximatelyEqual(to: 6623700059025))
             #expect(HKUnitB.inch().scaleFactor == 0.0254)
             #expect(HKUnitB.inch().unitRaised(toPower: 2).scaleFactor == 0.0254 * 0.0254)
             
-            #expect(1e+09 * 101325 * 101325 * 0.0254 * 0.0254 == 6623700059024999 as Double)
-            withKnownIssue("IEEE-754") {
-                #expect(1e+09 * 101325 * 101325 * 0.0254 * 0.0254 == 6623700059025000 as Double)
-            }
+            #expect(1e+06 * 101325 * 101325 * 0.0254 * 0.0254 == 6623700059025 as Double)
         }
         
         do {
@@ -352,7 +388,7 @@ struct HKUnitTests {
                 .init(dimension: .length, unitString: "in"): -1
             ]))
             #expect(unit.scaleOffset == 0)
-            #expect(unit.scaleFactor == 1e+09 * (1 / 0.0254))
+            #expect(unit.scaleFactor == 1e+06 * (1 / 0.0254))
         }
         do {
             let unit = try HKUnitB.parse("GL/in^2")
@@ -361,7 +397,7 @@ struct HKUnitTests {
                 .init(dimension: .length, unitString: "in"): -2
             ]))
             #expect(unit.scaleOffset == 0)
-            #expect(unit.scaleFactor == 1e+09 * (1 / (0.0254 * 0.0254)))
+            #expect(unit.scaleFactor == 1e+06 * (1 / (0.0254 * 0.0254)))
         }
         do {
             let unit = try HKUnitB.parse("atm·GL/in^2")
@@ -371,7 +407,7 @@ struct HKUnitTests {
                 .init(dimension: .length, unitString: "in"): -2
             ]))
             #expect(unit.scaleOffset == 0)
-            #expect(unit.scaleFactor == 1e+09 * (101325) * (1 / (0.0254 * 0.0254)))
+            #expect(unit.scaleFactor == 1e+06 * (101325) * (1 / (0.0254 * 0.0254)))
         }
         do {
             let unit = try HKUnitB.parse("atm^2·GL/in^2")
@@ -381,7 +417,7 @@ struct HKUnitTests {
                 .init(dimension: .length, unitString: "in"): -2
             ]))
             #expect(unit.scaleOffset == 0)
-            #expect(unit.scaleFactor == 1e+09 * (101325 as Double * 101325) * (1 / (0.0254 * 0.0254)))
+            #expect(unit.scaleFactor == 1e+06 * (101325 as Double * 101325) * (1 / (0.0254 * 0.0254)))
         }
         do {
             let unit = try HKUnitB.parse("m·atm^2·GL/in^2")
@@ -392,7 +428,7 @@ struct HKUnitTests {
                 .init(dimension: .length, unitString: "in"): -2
             ]))
             #expect(unit.scaleOffset == 0)
-            #expect(unit.scaleFactor == 1e+09 * 1 * (101325 as Double * 101325) * (1 / (0.0254 * 0.0254)))
+            #expect(unit.scaleFactor == 1e+06 * 1 * (101325 as Double * 101325) * (1 / (0.0254 * 0.0254)))
         }
         do {
             let unit = try HKUnitB.parse("m^4·atm^2·GL/in^2")
@@ -403,7 +439,7 @@ struct HKUnitTests {
                 .init(dimension: .length, unitString: "in"): -2
             ]))
             #expect(unit.scaleOffset == 0)
-            #expect(unit.scaleFactor == 1e+09 * (1 as Double * 1 * 1 * 1) * (101325 as Double * 101325) * (1 / (0.0254 * 0.0254)))
+            #expect(unit.scaleFactor == 1e+06 * (1 as Double * 1 * 1 * 1) * (101325 as Double * 101325) * (1 / (0.0254 * 0.0254)))
         }
         
         do {
@@ -415,7 +451,7 @@ struct HKUnitTests {
                 .init(dimension: .volume, unitString: "GL"): 1,
                 .init(dimension: .length, unitString: "in"): -2
             ]))
-            #expect(unit.scaleFactor == 1.5913503045756092e+22)
+            #expect(unit.scaleFactor == 1.5913503045756092e+19)
             #expect(unit.convertFromBaseUnit(unit.convertToBaseUnit(12.71)) == 12.71)
         }
         
@@ -431,7 +467,7 @@ struct HKUnitTests {
             let unit1 = try HKUnitB.parse("m^4·atm^2·GL/in^2")
             let unit2 = try HKUnitB.parse("m^4·Pa^2·GL/m^2")
             #expect(unit1.isCompatible(with: unit2))
-            #expect(unit1.convert(12.7, to: unit2) == 202101488681102.343750)
+            #expect(unit1.convert(12.7, to: unit2) == 202101488681102.38)
             #expect(unit1.convertFromBaseUnit(unit1.convertToBaseUnit(12.71)) == 12.71)
             #expect(unit2.convertFromBaseUnit(unit2.convertToBaseUnit(12.71)) == 12.71)
         }
@@ -440,7 +476,7 @@ struct HKUnitTests {
             let unit1 = try HKUnitB.parse("m^4·atm^2·GL")
             let unit2 = try HKUnitB.parse("m^4·Pa^2·GL")
             #expect(unit1.isCompatible(with: unit2))
-            #expect(unit1.convert(12.7, to: unit2) == 130387796437.499985)
+            #expect(unit1.convert(12.7, to: unit2) == 130387796437.5)
             #expect(unit2.convertFromBaseUnit(unit2.convertToBaseUnit(12.71)) == 12.71)
         }
     }
@@ -669,6 +705,34 @@ extension HKUnitTests {
         )
     ]
     
+    
+    @Test
+    func unitStringSimple() {
+        #expect(HKUnitA.meter().unitString == "m")
+        #expect(HKUnitB.meter().unitString == "m")
+        
+        #expect(HKUnitA.meter().unitRaised(toPower: 2).unitString == "m^2")
+        #expect(HKUnitB.meter().unitRaised(toPower: 2).unitString == "m^2")
+        
+        #expect(HKUnitA.meter().unitRaised(toPower: 3).unitString == "m^3")
+        #expect(HKUnitB.meter().unitRaised(toPower: 3).unitString == "m^3")
+        
+        #expect(HKUnitA.liter().unitString == "L")
+        #expect(HKUnitB.liter().unitString == "L")
+        
+        #expect(HKUnitA.liter().unitRaised(toPower: 2).unitString == "L^2")
+        #expect(HKUnitB.liter().unitRaised(toPower: 2).unitString == "L^2")
+        
+        #expect(HKUnitA.liter().unitRaised(toPower: 3).unitString == "L^3")
+        #expect(HKUnitB.liter().unitRaised(toPower: 3).unitString == "L^3")
+        
+        #expect(HKUnitA.literUnit(with: .milli).unitString == "mL")
+        #expect(HKUnitB.literUnit(with: .milli).unitString == "mL")
+        
+        #expect(HKUnitA.literUnit(with: .milli).unitRaised(toPower: 2).unitString == "mL^2")
+        #expect(HKUnitB.literUnit(with: .milli).unitRaised(toPower: 2).unitString == "mL^2")
+    }
+    
     @Test
     func unitString() {
         guard enableUnitStringTests else {
@@ -865,6 +929,8 @@ extension HKUnitTests {
                 #expect(unit.factorization == units[0].factorization)
             }
         }
+        
+        try expectEqual("m*m", "m·m")
     }
 }
 
