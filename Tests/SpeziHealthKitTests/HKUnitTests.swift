@@ -954,7 +954,6 @@ extension HKUnitTests {
         try expectEqual("D", .diopter(), .diopter())
         try expectEqual("pD", .prismDiopter(), .prismDiopter())
         
-        
         expectFailsToParse("km<123>")
         
         #expect(try HKUnitA.parse(HKUnitA.largeCalorie().unitString) == HKUnitA.largeCalorie())
