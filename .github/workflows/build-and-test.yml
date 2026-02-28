@@ -53,6 +53,7 @@ jobs:
         config: [Debug, Release]
       fail-fast: false
     with:
+      build_configuration: ${{ matrix.config }}
       artifact_name: ${{ format('SpeziHealthKit-Package-Linux-{0}.lcov', matrix.config) }}
   ui_tests:
     name: Build and Test UI Tests ${{ matrix.platform.name }} (${{ matrix.config }})
