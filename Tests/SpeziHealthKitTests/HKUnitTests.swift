@@ -10,9 +10,6 @@
 
 import Algorithms
 import Foundation
-#if canImport(ObjectiveC)
-import ObjectiveC
-#endif
 import SpeziFoundation
 @_spi(APISupport) @_spi(Testing)
 @testable import SpeziHealthKit
