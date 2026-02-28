@@ -29,7 +29,7 @@ public final class _HKUnit: NSObject, @unchecked Sendable {
         factorization: .init([:]),
         dimension: .null,
         scaleOffset: 0,
-        scaleFactor: 0
+        scaleFactor: 1
     )
     
     @_spi(Testing) public let factorization: HKFactorization
@@ -91,13 +91,16 @@ extension _HKUnit {
     ) -> _HKUnit {
         switch dimension.variant {
         case .base:
+            let descriptor = BaseUnitDescriptor(
+                dimension: dimension,
+                unitString: unitString,
+                scaleOffset: scaleOffset,
+                scaleFactor: scaleFactor
+            )
+            if let unit = baseUnitsCacheLock.withReadLock({ _baseUnitsCache[descriptor] }) {
+                return unit
+            }
             return baseUnitsCacheLock.withWriteLock {
-                let descriptor = BaseUnitDescriptor(
-                    dimension: dimension,
-                    unitString: unitString,
-                    scaleOffset: scaleOffset,
-                    scaleFactor: scaleFactor
-                )
                 if let unit = _baseUnitsCache[descriptor] {
                     return unit
                 } else {

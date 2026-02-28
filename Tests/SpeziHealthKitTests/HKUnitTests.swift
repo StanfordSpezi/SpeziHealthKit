@@ -499,9 +499,12 @@ struct HKUnitTests {
     
     // MARK: null unit tests
     
-    @Test func nullUnit() {
+    @Test func nullUnit() throws {
         #expect(HKUnitA._nullUnit.isNull())
         #expect(HKUnitB._nullUnit.isNull())
+        
+        #expect(try HKUnitA.parse("()").isNull())
+        #expect(try HKUnitB.parse("()").isNull())
         
         #expect(HKUnitA._nullUnit.unitString == "()")
         #expect(HKUnitB._nullUnit.unitString == "()")
@@ -600,6 +603,12 @@ struct HKUnitTests {
         #expect((HKUnitA._nullUnit / .liter()).unitString == "1/L")
         #expect(!(HKUnitB._nullUnit / .liter()).isNull())
         #expect((HKUnitB._nullUnit / .liter()).unitString == "1/L")
+        
+        #expect(HKUnitA._nullUnit.convertToBaseUnit(12.7) == 12.7)
+        #expect(HKUnitB._nullUnit.convertToBaseUnit(12.7) == 12.7)
+        
+        #expect(HKUnitA._nullUnit.convertFromBaseUnit(12.7) == 12.7)
+        #expect(HKUnitB._nullUnit.convertFromBaseUnit(12.7) == 12.7)
     }
     
     
@@ -1001,26 +1010,33 @@ extension HKUnit {
         return ret0
     }
     
+    // - (double)_convertToBaseUnit:(double)arg1;
+    fileprivate func convertToBaseUnit(_ value: Double) -> Double {
+        let imp = _method("_convertToBaseUnit:", as: (@convention(c) (HKUnit, Selector, Double) -> Double).self)
+        return imp(self, Selector(("_convertToBaseUnit:")), value)
+    }
+    
+    // - (double)_convertFromBaseUnit:(double)arg1;
+    fileprivate func convertFromBaseUnit(_ value: Double) -> Double {
+        let imp = _method("_convertFromBaseUnit:", as: (@convention(c) (HKUnit, Selector, Double) -> Double).self)
+        return imp(self, Selector(("_convertFromBaseUnit:")), value)
+    }
+    
     fileprivate func isCompatible1(with other: HKUnit) -> Bool {
         HKQuantity(unit: self, doubleValue: 12.9).is(compatibleWith: other)
     }
     
     // - (bool)_isCompatibleWithUnit:(id)arg1;
     fileprivate func isCompatible0(with other: HKUnit) -> Bool {
-        let sel = Selector(("_isCompatibleWithUnit:"))
-        let handle = dlopen(nil, RTLD_NOW)
-        guard let handle else {
-            fatalError("wtf?")
+        let imp = _method("_isCompatibleWithUnit:", as: (@convention(c) (HKUnit, Selector, HKUnit) -> ObjCBool).self)
+        return imp(self, Selector(("_isCompatibleWithUnit:")), other).boolValue
+    }
+    
+    private func _method<F>(_ name: String, as _: F.Type) -> F {
+        guard let imp = self.method(for: Selector(name)) else {
+            fatalError("Unable to find method -\(name)")
         }
-        defer {
-            dlclose(handle)
-        }
-        // swiftlint:disable:next identifier_name
-        guard let objc_msgSend = dlsym(handle, "objc_msgSend") else {
-            fatalError("wtf??")
-        }
-        let msgSend = unsafeBitCast(objc_msgSend, to: (@convention(c) (HKUnit, Selector, HKUnit) -> ObjCBool).self)
-        return msgSend(self, sel, other).boolValue
+        return unsafeBitCast(imp, to: F.self)
     }
 }
 #endif

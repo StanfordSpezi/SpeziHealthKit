@@ -697,7 +697,7 @@ quantity_types: list[SampleType] = [
     ),
     quantity_type(
         identifier='cyclingCadence',
-        display_unit='.count() / .minute()', # TODO check this!!!
+        display_unit='.count() / .minute()',
         doc='A quantity sample that records cycling cadence.'
     ),
     quantity_type(

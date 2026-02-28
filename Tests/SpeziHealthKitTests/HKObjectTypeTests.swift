@@ -34,4 +34,14 @@ struct HKObjectTypeTests {
         #expect(Set([heartRate, stepCount]).count == 2)
         #expect(HKQuantityType(.appleMoveTime).hashValue == HKQuantityType(.appleMoveTime).hashValue)
     }
+    
+    @Test
+    func identifiers() {
+        if #available(iOS 18.0, watchOS 11.0, macOS 15.0, visionOS 2.0, *) {
+            #expect(HKStateOfMindType.stateOfMindType().identifier == "HKDataTypeStateOfMind")
+        }
+        #if !canImport(HealthKit)
+        #expect(HKStateOfMindType.stateOfMindType().identifier == "HKDataTypeStateOfMind")
+        #endif
+    }
 }
