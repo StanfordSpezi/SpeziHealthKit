@@ -949,6 +949,12 @@ extension HKUnitTests {
         try expectEqual("m*m", "m·m")
         
         try expectEqual("cup_us", .cupUS(), .cupUS())
+        try expectEqual("yd", .yard(), .yard())
+        try expectEqual("deg", .degreeAngle(), .degreeAngle())
+        try expectEqual("D", .diopter(), .diopter())
+        try expectEqual("pD", .prismDiopter(), .prismDiopter())
+        
+        
         expectFailsToParse("km<123>")
         
         #expect(try HKUnitA.parse(HKUnitA.largeCalorie().unitString) == HKUnitA.largeCalorie())

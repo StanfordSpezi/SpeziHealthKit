@@ -615,6 +615,11 @@ extension _HKUnit {
                 Self.foot()
             case "mi":
                 Self.mile()
+            case "yd":
+                Self.yard()
+            // Angle
+            case "deg":
+                Self.degreeAngle()
             // Pressure
             case "mmHg":
                 Self.millimeterOfMercury()
@@ -667,6 +672,11 @@ extension _HKUnit {
             // Hearing Sensitivity
             case "dBHL":
                 Self.decibelHearingLevel()
+            // Diopter
+            case "D":
+                Self.diopter()
+            case "pD":
+                Self.prismDiopter()
             // Unitless
             case "appleEffortScore":
                 Self.appleEffortScore()
