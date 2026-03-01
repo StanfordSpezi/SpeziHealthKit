@@ -94,12 +94,8 @@
 "HKCorrelationTypeIdentifierBloodPressure" = "Blood Pressure";
 "HKCorrelationTypeIdentifierFood" = "Nutrition";
 "HKDataTypeIdentifierAudiogram" = "Audiogram";
-"HKDataTypeIdentifierAudiogram" = "Audiogram";
-"HKDataTypeIdentifierElectrocardiogram" = "Electrocardiograms (ECG)";
 "HKDataTypeIdentifierElectrocardiogram" = "Electrocardiograms (ECG)";
 "HKDataTypeIdentifierHeartbeatSeries" = "Beat-to-Beat Measurements";
-"HKDataTypeIdentifierHeartbeatSeries" = "Beat-to-Beat Measurements";
-"HKDataTypeStateOfMind" = "State of Mind";
 "HKDataTypeStateOfMind" = "State of Mind";
 "HKQuantityTypeIdentifierActiveEnergyBurned" = "Active Energy";
 "HKQuantityTypeIdentifierAppleExerciseTime" = "Exercise Minutes";
@@ -221,12 +217,7 @@
 "HKQuantityTypeIdentifierWaterTemperature" = "Water Temperature";
 "HKQuantityTypeIdentifierWorkoutEffortScore" = "Workout Effort Score";
 "HKScoredAssessmentTypeIdentifierGAD7" = "Anxiety Risk";
-"HKScoredAssessmentTypeIdentifierGAD7" = "Anxiety Risk";
-"HKScoredAssessmentTypeIdentifierPHQ9" = "Depression Risk";
 "HKScoredAssessmentTypeIdentifierPHQ9" = "Depression Risk";
 "HKVisionPrescriptionTypeIdentifier" = "Vision Prescription";
-"HKVisionPrescriptionTypeIdentifier" = "Vision Prescription";
 "HKWorkoutRouteTypeIdentifier" = "Workout Routes";
-"HKWorkoutRouteTypeIdentifier" = "Workout Routes";
-"HKWorkoutTypeIdentifier" = "Workouts";
 "HKWorkoutTypeIdentifier" = "Workouts";

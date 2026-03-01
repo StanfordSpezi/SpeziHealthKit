@@ -15,13 +15,7 @@ import Foundation
 import SpeziHealthKit
 
 
-private let allObjectTypes: [HKObjectType] = {
-    var types: [HKObjectType] = SampleType<HKQuantitySample>.otherSampleTypes.map { $0.hkSampleType }
-    for objectType in HKObjectType.allKnownObjectTypes {
-        types.append(objectType)
-    }
-    return types.sorted { $0.identifier < $1.identifier }
-}()
+private let allObjectTypes = HKObjectType.allKnownObjectTypes.sorted { $0.identifier < $1.identifier }
 
 
 enum CommandError: Error {
@@ -90,6 +84,13 @@ struct LocalizationsProcessor: ParsableCommand {
             
             
             """
+        if case let duplicates = allObjectTypes.grouped(by: \.self).filter({ $1.count > 1 }), !duplicates.isEmpty {
+            preconditionFailure(
+                "Duplicate object types in input:\n\(duplicates.keys.map(\.identifier).sorted().map { "- \($0)" }.joined(separator: "\n"))"
+            )
+        }
+        precondition(allObjectTypes.count == allObjectTypes.mapIntoSet(\.self).count, "1")
+        precondition(allObjectTypes.count == allObjectTypes.mapIntoSet(\.identifier).count, "2")
         for objectType in allObjectTypes {
             if let title = localizations[objectType, locale: locale] {
                 stringsFile.append(#""\#(objectType.identifier)" = "\#(title)";\#n"#)
@@ -113,7 +114,7 @@ struct LocalizationsProcessor: ParsableCommand {
 
 private struct Localizations {
     private let displayNameKeys: [HKObjectType: String]
-    private let mergedLoctables: [Locale: [String: [LocalizationEntry]]]
+    private var mergedLoctables: [Locale: [String: [LocalizationEntry]]]
     
     init() throws { // swiftlint:disable:this function_body_length
         let bundle = Bundle(for: HKHealthStore.self)
@@ -122,6 +123,7 @@ private struct Localizations {
         }
         let loctableUrls = ((try? FileManager.default.contents(of: bundleResourceUrl.absoluteURL.resolvingSymlinksInPath())) ?? [])
             .filter { $0.pathExtension == "loctable" }
+        print(loctableUrls)
         /// lang: [key: [value]]
         mergedLoctables = try loctableUrls.reduce(into: [:]) { mergedTable, url in
             let data = try Data(contentsOf: url)
@@ -140,16 +142,20 @@ private struct Localizations {
                         table: url.deletingPathExtension().lastPathComponent
                     ))
                 }
-                for (key, entries) in Self.hardcodedMappings {
-                    guard let value = entries[locale.identifier] else {
-                        continue
-                    }
-                    mergedTable[locale, default: [:]][key, default: []].append(.init(
-                        key: key,
-                        value: value,
-                        table: ""
-                    ))
+            }
+        }
+        for (key, entries) in Self.hardcodedMappings {
+            for (locale, value) in entries {
+                let locale = Locale(identifier: locale)
+                guard mergedLoctables.keys.contains(locale) else {
+                    continue
                 }
+                let entry = LocalizationEntry(key: key, value: value, table: "")
+                mergedLoctables[locale, default: [:]][key, default: []].append(.init(
+                    key: key,
+                    value: value,
+                    table: ""
+                ))
             }
         }
         guard let referenceLoctable = mergedLoctables[.init(identifier: Locale.current.language.minimalIdentifier)] else {

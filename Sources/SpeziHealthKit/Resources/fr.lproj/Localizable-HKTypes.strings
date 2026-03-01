@@ -94,12 +94,8 @@
 "HKCorrelationTypeIdentifierBloodPressure" = "Pression artérielle";
 "HKCorrelationTypeIdentifierFood" = "Nutrition";
 "HKDataTypeIdentifierAudiogram" = "Audiogramme";
-"HKDataTypeIdentifierAudiogram" = "Audiogramme";
-"HKDataTypeIdentifierElectrocardiogram" = "Électrocardiogrammes (ECG)";
 "HKDataTypeIdentifierElectrocardiogram" = "Électrocardiogrammes (ECG)";
 "HKDataTypeIdentifierHeartbeatSeries" = "Mesures d’intervalle R-R";
-"HKDataTypeIdentifierHeartbeatSeries" = "Mesures d’intervalle R-R";
-"HKDataTypeStateOfMind" = "État d’esprit";
 "HKDataTypeStateOfMind" = "État d’esprit";
 "HKQuantityTypeIdentifierActiveEnergyBurned" = "Énergie en activité";
 "HKQuantityTypeIdentifierAppleExerciseTime" = "Minutes d’exercice";
@@ -221,12 +217,7 @@
 "HKQuantityTypeIdentifierWaterTemperature" = "Température de l’eau";
 "HKQuantityTypeIdentifierWorkoutEffortScore" = "Score d’effort de l’exercice";
 "HKScoredAssessmentTypeIdentifierGAD7" = "Risque d’anxiété";
-"HKScoredAssessmentTypeIdentifierGAD7" = "Risque d’anxiété";
-"HKScoredAssessmentTypeIdentifierPHQ9" = "Risque de dépression";
 "HKScoredAssessmentTypeIdentifierPHQ9" = "Risque de dépression";
 "HKVisionPrescriptionTypeIdentifier" = "Ordonnance ophtalmologique";
-"HKVisionPrescriptionTypeIdentifier" = "Ordonnance ophtalmologique";
 "HKWorkoutRouteTypeIdentifier" = "Parcours d’exercice";
-"HKWorkoutRouteTypeIdentifier" = "Parcours d’exercice";
-"HKWorkoutTypeIdentifier" = "Exercices";
 "HKWorkoutTypeIdentifier" = "Exercices";
