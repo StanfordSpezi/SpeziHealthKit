@@ -123,7 +123,6 @@ private struct Localizations {
         }
         let loctableUrls = ((try? FileManager.default.contents(of: bundleResourceUrl.absoluteURL.resolvingSymlinksInPath())) ?? [])
             .filter { $0.pathExtension == "loctable" }
-        print(loctableUrls)
         /// lang: [key: [value]]
         mergedLoctables = try loctableUrls.reduce(into: [:]) { mergedTable, url in
             let data = try Data(contentsOf: url)
