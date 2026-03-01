@@ -116,7 +116,7 @@ private struct Localizations {
     private let displayNameKeys: [HKObjectType: String]
     private var mergedLoctables: [Locale: [String: [LocalizationEntry]]]
     
-    init() throws { // swiftlint:disable:this function_body_length
+    init() throws { // swiftlint:disable:this function_body_length cyclomatic_complexity
         let bundle = Bundle(for: HKHealthStore.self)
         guard let bundleResourceUrl = bundle.resourceURL else {
             throw CommandError.other("Unable to find bundle resource url")
