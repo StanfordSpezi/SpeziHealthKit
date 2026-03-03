@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit) && canImport(SwiftUI)
+
 @_spi(APISupport) import SpeziHealthKit
 import SwiftUI
 
@@ -65,3 +67,5 @@ struct HealthAccessAuthorizationObserver: DynamicProperty {
         }
     }
 }
+
+#endif

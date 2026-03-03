@@ -8,6 +8,8 @@
 
 // swiftlint:disable file_types_order
 
+#if canImport(HealthKit)
+
 import Algorithms
 import Foundation
 import HealthKit
@@ -170,3 +172,5 @@ extension Range {
         Swift.min(lowerBound, other.lowerBound)..<Swift.max(upperBound, other.upperBound)
     }
 }
+
+#endif

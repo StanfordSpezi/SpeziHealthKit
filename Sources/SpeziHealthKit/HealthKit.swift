@@ -8,6 +8,10 @@
 
 // swiftlint:disable file_length
 
+public import Foundation
+
+#if canImport(HealthKit)
+
 import HealthKit
 import OSLog
 public import Spezi
@@ -607,8 +611,6 @@ extension HealthKit.DataAccessRequirements {
 }
 
 
-// MARK: Utilities
-
 extension HKUnit {
     /// Creates a unit as the composition of dividing a unit by another unit.
     @inlinable public static func / (lhs: HKUnit, rhs: HKUnit) -> HKUnit {
@@ -620,6 +622,8 @@ extension HKUnit {
         lhs.unitMultiplied(by: rhs)
     }
 }
+
+#endif
 
 
 extension HealthKit {

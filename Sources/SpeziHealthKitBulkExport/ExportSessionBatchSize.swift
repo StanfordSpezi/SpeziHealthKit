@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 public import Foundation
 
 
@@ -31,3 +33,5 @@ public enum ExportSessionBatchSize: Hashable, Codable, Sendable {
         .calendarComponent(.month)
     }
 }
+
+#endif

@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
-
+#if canImport(SpeziLocalStorage)
 import Foundation
 import SpeziFoundation
 import SpeziLocalStorage
@@ -92,3 +92,4 @@ struct SampleTypeScopedLocalStorage<Value: SendableMetatype> {
         }
     }
 }
+#endif

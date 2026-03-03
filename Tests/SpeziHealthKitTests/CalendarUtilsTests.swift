@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import HealthKit
 import SpeziFoundation
 @testable import SpeziHealthKitBulkExport
@@ -157,3 +159,5 @@ struct CalendarUtilsTests {
         #expect(ranges == expected)
     }
 }
+
+#endif

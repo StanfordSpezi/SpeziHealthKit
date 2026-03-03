@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit) && canImport(SwiftUI)
+
 import Charts
 import SwiftUI
 
@@ -63,3 +65,5 @@ extension View {
         transform(self)
     }
 }
+
+#endif

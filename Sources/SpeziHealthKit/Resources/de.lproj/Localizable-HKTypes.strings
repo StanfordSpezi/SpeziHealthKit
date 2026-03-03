@@ -1,7 +1,7 @@
 //
 // This source file is part of the Stanford Spezi open-source project
 //
-// SPDX-FileCopyrightText: 2025 Stanford University and the project authors (see CONTRIBUTORS.md)
+// SPDX-FileCopyrightText: 2026 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
 // SPDX-License-Identifier: MIT
 //
@@ -92,6 +92,7 @@
 "HKClinicalTypeIdentifierProcedureRecord" = "Eingriffe";
 "HKClinicalTypeIdentifierVitalSignRecord" = "Klinische Vitalzeichen";
 "HKCorrelationTypeIdentifierBloodPressure" = "Blutdruck";
+"HKCorrelationTypeIdentifierFood" = "Ernährung";
 "HKDataTypeIdentifierAudiogram" = "Audiogramm";
 "HKDataTypeIdentifierElectrocardiogram" = "Elektrokardiogramme (EKG)";
 "HKDataTypeIdentifierHeartbeatSeries" = "Schlag-zu-Schlag-Messungen";
@@ -102,7 +103,7 @@
 "HKQuantityTypeIdentifierAppleSleepingBreathingDisturbances" = "Atemstörungen";
 "HKQuantityTypeIdentifierAppleSleepingWristTemperature" = "Temperatur am Handgelenk";
 "HKQuantityTypeIdentifierAppleStandTime" = "Stehminuten";
-"HKQuantityTypeIdentifierAppleWalkingSteadiness" = "Stabilität beim Gehen";
+"HKQuantityTypeIdentifierAppleWalkingSteadiness" = "Gehstabilität";
 "HKQuantityTypeIdentifierAtrialFibrillationBurden" = "Vorhofflimmern-Protokoll";
 "HKQuantityTypeIdentifierBasalBodyTemperature" = "Basaltemperatur";
 "HKQuantityTypeIdentifierBasalEnergyBurned" = "Ruheenergie";

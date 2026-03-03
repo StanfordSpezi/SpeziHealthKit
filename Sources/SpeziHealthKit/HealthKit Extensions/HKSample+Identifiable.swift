@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import HealthKit
 
 
@@ -23,3 +25,5 @@ extension HKSample {
         startDate..<endDate
     }
 }
+
+#endif

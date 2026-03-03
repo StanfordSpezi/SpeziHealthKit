@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 // swiftlint:disable file_types_order
 
 import ArgumentParser
@@ -13,13 +15,7 @@ import Foundation
 import SpeziHealthKit
 
 
-private let allObjectTypes: [HKObjectType] = {
-    var types: [HKObjectType] = SampleType<HKQuantitySample>.otherSampleTypes.map { $0.hkSampleType }
-    for objectType in HKObjectType.allKnownObjectTypes {
-        types.append(objectType)
-    }
-    return types.sorted { $0.identifier < $1.identifier }
-}()
+private let allObjectTypes = HKObjectType.allKnownObjectTypes.sorted { $0.identifier < $1.identifier }
 
 
 enum CommandError: Error {
@@ -38,12 +34,11 @@ struct LocalizationEntry: Hashable {
 
 @main
 struct LocalizationsProcessor: ParsableCommand {
-    static var configuration: CommandConfiguration {
-        CommandConfiguration(
-            abstract: "Generate localized string catalogues for HealthKit data types",
-            version: "0.1.0"
-        )
-    }
+    static let configuration = CommandConfiguration(
+        abstract: "Generate localized string catalogues for HealthKit data types",
+        version: "0.1.0"
+    )
+    
     @Flag(name: .short, help: "Enable extended logging")
     var verbose = false
     
@@ -89,6 +84,13 @@ struct LocalizationsProcessor: ParsableCommand {
             
             
             """
+        if case let duplicates = allObjectTypes.grouped(by: \.self).filter({ $1.count > 1 }), !duplicates.isEmpty {
+            preconditionFailure(
+                "Duplicate object types in input:\n\(duplicates.keys.map(\.identifier).sorted().map { "- \($0)" }.joined(separator: "\n"))"
+            )
+        }
+        precondition(allObjectTypes.count == allObjectTypes.mapIntoSet(\.self).count, "1")
+        precondition(allObjectTypes.count == allObjectTypes.mapIntoSet(\.identifier).count, "2")
         for objectType in allObjectTypes {
             if let title = localizations[objectType, locale: locale] {
                 stringsFile.append(#""\#(objectType.identifier)" = "\#(title)";\#n"#)
@@ -112,9 +114,9 @@ struct LocalizationsProcessor: ParsableCommand {
 
 private struct Localizations {
     private let displayNameKeys: [HKObjectType: String]
-    private let mergedLoctables: [Locale: [String: [LocalizationEntry]]]
+    private var mergedLoctables: [Locale: [String: [LocalizationEntry]]]
     
-    init() throws { // swiftlint:disable:this function_body_length
+    init() throws { // swiftlint:disable:this function_body_length cyclomatic_complexity
         let bundle = Bundle(for: HKHealthStore.self)
         guard let bundleResourceUrl = bundle.resourceURL else {
             throw CommandError.other("Unable to find bundle resource url")
@@ -141,6 +143,20 @@ private struct Localizations {
                 }
             }
         }
+        for (key, entries) in Self.hardcodedMappings {
+            for (locale, value) in entries {
+                let locale = Locale(identifier: locale)
+                guard mergedLoctables.keys.contains(locale) else {
+                    continue
+                }
+                let entry = LocalizationEntry(key: key, value: value, table: "")
+                mergedLoctables[locale, default: [:]][key, default: []].append(.init(
+                    key: key,
+                    value: value,
+                    table: ""
+                ))
+            }
+        }
         guard let referenceLoctable = mergedLoctables[.init(identifier: Locale.current.language.minimalIdentifier)] else {
             throw CommandError.other("unable to find reference loctable")
         }
@@ -153,7 +169,9 @@ private struct Localizations {
             HKClinicalType(.medicationRecord): "MEDICATION_RECORDS",
             HKClinicalType(.procedureRecord): "PROCEDURE_RECORDS",
             HKClinicalType(.vitalSignRecord): "VITAL_SIGN_RECORDS",
-            HKClinicalType(.coverageRecord): "INSURANCE_RECORDS"
+            HKClinicalType(.coverageRecord): "INSURANCE_RECORDS",
+            // for some reason `HKCorrelationType(.food)` has a -hk_localizedName, but .food does not...
+            HKCorrelationType(.food): "HKCorrelationTypeIdentifierFood"
         ]
         displayNameKeys = allObjectTypes.reduce(into: hardcodedNameKeys) { keys, type in
             guard !keys.keys.contains(type) else {
@@ -205,6 +223,31 @@ private struct Localizations {
 }
 
 
+extension Localizations {
+    /// mapping of localization keys to lang-value dictionaries
+    private static let hardcodedMappings: [String: [String: String]] = [
+        "HKCorrelationTypeIdentifierFood": [
+            "en": "Nutrition",
+            "en_GB": "Nutrition",
+            "fr": "Nutrition",
+            "de": "Ernährung",
+            "es": "Nutrición",
+            "es_US": "Nutrición"
+        ]
+    ]
+}
+
+
+extension Locale.Language {
+    static let english = Locale.Language(identifier: "en")
+    static let englishUK = Locale.Language(identifier: "en_GB")
+    static let german = Locale.Language(identifier: "de")
+    static let french = Locale.Language(identifier: "fr")
+    static let spanish = Locale.Language(identifier: "es")
+    static let spanishUS = Locale.Language(identifier: "es_US")
+}
+
+
 extension Locale: @retroactive _SendableMetatype {}
 extension Locale: @retroactive ExpressibleByArgument {
     public init?(argument: String) {
@@ -221,3 +264,5 @@ extension URL: @retroactive ExpressibleByArgument {
         self = URL(filePath: argument, relativeTo: .currentDirectory()).absoluteURL
     }
 }
+
+#endif

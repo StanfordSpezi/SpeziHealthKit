@@ -6,7 +6,9 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
 import HealthKit
+#endif
 
 
 /// Type-erased version of a ``SampleType``
@@ -37,9 +39,11 @@ public protocol AnySampleType<Sample>: Hashable, Identifiable, Sendable where ID
     /// The recommended user-displayable name of this sample type.
     var displayTitle: String { get }
     
+    #if canImport(HealthKit)
     /// Creates a properly-typed `HKSamplePredicate` object, for the current sample type.
     func _makeSamplePredicateInternal(filter filterPredicate: NSPredicate?) -> HKSamplePredicate<Sample._QueryResult>
     // swiftlint:disable:previous identifier_name
+    #endif
 }
 
 
@@ -49,6 +53,7 @@ extension AnySampleType {
         hkSampleType.identifier
     }
     
+    #if canImport(HealthKit)
     // swiftlint:disable:next identifier_name
     package func _makeSamplePredicate(filter filterPredicate: NSPredicate?) -> HKSamplePredicate<Sample> {
         let predicate = _makeSamplePredicateInternal(filter: filterPredicate)
@@ -57,6 +62,7 @@ extension AnySampleType {
         }
         return predicate
     }
+    #endif
 }
 
 

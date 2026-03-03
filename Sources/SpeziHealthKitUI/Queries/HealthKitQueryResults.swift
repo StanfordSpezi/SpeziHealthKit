@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit) && canImport(SwiftUI)
+
 import Foundation
 import HealthKit
 public import Observation
@@ -51,3 +53,5 @@ public protocol HealthKitQueryResults<Sample, Element>: Observable, RandomAccess
     /// Whether the query is currently performing its initial fetch.
     var isCurrentlyPerformingInitialFetch: Bool { get }
 }
+
+#endif

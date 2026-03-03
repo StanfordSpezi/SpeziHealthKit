@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import Foundation
 public import SpeziHealthKit
 
@@ -97,3 +99,5 @@ extension ExportBatch: Hashable {
         hasher.combine(result)
     }
 }
+
+#endif

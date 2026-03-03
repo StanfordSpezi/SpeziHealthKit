@@ -8,7 +8,9 @@
 
 // swiftlint:disable type_name
 
+#if canImport(HealthKit)
 import HealthKit
+#endif
 
 
 /// An Identifier type used by a `HKSampleType` subclass
@@ -49,5 +51,3 @@ extension HKClinicalType: _HKSampleTypeWithIdentifierType {
 extension HKScoredAssessmentType: _HKSampleTypeWithIdentifierType {
     public typealias _Identifier = HKScoredAssessmentTypeIdentifier
 }
-
-// swiftlint:enable type_name

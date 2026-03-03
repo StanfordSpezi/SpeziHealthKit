@@ -6,11 +6,13 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit) && canImport(SwiftUI)
+
 import Charts
 import Foundation
 import HealthKit
 public import SpeziFoundation
-public import SpeziHealthKit
+import SpeziHealthKit
 public import SwiftUI
 
 
@@ -261,3 +263,5 @@ extension Date.FormatStyle {
         return style
     }
 }
+
+#endif

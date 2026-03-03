@@ -7,7 +7,9 @@
 //
 
 import Foundation
+#if canImport(HealthKit)
 import HealthKit
+#endif
 
 
 /// A non-ordered collection of unique, type-erased ``SampleType``s

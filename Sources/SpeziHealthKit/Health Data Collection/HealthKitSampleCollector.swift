@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import HealthKit
 import OSLog
 import Spezi
@@ -210,3 +212,5 @@ extension HealthKitQueryTimeRange {
         return Self(imp(range.lowerBound)...imp(range.upperBound))
     }
 }
+
+#endif

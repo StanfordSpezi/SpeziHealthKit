@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit) && canImport(SwiftUI)
+
 import HealthKit
 import SnapshotTesting
 @testable import SpeziHealthKit
@@ -159,3 +161,5 @@ struct SpeziHealthKitUITests {
     }
     #endif
 }
+
+#endif

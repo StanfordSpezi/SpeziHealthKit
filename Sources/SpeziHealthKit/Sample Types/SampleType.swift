@@ -6,11 +6,15 @@
 // SPDX-License-Identifier: MIT
 //
 
+// swiftlint:disable file_types_order
+
 import Foundation
+#if canImport(HealthKit)
 import HealthKit
+#endif
 
 
-public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType {
+public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType, Sendable/*, __SampleTypeAssignmentHack*/ {
     @_documentation(visibility: internal)
     public typealias Sample = Sample
     
@@ -38,7 +42,7 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType {
     /// Creates a ``SampleType`` from a type-erased ``AnySampleType``.
     ///
     /// Since ``SampleType`` is the only type allowed to conform to ``AnySampleType``, this is guaranteed to always succeed.
-    @inlinable public init(_ typeErased: any AnySampleType<Sample>) {
+    @inlinable public /*convenience*/ init(_ typeErased: any AnySampleType<Sample>) {
         // SAFETY: `SampleType` is the only type allowed to conform to `AnySampleType`.
         self = typeErased as! Self // swiftlint:disable:this force_cast
     }
@@ -58,13 +62,19 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType {
         self.variant = variant
         // we use the identifier here as a fallback; however this will never be used bc the localizedTitle(for:) call will always return a nonnil title.
         // (we have tests to verify this behaviour).
+        #if canImport(Darwin)
         self.displayTitle = displayTitle.map { String(localized: $0) } ?? Self.localizedTitle(for: hkSampleType) ?? hkSampleType.identifier
+        #else
+        self.displayTitle = displayTitle?.value ?? Self.localizedTitle(for: hkSampleType) ?? hkSampleType.identifier
+        #endif
     }
     
+    #if canImport(HealthKit)
     // swiftlint:disable:next identifier_name
     public func _makeSamplePredicateInternal(filter filterPredicate: NSPredicate?) -> HKSamplePredicate<Sample._QueryResult> {
         Sample._makeSamplePredicateInternal(type: hkSampleType, filter: filterPredicate)
     }
+    #endif
 }
 
 
@@ -117,7 +127,25 @@ extension SampleType where Sample == HKCorrelation {
 
 // MARK: Factory methods for commonly-used sample types
 
+#if !canImport(Darwin)
+// swiftlint:disable:next type_name
+public struct _FakeLocalizedStringResource: ExpressibleByStringLiteral {
+    let value: String
+    public init(stringLiteral value: String) {
+        self.value = value
+    }
+}
+#endif
+
 extension SampleType {
+    #if canImport(Darwin)
+    // swiftlint:disable:next missing_docs
+    public typealias LocalizedStringResource = Foundation.LocalizedStringResource
+    #else
+    // swiftlint:disable:next missing_docs
+    public typealias LocalizedStringResource = _FakeLocalizedStringResource
+    #endif
+    
     /// Creates a new quantity sample type.
     /// Use this initializer only if the sample type you want to work with isn't already defined by SpeziHealthKit.
     /// - parameter identifier: The sample type's underlying `HKQuantityTypeIdentifier`

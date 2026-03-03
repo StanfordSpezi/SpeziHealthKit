@@ -1,4 +1,4 @@
-// swift-tools-version:6.0
+// swift-tools-version:6.2
 
 //
 // This source file is part of the Stanford Spezi open-source project
@@ -13,7 +13,9 @@ import class Foundation.ProcessInfo
 import PackageDescription
 
 
-let package = Package(
+let enableSwiftLintPlugin = false
+
+var package = Package(
     name: "SpeziHealthKit",
     defaultLocalization: "en",
     platforms: [
@@ -29,42 +31,58 @@ let package = Package(
         .library(name: "SpeziHealthKitUI", targets: ["SpeziHealthKitUI"])
     ],
     dependencies: [
-        .package(url: "https://github.com/StanfordSpezi/Spezi.git", from: "1.8.2"),
+        .package(url: "https://github.com/StanfordSpezi/Spezi.git", from: "1.10.0"),
         .package(url: "https://github.com/StanfordSpezi/SpeziFoundation.git", from: "2.5.2"),
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage.git", from: "2.1.1"),
         .package(url: "https://github.com/apple/swift-algorithms.git", from: "1.2.1"),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.17.7"),
         .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.6.1")
-    ] + swiftLintPackage(),
+    ] + swiftLintPackage,
     targets: [
         .target(
             name: "SpeziHealthKit",
             dependencies: [
                 .product(name: "Spezi", package: "Spezi"),
                 .product(name: "SpeziFoundation", package: "SpeziFoundation"),
-                .product(name: "SpeziLocalStorage", package: "SpeziStorage"),
+                .product(
+                    name: "SpeziLocalStorage",
+                    package: "SpeziStorage",
+                    condition: .when(platforms: [.macOS, .macCatalyst, .iOS, .tvOS, .watchOS, .visionOS])
+                ),
                 .product(name: "Algorithms", package: "swift-algorithms")
             ],
-            exclude: ["Sample Types/SampleTypes.swift.gyb"],
-            resources: [.process("Resources")],
+            exclude: [
+                "Sample Types/SampleTypeDefs.py",
+                "Sample Types/SampleTypes.swift.gyb"
+            ],
+            resources: [
+                // NOTE: the SpeziHealthKit target intentionally does not contain any xcstrings files,
+                // since these would, when building with `swift build` instead of `xcodebuild`, conflict
+                // with the lproj folders we have for the sample type display title localizations.
+                .process("Resources")
+            ],
             swiftSettings: [
                 .enableUpcomingFeature("ExistentialAny"),
                 .enableUpcomingFeature("InternalImportsByDefault")
             ],
-            plugins: [] + swiftLintPlugin()
+            plugins: [] + swiftLintPlugin
         ),
         .target(
             name: "SpeziHealthKitBulkExport",
             dependencies: [
                 .target(name: "SpeziHealthKit"),
                 .product(name: "SpeziFoundation", package: "SpeziFoundation"),
-                .product(name: "SpeziLocalStorage", package: "SpeziStorage")
+                .product(
+                    name: "SpeziLocalStorage",
+                    package: "SpeziStorage",
+                    condition: .when(platforms: [.macOS, .macCatalyst, .iOS, .tvOS, .watchOS, .visionOS])
+                )
             ],
             swiftSettings: [
                 .enableUpcomingFeature("ExistentialAny"),
                 .enableUpcomingFeature("InternalImportsByDefault")
             ],
-            plugins: [] + swiftLintPlugin()
+            plugins: [] + swiftLintPlugin
         ),
         .target(
             name: "SpeziHealthKitUI",
@@ -76,7 +94,7 @@ let package = Package(
                 .enableUpcomingFeature("ExistentialAny"),
                 .enableUpcomingFeature("InternalImportsByDefault")
             ],
-            plugins: [] + swiftLintPlugin()
+            plugins: [] + swiftLintPlugin
         ),
         .testTarget(
             name: "SpeziHealthKitTests",
@@ -89,31 +107,45 @@ let package = Package(
             ],
             resources: [.process("__Snapshots__")],
             swiftSettings: [.enableUpcomingFeature("ExistentialAny")],
-            plugins: [] + swiftLintPlugin()
-        ),
-        .executableTarget(
-            name: "LocalizationsProcessor",
-            dependencies: [
-                .target(name: "SpeziHealthKit"),
-                .product(name: "ArgumentParser", package: "swift-argument-parser")
-            ]
+            plugins: [] + swiftLintPlugin
         )
     ]
 )
 
+#if canImport(HealthKit)
+package.targets += [
+    .executableTarget(
+        name: "LocalizationsProcessor",
+        dependencies: [
+            .target(name: "SpeziHealthKit"),
+            .product(name: "ArgumentParser", package: "swift-argument-parser")
+        ]
+    ),
+    .executableTarget(
+        name: "Codegen",
+        dependencies: [
+            .target(name: "SpeziHealthKit"),
+            .product(name: "ArgumentParser", package: "swift-argument-parser")
+        ],
+        exclude: ["HKTypeIdentifierDefs+Linux.swift.gyb"]
+    )
+]
+#endif
 
-func swiftLintPlugin() -> [Target.PluginUsage] {
-    // Fully quit Xcode and open again with `open --env SPEZI_DEVELOPMENT_SWIFTLINT /Applications/Xcode.app`
-    if ProcessInfo.processInfo.environment["SPEZI_DEVELOPMENT_SWIFTLINT"] != nil {
-        [.plugin(name: "SwiftLintBuildToolPlugin", package: "SwiftLint")]
+
+// MARK: SwiftLint support
+
+var swiftLintPlugin: [Target.PluginUsage] {
+    if enableSwiftLintPlugin {
+        [.plugin(name: "SwiftLintBuildToolPlugin", package: "SwiftLintPlugins")]
     } else {
         []
     }
 }
 
-func swiftLintPackage() -> [PackageDescription.Package.Dependency] {
-    if ProcessInfo.processInfo.environment["SPEZI_DEVELOPMENT_SWIFTLINT"] != nil {
-        [.package(url: "https://github.com/realm/SwiftLint.git", from: "0.55.1")]
+var swiftLintPackage: [PackageDescription.Package.Dependency] {
+    if enableSwiftLintPlugin {
+        [.package(url: "https://github.com/SimplyDanny/SwiftLintPlugins.git", from: "0.63.2")]
     } else {
         []
     }

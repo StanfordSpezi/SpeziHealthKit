@@ -10,7 +10,10 @@
 // NOTE: This file was automatically generated and should not be edited.
 // swiftlint:disable all
 
-import HealthKit
+public import Foundation
+#if canImport(HealthKit)
+public import HealthKit
+#endif
 
 
 /// Selects one of the specified units, based on the current locale.
@@ -2883,16 +2886,21 @@ extension HKObjectType {
         types.formUnion(HKCorrelationType.allKnownCorrelations)
         types.formUnion(HKClinicalType.allKnownClinicalRecords)
         types.formUnion(HKCharacteristicTypeIdentifier.allKnownIdentifiers.map { HKCharacteristicType($0) })
+        // types.formUnion(SampleType<HKQuantitySample>.otherSampleTypes.map(\.hkSampleType))
         types.insert(SampleType.electrocardiogram.hkSampleType)
         types.insert(SampleType.audiogram.hkSampleType)
         types.insert(SampleType.workout.hkSampleType)
         types.insert(SampleType.visionPrescription.hkSampleType)
+        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
+            types.insert(SampleType.stateOfMind.hkSampleType)
+        }
         types.insert(SampleType.heartbeatSeries.hkSampleType)
         types.insert(SampleType.workoutRoute.hkSampleType)
-        if #available(iOS 18.0, watchOS 11.0, macOS 15.0, visionOS 2.0, *) {
+        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
             types.insert(SampleType.gad7.hkSampleType)
+        }
+        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
             types.insert(SampleType.phq9.hkSampleType)
-            types.insert(SampleType.stateOfMind.hkSampleType)
         }
         return types
     }()
@@ -2945,7 +2953,7 @@ extension SampleType where Sample == HKVisionPrescription {
     }
 }
 
-@available(iOS 18.0, watchOS 11.0, macOS 15.0, visionOS 2.0, *)
+@available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
 extension SampleType where Sample == HKStateOfMind {
     /// The state of mind sample type
     @inlinable public static var stateOfMind: SampleType<HKStateOfMind> {
@@ -2979,9 +2987,9 @@ extension SampleType where Sample == HKWorkoutRoute {
     }
 }
 
-@available(iOS 18.0, watchOS 11.0, macOS 15.0, visionOS 2.0, *)
+@available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
 extension SampleType where Sample == HKGAD7Assessment {
-    /// The GAD-7 (generalized anxiery disorder 7) score type
+    /// The GAD-7 (generalized anxiety disorder 7) score type
     @inlinable public static var gad7: SampleType<HKGAD7Assessment> {
         SampleTypeCache.get(
             identifier: HKScoredAssessmentType(.GAD7).identifier,
@@ -2991,7 +2999,7 @@ extension SampleType where Sample == HKGAD7Assessment {
     }
 }
 
-@available(iOS 18.0, watchOS 11.0, macOS 15.0, visionOS 2.0, *)
+@available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
 extension SampleType where Sample == HKPHQ9Assessment {
     /// The PHQ-9 (nine-item Patient Health Questionnaire) score type
     @inlinable public static var phq9: SampleType<HKPHQ9Assessment> {
@@ -3009,17 +3017,20 @@ extension SampleType {
     ///
     /// - Note: `SampleType<T>.otherSampleTypes` will always return the same value, regardless of the concrete sample type chosen for `T`.
     public static var otherSampleTypes: [any AnySampleType] {
-        var retval: [any AnySampleType] = [
-            SpeziHealthKit.SampleType.electrocardiogram,
-            SpeziHealthKit.SampleType.audiogram,
-            SpeziHealthKit.SampleType.workout,
-            SpeziHealthKit.SampleType.visionPrescription,
-            SpeziHealthKit.SampleType.heartbeatSeries,
-            SpeziHealthKit.SampleType.workoutRoute
-        ]
-        if #available(iOS 18.0, watchOS 11.0, macOS 15.0, visionOS 2.0, *) {
+        var retval: [any AnySampleType] = []
+        retval.append(SpeziHealthKit.SampleType.electrocardiogram)
+        retval.append(SpeziHealthKit.SampleType.audiogram)
+        retval.append(SpeziHealthKit.SampleType.workout)
+        retval.append(SpeziHealthKit.SampleType.visionPrescription)
+        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
             retval.append(SpeziHealthKit.SampleType.stateOfMind)
+        }
+        retval.append(SpeziHealthKit.SampleType.heartbeatSeries)
+        retval.append(SpeziHealthKit.SampleType.workoutRoute)
+        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
             retval.append(SpeziHealthKit.SampleType.gad7)
+        }
+        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
             retval.append(SpeziHealthKit.SampleType.phq9)
         }
         return retval

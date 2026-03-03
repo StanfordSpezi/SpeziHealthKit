@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 public import Foundation
 import SpeziFoundation
 
@@ -100,3 +102,5 @@ extension Calendar {
         return IteratorSequence(iterator)
     }
 }
+
+#endif

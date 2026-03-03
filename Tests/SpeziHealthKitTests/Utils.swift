@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
 
 import Foundation
 import SwiftUI
@@ -42,3 +43,5 @@ extension View {
             .environment(\.calendar, cal)
     }
 }
+
+#endif

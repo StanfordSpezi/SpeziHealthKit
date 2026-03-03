@@ -7,7 +7,9 @@
 //
 
 import Foundation
+#if canImport(HealthKit)
 import HealthKit
+#endif
 import SpeziFoundation
 
 
@@ -141,7 +143,12 @@ extension SampleTypeProxy: Codable {
                 throw SampleTypeDecodingError.unknownSampleTypeIdentifier(sampleTypeIdentifier)
             }
         }
-        switch NSClassFromString(sampleTypeClassname) {
+        #if canImport(ObjectiveC)
+        let resolvedClass: AnyClass? = NSClassFromString(sampleTypeClassname)
+        #else
+        let resolvedClass: AnyClass? = NSClassFromString("SpeziHealthKit.\(sampleTypeClassname)")
+        #endif
+        switch resolvedClass {
         case nil:
             throw SampleTypeDecodingError.unknownSampleTypeClassname(sampleTypeClassname)
         case is HKQuantityType.Type:
@@ -182,9 +189,13 @@ extension SampleTypeProxy: Codable {
                 case is HKStateOfMindType.Type:
                     self = .stateOfMind(SampleType.stateOfMind)
                 case is HKScoredAssessmentType.Type:
+                    #if canImport(ObjectiveC)
                     let scoredAssessmentType = try catchingNSException {
                         HKScoredAssessmentType(.init(rawValue: sampleTypeIdentifier))
                     }
+                    #else
+                    let scoredAssessmentType = HKScoredAssessmentType(.init(rawValue: sampleTypeIdentifier))
+                    #endif
                     switch scoredAssessmentType {
                     case .init(.GAD7):
                         self = .gad7(SampleType.gad7)
@@ -204,7 +215,11 @@ extension SampleTypeProxy: Codable {
     
     public func encode(to encoder: any Encoder) throws {
         var container = encoder.singleValueContainer()
+        #if canImport(ObjectiveC)
         let classname = NSStringFromClass(type(of: underlyingSampleType.hkSampleType))
+        #else
+        let classname = String(describing: type(of: underlyingSampleType.hkSampleType))
+        #endif
         try container.encode("\(classname);\(underlyingSampleType.hkSampleType.identifier)")
     }
 }

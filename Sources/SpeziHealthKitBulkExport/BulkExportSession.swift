@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import HealthKit
 public import Observation
 import SpeziHealthKit
@@ -204,3 +206,5 @@ extension BulkExportSession {
 public func == (lhs: any BulkExportSession, rhs: any BulkExportSession) -> Bool { // swiftlint:disable:this static_operator
     ObjectIdentifier(lhs) == ObjectIdentifier(rhs)
 }
+
+#endif

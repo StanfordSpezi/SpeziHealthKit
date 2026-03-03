@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import Algorithms
 import Foundation
 import HealthKit
@@ -248,3 +250,6 @@ extension Range where Bound == Date {
         lowerBound.distance(to: upperBound)
     }
 }
+
+
+#endif

@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit) && canImport(SwiftUI)
+
 public import Foundation
 import HealthKit
 public import SpeziHealthKit
@@ -111,3 +113,5 @@ public enum StatisticsAggregationOption: Sendable {
         }
     }
 }
+
+#endif

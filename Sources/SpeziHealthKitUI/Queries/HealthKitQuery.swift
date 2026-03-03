@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit) && canImport(SwiftUI)
+
 import Foundation
 import HealthKit
 import Spezi
@@ -278,3 +280,5 @@ extension SamplesQueryResults: HealthKitQueryResults {
         samples[position]
     }
 }
+
+#endif

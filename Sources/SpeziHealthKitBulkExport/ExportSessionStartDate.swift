@@ -9,6 +9,7 @@
 public import Foundation
 import SpeziHealthKit
 
+
 /// The earliest date for which the session should collect and export historical Health data.
 public enum ExportSessionStartDate: Hashable, Codable, Sendable {
     /// The session should, for every sample type, go back all the way to the oldest sample, and start collecting from there.
@@ -53,7 +54,7 @@ extension ExportSessionStartDate {
     }
 }
 
-
+#if canImport(HealthKit)
 extension ExportSessionStartDate {
     func startDate(for sampleType: SampleType<some Any>, in healthKit: HealthKit, relativeTo endDate: Date) async -> Date? {
         switch self {
@@ -104,3 +105,5 @@ extension DateComponents {
         )
     }
 }
+
+#endif

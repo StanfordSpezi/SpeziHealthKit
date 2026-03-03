@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit) && canImport(SwiftUI)
 
 import HealthKit
 public import SpeziHealthKit
@@ -154,3 +155,5 @@ extension HealthChartEntry: HealthChartEntryProtocol {
         }
     }
 }
+
+#endif

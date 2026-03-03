@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import HealthKit
 
 
@@ -35,3 +37,5 @@ extension HKBloodType {
         }
     }
 }
+
+#endif
