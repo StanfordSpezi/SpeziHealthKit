@@ -47,7 +47,7 @@ jobs:
       artifactname: ${{ format('SpeziHealthKit-{0}-{1}.xcresult', matrix.platform.name, matrix.config) }}
   unit_tests_linux:
     name: Unit Tests (Linux ${{ matrix.config }})
-    uses: StanfordBDHG/.github/.github/workflows/swift-test.yml@lukas/fix-swift-test
+    uses: StanfordBDHG/.github/.github/workflows/swift-test.yml@v2
     strategy:
       matrix:
         config: [Debug, Release]
