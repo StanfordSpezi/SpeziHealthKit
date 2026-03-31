@@ -16,6 +16,7 @@ import HealthKit
 import OSLog
 public import Spezi
 public import SpeziFoundation
+@_exported public import enum SpeziFoundation.ArrayBuilder
 import SpeziLocalStorage
 import SwiftUI
 
