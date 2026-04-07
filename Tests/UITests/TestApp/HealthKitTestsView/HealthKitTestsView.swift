@@ -26,6 +26,7 @@ struct HealthKitTestsView: View {
         case sourceFiltering = "Source Filtering"
         case deferredAuthorization = "Deferred Authorization"
         case localizedSampleTypeNames = "Localized Sample Type Names"
+        case ecg = "ECG"
     }
     
     @Environment(HealthKit.self) var healthKit
@@ -77,6 +78,8 @@ struct HealthKitTestsView: View {
                 DeferredAuthorizationTests(viewState: $viewState)
             case .localizedSampleTypeNames:
                 LocalizedSampleTypeNames()
+            case .ecg:
+                ECGQuery()
             }
         }
         .viewStateAlert(state: $viewState)
