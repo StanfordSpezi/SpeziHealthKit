@@ -32,9 +32,10 @@ var package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/StanfordSpezi/Spezi.git", from: "1.10.0"),
-        .package(url: "https://github.com/StanfordSpezi/SpeziFoundation.git", from: "2.5.2"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziFoundation.git", from: "2.7.5"),
         .package(url: "https://github.com/StanfordSpezi/SpeziStorage.git", from: "2.1.4"),
         .package(url: "https://github.com/apple/swift-algorithms.git", from: "1.2.1"),
+        .package(url: "https://github.com/apple/swift-async-algorithms.git", from: "1.1.3"),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.17.7"),
         .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.6.1")
     ] + swiftLintPackage,
@@ -49,7 +50,8 @@ var package = Package(
                     package: "SpeziStorage",
                     condition: .when(platforms: [.macOS, .macCatalyst, .iOS, .tvOS, .watchOS, .visionOS])
                 ),
-                .product(name: "Algorithms", package: "swift-algorithms")
+                .product(name: "Algorithms", package: "swift-algorithms"),
+                .product(name: "AsyncAlgorithms", package: "swift-async-algorithms")
             ],
             exclude: [
                 "Sample Types/SampleTypeDefs.py",

@@ -149,7 +149,6 @@ private struct Localizations {
                 guard mergedLoctables.keys.contains(locale) else {
                     continue
                 }
-                let entry = LocalizationEntry(key: key, value: value, table: "")
                 mergedLoctables[locale, default: [:]][key, default: []].append(.init(
                     key: key,
                     value: value,

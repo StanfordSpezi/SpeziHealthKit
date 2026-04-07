@@ -8,6 +8,7 @@
 
 #if canImport(HealthKit)
 
+import AsyncAlgorithms
 import HealthKit
 import Spezi
 import SwiftUI
@@ -39,19 +40,39 @@ extension HKElectrocardiogram {
     
     /// Load the symptoms of an `HKElectrocardiogram` instance from an `HKHealthStore` instance.
     /// - Parameter healthKit: The ``HealthKit`` instance that should be used to load the `Symptoms`.
-    /// - Returns: The symptoms associated with an `HKElectrocardiogram`.
+    /// - Returns: The electrocardiogram's associated symptoms
     public func symptoms(from healthKit: HealthKit) async throws -> Symptoms {
         switch symptomsStatus {
         case .present:
             try await healthKit.askForAuthorization(for: .init(
                 read: HKElectrocardiogram.correlatedSymptomTypes.map(\.hkSampleType)
             ))
-            let predicate = HKQuery.predicateForObjectsAssociated(electrocardiogram: self)
-            return try await HKElectrocardiogram.correlatedSymptomTypes.reduceAsync(into: Symptoms()) { symptoms, categoryType in
-                if let sample = try await healthKit.query(categoryType, timeRange: .ever, predicate: predicate).first {
-                    symptoms[sample.categoryType] = HKCategoryValueSeverity(rawValue: sample.value)
+            #if swift(>=6.3)
+            // SAFETY: the predicate doesn't use a block and therefore is Sendable.
+            nonisolated(unsafe) let predicate = HKQuery.predicateForObjectsAssociated(electrocardiogram: self)
+            #endif
+            let symptoms: Symptoms = try await withThrowingTaskGroup(of: Symptoms.self) { taskGroup in
+                for categoryType in HKElectrocardiogram.correlatedSymptomTypes {
+                    taskGroup.addTask {
+                        #if swift(>=6.3)
+                        let predicate = predicate
+                        #else
+                        let predicate = HKQuery.predicateForObjectsAssociated(electrocardiogram: self)
+                        #endif
+                        let samples = try await healthKit.query(categoryType, timeRange: .ever, predicate: predicate)
+                        guard let sample = samples.first, let value = HKCategoryValueSeverity(rawValue: sample.value) else {
+                            return [:]
+                        }
+                        return [sample.categoryType: value]
+                    }
+                }
+                return try await taskGroup.reduce(into: [:]) { result, symptoms in
+                    for (key, value) in symptoms {
+                        result[key] = value
+                    }
                 }
             }
+            return symptoms
         case .none, .notSet:
             fallthrough
         @unknown default:
@@ -62,7 +83,7 @@ extension HKElectrocardiogram {
     
     /// Load the voltage measurements of an `HKElectrocardiogram` instance from an `HKHealthStore` instance.
     /// - Parameter healthStore: The `HKHealthStore` instance that should be used to load the `VoltageMeasurements`.
-    /// - Returns: The voltage measurements associated with an `HKElectrocardiogram`.
+    /// - Returns: The electrocardiogram's associated voltage measurements
     public func voltageMeasurements(from healthStore: HKHealthStore) async throws -> [Measurement] {
         let queryDescriptor = HKElectrocardiogramQueryDescriptor(self)
         var measurements: [Measurement] = []
