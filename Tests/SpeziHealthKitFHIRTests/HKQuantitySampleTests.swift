@@ -2170,7 +2170,7 @@ struct HKQuantitySampleTests {
             start: try startDate,
             end: try endDate
         )
-        #expect(sample.quantityType.codes.isEmpty)
+        #expect(sample.quantityType.codes().isEmpty)
     }
     
     @Test func invalidValue() throws {
@@ -2292,7 +2292,7 @@ struct HKQuantitySampleTests {
         do {
             let extensions = try #require(observation1.extension)
             #expect(extensions.count == 1)
-            #expect(extensions.map(\.url) == [FHIRExtensionUrls.sourceRevision])
+            #expect(extensions.map(\.url) == [FHIRExtensionURL.sourceRevision.r4])
         }
         
         let observation2 = try createObservationFrom(
@@ -2305,10 +2305,10 @@ struct HKQuantitySampleTests {
             let extensions = try #require(observation2.extension)
             #expect(extensions.count == 3)
             #expect(Set(extensions.map(\.url)) == [
-                FHIRExtensionUrls.sourceRevision, FHIRExtensionUrls.absoluteTimeRangeStart, FHIRExtensionUrls.absoluteTimeRangeEnd
+                FHIRExtensionURL.sourceRevision.r4, FHIRExtensionURL.absoluteTimeRangeStart.r4, FHIRExtensionURL.absoluteTimeRangeEnd.r4
             ])
-            #expect(extensions.contains(Extension(url: FHIRExtensionUrls.absoluteTimeRangeStart, value: .decimal(0.asFHIRDecimalPrimitive()))))
-            #expect(extensions.contains(Extension(url: FHIRExtensionUrls.absoluteTimeRangeEnd, value: .decimal(900.asFHIRDecimalPrimitive()))))
+            #expect(extensions.contains(Extension(url: FHIRExtensionURL.absoluteTimeRangeStart.r4, value: .decimal(0.asFHIRDecimalPrimitive()))))
+            #expect(extensions.contains(Extension(url: FHIRExtensionURL.absoluteTimeRangeEnd.r4, value: .decimal(900.asFHIRDecimalPrimitive()))))
         }
     }
     
@@ -2337,9 +2337,9 @@ struct HKQuantitySampleTests {
         )
         let extensions = try #require(observation.extension)
         #expect(extensions.count == 2)
-        #expect(Set(extensions.map(\.url)) == [FHIRExtensionUrls.sourceRevision, FHIRExtensionUrls.sourceDevice])
-        let deviceExtension = try #require(extensions.first { $0.url == FHIRExtensionUrls.sourceDevice })
-        _ = try #require(extensions.first { $0.url == FHIRExtensionUrls.sourceRevision })
+        #expect(Set(extensions.map(\.url)) == [FHIRExtensionURL.sourceRevision.r4, FHIRExtensionURL.sourceDevice.r4])
+        let deviceExtension = try #require(extensions.first { $0.url == FHIRExtensionURL.sourceDevice.r4 })
+        _ = try #require(extensions.first { $0.url == FHIRExtensionURL.sourceRevision.r4 })
         
         try checkProperty(in: deviceExtension, ["name"], value: device.name.map { .string($0.asFHIRStringPrimitive()) })
         try checkProperty(in: deviceExtension, ["manufacturer"], value: device.manufacturer.map { .string($0.asFHIRStringPrimitive()) })
@@ -2376,8 +2376,8 @@ struct HKQuantitySampleTests {
         )
         let extensions = try #require(observation.extension)
         #expect(extensions.count == 2)
-        #expect(Set(extensions.compactMap(\.url)) == [FHIRExtensionUrls.metadata, FHIRExtensionUrls.sourceRevision])
-        let metadataExtension = try #require(extensions.first { $0.url == FHIRExtensionUrls.metadata })
+        #expect(Set(extensions.compactMap(\.url)) == [FHIRExtensionURL.metadata.r4, FHIRExtensionURL.sourceRevision.r4])
+        let metadataExtension = try #require(extensions.first { $0.url == FHIRExtensionURL.metadata.r4 })
         
         try checkProperty(
             in: metadataExtension,
@@ -2417,7 +2417,7 @@ func checkProperty(
         Issue.record("Empty path")
         return
     }
-    let url = try #require(parentExtension.url.value).url.appending(component: name).asFHIRURIPrimitive()
+    let url: ModelsR4.FHIRPrimitive = try #require(parentExtension.url.value).url.appending(component: name).asFHIRURIPrimitive()
     guard let ext = parentExtension.extension?.first(where: { $0.url == url }) else {
         if expectedValue != nil {
             Issue.record("Unable to find extension for \(try #require(url.value?.url).absoluteString)")

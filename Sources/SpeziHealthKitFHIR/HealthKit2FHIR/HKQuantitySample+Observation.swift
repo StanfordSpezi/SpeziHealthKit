@@ -12,12 +12,12 @@ import ModelsR4
 
 
 extension HKQuantitySample: FHIRObservationBuildable {
-    func build(_ observation: Observation, mapping: HKSampleMapping) throws {
+    func build(_ observation: inout Observation, mapping: HKSampleMapping) throws {
         guard let mapping = mapping.quantitySampleMapping[self.quantityType] else {
             throw HealthKitOnFHIRError.notSupported
         }
         for code in mapping.codings {
-            observation.appendCoding(code.coding)
+            observation.append(coding: code.coding)
         }
         observation.value = .quantity(try quantity.buildQuantity(mapping: mapping))
     }

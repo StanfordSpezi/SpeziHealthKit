@@ -12,20 +12,12 @@ import HealthKit
 import ModelsR4
 
 
-extension FHIRExtensionUrls {
-    // SAFETY: this is in fact safe, since the FHIRPrimitive's `extension` property is empty.
-    // As a result, the actual instance doesn't contain any mutable state, and since this is a let,
-    // it also never can be mutated to contain any.
+extension FHIRExtensionURL {
     /// Url of a FHIR Extension containing, if applicable, encoded `HKDevice` of the `HKObject` from which a FHIR `Observation` was created.
-    nonisolated(unsafe) public static let sourceDevice: FHIRPrimitive<ModelsR4.FHIRURI> = "https://bdh.stanford.edu/fhir/defs/sourceDevice".asFHIRURIPrimitive()!
-    // swiftlint:disable:previous force_unwrapping
+    public static let sourceDevice = Self("https://bdh.stanford.edu/fhir/defs/sourceDevice")
     
-    // SAFETY: this is in fact safe, since the FHIRPrimitive's `extension` property is empty.
-    // As a result, the actual instance doesn't contain any mutable state, and since this is a let,
-    // it also never can be mutated to contain any.
     /// Url of a FHIR Extension containing, if applicable, encoded `HKSourceRevision` of the `HKObject` from which a FHIR `Observation` was created.
-    nonisolated(unsafe) public static let sourceRevision: FHIRPrimitive<ModelsR4.FHIRURI> = "https://bdh.stanford.edu/fhir/defs/sourceRevision".asFHIRURIPrimitive()!
-    // swiftlint:disable:previous force_unwrapping
+    public static let sourceRevision = Self("https://bdh.stanford.edu/fhir/defs/sourceRevision")
 }
 
 
@@ -33,7 +25,7 @@ extension FHIRExtensionBuilderProtocol where Self == FHIRExtensionBuilder<HKDevi
     /// A FHIR Extension Builder that writes a  `HKDevice` into a FHIR `Observation`.
     public static var sourceDevice: Self {
         .init { (device: HKDevice, observation) in
-            let deviceInfo = Extension(url: FHIRExtensionUrls.sourceDevice)
+            var deviceInfo = Extension(url: .sourceDevice)
             let appendDeviceInfoEntry = { (keyPath: KeyPath<HKDevice, String?>) in
                 guard let name = keyPath._kvcKeyPathString else {
                     print("Unable to obtain name for keyPath '\(keyPath)'. Skipping.")
@@ -42,10 +34,12 @@ extension FHIRExtensionBuilderProtocol where Self == FHIRExtensionBuilder<HKDevi
                 guard let value = device[keyPath: keyPath] else {
                     return
                 }
-                let url = FHIRExtensionUrls.sourceDevice.appending(component: name)
-                deviceInfo.appendExtension(
-                    Extension(url: url, value: .string(value.asFHIRStringPrimitive())),
-                    replaceAllExistingWithSameUrl: true
+                deviceInfo.append(
+                    extension: Extension(
+                        url: .sourceDevice.appending(component: name),
+                        value: .string(value.asFHIRStringPrimitive())
+                    ),
+                    behaviour: .replace
                 )
             }
             appendDeviceInfoEntry(\.name)
@@ -56,7 +50,7 @@ extension FHIRExtensionBuilderProtocol where Self == FHIRExtensionBuilder<HKDevi
             appendDeviceInfoEntry(\.softwareVersion)
             appendDeviceInfoEntry(\.localIdentifier)
             appendDeviceInfoEntry(\.udiDeviceIdentifier)
-            observation.appendExtension(deviceInfo, replaceAllExistingWithSameUrl: true)
+            observation.append(extension: deviceInfo, behaviour: .replace)
         }
     }
 }
@@ -66,9 +60,9 @@ extension FHIRExtensionBuilderProtocol where Self == FHIRExtensionBuilder<HKSour
     /// A FHIR Extension Builder that writes a `HKSourceRevision` into a FHIR `Observation`.
     public static var sourceRevision: Self {
         .init { (revision: HKSourceRevision, observation) throws in // swiftlint:disable:this closure_body_length
-            let deviceInfo = Extension(url: FHIRExtensionUrls.sourceRevision)
+            var deviceInfo = Extension(url: .sourceRevision)
             let fieldUrl = { (components: String...) in
-                FHIRExtensionUrls.sourceRevision.appending(components: components)
+                FHIRExtensionURL.sourceRevision.appending(components: components)
             }
             let appendDeviceInfoEntry = { (keyPath: KeyPath<HKSourceRevision, String?>) in
                 guard let name = keyPath._kvcKeyPathString else {
@@ -78,14 +72,13 @@ extension FHIRExtensionBuilderProtocol where Self == FHIRExtensionBuilder<HKSour
                 guard let value = revision[keyPath: keyPath] else {
                     return
                 }
-                let url = fieldUrl(name)
-                deviceInfo.appendExtension(
-                    Extension(url: url, value: .string(value.asFHIRStringPrimitive())),
-                    replaceAllExistingWithSameUrl: true
+                deviceInfo.append(
+                    extension: Extension(url: fieldUrl(name), value: .string(value.asFHIRStringPrimitive())),
+                    behaviour: .replace
                 )
             }
-            deviceInfo.appendExtension(
-                Extension(
+            deviceInfo.append(
+                extension: Extension(
                     extension: [
                         Extension(
                             url: fieldUrl("source", "name"),
@@ -98,12 +91,12 @@ extension FHIRExtensionBuilderProtocol where Self == FHIRExtensionBuilder<HKSour
                     ],
                     url: fieldUrl("source")
                 ),
-                replaceAllExistingWithSameUrl: true
+                behaviour: .replace
             )
             appendDeviceInfoEntry(\.version)
             appendDeviceInfoEntry(\.productType)
             appendDeviceInfoEntry(\.OSVersion)
-            observation.appendExtension(deviceInfo, replaceAllExistingWithSameUrl: true)
+            observation.append(extension: deviceInfo, behaviour: .replace)
         }
     }
 }
@@ -123,7 +116,7 @@ extension FHIRExtensionBuilderProtocol where Self == FHIRExtensionBuilder<HKObje
             if let device = object.device {
                 try observation.apply(.sourceDevice, input: device)
             } else {
-                observation.removeAllExtensions(withUrl: FHIRExtensionUrls.sourceDevice)
+                observation.removeAllExtensions(withUrl: .sourceDevice)
             }
         }
     }

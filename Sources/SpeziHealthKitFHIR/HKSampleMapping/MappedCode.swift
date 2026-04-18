@@ -24,7 +24,7 @@ public struct MappedCode: Decodable, Sendable {
         Coding(
             code: code.asFHIRStringPrimitive(),
             display: display.asFHIRStringPrimitive(),
-            system: FHIRPrimitive(FHIRURI(system))
+            system: system.asFHIRURIPrimitive()
         )
     }
 

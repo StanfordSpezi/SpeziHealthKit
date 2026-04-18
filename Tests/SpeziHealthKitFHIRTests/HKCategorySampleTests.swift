@@ -135,7 +135,7 @@ struct HKCategorySampleTests {
         ])))
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .withoutEscapingSlashes]
-        print(String(decoding: try encoder.encode(observation), as: UTF8.self))
+        _ = try encoder.encode(observation)
     }
 
     @Test(arguments: [

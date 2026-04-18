@@ -20,21 +20,6 @@ public import HealthKit
 #endif
 
 
-/// Selects one of the specified units, based on the current locale.
-@inlinable func localeDependentUnit(
-    us: @autoclosure () -> HKUnit,
-    uk: @autoclosure () -> HKUnit? = nil,
-    metric: @autoclosure () -> HKUnit
-) -> HKUnit {
-    switch Locale.current.measurementSystem {
-    case .us: us()
-    case .uk: uk() ?? metric()
-    case .metric: metric()
-    default: metric()
-    }
-}
-
-
 % for (display_title, display_title_plural, hk_class, hk_sampletype_class, ctor, types) in gen_inputs:
 
 // MARK: ${display_title} Types

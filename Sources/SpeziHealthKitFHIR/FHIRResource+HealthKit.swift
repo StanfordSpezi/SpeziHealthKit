@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
+import FHIRModelsExtensions
 import HealthKit
 import ModelsDSTU2
 import ModelsR4
@@ -33,47 +34,49 @@ extension FHIRResource {
             let decoder = JSONDecoder()
             switch fhirResource.fhirVersion.fhirRelease {
             case .dstu2:
-                let resourceProxy = try decoder.decode(ModelsDSTU2.ResourceProxy.self, from: fhirResource.data)
-                if let domainResource = resourceProxy.get(if: ModelsDSTU2.DomainResource.self) {
+                var resource = try decoder.decode(ModelsDSTU2.ResourceProxy.self, from: fhirResource.data).get()
+                if var domainResource = resource as? any ModelsDSTU2.DomainResource {
                     if domainResource.extension == nil {
                         domainResource.extension = []
                     }
                     domainResource.extension!.append( // swiftlint:disable:this force_unwrapping
                         ModelsDSTU2.Extension(
-                            url: Self.fhirExtensionUrlHKSampleId.asFHIRURIPrimitive(),
+                            url: FHIRExtensionURL.hkSampleId.dstu2,
                             value: .id(record.uuid.uuidString.asFHIRStringPrimitive())
                         )
                     )
+                    resource = domainResource
                 }
-                var resource = FHIRResource(
-                    versionedResource: .dstu2(resourceProxy.get()),
+                var fhirResource = FHIRResource(
+                    versionedResource: .dstu2(resource),
                     displayName: record.displayName
                 )
                 if loadHealthKitAttachments, let healthKit {
-                    try await resource.loadAttachments(for: record, using: healthKit)
+                    try await fhirResource.loadAttachments(for: record, using: healthKit)
                 }
-                return resource
+                return fhirResource
             case .r4:
-                let resourceProxy = try decoder.decode(ModelsR4.ResourceProxy.self, from: fhirResource.data)
-                if let domainResource = resourceProxy.get(if: ModelsR4.DomainResource.self) {
+                var resource = try decoder.decode(ModelsR4.ResourceProxy.self, from: fhirResource.data).get()
+                if var domainResource = resource as? any ModelsR4.DomainResource {
                     if domainResource.extension == nil {
                         domainResource.extension = []
                     }
                     domainResource.extension!.append( // swiftlint:disable:this force_unwrapping
                         ModelsR4.Extension(
-                            url: Self.fhirExtensionUrlHKSampleId.asFHIRURIPrimitive(),
+                            url: .hkSampleId,
                             value: .id(record.uuid.uuidString.asFHIRStringPrimitive())
                         )
                     )
+                    resource = domainResource
                 }
-                var resource = FHIRResource(
-                    versionedResource: .r4(resourceProxy.get()),
+                var fhirResource = FHIRResource(
+                    versionedResource: .r4(resource),
                     displayName: record.displayName
                 )
                 if loadHealthKitAttachments, let healthKit {
-                    try await resource.loadAttachments(for: record, using: healthKit)
+                    try await fhirResource.loadAttachments(for: record, using: healthKit)
                 }
-                return resource
+                return fhirResource
             case .unknown:
                 fallthrough // swiftlint:disable:this no_fallthrough_only
             default:

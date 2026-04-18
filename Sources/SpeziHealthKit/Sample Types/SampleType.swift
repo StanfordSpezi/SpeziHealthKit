@@ -14,7 +14,7 @@ import HealthKit
 #endif
 
 
-public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType, Sendable/*, __SampleTypeAssignmentHack*/ {
+public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType, Sendable {
     @_documentation(visibility: internal)
     public typealias Sample = Sample
     
@@ -23,7 +23,7 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType, Sendab
         /// - parameter displayUnit: The unit that should be used when displaying a sample of this type to the user
         /// - parameter expectedValuesRange: The expected range of values we expect to see for this sample type, if applicable.
         ///     The main purpose of this is to be able to e.g. adjust chart value ranges based on the specific sample types being visualised.
-        case quantity(displayUnit: HKUnit, expectedValuesRange: ClosedRange<Double>?)
+        case quantity(canonicalUnit: LocalizedUnit, expectedValuesRange: ClosedRange<Double>?)
         /// - parameter associatedQuantityTypes: The correlation's associated sample types, if known.
         case correlation(associatedQuantityTypes: Set<SampleType<HKQuantitySample>>)
         case category
@@ -42,7 +42,7 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType, Sendab
     /// Creates a ``SampleType`` from a type-erased ``AnySampleType``.
     ///
     /// Since ``SampleType`` is the only type allowed to conform to ``AnySampleType``, this is guaranteed to always succeed.
-    @inlinable public /*convenience*/ init(_ typeErased: any AnySampleType<Sample>) {
+    @inlinable public init(_ typeErased: any AnySampleType<Sample>) {
         // SAFETY: `SampleType` is the only type allowed to conform to `AnySampleType`.
         self = typeErased as! Self // swiftlint:disable:this force_cast
     }
@@ -79,16 +79,16 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType, Sendab
 
 
 extension SampleType where Sample == HKQuantitySample {
-    /// The recommended unit that should be used when displaying values of this sample type to a user.
+    /// The recommended localized unit that should be used when displaying values of this sample type to a user.
     @inlinable public var displayUnit: HKUnit {
         switch variant {
-        case .quantity(let displayUnit, _):
-            return displayUnit
+        case .quantity(let canonicalUnit, _):
+            return canonicalUnit[.current]
         case .correlation, .category, .other:
             // SAFETY:
             // This branch is unreachable; the initializers are defined and structured in a way that all
             // `SampleType<HKQuantitySample>` objects always must specify a displayUnit.
-            fatalError("Cannot provide '\(#function)' for '\(Self.self)'")
+            preconditionFailure("Cannot provide '\(#function)' for '\(Self.self)'")
         }
     }
     
@@ -97,13 +97,26 @@ extension SampleType where Sample == HKQuantitySample {
     /// The main purpose of this is to be able to e.g. adjust chart value ranges based on the specific sample types being visualised.
     @inlinable public var expectedValuesRange: ClosedRange<Double>? {
         switch variant {
-        case .quantity(displayUnit: _, let expectedValuesRange):
+        case .quantity(canonicalUnit: _, let expectedValuesRange):
             return expectedValuesRange
         case .correlation, .category, .other:
             // SAFETY:
             // This branch is unreachable; the initializers are defined and structured in a way that all
             // `SampleType<HKQuantitySample>` objects always must specify an expectedValuesRange.
-            fatalError("Cannot provide '\(#function)' for '\(Self.self)'")
+            preconditionFailure("Cannot provide '\(#function)' for '\(Self.self)'")
+        }
+    }
+    
+    /// The canonical, non-localized unit associated with the quantity type.
+    @inlinable public var canonicalUnit: HKUnit {
+        switch variant {
+        case .quantity(let canonicalUnit, _):
+            return canonicalUnit.metric
+        case .correlation, .category, .other:
+            // SAFETY:
+            // This branch is unreachable; the initializers are defined and structured in a way that all
+            // `SampleType<HKQuantitySample>` objects always must specify a displayUnit.
+            preconditionFailure("Cannot provide '\(#function)' for '\(Self.self)'")
         }
     }
 }
@@ -156,13 +169,13 @@ extension SampleType {
     @inlinable public static func quantity(
         _ identifier: HKQuantityTypeIdentifier,
         displayTitle: LocalizedStringResource? = nil, // swiftlint:disable:this function_default_parameter_at_end
-        displayUnit: HKUnit,
+        unit: LocalizedUnit,
         expectedValuesRange: ClosedRange<Double>? = nil
     ) -> SampleType<HKQuantitySample> {
         .init(
             HKQuantityType(identifier),
             displayTitle: displayTitle,
-            variant: .quantity(displayUnit: displayUnit, expectedValuesRange: expectedValuesRange)
+            variant: .quantity(canonicalUnit: unit, expectedValuesRange: expectedValuesRange)
         )
     }
     

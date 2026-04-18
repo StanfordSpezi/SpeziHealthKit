@@ -12,13 +12,9 @@ import HealthKit
 import ModelsR4
 
 
-extension FHIRExtensionUrls {
-    // SAFETY: this is in fact safe, since the FHIRPrimitive's `extension` property is empty.
-    // As a result, the actual instance doesn't contain any mutable state, and since this is a let,
-    // it also never can be mutated to contain any.
+extension FHIRExtensionURL {
     /// Url of a FHIR Extension containing, if applicable, encoded metadata of the `HKObject` from which a FHIR `Observation` was created.
-    nonisolated(unsafe) public static let metadata: FHIRPrimitive<ModelsR4.FHIRURI> = "https://bdh.stanford.edu/fhir/defs/metadata".asFHIRURIPrimitive()!
-    // swiftlint:disable:previous force_unwrapping
+    public static let metadata = Self("https://bdh.stanford.edu/fhir/defs/metadata")
 }
 
 
@@ -27,10 +23,10 @@ extension FHIRExtensionBuilderProtocol where Self == FHIRExtensionBuilder<HKObje
     public static var metadata: FHIRExtensionBuilder<HKObject> {
         .init { (object: HKObject, observation) in // swiftlint:disable:this closure_body_length
             guard let metadata = object.metadata, !metadata.isEmpty else {
-                observation.removeAllExtensions(withUrl: FHIRExtensionUrls.metadata)
+                observation.removeAllExtensions(withUrl: .metadata)
                 return
             }
-            let metadataExtension = Extension(url: FHIRExtensionUrls.metadata)
+            var metadataExtension = Extension(url: .metadata)
             for (key, value) in metadata {
                 // The HKObject docs state that "Keys must be NSString and values must be either NSString, NSNumber, NSDate, or HKQuantity".
                 // Additionally, there are some HKMetadataKey constants which say that they store a BOOL, so we support that as well.
@@ -106,11 +102,11 @@ extension FHIRExtensionBuilderProtocol where Self == FHIRExtensionBuilder<HKObje
                     print("Encountered unexpected HKSample metadata value of type \(Swift.type(of: value)), for key '\(key)': \(value). Skipping.")
                     continue
                 }
-                metadataExtension.appendExtension(
-                    Extension(url: FHIRExtensionUrls.metadata.appending(component: key), value: extensionValue),
-                    replaceAllExistingWithSameUrl: true
+                metadataExtension.append(
+                    extension: Extension(url: .metadata.appending(component: key), value: extensionValue),
+                    behaviour: .replace
                 )
-                observation.appendExtension(metadataExtension, replaceAllExistingWithSameUrl: true)
+                observation.append(extension: metadataExtension, behaviour: .replace)
             }
         }
     }

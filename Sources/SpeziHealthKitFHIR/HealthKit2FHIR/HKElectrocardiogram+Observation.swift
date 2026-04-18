@@ -12,21 +12,6 @@ import SpeziHealthKitFHIRMacros
 import ModelsR4
 
 
-@SynthesizeDisplayProperty(
-    HKElectrocardiogram.Classification.self,
-    .notSet, .sinusRhythm, .atrialFibrillation, .inconclusiveLowHeartRate,
-    .inconclusiveHighHeartRate, .inconclusivePoorReading, .inconclusiveOther, .unrecognized
-)
-extension HKElectrocardiogram.Classification: FHIRCodingConvertibleHKEnum {}
-
-
-@SynthesizeDisplayProperty(
-    HKElectrocardiogram.SymptomsStatus.self,
-    .notSet, .none, .present
-)
-extension HKElectrocardiogram.SymptomsStatus: FHIRCodingConvertibleHKEnum {}
-
-
 extension HKElectrocardiogram {
     /// The `Symptoms` contain related `HKCategoryType` instances coded as `HKCategoryValueSeverity` enums related to an `HKElectrocardiogram`.
     public typealias Symptoms = [HKCategoryType: HKCategoryValueSeverity]
@@ -52,14 +37,14 @@ extension HKElectrocardiogram {
         issuedDate: FHIRPrimitive<Instant>? = nil,
         extensions: [any FHIRExtensionBuilderProtocol] = []
     ) throws -> Observation {
-        guard let observation = try resource(withMapping: mapping, issuedDate: issuedDate, extensions: extensions).get(if: Observation.self) else {
+        guard var observation = try resource(withMapping: mapping, issuedDate: issuedDate, extensions: extensions).get(if: Observation.self) else {
             throw HealthKitOnFHIRError.notSupported
         }
         if !symptoms.isEmpty {
-            try appendSymptomsComponent(to: observation, symptoms: symptoms, mappings: mapping)
+            try appendSymptomsComponent(to: &observation, symptoms: symptoms, mappings: mapping)
         }
         if !voltageMeasurements.isEmpty {
-            try appendVoltageMeasurementsComponent(to: observation, voltageMeasurements: voltageMeasurements, mappings: mapping)
+            try appendVoltageMeasurementsComponent(to: &observation, voltageMeasurements: voltageMeasurements, mappings: mapping)
         }
         return observation
     }
@@ -67,52 +52,52 @@ extension HKElectrocardiogram {
 
 
 extension HKElectrocardiogram: FHIRObservationBuildable {
-    func build(_ observation: Observation, mapping: HKSampleMapping) throws {
+    func build(_ observation: inout Observation, mapping: HKSampleMapping) throws {
         let mapping = mapping.electrocardiogramMapping
         for code in mapping.codings {
-            observation.appendCoding(code.coding)
+            observation.append(coding: code.coding)
         }
         for category in mapping.categories {
-            observation.appendCategory(
-                CodeableConcept(coding: [category.coding])
+            observation.append(
+                category: CodeableConcept(coding: [category.coding])
             )
         }
-        try appendNumberOfVoltageMeasurementsComponent(to: observation, mapping: mapping)
-        try appendSamplingFrequencyComponent(to: observation, mapping: mapping)
-        appendClassificationComponent(to: observation, mapping: mapping)
-        try appendAverageHeartRateComponent(to: observation, mapping: mapping)
-        appendSymptomsStatusComponent(to: observation, mapping: mapping)
+        try appendNumberOfVoltageMeasurementsComponent(to: &observation, mapping: mapping)
+        try appendSamplingFrequencyComponent(to: &observation, mapping: mapping)
+        appendClassificationComponent(to: &observation, mapping: mapping)
+        try appendAverageHeartRateComponent(to: &observation, mapping: mapping)
+        appendSymptomsStatusComponent(to: &observation, mapping: mapping)
     }
     
     
     private func appendNumberOfVoltageMeasurementsComponent(
-        to observation: Observation,
+        to observation: inout Observation,
         mapping: HKElectrocardiogramMapping
     ) throws {
-        // Number Of Voltage Measurements
-        let numberOfVoltageMeasurementsComponent = ObservationComponent(
-            code: CodeableConcept(coding: mapping.numberOfVoltageMeasurements.codings.map(\.coding))
-        )
-        numberOfVoltageMeasurementsComponent.value = .quantity(
-            Quantity(
-                code: mapping.numberOfVoltageMeasurements.unit.code?.asFHIRStringPrimitive(),
-                system: mapping.numberOfVoltageMeasurements.unit.system?.asFHIRURIPrimitive(),
-                unit: mapping.numberOfVoltageMeasurements.unit.unit.asFHIRStringPrimitive(),
-                value: try Double(numberOfVoltageMeasurements).asFHIRDecimalPrimitiveSafe()
+        let component = ObservationComponent(
+            code: CodeableConcept(coding: mapping.numberOfVoltageMeasurements.codings.map(\.coding)),
+            value: .quantity(
+                Quantity(
+                    code: mapping.numberOfVoltageMeasurements.unit.code?.asFHIRStringPrimitive(),
+                    system: mapping.numberOfVoltageMeasurements.unit.system?.asFHIRURIPrimitive(),
+                    unit: mapping.numberOfVoltageMeasurements.unit.unit.asFHIRStringPrimitive(),
+                    value: try Double(numberOfVoltageMeasurements).asFHIRDecimalPrimitiveSafe()
+                )
             )
         )
-        observation.appendComponent(numberOfVoltageMeasurementsComponent)
+        observation.append(component: component)
     }
     
     private func appendSamplingFrequencyComponent(
-        to observation: Observation,
+        to observation: inout Observation,
         mapping: HKElectrocardiogramMapping
     ) throws {
-        if let samplingFrequency {
-            let samplingFrequencyComponent = ObservationComponent(
-                code: CodeableConcept(coding: mapping.samplingFrequency.codings.map(\.coding))
-            )
-            samplingFrequencyComponent.value = .quantity(
+        guard let samplingFrequency else {
+            return
+        }
+        let component = ObservationComponent(
+            code: CodeableConcept(coding: mapping.samplingFrequency.codings.map(\.coding)),
+            value: .quantity(
                 Quantity(
                     code: mapping.samplingFrequency.unit.code?.asFHIRStringPrimitive(),
                     system: mapping.samplingFrequency.unit.system?.asFHIRURIPrimitive(),
@@ -120,28 +105,31 @@ extension HKElectrocardiogram: FHIRObservationBuildable {
                     value: try samplingFrequency.doubleValue(for: mapping.samplingFrequency.unit.hkunit).asFHIRDecimalPrimitiveSafe()
                 )
             )
-            observation.appendComponent(samplingFrequencyComponent)
-        }
+        )
+        observation.append(component: component)
     }
     
     private func appendClassificationComponent(
-        to observation: Observation,
+        to observation: inout Observation,
         mapping: HKElectrocardiogramMapping
     ) {
-        let classificationComponent = ObservationComponent(code: CodeableConcept(coding: mapping.classification.codings.map(\.coding)))
-        classificationComponent.value = .codeableConcept(CodeableConcept(coding: [classification.asCoding]))
-        observation.appendComponent(classificationComponent)
+        let component = ObservationComponent(
+            code: CodeableConcept(coding: mapping.classification.codings.map(\.coding)),
+            value: .codeableConcept(CodeableConcept(coding: [classification.asCoding]))
+        )
+        observation.append(component: component)
     }
     
     private func appendAverageHeartRateComponent(
-        to observation: Observation,
+        to observation: inout Observation,
         mapping: HKElectrocardiogramMapping
     ) throws {
-        if let averageHeartRate {
-            let averageHeartRateComponent = ObservationComponent(
-                code: CodeableConcept(coding: mapping.averageHeartRate.codings.map(\.coding))
-            )
-            averageHeartRateComponent.value = .quantity(
+        guard let averageHeartRate else {
+            return
+        }
+        let component = ObservationComponent(
+            code: CodeableConcept(coding: mapping.averageHeartRate.codings.map(\.coding)),
+            value: .quantity(
                 Quantity(
                     code: mapping.averageHeartRate.unit.code?.asFHIRStringPrimitive(),
                     system: mapping.averageHeartRate.unit.system?.asFHIRURIPrimitive(),
@@ -149,22 +137,24 @@ extension HKElectrocardiogram: FHIRObservationBuildable {
                     value: try averageHeartRate.doubleValue(for: mapping.averageHeartRate.unit.hkunit).asFHIRDecimalPrimitiveSafe()
                 )
             )
-            observation.appendComponent(averageHeartRateComponent)
-        }
+        )
+        observation.append(component: component)
     }
     
     private func appendSymptomsStatusComponent(
-        to observation: Observation,
+        to observation: inout Observation,
         mapping: HKElectrocardiogramMapping
     ) {
-        let symptomsStatusComponent = ObservationComponent(code: CodeableConcept(coding: mapping.symptomsStatus.codings.map(\.coding)))
-        symptomsStatusComponent.value = .codeableConcept(CodeableConcept(coding: [symptomsStatus.asCoding]))
-        observation.appendComponent(symptomsStatusComponent)
+        let component = ObservationComponent(
+            code: CodeableConcept(coding: mapping.symptomsStatus.codings.map(\.coding)),
+            value: .codeableConcept(CodeableConcept(coding: [symptomsStatus.asCoding]))
+        )
+        observation.append(component: component)
     }
     
     
     private func appendSymptomsComponent(
-        to observation: Observation,
+        to observation: inout Observation,
         symptoms: Symptoms,
         mappings: HKSampleMapping
     ) throws {
@@ -172,17 +162,17 @@ extension HKElectrocardiogram: FHIRObservationBuildable {
             guard let mapping = mappings.categorySampleMapping[symptom.key] else {
                 throw HealthKitOnFHIRError.notSupported
             }
-            let symptomComponent = ObservationComponent(
-                code: CodeableConcept(coding: mapping.codings.map(\.coding))
+            let component = ObservationComponent(
+                code: CodeableConcept(coding: mapping.codings.map(\.coding)),
+                value: .codeableConcept(CodeableConcept(coding: [symptom.value.asCoding]))
             )
-            symptomComponent.value = .codeableConcept(CodeableConcept(coding: [symptom.value.asCoding]))
-            observation.appendComponent(symptomComponent)
+            observation.append(component: component)
         }
     }
     
     
     private func appendVoltageMeasurementsComponent(
-        to observation: Observation,
+        to observation: inout Observation,
         voltageMeasurements: VoltageMeasurements,
         mappings: HKSampleMapping
     ) throws {
@@ -220,23 +210,39 @@ extension HKElectrocardiogram: FHIRObservationBuildable {
             let data = voltageMeasurementBatch
                 .map { String(format: "%.\(voltagePrecision)f", $0.value.doubleValue(for: mapping.unit.hkunit)) }
                 .joined(separator: " ")
-            let voltageMeasurementBatchComponent = ObservationComponent(
-                code: CodeableConcept(coding: mapping.codings.map(\.coding))
-            )
-            voltageMeasurementBatchComponent.value = .sampledData(
-                SampledData(
-                    data: data.asFHIRStringPrimitive(),
-                    dimensions: 1,
-                    origin: Quantity(
-                        code: mapping.unit.code?.asFHIRStringPrimitive(),
-                        system: mapping.unit.system?.asFHIRURIPrimitive(),
-                        unit: mapping.unit.unit.asFHIRStringPrimitive(),
-                        value: 0.asFHIRDecimalPrimitive()
-                    ),
-                    period: try period.asFHIRDecimalPrimitiveSafe()
+            let component = ObservationComponent(
+                code: CodeableConcept(coding: mapping.codings.map(\.coding)),
+                value : .sampledData(
+                    SampledData(
+                        data: data.asFHIRStringPrimitive(),
+                        dimensions: 1,
+                        origin: Quantity(
+                            code: mapping.unit.code?.asFHIRStringPrimitive(),
+                            system: mapping.unit.system?.asFHIRURIPrimitive(),
+                            unit: mapping.unit.unit.asFHIRStringPrimitive(),
+                            value: 0.asFHIRDecimalPrimitive()
+                        ),
+                        period: try period.asFHIRDecimalPrimitiveSafe()
+                    )
                 )
             )
-            observation.appendComponent(voltageMeasurementBatchComponent)
+            observation.append(component: component)
         }
     }
 }
+
+
+// MARK: HKElectrocardiogram-related enums
+
+@SynthesizeDisplayProperty(
+    HKElectrocardiogram.Classification.self,
+    .notSet, .sinusRhythm, .atrialFibrillation, .inconclusiveLowHeartRate,
+    .inconclusiveHighHeartRate, .inconclusivePoorReading, .inconclusiveOther, .unrecognized
+)
+extension HKElectrocardiogram.Classification: FHIRCodingConvertibleHKEnum {}
+
+@SynthesizeDisplayProperty(
+    HKElectrocardiogram.SymptomsStatus.self,
+    .notSet, .none, .present
+)
+extension HKElectrocardiogram.SymptomsStatus: FHIRCodingConvertibleHKEnum {}

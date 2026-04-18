@@ -13,12 +13,6 @@ import ModelsR4
 
 extension HKQuantityType {
     /// Converts an HKQuantityType into corresponding FHIR Coding(s) based on a specified mapping
-    var codes: [Coding] {
-        codes()
-    }
-    
-    
-    /// Converts an HKQuantityType into corresponding FHIR Coding(s) based on a specified mapping
     func codes(mappings: [HKQuantityType: HKQuantitySampleMapping] = HKQuantitySampleMapping.default) -> [Coding] {
         guard let mapping = mappings[self] else {
             return []

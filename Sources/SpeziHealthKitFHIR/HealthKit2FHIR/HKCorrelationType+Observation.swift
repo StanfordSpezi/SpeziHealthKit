@@ -11,23 +11,23 @@ import ModelsR4
 
 
 extension HKCorrelation: FHIRObservationBuildable {
-    func build(_ observation: Observation, mapping: HKSampleMapping) throws {
+    func build(_ observation: inout Observation, mapping: HKSampleMapping) throws {
         guard let mapping = mapping.correlationMapping[self.correlationType] else {
             throw HealthKitOnFHIRError.notSupported
         }
         for code in mapping.codings {
-            observation.appendCoding(code.coding)
+            observation.append(coding: code.coding)
         }
         for category in mapping.categories {
-            observation.appendCategory(
-                CodeableConcept(coding: [category.coding])
+            observation.append(
+                category: CodeableConcept(coding: [category.coding])
             )
         }
         for object in self.objects {
             guard let sample = object as? HKQuantitySample else {
                 throw HealthKitOnFHIRError.notSupported
             }
-            observation.appendComponent(try sample.quantity.buildObservationComponent(for: sample.quantityType))
+            observation.append(component: try sample.quantity.buildObservationComponent(for: sample.quantityType))
         }
     }
 }

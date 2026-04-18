@@ -11,13 +11,13 @@ import ModelsR4
 
 
 extension HKCategorySample: FHIRObservationBuildable {
-    func build(_ observation: Observation, mapping: HKSampleMapping) throws {
+    func build(_ observation: inout Observation, mapping: HKSampleMapping) throws {
         guard let mapping = mapping.categorySampleMapping[self.categoryType] else {
             throw HealthKitOnFHIRError.notSupported
         }
         let assocDataInfo = try categoryType.associatedDataInfo
         for code in mapping.codings {
-            observation.appendCoding(code.coding)
+            observation.append(coding: code.coding)
         }
         if let valueType = assocDataInfo.valueType {
             guard let value = valueType.init(rawValue: self.value) else {
@@ -36,12 +36,12 @@ extension HKCategorySample: FHIRObservationBuildable {
                 guard let quantityType = HKCategoryType.quantityType(forMetadataKey: metadataKey) else {
                     continue
                 }
-                observation.appendComponent(try quantity.buildObservationComponent(for: quantityType))
+                observation.append(component: try quantity.buildObservationComponent(for: quantityType))
             } else if let value = value as? Bool {
                 guard let coding = HKCategoryType.coding(forMetadataKey: metadataKey) else {
                     continue
                 }
-                observation.appendComponent(ObservationComponent(
+                observation.append(component: ObservationComponent(
                     code: CodeableConcept(coding: [coding]),
                     value: .boolean(value.asPrimitive())
                 ))

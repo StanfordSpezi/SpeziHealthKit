@@ -1,4 +1,4 @@
-# ``HealthKitOnFHIR``
+# ``SpeziHealthKitFHIR``
 
 <!--
                   

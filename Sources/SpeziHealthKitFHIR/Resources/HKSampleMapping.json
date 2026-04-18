@@ -184,7 +184,7 @@
         },
         "voltagePrecision": 3
     },
-    "HKCategorySamples": {
+    "HKCategorySample": {
         "HKCategoryTypeIdentifierAppetiteChanges": {
             "codings": [
                 {
@@ -798,7 +798,7 @@
             ]
         }
     },
-    "HKCorrelations": {
+    "HKCorrelation": {
         "HKCorrelationTypeIdentifierBloodPressure": {
             "categories": [
                 {
@@ -826,7 +826,7 @@
             ]
         }
     },
-    "HKQuantitySamples": {
+    "HKQuantitySample": {
         "HKQuantityTypeIdentifierActiveEnergyBurned": {
             "codings": [
                 {

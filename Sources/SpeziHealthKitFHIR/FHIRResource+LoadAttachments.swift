@@ -70,99 +70,103 @@ extension FHIRResource {
         // We assume that the content type is a MIME type, we would need to more checks around the content.format to be fully correct.
         // Otherwise we create a new content entry to inject this information in here.
         switch versionedResource {
-        case let .r4(resource):
-            try processAttachments(for: resource, encodedAttachments: encodedAttachments)
-        case let .dstu2(resource):
-            try processAttachments(for: resource, encodedAttachments: encodedAttachments)
+        case .r4(var resource):
+            try processAttachments(for: &resource, encodedAttachments: encodedAttachments)
+        case .dstu2(var resource):
+            try processAttachments(for: &resource, encodedAttachments: encodedAttachments)
         }
     }
 
     func processAttachments(
-        for resource: ModelsR4.Resource,
+        for resource: inout any ModelsR4.Resource,
         encodedAttachments: [(identifier: String, base64EncodedString: String)]
     ) throws {
         switch resource {
-        case let documentReference as ModelsR4.DocumentReference:
+        case var reference as ModelsR4.DocumentReference:
             for attachment in encodedAttachments {
                 let data = FHIRPrimitive(ModelsR4.Base64Binary(attachment.base64EncodedString))
-                if let matchingContent = documentReference.content.first(where: {
+                if let matchingContentIdx = reference.content.firstIndex(where: {
                     $0.attachment.contentType?.value?.string == attachment.identifier && $0.attachment.data == nil
                 }) {
-                    matchingContent.attachment.data = data
+                    reference.content[matchingContentIdx].attachment.data = data
                 } else {
-                    documentReference.content.append(
+                    reference.content.append(
                         DocumentReferenceContent(
                             attachment: Attachment(contentType: FHIRPrimitive(stringLiteral: attachment.identifier), data: data)
                         )
                     )
                 }
+                resource = reference
             }
-        case let diagnosticReport as ModelsR4.DiagnosticReport:
+        case var report as ModelsR4.DiagnosticReport:
             for attachment in encodedAttachments {
                 let data = FHIRPrimitive(ModelsR4.Base64Binary(attachment.base64EncodedString))
-                if let presentedForms = diagnosticReport.presentedForm {
-                    if let matchingAttachment = presentedForms.first(where: {
-                        $0.contentType?.value?.string == attachment.identifier && $0.data == nil
-                    }) {
-                        matchingAttachment.data = data
-                    } else {
-                        diagnosticReport.presentedForm?.append(
-                            Attachment(contentType: FHIRPrimitive(stringLiteral: attachment.identifier), data: data)
-                        )
-                    }
+                if let matchingAttachmentIdx = (report.presentedForm ?? []).firstIndex(where: {
+                    $0.contentType?.value?.string == attachment.identifier && $0.data == nil
+                }) {
+                    // SAFETY: if there is an index, we know that the array is not nil.
+                    // swiftlint:disable:next force_unwrapping
+                    report.presentedForm![matchingAttachmentIdx].data = data
                 } else {
-                    diagnosticReport.presentedForm = [
+                    if report.presentedForm == nil {
+                        report.presentedForm = []
+                    }
+                    report.presentedForm!.append( // swiftlint:disable:this force_unwrapping
                         Attachment(contentType: FHIRPrimitive(stringLiteral: attachment.identifier), data: data)
-                    ]
+                    )
                 }
+                resource = report
             }
         default:
-            print("Unexpected FHIR type in the document parsing path: \(resource.description)")
+            print("Unexpected FHIR type in the document parsing path: \(resource)")
         }
     }
 
     func processAttachments(
-        for resource: ModelsDSTU2.Resource,
+        for resource: inout any ModelsDSTU2.Resource,
         encodedAttachments: [(identifier: String, base64EncodedString: String)]
     ) throws {
-        switch resource {
-        case let documentReference as ModelsDSTU2.DocumentReference:
-            for attachment in encodedAttachments {
-                let data = FHIRPrimitive(ModelsDSTU2.Base64Binary(attachment.base64EncodedString))
-                if let matchingContent = documentReference.content.first(where: {
-                    $0.attachment.contentType?.value?.string == attachment.identifier && $0.attachment.data == nil
-                }) {
-                    matchingContent.attachment.data = data
-                } else {
-                    documentReference.content.append(
-                        DocumentReferenceContent(
-                            attachment: Attachment(contentType: FHIRPrimitive(stringLiteral: attachment.identifier), data: data)
-                        )
-                    )
-                }
-            }
-        case let diagnosticReport as ModelsDSTU2.DiagnosticReport:
-            for attachment in encodedAttachments {
-                let data = FHIRPrimitive(ModelsDSTU2.Base64Binary(attachment.base64EncodedString))
-                if let presentedForms = diagnosticReport.presentedForm {
-                    if let matchingAttachment = presentedForms.first(where: {
-                        $0.contentType?.value?.string == attachment.identifier && $0.data == nil
-                    }) {
-                        matchingAttachment.data = data
-                    } else {
-                        diagnosticReport.presentedForm?.append(
-                            Attachment(contentType: FHIRPrimitive(stringLiteral: attachment.identifier), data: data)
-                        )
-                    }
-                } else {
-                    diagnosticReport.presentedForm = [
-                        Attachment(contentType: FHIRPrimitive(stringLiteral: attachment.identifier), data: data)
-                    ]
-                }
-            }
-        default:
-            print("Unexpected FHIR type in the document parsing path: \(resource.description)")
-        }
+        // TODO(DSTU2)
+//        switch resource {
+//        case let reference as ModelsDSTU2.DocumentReference:
+//            for attachment in encodedAttachments {
+//                let data = FHIRPrimitive(ModelsDSTU2.Base64Binary(attachment.base64EncodedString))
+//                if let matchingContent = reference.content.first(where: {
+//                    $0.attachment.contentType?.value?.string == attachment.identifier && $0.attachment.data == nil
+//                }) {
+//                    matchingContent.attachment.data = data
+//                } else {
+//                    reference.content.append(
+//                        DocumentReferenceContent(
+//                            attachment: Attachment(contentType: FHIRPrimitive(stringLiteral: attachment.identifier), data: data)
+//                        )
+//                    )
+//                }
+//                resource = reference
+//            }
+//        case let report as ModelsDSTU2.DiagnosticReport:
+//            for attachment in encodedAttachments {
+//                let data = FHIRPrimitive(ModelsDSTU2.Base64Binary(attachment.base64EncodedString))
+//                if let presentedForms = report.presentedForm {
+//                    if let matchingAttachment = presentedForms.first(where: {
+//                        $0.contentType?.value?.string == attachment.identifier && $0.data == nil
+//                    }) {
+//                        matchingAttachment.data = data
+//                    } else {
+//                        report.presentedForm?.append(
+//                            Attachment(contentType: FHIRPrimitive(stringLiteral: attachment.identifier), data: data)
+//                        )
+//                    }
+//                } else {
+//                    report.presentedForm = [
+//                        Attachment(contentType: FHIRPrimitive(stringLiteral: attachment.identifier), data: data)
+//                    ]
+//                }
+//                resource = report
+//            }
+//        default:
+//            print("Unexpected FHIR type in the document parsing path: \(resource.description)")
+//        }
     }
 }
 

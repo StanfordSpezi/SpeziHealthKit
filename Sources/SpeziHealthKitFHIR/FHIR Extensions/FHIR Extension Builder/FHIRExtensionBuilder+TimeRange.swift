@@ -18,15 +18,15 @@ extension FHIRExtensionBuilderProtocol where Self == FHIRExtensionBuilder<HKSamp
         .init { (sample: HKSample, observation) in
             let timeRangeExtensions = [
                 Extension(
-                    url: FHIRExtensionUrls.absoluteTimeRangeStart,
+                    url: .absoluteTimeRangeStart,
                     value: .decimal(sample.startDate.timeIntervalSince1970.asFHIRDecimalPrimitive())
                 ),
                 Extension(
-                    url: FHIRExtensionUrls.absoluteTimeRangeEnd,
+                    url: .absoluteTimeRangeEnd,
                     value: .decimal(sample.endDate.timeIntervalSince1970.asFHIRDecimalPrimitive())
                 )
             ]
-            observation.appendExtensions(timeRangeExtensions, replaceAllExistingWithSameUrl: true)
+            observation.append(extensions: timeRangeExtensions, behaviour: .replace)
         }
     }
 }

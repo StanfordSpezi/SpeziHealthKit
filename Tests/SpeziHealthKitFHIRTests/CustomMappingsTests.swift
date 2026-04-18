@@ -60,7 +60,7 @@ struct CustomMappingsTests {
             .resource(withMapping: hkSampleMapping)
             .get(if: Observation.self)
         
-        #expect(quantitySample.quantityType.codes == [
+        #expect(quantitySample.quantityType.codes() == [
             Coding(
                 code: "29463-7",
                 display: "Body weight",

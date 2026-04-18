@@ -10,9 +10,9 @@ from typing import Optional, Any
 
 def localeDependentUnit(*, us: str, uk: Optional[str] = None, metric: str) -> str:
     if uk:
-        return f'localeDependentUnit(us: {us}, uk: {uk}, metric: {metric})'
+        return f'LocalizedUnit(metric: {metric}, us: {us}, uk: {uk})'
     else:
-        return f'localeDependentUnit(us: {us}, metric: {metric})'
+        return f'LocalizedUnit(metric: {metric}, us: {us})'
 
 
 class Availability(object):
@@ -60,7 +60,7 @@ def quantity_type(
     identifier: str,
     property_name: Optional[str] = None,
     display_title: Optional[str] = None,
-    display_unit: str,
+    display_unit: str, # TODO rename to just unit!
     expected_values_range: Optional[str] = None,
     doc: str
 ) -> SampleType:
@@ -70,7 +70,7 @@ def quantity_type(
         property_name=property_name,
         display_title=display_title,
         extra_init_params=[
-            ('displayUnit', display_unit),
+            ('unit', display_unit if display_unit.startswith('LocalizedUnit') else f'LocalizedUnit(metric: {display_unit})'),
             ('expectedValuesRange', expected_values_range)
         ],
         doc=doc
@@ -297,12 +297,12 @@ quantity_types: list[SampleType] = [
     # Hearing
     quantity_type(
         identifier='environmentalAudioExposure',
-        display_unit='.decibelHearingLevel()',
+        display_unit='.decibelAWeightedSoundPressureLevel()',
         doc='A quantity sample type that measures audio exposure to sounds in the environment.'
     ),
     quantity_type(
         identifier='headphoneAudioExposure',
-        display_unit='.decibelHearingLevel()',
+        display_unit='.decibelAWeightedSoundPressureLevel()',
         doc='A quantity sample type that measures audio exposure from headphones.'
     ),
     # Vital Signs

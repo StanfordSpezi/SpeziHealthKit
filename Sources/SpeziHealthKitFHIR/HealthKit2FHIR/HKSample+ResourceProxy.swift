@@ -30,16 +30,18 @@ extension HKSample {
     ) throws -> ResourceProxy {
         #if !os(watchOS)
         if let self = self as? HKClinicalRecord {
+            // NOTE: this currently completely circumvents the extension builders.
+            // might wanna look into possibly fixig that at some point.
             return try self.resource()
         }
         #endif
-        let observation = Observation(
+        var observation = Observation(
             code: CodeableConcept(),
             status: FHIRPrimitive(.final)
         )
         // Set basic elements applicable to all observations
         observation.id = self.uuid.uuidString.asFHIRStringPrimitive()
-        observation.appendIdentifier(Identifier(id: observation.id))
+        observation.append(identifier: Identifier(id: observation.id))
         try observation.setEffective(
             startDate: self.startDate,
             endDate: self.endDate,
@@ -50,9 +52,8 @@ extension HKSample {
         } else {
             try observation.setIssued(on: Date())
         }
-        // Set specific data based on HealthKit type
         if let self = self as? any FHIRObservationBuildable {
-            try self.build(observation, mapping: mapping)
+            try self.build(&observation, mapping: mapping)
         } else {
             throw HealthKitOnFHIRError.notSupported
         }
@@ -60,7 +61,7 @@ extension HKSample {
             .sourceDevice, .sourceRevision, .metadata
         ]
         for builder in baseExtensions + extensions {
-            try builder.apply(typeErasedInput: self, to: observation)
+            try builder.apply(typeErasedInput: self, to: &observation)
         }
         return ResourceProxy(with: observation)
     }
