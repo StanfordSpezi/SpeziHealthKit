@@ -8,11 +8,31 @@
 
 from typing import Optional, Any
 
-def localeDependentUnit(*, us: str, uk: Optional[str] = None, metric: str) -> str:
-    if uk:
-        return f'LocalizedUnit(metric: {metric}, us: {us}, uk: {uk})'
-    else:
-        return f'LocalizedUnit(metric: {metric}, us: {us})'
+# def LocaleDependentUnit(*, us: str, uk: Optional[str] = None, metric: str) -> str:
+#     if uk:
+#         return f'LocalizedUnit(metric: {metric}, us: {us}, uk: {uk})'
+#     else:
+#         return f'LocalizedUnit(metric: {metric}, us: {us})'
+
+class LocaleDependentUnit(object):
+    def __init__(self, *, us: str, uk: str | None = None, metric: str | None = None): # TODO move metric to the front?!
+        self.metric = metric
+        self.us = us
+        self.uk = uk
+    
+    def to_str(self) -> str:
+        components: list[tuple[str, str | None]] = [
+            ('metric', self.metric),
+            ('us', self.us),
+            ('uk', self.uk)
+        ]
+        components: list[tuple[str, str]] = list(filter(lambda x: x[1], components))
+        args = map(lambda x: f'{x[0]}: {x[1]}', components)
+        return f'LocalizedUnit({', '.join(args)})'
+        # if self.uk:
+        #     return f'LocalizedUnit(metric: {self.metric}, us: {self.us}, uk: {self.uk})'
+        # else:
+        #     return f'LocalizedUnit(metric: {self.metric}, us: {self.us})'
 
 
 class Availability(object):
@@ -60,17 +80,30 @@ def quantity_type(
     identifier: str,
     property_name: Optional[str] = None,
     display_title: Optional[str] = None,
-    display_unit: str, # TODO rename to just unit!
+    unit: str, # canonical unit. TODO maybe rename?
+    display_unit: LocaleDependentUnit | None = None,
     expected_values_range: Optional[str] = None,
     doc: str
 ) -> SampleType:
+    # # yes this whole if thing could be more elegant but this way it's clear what is going on.
+    # if display_unit: # not empty
+    #     if not display_unit.startswith('LocalizedUnit'): # not already localized
+    #         display_unit = f'LocalizedUnit(metric: {display_unit})'
+    # else: # empty
+    #     # use canonical unit for display as well
+    #     display_unit = f'LocalizedUnit(metric: {display_unit})'
+    if not display_unit:
+        display_unit = LocaleDependentUnit(us=unit, metric=unit)
+    elif not display_unit.metric:
+        display_unit.metric = unit
     return SampleType(
         availability=availability,
         identifier=identifier,
         property_name=property_name,
         display_title=display_title,
         extra_init_params=[
-            ('unit', display_unit if display_unit.startswith('LocalizedUnit') else f'LocalizedUnit(metric: {display_unit})'),
+            ('canonicalUnit', unit),
+            ('displayUnits', display_unit.to_str() if display_unit else unit),
             ('expectedValuesRange', expected_values_range)
         ],
         doc=doc
@@ -149,82 +182,90 @@ quantity_types: list[SampleType] = [
     # Activity
     quantity_type(
         identifier='stepCount',
-        display_unit='.count()',
+        unit='.count()',
         doc='A quantity sample type that measures the number of steps the user has taken.'
     ),
     quantity_type(
         identifier='distanceWalkingRunning',
-        display_unit=localeDependentUnit(us='.mile()', metric='.meterUnit(with: .kilo)'),
+        unit='.meterUnit(with: .kilo)',
+        display_unit=LocaleDependentUnit(us='.mile()'),
         doc='A quantity sample type that measures the distance the user has moved by walking or running.'
     ),
     quantity_type(
         identifier='runningGroundContactTime',
-        display_unit='.secondUnit(with: .milli)',
+        unit='.secondUnit(with: .milli)',
         doc='A quantity sample type that measures the amount of time the runner’s foot is in contact with the ground while running.'
     ),
     quantity_type(
         identifier='runningPower',
-        display_unit='.watt()',
+        unit='.watt()',
         doc='A quantity sample type that measures the rate of work required for the runner to maintain their speed.'
     ),
     quantity_type(
         identifier='runningSpeed',
-        display_unit=localeDependentUnit(us='.mile() / .hour()', metric='.meterUnit(with: .kilo) / .hour()'),
+        unit='.meterUnit(with: .kilo) / .hour()',
+        display_unit=LocaleDependentUnit(us='.mile() / .hour()'),
         doc='A quantity sample type that measures the runner’s speed.'
     ),
     quantity_type(
         identifier='runningStrideLength',
-        display_unit=localeDependentUnit(us='.foot()', metric='.meter()'),
+        unit='.meter()',
+        display_unit=LocaleDependentUnit(us='.foot()'),
         doc='A quantity sample type that measures the distance covered by a single step while running.'
     ),
     quantity_type(
         identifier='runningVerticalOscillation',
-        display_unit=localeDependentUnit(us='.inch()', metric='.meterUnit(with: .centi)'),
+        unit='.meterUnit(with: .centi)',
+        display_unit=LocaleDependentUnit(us='.inch()'),
         doc='A quantity sample type measuring pelvis vertical range of motion during a single running stride.'
     ),
     quantity_type(
         identifier='distanceCycling',
-        display_unit=localeDependentUnit(us='.mile()', metric='.meterUnit(with: .kilo)'),
+        unit='.meterUnit(with: .kilo)',
+        display_unit=LocaleDependentUnit(us='.mile()'),
         doc='A quantity sample type that measures the distance the user has moved by cycling.'
     ),
     quantity_type(
         identifier='pushCount',
-        display_unit='.count()',
+        unit='.count()',
         doc='A quantity sample type that measures the number of pushes that the user has performed while using a wheelchair.'
     ),
     quantity_type(
         identifier='distanceWheelchair',
-        display_unit=localeDependentUnit(us='.mile()', metric='.meterUnit(with: .kilo)'),
+        unit='.meterUnit(with: .kilo)',
+        display_unit=LocaleDependentUnit(us='.mile()'),
         doc='A quantity sample type that measures the distance the user has moved using a wheelchair.'
     ),
     quantity_type(
         identifier='swimmingStrokeCount',
-        display_unit='.count()',
+        unit='.count()',
         doc='A quantity sample type that measures the number of strokes performed while swimming.'
     ),
     quantity_type(
         identifier='distanceSwimming',
-        display_unit=localeDependentUnit(us='.yard()', uk='.yard()', metric='.meter()'),
+        unit='.meter()',
+        display_unit=LocaleDependentUnit(us='.yard()', uk='.yard()'),
         doc='A quantity sample type that measures the distance the user has moved while swimming.'
     ),
     quantity_type(
         identifier='distanceDownhillSnowSports',
-        display_unit=localeDependentUnit(us='.mile()', metric='.meterUnit(with: .kilo)'),
+        unit='.meterUnit(with: .kilo)',
+        display_unit=LocaleDependentUnit(us='.mile()'),
         doc='A quantity sample type that measures the distance the user has traveled while skiing or snowboarding.'
     ),
     quantity_type(
         identifier='basalEnergyBurned',
-        display_unit='.largeCalorie()',
+        unit='.largeCalorie()',
         doc='A quantity sample type that measures the resting energy burned by the user.'
     ),
     quantity_type(
         identifier='activeEnergyBurned',
-        display_unit='.largeCalorie()',
+        unit='.largeCalorie()',
         doc='A quantity sample type that measures the amount of active energy the user has burned.'
     ),
     quantity_type(
         identifier='flightsClimbed',
-        display_unit='.count()',
+        unit='.count()',
         doc='A quantity sample type that measures the number flights of stairs that the user has climbed.'
     ),
 #    quantity_type(
@@ -234,451 +275,465 @@ quantity_types: list[SampleType] = [
 #    ),
     quantity_type(
         identifier='appleExerciseTime',
-        display_unit='.minute()',
+        unit='.minute()',
         doc='A quantity sample type that measures the amount of time the user spent exercising.'
     ),
     quantity_type(
         identifier='appleMoveTime',
-        display_unit='.minute()',
+        unit='.minute()',
         doc='A quantity sample type that measures the amount of time the user has spent performing activities that involve full-body movements during the specified day.'
     ),
     quantity_type(
         identifier='appleStandTime',
-        display_unit='.hour()',
+        unit='.hour()',
         doc='A quantity sample type that measures the amount of time the user has spent standing.'
     ),
     quantity_type(
         identifier='vo2Max',
-        display_unit='.literUnit(with: .milli) / (.gramUnit(with: .kilo) * .minute())',
+        unit='.literUnit(with: .milli) / (.gramUnit(with: .kilo) * .minute())',
         doc='A quantity sample that measures the maximal oxygen consumption during exercise.'
     ),
     # Body Measurements
     quantity_type(
         identifier='height',
-        display_unit=localeDependentUnit(us='.foot()', metric='.meterUnit(with: .centi)'),
+        unit='.meterUnit(with: .centi)',
+        display_unit=LocaleDependentUnit(us='.foot()'),
         doc='A quantity sample type that measures the user’s height.'
     ),
     quantity_type(
         identifier='bodyMass',
-        display_unit=localeDependentUnit(us='.pound()', uk='.pound()', metric='.gramUnit(with: .kilo)'),
+        unit='.gramUnit(with: .kilo)',
+        display_unit=LocaleDependentUnit(us='.pound()', uk='.pound()'),
         doc='A quantity sample type that measures the user’s weight.'
     ),
     quantity_type(
         identifier='bodyMassIndex',
-        display_unit='.count()',
+        unit='.count()',
         doc='A quantity sample type that measures the user’s body mass index.'
     ),
     quantity_type(
         identifier='leanBodyMass',
-        display_unit=localeDependentUnit(us='.pound()', uk='.pound()', metric='.gramUnit(with: .kilo)'),
+        unit='.gramUnit(with: .kilo)',
+        display_unit=LocaleDependentUnit(us='.pound()', uk='.pound()'),
         doc='A quantity sample type that measures the user’s lean body mass.'
     ),
     quantity_type(
         identifier='bodyFatPercentage',
-        display_unit='.percent()',
+        unit='.percent()',
         doc='A quantity sample type that measures the user’s body fat percentage.'
     ),
     quantity_type(
         identifier='waistCircumference',
-        display_unit=localeDependentUnit(us='.inch()', metric='.meterUnit(with: .centi)'),
+        unit='.meterUnit(with: .centi)',
+        display_unit=LocaleDependentUnit(us='.inch()'),
         doc='A quantity sample type that measures the user’s waist circumference.'
     ),
     quantity_type(
         identifier='appleSleepingWristTemperature',
-        display_unit=localeDependentUnit(us='.degreeFahrenheit()', metric='.degreeCelsius()'),
+        unit='.kelvin()',
+        display_unit=LocaleDependentUnit(us='.degreeFahrenheit()', uk='.degreeCelsius()', metric='.degreeCelsius()'),
         doc='A quantity sample type that records the wrist temperature during sleep.'
     ),
     # Reproductive Health
     quantity_type(
         identifier='basalBodyTemperature',
-        display_unit=localeDependentUnit(us='.degreeFahrenheit()', metric='.degreeCelsius()'),
+        unit='.kelvin()',
+        display_unit=LocaleDependentUnit(us='.degreeFahrenheit()', uk='.degreeCelsius()', metric='.degreeCelsius()'),
         doc='A quantity sample type that records the user’s basal body temperature.'
     ),
     # Hearing
     quantity_type(
         identifier='environmentalAudioExposure',
-        display_unit='.decibelAWeightedSoundPressureLevel()',
+        unit='.decibelAWeightedSoundPressureLevel()',
         doc='A quantity sample type that measures audio exposure to sounds in the environment.'
     ),
     quantity_type(
         identifier='headphoneAudioExposure',
-        display_unit='.decibelAWeightedSoundPressureLevel()',
+        unit='.decibelAWeightedSoundPressureLevel()',
         doc='A quantity sample type that measures audio exposure from headphones.'
     ),
     # Vital Signs
     quantity_type(
         identifier='heartRate',
-        display_unit='.count() / .minute()',
+        unit='.count() / .minute()',
         expected_values_range='0...175',
         doc='A quantity sample type that measures the user’s heart rate.'
     ),
     quantity_type(
         identifier='restingHeartRate',
-        display_unit='.count() / .minute()',
+        unit='.count() / .minute()',
         doc='A quantity sample type that measures the user’s resting heart rate.'
     ),
     quantity_type(
         identifier='walkingHeartRateAverage',
-        display_unit='.count() / .minute()',
+        unit='.count() / .minute()',
         doc='A quantity sample type that measures the user’s heart rate while walking.'
     ),
     quantity_type(
         identifier='heartRateVariabilitySDNN',
-        display_unit='.secondUnit(with: .milli)',
+        unit='.secondUnit(with: .milli)',
         doc='A quantity sample type that measures the standard deviation of heartbeat intervals.'
     ),
     quantity_type(
         identifier='heartRateRecoveryOneMinute',
-        display_unit='.count() / .minute()', # might not be the correct unit; docs say count, but the health app seems to use BPM?
+        unit='.count() / .minute()', # might not be the correct unit; docs say count, but the health app seems to use BPM?
         doc='A quantity sample that records the reduction in heart rate from the peak exercise rate to the rate one minute after exercising ended.'
     ),
     quantity_type(
         identifier='atrialFibrillationBurden',
-        display_unit='.percent()',
+        unit='.percent()',
         doc='A quantity type that measures an estimate of the percentage of time a person’s heart shows signs of atrial fibrillation (AFib) while wearing Apple Watch.'
     ),
     quantity_type(
         identifier='oxygenSaturation',
         property_name='bloodOxygen',
-        display_unit='.percent()',
+        unit='.percent()',
         expected_values_range='80...105',
         doc='A quantity sample type that measures the user’s oxygen saturation.'
     ),
     quantity_type(
         identifier='bodyTemperature',
-        display_unit=localeDependentUnit(us='.degreeFahrenheit()', metric='.degreeCelsius()'),
+        unit='.kelvin()',
+        display_unit=LocaleDependentUnit(us='.degreeFahrenheit()', uk='.degreeCelsius()', metric='.degreeCelsius()'),
         doc='A quantity sample type that measures the user’s body temperature.'
     ),
     quantity_type(
         identifier='bloodPressureDiastolic',
-        display_unit='.millimeterOfMercury()',
+        unit='.millimeterOfMercury()',
         doc='A quantity sample type that measures the user’s diastolic blood pressure.'
     ),
     quantity_type(
         identifier='bloodPressureSystolic',
-        display_unit='.millimeterOfMercury()',
+        unit='.millimeterOfMercury()',
         doc='A quantity sample type that measures the user’s systolic blood pressure.'
     ),
     quantity_type(
         identifier='respiratoryRate',
-        display_unit='.count() / .minute()',
+        unit='.count() / .minute()',
         doc='A quantity sample type that measures the user’s respiratory rate.'
     ),
 
     # Lab and Test Results
     quantity_type(
         identifier='bloodGlucose',
-        display_unit='.gramUnit(with: .milli) / .literUnit(with: .deci)',
+        unit='.gramUnit(with: .milli) / .literUnit(with: .deci)',
         doc='A quantity sample type that measures the user’s blood glucose level.'
     ),
     quantity_type(
         identifier='electrodermalActivity',
-        display_unit='.siemenUnit(with: .micro)',
+        unit='.siemenUnit(with: .micro)',
         doc='A quantity sample type that measures electrodermal activity.'
     ),
     quantity_type(
         identifier='forcedExpiratoryVolume1',
-        display_unit='.liter()',
+        unit='.liter()',
         doc='A quantity sample type that measures the amount of air that can be forcibly exhaled from the lungs during the first second of a forced exhalation.'
     ),
     quantity_type(
         identifier='forcedVitalCapacity',
-        display_unit='.liter()',
+        unit='.liter()',
         doc='A quantity sample type that measures the amount of air that can be forcibly exhaled from the lungs after taking the deepest breath possible.'
     ),
     quantity_type(
         identifier='inhalerUsage',
-        display_unit='.count()',
+        unit='.count()',
         doc='A quantity sample type that measures the number of puffs the user takes from their inhaler.'
     ),
     quantity_type(
         identifier='insulinDelivery',
-        display_unit='.internationalUnit()',
+        unit='.internationalUnit()',
         doc='A quantity sample that measures the amount of insulin delivered.'
     ),
     quantity_type(
         identifier='numberOfTimesFallen',
-        display_unit='.count()',
+        unit='.count()',
         doc='A quantity sample type that measures the number of times the user fell.'
     ),
     quantity_type(
         identifier='peakExpiratoryFlowRate',
-        display_unit='.liter() / .minute()',
+        unit='.liter() / .minute()',
         doc='A quantity sample type that measures the user’s maximum flow rate generated during a forceful exhalation.'
     ),
     quantity_type(
         identifier='peripheralPerfusionIndex',
-        display_unit='.percent()',
+        unit='.percent()',
         doc='A quantity sample type that measures the user’s peripheral perfusion index.'
     ),
 
     # Nutrition
     quantity_type(
         identifier='dietaryBiotin',
-        display_unit='.gramUnit(with: .micro)',
+        unit='.gramUnit(with: .micro)',
         doc='A quantity sample type that measures the amount of biotin (vitamin B7) consumed.'
     ),
     quantity_type(
         identifier='dietaryCaffeine',
-        display_unit='.gramUnit(with: .milli)',
+        unit='.gramUnit(with: .milli)',
         doc='A quantity sample type that measures the amount of caffeine consumed.'
     ),
     quantity_type(
         identifier='dietaryCalcium',
-        display_unit='.gramUnit(with: .milli)',
+        unit='.gramUnit(with: .milli)',
         doc='A quantity sample type that measures the amount of calcium consumed.'
     ),
     quantity_type(
         identifier='dietaryCarbohydrates',
-        display_unit='.gram()',
+        unit='.gram()',
         doc='A quantity sample type that measures the amount of carbohydrates consumed.'
     ),
     quantity_type(
         identifier='dietaryChloride',
-        display_unit='.gramUnit(with: .milli)',
+        unit='.gramUnit(with: .milli)',
         doc='A quantity sample type that measures the amount of chloride consumed.'
     ),
     quantity_type(
         identifier='dietaryCholesterol',
-        display_unit='.gramUnit(with: .milli)',
+        unit='.gramUnit(with: .milli)',
         doc='A quantity sample type that measures the amount of cholesterol consumed.'
     ),
     quantity_type(
         identifier='dietaryChromium',
-        display_unit='.gramUnit(with: .micro)',
+        unit='.gramUnit(with: .micro)',
         doc='A quantity sample type that measures the amount of chromium consumed.'
     ),
     quantity_type(
         identifier='dietaryCopper',
-        display_unit='.gramUnit(with: .milli)',
+        unit='.gramUnit(with: .milli)',
         doc='A quantity sample type that measures the amount of copper consumed.'
     ),
     quantity_type(
         identifier='dietaryEnergyConsumed',
-        display_unit='.largeCalorie()',
+        unit='.largeCalorie()',
         doc='A quantity sample type that measures the amount of energy consumed.'
     ),
     quantity_type(
         identifier='dietaryFatMonounsaturated',
-        display_unit='.gram()',
+        unit='.gram()',
         doc='A quantity sample type that measures the amount of monounsaturated fat consumed.'
     ),
     quantity_type(
         identifier='dietaryFatPolyunsaturated',
-        display_unit='.gram()',
+        unit='.gram()',
         doc='A quantity sample type that measures the amount of polyunsaturated fat consumed.'
     ),
     quantity_type(
         identifier='dietaryFatSaturated',
-        display_unit='.gram()',
+        unit='.gram()',
         doc='A quantity sample type that measures the amount of saturated fat consumed.'
     ),
     quantity_type(
         identifier='dietaryFatTotal',
-        display_unit='.gram()',
+        unit='.gram()',
         doc='A quantity sample type that measures the total amount of fat consumed.'
     ),
     quantity_type(
         identifier='dietaryFiber',
-        display_unit='.gram()',
+        unit='.gram()',
         doc='A quantity sample type that measures the amount of fiber consumed.'
     ),
     quantity_type(
         identifier='dietaryFolate',
-        display_unit='.gramUnit(with: .micro)',
+        unit='.gramUnit(with: .micro)',
         doc='A quantity sample type that measures the amount of folate (folic acid) consumed.'
     ),
     quantity_type(
         identifier='dietaryIodine',
-        display_unit='.gramUnit(with: .micro)',
+        unit='.gramUnit(with: .micro)',
         doc='A quantity sample type that measures the amount of iodine consumed.'
     ),
     quantity_type(
         identifier='dietaryIron',
-        display_unit='.gramUnit(with: .milli)',
+        unit='.gramUnit(with: .milli)',
         doc='A quantity sample type that measures the amount of iron consumed.'
     ),
     quantity_type(
         identifier='dietaryMagnesium',
-        display_unit='.gramUnit(with: .milli)',
+        unit='.gramUnit(with: .milli)',
         doc='A quantity sample type that measures the amount of magnesium consumed.'
     ),
     quantity_type(
         identifier='dietaryManganese',
-        display_unit='.gramUnit(with: .milli)',
+        unit='.gramUnit(with: .milli)',
         doc='A quantity sample type that measures the amount of manganese consumed.'
     ),
     quantity_type(
         identifier='dietaryMolybdenum',
-        display_unit='.gramUnit(with: .micro)',
+        unit='.gramUnit(with: .micro)',
         doc='A quantity sample type that measures the amount of molybdenum consumed.'
     ),
     quantity_type(
         identifier='dietaryNiacin',
-        display_unit='.gramUnit(with: .milli)',
+        unit='.gramUnit(with: .milli)',
         doc='A quantity sample type that measures the amount of niacin (vitamin B3) consumed.'
     ),
     quantity_type(
         identifier='dietaryPantothenicAcid',
-        display_unit='.gramUnit(with: .milli)',
+        unit='.gramUnit(with: .milli)',
         doc='A quantity sample type that measures the amount of pantothenic acid (vitamin B5) consumed.'
     ),
     quantity_type(
         identifier='dietaryPhosphorus',
-        display_unit='.gramUnit(with: .milli)',
+        unit='.gramUnit(with: .milli)',
         doc='A quantity sample type that measures the amount of phosphorus consumed.'
     ),
     quantity_type(
         identifier='dietaryPotassium',
-        display_unit='.gramUnit(with: .milli)',
+        unit='.gramUnit(with: .milli)',
         doc='A quantity sample type that measures the amount of potassium consumed.'
     ),
     quantity_type(
         identifier='dietaryProtein',
-        display_unit='.gram()',
+        unit='.gram()',
         doc='A quantity sample type that measures the amount of protein consumed.'
     ),
     quantity_type(
         identifier='dietaryRiboflavin',
-        display_unit='.gramUnit(with: .milli)',
+        unit='.gramUnit(with: .milli)',
         doc='A quantity sample type that measures the amount of riboflavin (vitamin B2) consumed.'
     ),
     quantity_type(
         identifier='dietarySelenium',
-        display_unit='.gramUnit(with: .micro)',
+        unit='.gramUnit(with: .micro)',
         doc='A quantity sample type that measures the amount of selenium consumed.'
     ),
     quantity_type(
         identifier='dietarySodium',
-        display_unit='.gramUnit(with: .milli)',
+        unit='.gramUnit(with: .milli)',
         doc='A quantity sample type that measures the amount of sodium consumed.'
     ),
     quantity_type(
         identifier='dietarySugar',
-        display_unit='.gram()',
+        unit='.gram()',
         doc='A quantity sample type that measures the amount of sugar consumed.'
     ),
     quantity_type(
         identifier='dietaryThiamin',
-        display_unit='.gramUnit(with: .milli)',
+        unit='.gramUnit(with: .milli)',
         doc='A quantity sample type that measures the amount of thiamin (vitamin B1) consumed.'
     ),
     quantity_type(
         identifier='dietaryVitaminA',
-        display_unit='.gramUnit(with: .micro)',
+        unit='.gramUnit(with: .micro)',
         doc='A quantity sample type that measures the amount of vitamin A consumed.'
     ),
     quantity_type(
         identifier='dietaryVitaminB12',
-        display_unit='.gramUnit(with: .micro)',
+        unit='.gramUnit(with: .micro)',
         doc='A quantity sample type that measures the amount of cyanocobalamin (vitamin B12) consumed.'
     ),
     quantity_type(
         identifier='dietaryVitaminB6',
-        display_unit='.gramUnit(with: .milli)',
+        unit='.gramUnit(with: .milli)',
         doc='A quantity sample type that measures the amount of pyridoxine (vitamin B6) consumed.'
     ),
     quantity_type(
         identifier='dietaryVitaminC',
-        display_unit='.gramUnit(with: .milli)',
+        unit='.gramUnit(with: .milli)',
         doc='A quantity sample type that measures the amount of vitamin C consumed.'
     ),
     quantity_type(
         identifier='dietaryVitaminD',
-        display_unit='.gramUnit(with: .micro)',
+        unit='.gramUnit(with: .micro)',
         doc='A quantity sample type that measures the amount of vitamin D consumed.'
     ),
     quantity_type(
         identifier='dietaryVitaminE',
-        display_unit='.gramUnit(with: .milli)',
+        unit='.gramUnit(with: .milli)',
         doc='A quantity sample type that measures the amount of vitamin E consumed.'
     ),
     quantity_type(
         identifier='dietaryVitaminK',
-        display_unit='.gramUnit(with: .micro)',
+        unit='.gramUnit(with: .micro)',
         doc='A quantity sample type that measures the amount of vitamin K consumed.'
     ),
     quantity_type(
         identifier='dietaryWater',
-        display_unit=localeDependentUnit(us='.fluidOunceUS()', metric='.literUnit(with: .milli)'),
+        unit='.literUnit(with: .milli)',
+        display_unit=LocaleDependentUnit(us='.fluidOunceUS()'),
         doc='A quantity sample type that measures the amount of water consumed.'
     ),
     quantity_type(
         identifier='dietaryZinc',
-        display_unit='.gramUnit(with: .milli)',
+        unit='.gramUnit(with: .milli)',
         doc='A quantity sample type that measures the amount of zinc consumed.'
     ),
 
     # Alcohol Consumption
     quantity_type(
         identifier='bloodAlcoholContent',
-        display_unit='.percent()',
+        unit='.percent()',
         doc='A quantity sample type that measures the user’s blood alcohol content.'
     ),
     quantity_type(
         identifier='numberOfAlcoholicBeverages',
-        display_unit='.count()',
+        unit='.count()',
         doc='A quantity sample type that measures the number of standard alcoholic drinks that the user has consumed.'
     ),
 
     # Mobility
     quantity_type(
         identifier='appleWalkingSteadiness',
-        display_unit='.percent()',
+        unit='.percent()',
         doc='A quantity sample type that measures the steadiness of the user’s gait.'
     ),
     quantity_type(
         identifier='sixMinuteWalkTestDistance',
-        display_unit='.meter()',
+        unit='.meter()',
         doc='A quantity sample type that stores the distance a user can walk during a six-minute walk test.'
     ),
     quantity_type(
         identifier='walkingSpeed',
-        display_unit=localeDependentUnit(us='.mile() / .hour()', metric='.meterUnit(with: .kilo) / .hour()'),
+        unit='.meterUnit(with: .kilo) / .hour()',
+        display_unit=LocaleDependentUnit(us='.mile() / .hour()'),
         doc='A quantity sample type that measures the user’s average speed when walking steadily over flat ground.'
     ),
     quantity_type(
         identifier='walkingStepLength',
-        display_unit=localeDependentUnit(us='.inch()', metric='.meterUnit(with: .centi)'),
+        unit='.meterUnit(with: .centi)',
+        display_unit=LocaleDependentUnit(us='.inch()'),
         doc='A quantity sample type that measures the average length of the user’s step when walking steadily over flat ground.'
     ),
     quantity_type(
         identifier='walkingAsymmetryPercentage',
-        display_unit='.percent()',
+        unit='.percent()',
         doc='A quantity sample type that measures the percentage of steps in which one foot moves at a different speed than the other when walking on flat ground.'
     ),
     quantity_type(
         identifier='walkingDoubleSupportPercentage',
-        display_unit='.percent()',
+        unit='.percent()',
         doc='A quantity sample type that measures the percentage of time when both of the user’s feet touch the ground while walking steadily over flat ground.'
     ),
     quantity_type(
         identifier='stairAscentSpeed',
-        display_unit=localeDependentUnit(us='.foot() / .second()', metric='.meter() / .second()'),
+        unit='.meter() / .second()',
+        display_unit=LocaleDependentUnit(us='.foot() / .second()'),
         doc='A quantity sample type measuring the user’s speed while climbing a flight of stairs.'
     ),
     quantity_type(
         identifier='stairDescentSpeed',
-        display_unit=localeDependentUnit(us='.foot() / .second()', metric='.meter() / .second()'),
+        unit='.meter() / .second()',
+        display_unit=LocaleDependentUnit(us='.foot() / .second()'),
         doc='A quantity sample type measuring the user’s speed while descending a flight of stairs.'
     ),
 
     # UV Exposure
     quantity_type(
         identifier='uvExposure',
-        display_unit='.count()',
+        unit='.count()',
         doc='A quantity sample type that measures the user’s exposure to UV radiation.'
     ),
 
     # Diving
     quantity_type(
         identifier='underwaterDepth',
-        display_unit=localeDependentUnit(us='.foot()', metric='.meter()'),
+        unit='.meter()',
+        display_unit=LocaleDependentUnit(us='.foot()'),
         doc='A quantity sample that records a person’s depth underwater.'
     ),
     quantity_type(
         identifier='waterTemperature',
-        display_unit=localeDependentUnit(us='.degreeFahrenheit()', metric='.degreeCelsius()'),
+        unit='.kelvin()',
+        display_unit=LocaleDependentUnit(us='.degreeFahrenheit()', uk='.degreeCelsius()', metric='.degreeCelsius()'),
         doc=' A quantity sample that records the water temperature.'
     ),
 
@@ -686,96 +741,104 @@ quantity_types: list[SampleType] = [
     quantity_type(
         availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0', visionOS='2.0'),
         identifier='appleSleepingBreathingDisturbances',
-        display_unit='.count()',
+        unit='.count()',
         doc='A quantity sample that records breathing disturbances during sleep.'
     ),
     quantity_type(
         availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0', visionOS='2.0'),
         identifier='crossCountrySkiingSpeed',
-        display_unit=localeDependentUnit(us='.mile() / .hour()', metric='.meterUnit(with: .kilo) / .hour()'),
+        unit='.meterUnit(with: .kilo) / .hour()',
+        display_unit=LocaleDependentUnit(us='.mile() / .hour()'),
         doc='A quantity sample that records cross-country skiing speed.'
     ),
     quantity_type(
         identifier='cyclingCadence',
-        display_unit='.count() / .minute()',
+        unit='.count() / .minute()',
         doc='A quantity sample that records cycling cadence.'
     ),
     quantity_type(
         identifier='cyclingFunctionalThresholdPower',
-        display_unit='.watt()',
+        unit='.watt()',
         doc='A quantity sample that records cycling functional threshold power.'
     ),
     quantity_type(
         identifier='cyclingPower',
-        display_unit='.watt()',
+        unit='.watt()',
         doc='A quantity sample that records cycling power.'
     ),
     quantity_type(
         identifier='cyclingSpeed',
-        display_unit=localeDependentUnit(us='.mile() / .hour()', metric='.meterUnit(with: .kilo) / .hour()'),
+        unit='.meterUnit(with: .kilo) / .hour()',
+        display_unit=LocaleDependentUnit(us='.mile() / .hour()'),
         doc='A quantity sample that records cycling speed.'
     ),
     quantity_type(
         availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0', visionOS='2.0'),
         identifier='distanceCrossCountrySkiing',
-        display_unit=localeDependentUnit(us='.mile()', metric='.meterUnit(with: .kilo)'),
+        unit='.meterUnit(with: .kilo)',
+        display_unit=LocaleDependentUnit(us='.mile()'),
         doc='A quantity sample that records cross-country skiing distance.'
     ),
     quantity_type(
         availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0', visionOS='2.0'),
         identifier='distancePaddleSports',
-        display_unit=localeDependentUnit(us='.mile()', metric='.meterUnit(with: .kilo)'),
+        unit='.meterUnit(with: .kilo)',
+        display_unit=LocaleDependentUnit(us='.mile()'),
         doc='A quantity sample that records paddle sports distance.'
     ),
     quantity_type(
         availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0', visionOS='2.0'),
         identifier='distanceRowing',
-        display_unit=localeDependentUnit(us='.mile()', metric='.meterUnit(with: .kilo)'),
+        unit='.meterUnit(with: .kilo)',
+        display_unit=LocaleDependentUnit(us='.mile()'),
         doc='A quantity sample that records rowing distance.'
     ),
     quantity_type(
         availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0', visionOS='2.0'),
         identifier='distanceSkatingSports',
-        display_unit=localeDependentUnit(us='.mile()', metric='.meterUnit(with: .kilo)'),
+        unit='.meterUnit(with: .kilo)',
+        display_unit=LocaleDependentUnit(us='.mile()'),
         doc='A quantity sample that records skating sports distance.'
     ),
     quantity_type(
         identifier='environmentalSoundReduction',
-        display_unit='.decibelHearingLevel()',
+        unit='.decibelHearingLevel()',
         doc='A quantity sample that records environmental sound reduction.'
     ),
     quantity_type(
         availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0', visionOS='2.0'),
         identifier='estimatedWorkoutEffortScore',
-        display_unit='.count()', # TODO not sure about this one
+        unit='.count()', # TODO not sure about this one
         doc='A quantity sample that records estimated physical effort during workouts.'
     ),
     quantity_type(
         availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0', visionOS='2.0'),
         identifier='paddleSportsSpeed',
-        display_unit=localeDependentUnit(us='.mile() / .hour()', metric='.meterUnit(with: .kilo) / .hour()'),
+        unit='.meterUnit(with: .kilo) / .hour()',
+        display_unit=LocaleDependentUnit(us='.mile() / .hour()'),
         doc='A quantity sample that records paddle sports speed.'
     ),
     quantity_type(
         identifier='physicalEffort',
-        display_unit='.kilocalorie() / (.gramUnit(with: .kilo) * .hour())',
+        unit='.kilocalorie() / (.gramUnit(with: .kilo) * .hour())',
         doc='A quantity sample that records physical effort.'
     ),
     quantity_type(
         availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0', visionOS='2.0'),
         identifier='rowingSpeed',
-        display_unit=localeDependentUnit(us='.mile() / .hour()', metric='.meterUnit(with: .kilo) / .hour()'),
+        unit='.meterUnit(with: .kilo) / .hour()',
+        display_unit=LocaleDependentUnit(us='.mile() / .hour()'),
         doc='A quantity sample that records rowing speed.'
     ),
     quantity_type(
         identifier='timeInDaylight',
-        display_unit='.minute()',
+        unit='.minute()',
         doc='A quantity sample that records time spent in daylight.'
     ),
     quantity_type(
         availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0', visionOS='2.0'),
         identifier='workoutEffortScore',
-        display_unit='.count()', # TODO not sure about this one
+        unit='.count()', # TODO not sure about this one
         doc='A quantity sample that records workout effort.'
     )
 ]

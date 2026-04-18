@@ -20,10 +20,15 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType, Sendab
     
     @usableFromInline
     enum Variant: Sendable {
-        /// - parameter displayUnit: The unit that should be used when displaying a sample of this type to the user
+        /// - parameter canonicalUnit: The sample type's canonical unit
+        /// - parameter displayUnits: The sample type's localized display units.
         /// - parameter expectedValuesRange: The expected range of values we expect to see for this sample type, if applicable.
         ///     The main purpose of this is to be able to e.g. adjust chart value ranges based on the specific sample types being visualised.
-        case quantity(canonicalUnit: LocalizedUnit, expectedValuesRange: ClosedRange<Double>?)
+        case quantity(
+            canonicalUnit: HKUnit,
+            displayUnits: LocalizedUnit,
+            expectedValuesRange: ClosedRange<Double>?
+        )
         /// - parameter associatedQuantityTypes: The correlation's associated sample types, if known.
         case correlation(associatedQuantityTypes: Set<SampleType<HKQuantitySample>>)
         case category
@@ -82,8 +87,8 @@ extension SampleType where Sample == HKQuantitySample {
     /// The recommended localized unit that should be used when displaying values of this sample type to a user.
     @inlinable public var displayUnit: HKUnit {
         switch variant {
-        case .quantity(let canonicalUnit, _):
-            return canonicalUnit[.current]
+        case .quantity(canonicalUnit: _, let displayUnits, expectedValuesRange: _):
+            return displayUnits[.current]
         case .correlation, .category, .other:
             // SAFETY:
             // This branch is unreachable; the initializers are defined and structured in a way that all
@@ -97,7 +102,7 @@ extension SampleType where Sample == HKQuantitySample {
     /// The main purpose of this is to be able to e.g. adjust chart value ranges based on the specific sample types being visualised.
     @inlinable public var expectedValuesRange: ClosedRange<Double>? {
         switch variant {
-        case .quantity(canonicalUnit: _, let expectedValuesRange):
+        case .quantity(canonicalUnit: _, displayUnits: _, let expectedValuesRange):
             return expectedValuesRange
         case .correlation, .category, .other:
             // SAFETY:
@@ -110,8 +115,8 @@ extension SampleType where Sample == HKQuantitySample {
     /// The canonical, non-localized unit associated with the quantity type.
     @inlinable public var canonicalUnit: HKUnit {
         switch variant {
-        case .quantity(let canonicalUnit, _):
-            return canonicalUnit.metric
+        case .quantity(let canonicalUnit, _, _):
+            return canonicalUnit
         case .correlation, .category, .other:
             // SAFETY:
             // This branch is unreachable; the initializers are defined and structured in a way that all
@@ -169,13 +174,14 @@ extension SampleType {
     @inlinable public static func quantity(
         _ identifier: HKQuantityTypeIdentifier,
         displayTitle: LocalizedStringResource? = nil, // swiftlint:disable:this function_default_parameter_at_end
-        unit: LocalizedUnit,
+        canonicalUnit: HKUnit,
+        displayUnits: LocalizedUnit,
         expectedValuesRange: ClosedRange<Double>? = nil
     ) -> SampleType<HKQuantitySample> {
         .init(
             HKQuantityType(identifier),
             displayTitle: displayTitle,
-            variant: .quantity(canonicalUnit: unit, expectedValuesRange: expectedValuesRange)
+            variant: .quantity(canonicalUnit: canonicalUnit, displayUnits: displayUnits, expectedValuesRange: expectedValuesRange)
         )
     }
     

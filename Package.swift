@@ -41,9 +41,9 @@ var package = Package(
         .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.6.1"),
         
 //        .package(url: "https://github.com/apple/FHIRModels.git", "0.8.0"..<"0.9.0"),
-//        .package(url: "https://github.com/StanfordSpezi/SpeziFHIR.git", branch: "lukas/movin-and-shakin"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziFHIR.git", revision: "90cebe38a1297aa4e73f87ce89e382ba248524e0"),
         .package(url: "https://github.com/lukaskollmer/FHIRModels.git", branch: "lukas/try-to-fix"),
-        .package(path: "../SpeziFHIR"),
+//        .package(path: "../SpeziFHIR"),
         .package(url: "https://github.com/swiftlang/swift-syntax.git", "602.0.0"..<"605.0.0")
     ] + swiftLintPackage,
     targets: [

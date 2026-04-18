@@ -88,22 +88,6 @@ extension QuantityTypesFHIRMapping {
             unitString: "kcal",
             system: .unitsOfMeasureSystem
         )
-//        mapping[.activeEnergyBurned] = QuantityTypeFHIRMapping(
-//            codings: [
-//                Coding(
-//                    code: "41981-2",
-//                    display: "Calories burned",
-//                    system: .loincSystem
-//                ),
-//                defaultCoding(for: .activeEnergyBurned)
-//            ],
-//            unit: QuantityTypeFHIRMapping.Unit(
-//                hkUnit: SampleType.activeEnergyBurned.canonicalUnit,
-//                unit: "kcal",
-//                system: .unitsOfMeasureSystem,
-//                code: "kcal"
-//            )
-//        )
         addMapping(for: .appleExerciseTime, code: "min", unitString: "min", system: .unitsOfMeasureSystem)
         addMapping(for: .appleMoveTime, code: "min", unitString: "min", system: .unitsOfMeasureSystem)
         if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
