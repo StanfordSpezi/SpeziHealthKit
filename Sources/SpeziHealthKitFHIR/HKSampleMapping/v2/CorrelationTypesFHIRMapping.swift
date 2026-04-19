@@ -41,15 +41,30 @@ extension CorrelationTypesFHIRMapping {
         .bloodPressure: CorrelationTypeFHIRMapping(
             codings: [
                 Coding(
-                    code: "85354-9",
+                    code: "35094-2",
                     display: "Blood pressure panel",
-                    system: "http://loinc.org"
+                    system: .loincSystem
+                ),
+                Coding(
+                    code: "85354-9",
+                    display: "Blood pressure panel with all children optional",
+                    system: .loincSystem
                 )
             ],
             categories: [
                 Coding(
                     code: "vital-signs",
                     display: "Vital Signs",
+                    system: "http://terminology.hl7.org/CodeSystem/observation-category"
+                )
+            ]
+        ),
+        .food: CorrelationTypeFHIRMapping(
+            codings: [],
+            categories: [
+                Coding(
+                    code: "activity",
+                    display: "Activity",
                     system: "http://terminology.hl7.org/CodeSystem/observation-category"
                 )
             ]

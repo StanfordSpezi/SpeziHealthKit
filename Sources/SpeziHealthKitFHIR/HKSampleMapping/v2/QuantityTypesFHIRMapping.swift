@@ -43,11 +43,14 @@ public struct QuantityTypeFHIRMapping: Hashable, Sendable {
         }
     }
     
+    // TODO add categories?!
     public let codings: [Coding]
+    public let categories: [Coding]
     public let unit: Unit
     
-    public init(codings: [Coding], unit: Unit) {
+    public init(codings: [Coding], categories: [Coding] = [], unit: Unit) {
         self.codings = codings
+        self.categories = categories
         self.unit = unit
     }
 }
@@ -57,6 +60,7 @@ public struct QuantityTypeFHIRMapping: Hashable, Sendable {
 extension FHIRPrimitive<FHIRURI> {
     // swiftlint:disable force_unwrapping
     internal static let loincSystem: Self = "http://loinc.org".asFHIRURIPrimitive()!
+    internal static let snomedCT: Self = "http://snomed.info/sct".asFHIRURIPrimitive()!
     internal static let unitsOfMeasureSystem: Self = "http://unitsofmeasure.org".asFHIRURIPrimitive()!
     internal static let healthKitSystem: Self = "http://developer.apple.com/documentation/healthkit".asFHIRURIPrimitive()!
     // swiftlint:enable force_unwrapping
@@ -75,23 +79,20 @@ extension Coding {
 
 
 extension QuantityTypesFHIRMapping {
-//    @available(*, deprecated, renamed: "Coding.init(_:)")
-//    private static func defaultCoding(for sampleType: SampleType<HKQuantitySample>) -> Coding {
-//        .init(sampleType)
-//    }
-    
     /// The default FHIR mapping for HealthKit Quantity types
     public static let `default`: Self = {
         var mapping: Self = [:]
         func addMapping(
             for sampleType: SampleType<HKQuantitySample>,
             extraCodings: [Coding] = [],
+            case categories: [Coding] = [],
             code: FHIRPrimitive<FHIRString>?,
             unitString: String,
             system: FHIRPrimitive<FHIRURI>?
         ) {
             mapping[sampleType] = QuantityTypeFHIRMapping(
                 codings: extraCodings + [Coding(sampleType)],
+                categories: categories,
                 unit: QuantityTypeFHIRMapping.Unit(
                     hkUnit: sampleType.canonicalUnit,
                     unit: unitString,
@@ -122,15 +123,31 @@ extension QuantityTypesFHIRMapping {
         addMapping(for: .appleStandTime, code: "min", unitString: "min", system: .unitsOfMeasureSystem)
         addMapping(for: .appleWalkingSteadiness, code: "%", unitString: "%", system: .unitsOfMeasureSystem)
         addMapping(for: .atrialFibrillationBurden, code: "%", unitString: "%", system: .unitsOfMeasureSystem)
-        addMapping(for: .basalBodyTemperature, code: "Cel", unitString: "C", system: .unitsOfMeasureSystem)
+        addMapping(
+            for: .basalBodyTemperature,
+            extraCodings: [
+                Coding(
+                    code: "8310-5",
+                    display: "Body temperature",
+                    system: .loincSystem
+                ),
+                Coding(
+                    code: "300076005",
+                    system: .snomedCT
+                )
+            ],
+            code: "Cel",
+            unitString: "C",
+            system: .unitsOfMeasureSystem
+        )
         addMapping(for: .basalEnergyBurned, code: "kcal", unitString: "kcal", system: .unitsOfMeasureSystem)
         addMapping(
             for: .bloodAlcoholContent,
             extraCodings: [
                 Coding(
-                    code: "74859-0",
+                    code: "74859-0", // 5640-8?
                     display: "Ethanol [Mass/volume] in Blood Estimated from serum or plasma level",
-                    system: "http://loinc.org"
+                    system: .loincSystem
                 )
             ],
             code: "%",
@@ -143,7 +160,7 @@ extension QuantityTypesFHIRMapping {
                 Coding(
                     code: "41653-7",
                     display: "Glucose Glucometer (BldC) [Mass/Vol]",
-                    system: "http://loinc.org"
+                    system: .loincSystem
                 )
             ],
             code: "mg/dL",
@@ -156,7 +173,7 @@ extension QuantityTypesFHIRMapping {
                 Coding(
                     code: "8462-4",
                     display: "Diastolic blood pressure",
-                    system: "http://loinc.org"
+                    system: .loincSystem
                 )
             ],
             code: "mm[Hg]",
@@ -169,7 +186,7 @@ extension QuantityTypesFHIRMapping {
                 Coding(
                     code: "8480-6",
                     display: "Systolic blood pressure",
-                    system: "http://loinc.org"
+                    system: .loincSystem
                 )
             ],
             code: "mm[Hg]",
@@ -182,7 +199,7 @@ extension QuantityTypesFHIRMapping {
                 Coding(
                     code: "41982-0",
                     display: "Percentage of body fat Measured",
-                    system: "http://loinc.org"
+                    system: .loincSystem
                 )
             ],
             code: "%",
@@ -195,7 +212,7 @@ extension QuantityTypesFHIRMapping {
                 Coding(
                     code: "29463-7",
                     display: "Body weight",
-                    system: "http://loinc.org"
+                    system: .loincSystem
                 )
             ],
             code: "[lb_av]",
@@ -208,7 +225,7 @@ extension QuantityTypesFHIRMapping {
                 Coding(
                     code: "39156-5",
                     display: "Body mass index (BMI) [Ratio]",
-                    system: "http://loinc.org"
+                    system: .loincSystem
                 )
             ],
             code: "kg/m2",
@@ -221,7 +238,7 @@ extension QuantityTypesFHIRMapping {
                 Coding(
                     code: "8310-5",
                     display: "Body temperature",
-                    system: "http://loinc.org"
+                    system: .loincSystem
                 )
             ],
             code: "Cel",
@@ -284,7 +301,7 @@ extension QuantityTypesFHIRMapping {
                 Coding(
                     code: "9052-2",
                     display: "Calorie intake total",
-                    system: "http://loinc.org"
+                    system: .loincSystem
                 )
             ],
             code: "kcal",
@@ -296,18 +313,20 @@ extension QuantityTypesFHIRMapping {
             for: .dietaryWater,
             extraCodings: [
                 Coding(
-                    // TODO is there a water intake LOINC? what about all the other types?
-//                    code: "9052-2",
-//                    display: "Calorie intake total",
-//                    system: "http://loinc.org"
+                    code: "8999-5",
+                    display: "Fluid intake oral Estimated",
+                    system: .loincSystem
+                ),
+                Coding(
+                    code: "226354008",
+                    display: "Water intake",
+                    system: .snomedCT
                 )
             ],
             code: "l",
             unitString: "l",
             system: .unitsOfMeasureSystem
         )
-        
-//        for sampleType in [SampleType.distanceCrossCountrySkiing, .distanceCycling, .distanceDownhillSnowSports, .distancePaddleSports, .distanceRowing, .distanceSkatingSports]
         
         if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
             addMapping(for: .distanceCrossCountrySkiing, code: "m", unitString: "m", system: .unitsOfMeasureSystem)
@@ -325,7 +344,7 @@ extension QuantityTypesFHIRMapping {
                 Coding(
                     code: "93816-7",
                     display: "Swimming distance unspecified time",
-                    system: "http://loinc.org"
+                    system: .loincSystem
                 )
             ],
             code: "m",
@@ -368,7 +387,7 @@ extension QuantityTypesFHIRMapping {
                 Coding(
                     code: "100304-5",
                     display: "Flights climbed [#] Reporting Period",
-                    system: "http://loinc.org"
+                    system: .loincSystem
                 )
             ],
             code: nil,
@@ -381,7 +400,7 @@ extension QuantityTypesFHIRMapping {
                 Coding(
                     code: "20150-9",
                     display: "FEV1",
-                    system: "http://loinc.org"
+                    system: .loincSystem
                 )
             ],
             code: "L",
@@ -394,7 +413,7 @@ extension QuantityTypesFHIRMapping {
                 Coding(
                     code: "19870-5",
                     display: "Forced vital capacity [Volume] Respiratory system",
-                    system: "http://loinc.org"
+                    system: .loincSystem
                 )
             ],
             code: "L",
@@ -408,7 +427,7 @@ extension QuantityTypesFHIRMapping {
                 Coding(
                     code: "8867-4",
                     display: "Heart rate",
-                    system: "http://loinc.org"
+                    system: .loincSystem
                 )
             ],
             code: "/min",
@@ -421,7 +440,7 @@ extension QuantityTypesFHIRMapping {
                 Coding(
                     code: "80404-7",
                     display: "R-R interval.standard deviation (Heart rate variability)",
-                    system: "http://loinc.org"
+                    system: .loincSystem
                 )
             ],
             code: "ms",
@@ -434,7 +453,7 @@ extension QuantityTypesFHIRMapping {
                 Coding(
                     code: "8302-2",
                     display: "Body height",
-                    system: "http://loinc.org"
+                    system: .loincSystem
                 )
             ],
             code: "[in_i]",
@@ -449,13 +468,14 @@ extension QuantityTypesFHIRMapping {
                 Coding(
                     code: "91557-9",
                     display: "Lean body weight",
-                    system: "http://loinc.org"
+                    system: .loincSystem
                 )
             ],
             code: "[lb_av]",
             unitString: "lbs",
             system: .unitsOfMeasureSystem
         )
+        addMapping(for: .nikeFuel, code: nil, unitString: "nikeFuel", system: nil)
         addMapping(for: .numberOfAlcoholicBeverages, code: nil, unitString: "beverages", system: nil)
         addMapping(for: .numberOfTimesFallen, code: nil, unitString: "falls", system: nil)
         addMapping(
@@ -464,7 +484,7 @@ extension QuantityTypesFHIRMapping {
                 Coding(
                     code: "59408-5",
                     display: "Oxygen saturation in Arterial blood by Pulse oximetry",
-                    system: "http://loinc.org"
+                    system: .loincSystem
                 )
             ],
             code: "%",
@@ -480,7 +500,7 @@ extension QuantityTypesFHIRMapping {
                 Coding(
                     code: "19935-6",
                     display: "Maximum expiratory gas flow Respiratory system airway by Peak flow meter",
-                    system: "http://loinc.org"
+                    system: .loincSystem
                 )
             ],
             code: "L/min",
@@ -493,7 +513,7 @@ extension QuantityTypesFHIRMapping {
                 Coding(
                     code: "61006-3",
                     display: "Perfusion index Tissue by Pulse oximetry",
-                    system: "http://loinc.org"
+                    system: .loincSystem
                 )
             ],
             code: "%",
@@ -507,7 +527,7 @@ extension QuantityTypesFHIRMapping {
                 Coding(
                     code: "96502-0",
                     display: "Number of wheelchair pushes per time period",
-                    system: "http://loinc.org"
+                    system: .loincSystem
                 )
             ],
             code: nil,
@@ -520,7 +540,7 @@ extension QuantityTypesFHIRMapping {
                 Coding(
                     code: "9279-1",
                     display: "Respiratory rate",
-                    system: "http://loinc.org"
+                    system: .loincSystem
                 )
             ],
             code: "/min",
@@ -533,7 +553,7 @@ extension QuantityTypesFHIRMapping {
                 Coding(
                     code: "40443-4",
                     display: "Heart rate --resting",
-                    system: "http://loinc.org"
+                    system: .loincSystem
                 )
             ],
             code: "/min",
@@ -557,7 +577,7 @@ extension QuantityTypesFHIRMapping {
                 Coding(
                     code: "55423-8",
                     display: "Number of steps in unspecified time Pedometer",
-                    system: "http://loinc.org"
+                    system: .loincSystem
                 )
             ],
             code: nil,
@@ -576,7 +596,7 @@ extension QuantityTypesFHIRMapping {
                 Coding(
                     code: "8280-0",
                     display: "Waist Circumference at umbilicus by Tape measure",
-                    system: "http://loinc.org"
+                    system: .loincSystem
                 )
             ],
             code: "in", // TODO should use meters (or cm?) here!!!
@@ -592,14 +612,6 @@ extension QuantityTypesFHIRMapping {
         if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
             addMapping(for: .workoutEffortScore, code: nil, unitString: "effort", system: nil)
         }
-        
-        
-        #if DEBUG
-        let missingTypes = HKQuantityType.allKnownQuantities.subtracting(mapping.keys.map(\.hkSampleType))
-        if !missingTypes.isEmpty {
-            assertionFailure("Missing entries in Quantity Type FHIR Mapping: \(missingTypes.map(\.identifier).sorted())")
-        }
-        #endif
         return mapping
     }()
 }

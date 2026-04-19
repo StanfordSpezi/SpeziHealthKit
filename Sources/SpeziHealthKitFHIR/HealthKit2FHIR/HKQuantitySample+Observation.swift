@@ -21,6 +21,7 @@ extension HKQuantitySample: FHIRObservationBuildable {
             throw HealthKitOnFHIRError.notSupported
         }
         observation.append(codings: mapping.codings)
+        observation.append(categories: mapping.categories.map { CodeableConcept(coding: [$0]) })
         observation.value = .quantity(try quantity.buildQuantity(mapping: mapping))
     }
 }

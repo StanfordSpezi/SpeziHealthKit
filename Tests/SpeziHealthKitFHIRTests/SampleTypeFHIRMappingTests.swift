@@ -17,7 +17,26 @@ import Testing
 @Suite
 struct SampleTypeFHIRMappingTests {
     @Test
+    func completeness() {
+        let mapping = SampleTypesFHIRMapping.default
+        
+        let missingQuantities = HKQuantityType.allKnownQuantities.subtracting(mapping.quantityTypesMapping.keys.map(\.hkSampleType))
+        #expect(missingQuantities.isEmpty, "Missing entries in Quantity Type FHIR Mapping: \(missingQuantities.map(\.identifier).sorted())")
+        
+        let missingCorrelations = HKCorrelationType.allKnownCorrelations.subtracting(mapping.correlationTypesMapping.keys.map(\.hkSampleType))
+        #expect(missingCorrelations.isEmpty, "Missing entries in Correlation Type FHIR Mapping: \(missingCorrelations.map(\.identifier).sorted())")
+        
+        let missingCategories = HKCategoryType.allKnownCategories.subtracting(mapping.categoryTypesMapping.keys.map(\.hkSampleType))
+        #expect(missingCategories.isEmpty, "Missing entries in Category Type FHIR Mapping: \(missingCategories.map(\.identifier).sorted())")
+    }
+    
+    
+    @Test
     func quantityTypes() {
+//        let missingTypes = HKQuantityType.allKnownQuantities.subtracting(mapping.keys.map(\.hkSampleType))
+//        if !missingTypes.isEmpty {
+//            assertionFailure("Missing entries in Quantity Type FHIR Mapping: \(missingTypes.map(\.identifier).sorted())")
+//        }
         let oldMapping = HKSampleMapping.default.quantitySampleMapping
         let newMapping = QuantityTypesFHIRMapping.default
         #expect(oldMapping.count == newMapping.count)
