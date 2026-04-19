@@ -6,10 +6,12 @@
 // SPDX-License-Identifier: MIT
 //
 
+// swiftlint:disable file_length file_types_order
+
 public import ModelsR4
 public import SpeziHealthKit
 
-// TODO use HKQuantityType or SampleType<...> as the key here? (perf impact?!)
+
 /// Controls how `HKQuantitySample`s are mapped into FHIR Observations.
 public typealias QuantityTypesFHIRMapping = [SampleType<HKQuantitySample>: QuantityTypeFHIRMapping]
 
@@ -27,9 +29,8 @@ public typealias QuantityTypesFHIRMapping = [SampleType<HKQuantitySample>: Quant
 ///
 /// ### Supporting Types
 /// - ``Unit``
-public struct QuantityTypeFHIRMapping: Hashable, Sendable {
-    // TODO docs!
-    public struct Unit: Hashable, Sendable {
+public struct QuantityTypeFHIRMapping: Sendable {
+    public struct Unit: Sendable {
         public let hkUnit: HKUnit
         public let unit: String
         public let system: FHIRPrimitive<FHIRURI>?
@@ -43,7 +44,6 @@ public struct QuantityTypeFHIRMapping: Hashable, Sendable {
         }
     }
     
-    // TODO add categories?!
     public let codings: [Coding]
     public let categories: [Coding]
     public let unit: Unit
@@ -54,7 +54,6 @@ public struct QuantityTypeFHIRMapping: Hashable, Sendable {
         self.unit = unit
     }
 }
-
 
 
 extension FHIRPrimitive<FHIRURI> {
@@ -80,7 +79,7 @@ extension Coding {
 
 extension QuantityTypesFHIRMapping {
     /// The default FHIR mapping for HealthKit Quantity types
-    public static let `default`: Self = {
+    public static let `default`: Self = { // swiftlint:disable:this closure_body_length
         var mapping: Self = [:]
         func addMapping(
             for sampleType: SampleType<HKQuantitySample>,
@@ -299,9 +298,11 @@ extension QuantityTypesFHIRMapping {
         )
         do {
             let byUnit: [String: [SampleType<HKQuantitySample>]] = [
+                // swiftlint:disable line_length
                 "ug": [.dietaryBiotin, .dietaryChromium, .dietaryCopper, .dietaryFolate, .dietaryIodine, .dietaryMolybdenum, .dietarySelenium, .dietaryVitaminA, .dietaryVitaminB12, .dietaryVitaminD, .dietaryVitaminK],
                 "mg": [.dietaryCaffeine, .dietaryCalcium, .dietaryChloride, .dietaryCholesterol, .dietaryIron, .dietaryMagnesium, .dietaryManganese, .dietaryNiacin, .dietaryPantothenicAcid, .dietaryPhosphorus, .dietaryPotassium, .dietaryRiboflavin, .dietarySodium, .dietaryThiamin, .dietaryVitaminB6, .dietaryVitaminC, .dietaryVitaminE, .dietaryZinc],
                 "g": [.dietaryCarbohydrates, .dietaryFatMonounsaturated, .dietaryFatPolyunsaturated, .dietaryFatSaturated, .dietaryFatTotal, .dietaryProtein, .dietarySugar]
+                // swiftlint:enable line_length
             ]
             for (unit, sampleTypes) in byUnit {
                 for sampleType in sampleTypes {
@@ -393,7 +394,7 @@ extension QuantityTypesFHIRMapping {
         addMapping(
             for: .distanceWalkingRunning,
             extraCodings: [
-                // TODO SURELU THIS HAS A COPDE?
+                // ???
             ],
             code: "m",
             unitString: "m",
@@ -402,7 +403,7 @@ extension QuantityTypesFHIRMapping {
         addMapping(
             for: .distanceWheelchair,
             extraCodings: [
-                // TODO SURELU THIS HAS A COPDE?
+                // ???
             ],
             code: "m",
             unitString: "m",
@@ -655,7 +656,6 @@ extension QuantityTypesFHIRMapping {
         addMapping(for: .timeInDaylight, code: "min", unitString: "min", system: .unitsOfMeasureSystem)
         addMapping(for: .underwaterDepth, code: "m", unitString: "m", system: .unitsOfMeasureSystem)
         addMapping(for: .uvExposure, code: nil, unitString: "count", system: nil)
-        // TODO surely this one has a LOINC?
         addMapping(for: .vo2Max, code: "mL/kg/min", unitString: "mL/kg/min", system: .unitsOfMeasureSystem)
         addMapping(
             for: .waistCircumference,

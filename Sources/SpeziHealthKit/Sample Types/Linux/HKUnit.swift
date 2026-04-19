@@ -836,7 +836,7 @@ private struct UnitParser<Input: StringProtocol>: ~Copyable { // swiftlint:disab
         position = newPos
     }
     
-    private func parseError(at pos: Input.Index? = nil, issue: String) -> ParseError { // swiftlint:disable:this function_default_parameter_at_end
+    private func parseError(at pos: Input.Index? = nil, issue: String) -> ParseError {
         ParseError(issue: issue, position: pos ?? position)
     }
     

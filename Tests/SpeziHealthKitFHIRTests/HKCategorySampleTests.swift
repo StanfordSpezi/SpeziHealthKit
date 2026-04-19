@@ -9,8 +9,8 @@
 // swiftlint:disable file_length type_body_length
 
 import HealthKit
-@testable import SpeziHealthKitFHIR
 import ModelsR4
+@testable import SpeziHealthKitFHIR
 import Testing
 
 

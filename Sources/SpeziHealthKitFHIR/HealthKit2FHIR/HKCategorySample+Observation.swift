@@ -13,7 +13,8 @@ import SpeziHealthKit
 
 extension HKCategorySample: FHIRObservationBuildable {
     func build(_ observation: inout Observation, mapping: SampleTypesFHIRMapping) throws {
-        guard let mapping = mapping.categoryTypesMapping[SampleType(self.categoryType)!] else {
+        guard let sampleType = SampleType(self.categoryType),
+              let mapping = mapping.categoryTypesMapping[sampleType] else {
             throw HealthKitOnFHIRError.notSupported
         }
         observation.append(codings: mapping.codings)
@@ -35,7 +36,7 @@ extension HKCategorySample: FHIRObservationBuildable {
                 guard let quantityType = HKCategoryType.quantityType(forMetadataKey: metadataKey) else {
                     continue
                 }
-                observation.append(component: try quantity.buildObservationComponent(for: SampleType(quantityType)!))
+                observation.append(component: try quantity.buildObservationComponent(for: quantityType))
             } else if let value = value as? Bool {
                 guard let coding = HKCategoryType.coding(forMetadataKey: metadataKey) else {
                     continue
@@ -71,12 +72,12 @@ extension HKCategoryType {
         }
     }
     
-    fileprivate static func quantityType(forMetadataKey key: String) -> HKQuantityType? {
+    fileprivate static func quantityType(forMetadataKey key: String) -> SampleType<HKQuantitySample>? {
         switch key {
         case HKMetadataKeyHeartRateEventThreshold:
-            HKQuantityType(.heartRate)
+            .heartRate
         case HKMetadataKeyLowCardioFitnessEventThreshold:
-            HKQuantityType(.vo2Max)
+            .vo2Max
         default:
             nil
         }

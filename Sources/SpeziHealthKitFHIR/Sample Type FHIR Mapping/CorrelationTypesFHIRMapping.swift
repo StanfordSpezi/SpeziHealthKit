@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+// swiftlint:disable file_types_order
+
 public import ModelsR4
 public import SpeziHealthKit
 
@@ -24,7 +26,7 @@ public typealias CorrelationTypesFHIRMapping = [SampleType<HKCorrelation>: Corre
 /// ### Instance Properties
 /// - ``codings``
 /// - ``categories``
-public struct CorrelationTypeFHIRMapping: Hashable, Sendable {
+public struct CorrelationTypeFHIRMapping: Sendable {
     public let codings: [Coding]
     public let categories: [Coding]
     

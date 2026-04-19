@@ -7,8 +7,8 @@
 //
 
 import HealthKit
-import SpeziHealthKitFHIRMacros
 import ModelsR4
+import SpeziHealthKitFHIRMacros
 
 
 /// Models a value type used by a `HKCategoryType`.

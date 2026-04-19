@@ -6,6 +6,10 @@
 // SPDX-License-Identifier: MIT
 //
 
+// TOOO!!!
+
+// swiftlint:disable all
+
 import HealthKit
 import ModelsDSTU2
 import ModelsR4

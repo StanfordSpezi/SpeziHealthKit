@@ -7,8 +7,8 @@
 //
 
 import HealthKit
-@testable import SpeziHealthKitFHIR
 import ModelsR4
+@testable import SpeziHealthKitFHIR
 import Testing
 
 

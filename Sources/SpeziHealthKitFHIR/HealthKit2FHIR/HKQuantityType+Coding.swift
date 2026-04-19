@@ -13,8 +13,7 @@ import SpeziHealthKit
 
 
 extension HKQuantityType {
-    // TODO remove?!
-    /// Converts an HKQuantityType into corresponding FHIR Coding(s) based on a specified mapping
+    /// Converts an `HKQuantityType` into corresponding FHIR Coding(s) based on a specified mapping
     func codes(
         mapping: QuantityTypesFHIRMapping = .default
     ) -> [Coding] {

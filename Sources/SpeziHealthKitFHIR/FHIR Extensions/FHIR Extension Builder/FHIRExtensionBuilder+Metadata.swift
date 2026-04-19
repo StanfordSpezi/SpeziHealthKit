@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+// swiftlint:disable file_length
+
 import FHIRModelsExtensions
 import Foundation
 import HealthKit
@@ -53,7 +55,8 @@ extension FHIRExtensionBuilderProtocol where Self == FHIRExtensionBuilder<HKObje
                         extensionValue = .quantity(try value.buildQuantity(mapping: .weatherHumidity))
                     case HKMetadataKeySessionEstimate:
                         guard let sample = object as? HKQuantitySample,
-                              let mapping = QuantityTypesFHIRMapping.default[SampleType(sample.quantityType)!] else {
+                              let sampleType = SampleType(sample.quantityType),
+                              let mapping = QuantityTypesFHIRMapping.default[sampleType] else {
                             continue // should be unreachable. skipping
                         }
                         extensionValue = .quantity(try value.buildQuantity(mapping: mapping))

@@ -22,7 +22,7 @@ public import ModelsR4
 /// ### Instance Properties
 /// - ``codings``
 /// - ``categories``
-public struct WorkoutTypeFHIRMapping: Hashable, Sendable {
+public struct WorkoutTypeFHIRMapping: Sendable {
     public let codings: [Coding]
     public let categories: [Coding]
     

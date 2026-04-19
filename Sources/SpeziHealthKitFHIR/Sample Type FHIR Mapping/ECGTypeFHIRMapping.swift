@@ -30,7 +30,7 @@ private import SpeziHealthKit
 /// - ``averageHeartRate``
 /// - ``voltageMeasurements``
 /// - ``voltagePrecision``
-public struct ECGTypeFHIRMapping: Hashable, Sendable {
+public struct ECGTypeFHIRMapping: Sendable {
     /// The FHIR codings defined as `Coding`s used for the `HKElectrocardiogram`.
     public var codings: [Coding]
     /// The FHIR categories defined as `Coding`s used for the `HKElectrocardiogram`.

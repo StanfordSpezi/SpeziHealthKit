@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+// swiftlint:disable file_types_order
+
 public import ModelsR4
 public import SpeziHealthKit
 
@@ -23,7 +25,7 @@ public typealias CategoryTypesFHIRMapping = [SampleType<HKCategorySample>: Categ
 ///
 /// ### Instance Properties
 /// - ``codings``
-public struct CategoryTypeFHIRMapping: Hashable, Sendable {
+public struct CategoryTypeFHIRMapping: Sendable {
     public var codings: [Coding]
     public var categories: [Coding]
     

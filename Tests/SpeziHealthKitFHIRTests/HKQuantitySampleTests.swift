@@ -10,9 +10,9 @@
 
 import FHIRModelsExtensions
 import HealthKit
-@testable import SpeziHealthKitFHIR
 import ModelsR4
 import SpeziFoundation
+@testable import SpeziHealthKitFHIR
 import Testing
 
 
@@ -2193,7 +2193,7 @@ struct HKQuantitySampleTests {
         ))
     }
     
-    // TODO find a new unsupported type!
+    // need to find a new unsupported type
 //    @Test
 //    func unsupportedTypeSample() throws {
 //        let quantitySample = HKQuantitySample(
@@ -2250,7 +2250,7 @@ struct HKQuantitySampleTests {
         }
     }
     
-    // TODO find a new unsupported type!
+    // need to find a new unsupported type
 //    @Test
 //    func unsupportedMapping() throws {
 //        let sample = HKQuantitySample(
@@ -2335,7 +2335,7 @@ struct HKQuantitySampleTests {
         }
     }
     
-    // TODO find a new unsupported type!
+    // need to find a new unsupported type
 //    @Test
 //    func collectionSampleToResourceProxyWithUnsupportedSample() throws {
 //        func makeSample(numSteps: Int, date: DateComponents) throws -> HKQuantitySample {

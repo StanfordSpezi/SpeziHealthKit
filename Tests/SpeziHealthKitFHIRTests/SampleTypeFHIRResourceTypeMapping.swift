@@ -28,7 +28,6 @@ struct SampleTypeFHIRResourceTypeMapping {
         if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
             imp(CollectionOfOne(SampleType.stateOfMind))
         }
-        // TODO
         #expect(SampleType.workoutRoute.fhirResourceType == nil)
         #expect(SampleType.visionPrescription.fhirResourceType == nil)
     }

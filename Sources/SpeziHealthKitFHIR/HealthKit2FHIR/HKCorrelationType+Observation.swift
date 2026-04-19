@@ -13,10 +13,8 @@ import SpeziHealthKit
 
 extension HKCorrelation: FHIRObservationBuildable {
     func build(_ observation: inout Observation, mapping: SampleTypesFHIRMapping) throws {
-        guard let sampleType = SampleType(self.correlationType) else {
-            preconditionFailure() // TODO msg
-        }
-        guard let mapping = mapping.correlationTypesMapping[sampleType] else {
+        guard let sampleType = SampleType(self.correlationType),
+              let mapping = mapping.correlationTypesMapping[sampleType] else {
             throw HealthKitOnFHIRError.notSupported
         }
         observation.append(codings: mapping.codings)
@@ -30,7 +28,7 @@ extension HKCorrelation: FHIRObservationBuildable {
                 throw HealthKitOnFHIRError.notSupported
             }
             guard let sampleType = SampleType(sample.quantityType) else {
-                preconditionFailure() // TODO msg
+                throw HealthKitOnFHIRError.notSupported
             }
             observation.append(component: try sample.quantity.buildObservationComponent(for: sampleType))
         }

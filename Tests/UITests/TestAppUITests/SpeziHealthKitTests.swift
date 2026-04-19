@@ -23,7 +23,7 @@ class SpeziHealthKitTests: XCTestCase {
     func launchAndHandleInitialStuff(
         _ app: XCUIApplication,
         resetEverything: Bool,
-        askForAuthorization: Bool = true, // swiftlint:disable:this function_default_parameter_at_end
+        askForAuthorization: Bool = true,
         deleteAllHealthData: Bool
     ) throws {
         if resetEverything {

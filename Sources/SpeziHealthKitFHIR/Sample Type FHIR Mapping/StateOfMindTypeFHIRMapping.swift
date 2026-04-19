@@ -27,7 +27,7 @@ public import ModelsR4
 /// - ``valenceClassification``
 /// - ``label``
 /// - ``association``
-public struct StateOfMindTypeFHIRMapping: Hashable, Sendable {
+public struct StateOfMindTypeFHIRMapping: Sendable {
     /// The FHIR codings defined as ``MappedCode``s to be used for `HKStateOfMind` samples
     public let codings: [Coding]
     /// The FHIR categories defined as ``MappedCode``s to be used for `HKStateOfMind` samples

@@ -6,11 +6,9 @@
 // SPDX-License-Identifier: MIT
 //
 
-import HealthKit
-import SpeziFoundation
+import ModelsR4
 import SpeziHealthKit
 @testable import SpeziHealthKitFHIR
-import ModelsR4
 import Testing
 
 

@@ -63,7 +63,7 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType, Sendab
     /// - parameter variant: The internal variant that should be used for storing any additional data associated with the sample type's specific underlying HealthKit sample type.
     @usableFromInline init(
         _ hkSampleType: Sample._SampleType,
-        displayTitle: LocalizedStringResource? = nil, // swiftlint:disable:this function_default_parameter_at_end
+        displayTitle: LocalizedStringResource? = nil,
         canonicalTitle: String,
         variant: Variant
     ) {
@@ -96,6 +96,7 @@ extension SampleType: CustomStringConvertible {
 
 
 extension SampleType {
+    /// Accesses a property on the underlying `HKSampleType`.
     @inlinable
     public subscript<T>(dynamicMember keyPath: KeyPath<Sample._SampleType, T>) -> T {
         hkSampleType[keyPath: keyPath]
@@ -193,7 +194,7 @@ extension SampleType {
     ///     Providing this information allows some components to optimize how they display data belonging to this sample type.
     @inlinable public static func quantity(
         _ identifier: HKQuantityTypeIdentifier,
-        displayTitle: LocalizedStringResource? = nil, // swiftlint:disable:this function_default_parameter_at_end
+        displayTitle: LocalizedStringResource? = nil,
         canonicalTitle: String,
         canonicalUnit: HKUnit,
         displayUnits: LocalizedUnit,
@@ -214,7 +215,7 @@ extension SampleType {
     /// - parameter associatedQuantityTypes: The sample type's associated quantity sample types. E.g.: for the blood pressure correlation type, the associated quantity types would be systolic and siastolic blood pressure.
     @inlinable public static func correlation(
         _ identifier: HKCorrelationTypeIdentifier,
-        displayTitle: LocalizedStringResource? = nil, // swiftlint:disable:this function_default_parameter_at_end
+        displayTitle: LocalizedStringResource? = nil,
         canonicalTitle: String,
         associatedQuantityTypes: Set<SampleType<HKQuantitySample>>
     ) -> SampleType<HKCorrelation> {

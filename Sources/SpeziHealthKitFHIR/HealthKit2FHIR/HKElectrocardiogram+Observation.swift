@@ -158,7 +158,8 @@ extension HKElectrocardiogram: FHIRObservationBuildable {
         mappings: SampleTypesFHIRMapping
     ) throws {
         for symptom in symptoms {
-            guard let mapping = mappings.categoryTypesMapping[SampleType(symptom.key)!] else {
+            guard let sampleType = SampleType(symptom.key),
+                  let mapping = mappings.categoryTypesMapping[sampleType] else {
                 throw HealthKitOnFHIRError.notSupported
             }
             let component = ObservationComponent(
@@ -211,7 +212,7 @@ extension HKElectrocardiogram: FHIRObservationBuildable {
                 .joined(separator: " ")
             let component = ObservationComponent(
                 code: CodeableConcept(coding: voltageMapping.codings),
-                value : .sampledData(
+                value: .sampledData(
                     SampledData(
                         data: data.asFHIRStringPrimitive(),
                         dimensions: 1,
