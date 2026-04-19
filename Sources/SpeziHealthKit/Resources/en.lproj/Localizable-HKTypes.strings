@@ -183,6 +183,7 @@
 "HKQuantityTypeIdentifierInhalerUsage" = "Inhaler Usage";
 "HKQuantityTypeIdentifierInsulinDelivery" = "Insulin Delivery";
 "HKQuantityTypeIdentifierLeanBodyMass" = "Lean Body Mass";
+"HKQuantityTypeIdentifierNikeFuel" = "NikeFuel";
 "HKQuantityTypeIdentifierNumberOfAlcoholicBeverages" = "Alcohol Consumption";
 "HKQuantityTypeIdentifierNumberOfTimesFallen" = "Number of Times Fallen";
 "HKQuantityTypeIdentifierOxygenSaturation" = "Blood Oxygen";

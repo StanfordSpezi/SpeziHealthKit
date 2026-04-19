@@ -183,6 +183,7 @@
 "HKQuantityTypeIdentifierInhalerUsage" = "Uso de inhaladores";
 "HKQuantityTypeIdentifierInsulinDelivery" = "Suministro de insulina";
 "HKQuantityTypeIdentifierLeanBodyMass" = "Masa corporal magra";
+"HKQuantityTypeIdentifierNikeFuel" = "NikeFuel";
 "HKQuantityTypeIdentifierNumberOfAlcoholicBeverages" = "Consumo de alcohol";
 "HKQuantityTypeIdentifierNumberOfTimesFallen" = "Número de caídas";
 "HKQuantityTypeIdentifierOxygenSaturation" = "Oxígeno en la sangre";

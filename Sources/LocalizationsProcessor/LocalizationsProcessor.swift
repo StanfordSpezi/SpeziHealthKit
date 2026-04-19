@@ -55,6 +55,15 @@ struct LocalizationsProcessor: ParsableCommand {
     var locales: [Locale]
     
     
+    static func main() {
+        UserDefaults.standard.setVolatileDomain(
+            ["AppleLocale": "en_US", "AppleLanguages": ["en"]],
+            forName: UserDefaults.argumentDomain
+        )
+        precondition(Locale.current.identifier == "en_US", "Failed to force locale")
+        Self.main(nil)
+    }
+    
     func run() throws {
         if verbose {
             print("\(self)")
@@ -157,7 +166,7 @@ private struct Localizations {
             }
         }
         guard let referenceLoctable = mergedLoctables[.init(identifier: Locale.current.language.minimalIdentifier)] else {
-            throw CommandError.other("unable to find reference loctable")
+            throw CommandError.other("unable to find reference loctable for \(Locale.current.language.minimalIdentifier)")
         }
         let hardcodedNameKeys: [HKObjectType: String] = [
             HKClinicalType(.allergyRecord): "ALLERGY_RECORDS",

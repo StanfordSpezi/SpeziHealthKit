@@ -268,11 +268,11 @@ quantity_types: list[SampleType] = [
         unit='.count()',
         doc='A quantity sample type that measures the number flights of stairs that the user has climbed.'
     ),
-#    quantity_type(
-#        'nikeFuel',
-#        'TITLE',
-#        'A quantity sample type that measures the number of NikeFuel points the user has earned.'
-#    ),
+   quantity_type(
+       identifier='nikeFuel',
+       unit='.count()',
+       doc='A quantity sample type that measures the number of NikeFuel points the user has earned.'
+   ),
     quantity_type(
         identifier='appleExerciseTime',
         unit='.minute()',
@@ -330,14 +330,14 @@ quantity_types: list[SampleType] = [
     ),
     quantity_type(
         identifier='appleSleepingWristTemperature',
-        unit='.kelvin()',
+        unit='.degreeCelsius()',
         display_unit=LocaleDependentUnit(us='.degreeFahrenheit()', uk='.degreeCelsius()', metric='.degreeCelsius()'),
         doc='A quantity sample type that records the wrist temperature during sleep.'
     ),
     # Reproductive Health
     quantity_type(
         identifier='basalBodyTemperature',
-        unit='.kelvin()',
+        unit='.degreeCelsius()',
         display_unit=LocaleDependentUnit(us='.degreeFahrenheit()', uk='.degreeCelsius()', metric='.degreeCelsius()'),
         doc='A quantity sample type that records the user’s basal body temperature.'
     ),
@@ -393,7 +393,7 @@ quantity_types: list[SampleType] = [
     ),
     quantity_type(
         identifier='bodyTemperature',
-        unit='.kelvin()',
+        unit='.degreeCelsius()',
         display_unit=LocaleDependentUnit(us='.degreeFahrenheit()', uk='.degreeCelsius()', metric='.degreeCelsius()'),
         doc='A quantity sample type that measures the user’s body temperature.'
     ),
@@ -732,7 +732,7 @@ quantity_types: list[SampleType] = [
     ),
     quantity_type(
         identifier='waterTemperature',
-        unit='.kelvin()',
+        unit='.degreeCelsius()',
         display_unit=LocaleDependentUnit(us='.degreeFahrenheit()', uk='.degreeCelsius()', metric='.degreeCelsius()'),
         doc=' A quantity sample that records the water temperature.'
     ),

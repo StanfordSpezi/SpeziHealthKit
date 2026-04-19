@@ -213,6 +213,18 @@ extension SampleType where Sample == HKQuantitySample {
             )
         )
     }
+    /// A quantity sample type that measures the number of NikeFuel points the user has earned.
+    @inlinable public static var nikeFuel: SampleType<HKQuantitySample> {
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.nikeFuel.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .nikeFuel,
+                canonicalUnit: .count(),
+                displayUnits: LocalizedUnit(metric: .count(), us: .count())
+            )
+        )
+    }
     /// A quantity sample type that measures the amount of time the user spent exercising.
     @inlinable public static var appleExerciseTime: SampleType<HKQuantitySample> {
         SampleTypeCache.get(
@@ -340,7 +352,7 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .appleSleepingWristTemperature,
-                canonicalUnit: .kelvin(),
+                canonicalUnit: .degreeCelsius(),
                 displayUnits: LocalizedUnit(metric: .degreeCelsius(), us: .degreeFahrenheit(), uk: .degreeCelsius())
             )
         )
@@ -352,7 +364,7 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .basalBodyTemperature,
-                canonicalUnit: .kelvin(),
+                canonicalUnit: .degreeCelsius(),
                 displayUnits: LocalizedUnit(metric: .degreeCelsius(), us: .degreeFahrenheit(), uk: .degreeCelsius())
             )
         )
@@ -474,7 +486,7 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .bodyTemperature,
-                canonicalUnit: .kelvin(),
+                canonicalUnit: .degreeCelsius(),
                 displayUnits: LocalizedUnit(metric: .degreeCelsius(), us: .degreeFahrenheit(), uk: .degreeCelsius())
             )
         )
@@ -1242,7 +1254,7 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .waterTemperature,
-                canonicalUnit: .kelvin(),
+                canonicalUnit: .degreeCelsius(),
                 displayUnits: LocalizedUnit(metric: .degreeCelsius(), us: .degreeFahrenheit(), uk: .degreeCelsius())
             )
         )
@@ -1502,6 +1514,8 @@ extension SampleType where Sample == HKQuantitySample {
             self = .activeEnergyBurned
         } else if identifier == .flightsClimbed {
             self = .flightsClimbed
+        } else if identifier == .nikeFuel {
+            self = .nikeFuel
         } else if identifier == .appleExerciseTime {
             self = .appleExerciseTime
         } else if identifier == .appleMoveTime {
@@ -1756,6 +1770,7 @@ extension HKQuantityTypeIdentifier {
         identifiers.insert(Self.basalEnergyBurned)
         identifiers.insert(Self.activeEnergyBurned)
         identifiers.insert(Self.flightsClimbed)
+        identifiers.insert(Self.nikeFuel)
         identifiers.insert(Self.appleExerciseTime)
         identifiers.insert(Self.appleMoveTime)
         identifiers.insert(Self.appleStandTime)
