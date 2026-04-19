@@ -11,7 +11,7 @@ import HealthKit
 import Testing
 
 
-@MainActor // to work around https://github.com/apple/FHIRModels/issues/36
+@Suite
 struct HKElectrocardiogramTests {
     @Test
     func electrocardiogramCategoryTests() {

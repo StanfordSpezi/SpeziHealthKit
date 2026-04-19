@@ -12,7 +12,7 @@ import ModelsR4
 import Testing
 
 
-@MainActor // to work around https://github.com/apple/FHIRModels/issues/36 // TODO remove the isolation!
+@Suite
 struct CustomMappingsTests {
     @Test
     func customMappings() throws {

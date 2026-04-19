@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+// swiftlint:disable file_length
+
 import FHIRModelsExtensions
 import HealthKit
 @testable import SpeziHealthKitFHIR
@@ -14,9 +16,7 @@ import SpeziFoundation
 import Testing
 
 
-// swiftlint:disable file_length
-// We disable the file length rule as this is a test class
-@MainActor // to work around https://github.com/apple/FHIRModels/issues/36
+@Suite
 struct HKQuantitySampleTests {
     // swiftlint:disable:previous type_body_length
     // We disable the type body length as this is a test class

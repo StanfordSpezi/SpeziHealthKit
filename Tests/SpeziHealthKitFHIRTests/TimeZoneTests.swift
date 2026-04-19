@@ -12,7 +12,7 @@ import ModelsR4
 import Testing
 
 
-@MainActor // to work around https://github.com/apple/FHIRModels/issues/36
+@Suite
 struct TimeZoneTests { // swiftlint:disable:this type_body_length
     func createDateInTimeZone(_ components: DateComponents, timeZone: TimeZone) throws -> Date {
         var calendar = Calendar.current

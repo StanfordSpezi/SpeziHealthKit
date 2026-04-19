@@ -6,14 +6,15 @@
 // SPDX-License-Identifier: MIT
 //
 
+// swiftlint:disable file_length type_body_length
+
 import HealthKit
 @testable import SpeziHealthKitFHIR
 import ModelsR4
 import Testing
 
 
-// swiftlint:disable file_length type_body_length
-@MainActor // to work around https://github.com/apple/FHIRModels/issues/36
+@Suite
 struct HKCategorySampleTests {
     var startDate: Date {
         get throws {
