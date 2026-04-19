@@ -51,7 +51,7 @@ extension FHIRCodingConvertibleHKEnum {
 
 // MARK: Extensions
 
-@available(iOS 18.0, macOS 15.0, watchOS 11.0, *)
+@available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *)
 @SynthesizeDisplayProperty(
     HKCategoryValueVaginalBleeding.self,
     .unspecified, .light, .medium, .heavy, .none

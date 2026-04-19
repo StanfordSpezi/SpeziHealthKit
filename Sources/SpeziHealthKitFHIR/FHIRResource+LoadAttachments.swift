@@ -9,7 +9,6 @@
 import HealthKit
 import ModelsDSTU2
 import ModelsR4
-import PDFKit
 import SpeziFHIR
 import SpeziHealthKit
 
