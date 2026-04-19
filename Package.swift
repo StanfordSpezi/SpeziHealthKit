@@ -147,9 +147,6 @@ var package = Package(
                 .product(name: "ModelsDSTU2", package: "FHIRModels"),
                 .product(name: "FHIRModelsExtensions", package: "SpeziFHIR")
             ],
-            resources: [
-                .process("Resources")
-            ],
             swiftSettings: [.enableUpcomingFeature("ExistentialAny")],
             plugins: [] + swiftLintPlugin
         ),
