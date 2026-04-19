@@ -1,5 +1,5 @@
 //
-// This source file is part of the HealthKitOnFHIR open source project
+// This source file is part of the Stanford Spezi open source project
 //
 // SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
@@ -18,7 +18,7 @@ extension HKQuantitySample: FHIRObservationBuildable {
             preconditionFailure("Missing \(self.quantityType)")
         }
         guard let mapping = mapping.quantityTypesMapping[quantityType] else {
-            throw HealthKitOnFHIRError.notSupported
+            throw SpeziHealthKitFHIRError.notSupported
         }
         observation.append(codings: mapping.codings)
         observation.append(categories: mapping.categories.map { CodeableConcept(coding: [$0]) })
@@ -33,7 +33,7 @@ extension HKQuantity {
         mappings: QuantityTypesFHIRMapping = .default
     ) throws -> ObservationComponent {
         guard let mapping = mappings[quantityType] else {
-            throw HealthKitOnFHIRError.notSupported
+            throw SpeziHealthKitFHIRError.notSupported
         }
         return try buildObservationComponent(mapping: mapping)
     }

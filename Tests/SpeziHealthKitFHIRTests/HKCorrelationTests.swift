@@ -92,7 +92,7 @@ struct HKCorrelationTests {
             end: try endDate,
             objects: [vitaminC]
         )
-        #expect(throws: HealthKitOnFHIRError.self) {
+        #expect(throws: SpeziHealthKitFHIRError.self) {
             try correlation.resource()
         }
     }

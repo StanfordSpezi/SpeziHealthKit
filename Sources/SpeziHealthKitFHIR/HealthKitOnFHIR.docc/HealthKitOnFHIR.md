@@ -1,14 +1,22 @@
 # ``SpeziHealthKitFHIR``
 
 <!--
-                  
-This source file is part of the HealthKitOnFHIR open source project
 
-SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
+This source file is part of the Stanford Spezi open source project
+
+SPDX-FileCopyrightText: 2026 Stanford University and the project authors (see CONTRIBUTORS.md)
 
 SPDX-License-Identifier: MIT
-             
+
 -->
+
+Extends HealthKit for working with FHIR data.
+
+
+## Overview
+
+
+
 
 Extensions that convert supported HealthKit samples to FHIR resources.
 

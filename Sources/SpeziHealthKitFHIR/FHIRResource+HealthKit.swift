@@ -10,8 +10,8 @@ import FHIRModelsExtensions
 import HealthKit
 import ModelsDSTU2
 import ModelsR4
-import SpeziFHIR
-import SpeziHealthKit
+public import SpeziFHIR
+public import SpeziHealthKit
 
 
 extension FHIRResource {
@@ -29,7 +29,7 @@ extension FHIRResource {
         switch sample {
         case let record as HKClinicalRecord:
             guard let fhirResource = record.fhirResource else {
-                throw HealthKitOnFHIRError.invalidFHIRResource
+                throw SpeziHealthKitFHIRError.invalidFHIRResource
             }
             let decoder = JSONDecoder()
             switch fhirResource.fhirVersion.fhirRelease {
@@ -80,7 +80,7 @@ extension FHIRResource {
             case .unknown:
                 fallthrough // swiftlint:disable:this no_fallthrough_only
             default:
-                throw HealthKitOnFHIRError.invalidFHIRResource
+                throw SpeziHealthKitFHIRError.invalidFHIRResource
             }
         case let electrocardiogram as HKElectrocardiogram:
             guard let healthKit = healthKit else {

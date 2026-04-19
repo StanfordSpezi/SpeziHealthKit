@@ -1,5 +1,5 @@
 //
-// This source file is part of the HealthKitOnFHIR open source project
+// This source file is part of the Stanford Spezi open source project
 //
 // SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
@@ -15,13 +15,13 @@ extension HKCategorySample: FHIRObservationBuildable {
     func build(_ observation: inout Observation, mapping: SampleTypesFHIRMapping) throws {
         guard let sampleType = SampleType(self.categoryType),
               let mapping = mapping.categoryTypesMapping[sampleType] else {
-            throw HealthKitOnFHIRError.notSupported
+            throw SpeziHealthKitFHIRError.notSupported
         }
         observation.append(codings: mapping.codings)
         let assocDataInfo = try categoryType.associatedDataInfo
         if let valueType = assocDataInfo.valueType {
             guard let value = valueType.init(rawValue: self.value) else {
-                throw HealthKitOnFHIRError.invalidValue
+                throw SpeziHealthKitFHIRError.invalidValue
             }
             observation.value = .codeableConcept(CodeableConcept(coding: [value.asCoding]))
         } else {
@@ -101,7 +101,7 @@ extension HKCategoryType {
     
     /// The category type's associated (FHIR-compatible) Category Value Type.
     ///
-    /// - throws: if the category type is unknown to HealthKitOnFHIR.
+    /// - throws: if the category type is unknown.
     var associatedDataInfo: AssociatedDataInfo {
         get throws {
             try HKCategoryTypeIdentifier(rawValue: self.identifier).associatedDataInfo
@@ -113,7 +113,7 @@ extension HKCategoryType {
 extension HKCategoryTypeIdentifier {
     /// The category type's associated (FHIR-compatible) Category Value Type.
     ///
-    /// - throws: if the category type is unknown to HealthKitOnFHIR.
+    /// - throws: if the category type is unknown
     var associatedDataInfo: HKCategoryType.AssociatedDataInfo {
         get throws {
             switch self {
@@ -185,7 +185,7 @@ extension HKCategoryTypeIdentifier {
                 if #available(iOS 18.0, macOS 15.0, watchOS 11.0, *), self == .bleedingDuringPregnancy || self == .bleedingAfterPregnancy {
                     return .init(valueType: HKCategoryValueVaginalBleeding.self)
                 } else {
-                    throw HealthKitOnFHIRError.notSupported
+                    throw SpeziHealthKitFHIRError.notSupported
                 }
             }
         }

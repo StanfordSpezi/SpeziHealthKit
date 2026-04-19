@@ -1,14 +1,15 @@
 //
-// This source file is part of the HealthKitOnFHIR open source project
+// This source file is part of the Stanford Spezi open source project
 //
 // SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
 // SPDX-License-Identifier: MIT
 //
 
-import FHIRModelsExtensions
-import HealthKit
-import ModelsR4
+public import FHIRModelsExtensions
+public import Foundation
+public import HealthKit
+public import ModelsR4
 import SpeziHealthKit
 import SpeziHealthKitFHIRMacros
 
@@ -39,7 +40,7 @@ extension HKElectrocardiogram {
         extensions: [any FHIRExtensionBuilderProtocol] = []
     ) throws -> Observation {
         guard var observation = try resource(withMapping: mapping, issuedDate: issuedDate, extensions: extensions).get(if: Observation.self) else {
-            throw HealthKitOnFHIRError.notSupported
+            throw SpeziHealthKitFHIRError.notSupported
         }
         if !symptoms.isEmpty {
             try appendSymptomsComponent(to: &observation, symptoms: symptoms, mappings: mapping)
@@ -160,7 +161,7 @@ extension HKElectrocardiogram: FHIRObservationBuildable {
         for symptom in symptoms {
             guard let sampleType = SampleType(symptom.key),
                   let mapping = mappings.categoryTypesMapping[sampleType] else {
-                throw HealthKitOnFHIRError.notSupported
+                throw SpeziHealthKitFHIRError.notSupported
             }
             let component = ObservationComponent(
                 code: CodeableConcept(coding: mapping.codings),

@@ -1,14 +1,14 @@
 //
-// This source file is part of the HealthKitOnFHIR open source project
+// This source file is part of the Stanford Spezi open source project
 //
 // SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
 // SPDX-License-Identifier: MIT
 //
 
-import FHIRModelsExtensions
-import HealthKit
-import ModelsR4
+public import FHIRModelsExtensions
+public import HealthKit
+public import ModelsR4
 
 
 extension HKSample {
@@ -55,7 +55,7 @@ extension HKSample {
         if let self = self as? any FHIRObservationBuildable {
             try self.build(&observation, mapping: mapping)
         } else {
-            throw HealthKitOnFHIRError.notSupported
+            throw SpeziHealthKitFHIRError.notSupported
         }
         let baseExtensions: [FHIRExtensionBuilder<HKObject>] = [
             .sourceDevice, .sourceRevision, .metadata

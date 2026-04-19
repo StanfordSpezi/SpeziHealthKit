@@ -8,9 +8,9 @@
 
 // swiftlint:disable identifier_name
 
-import Foundation
+public import Foundation
 #if canImport(HealthKit)
-import HealthKit
+public import HealthKit
 #endif
 
 

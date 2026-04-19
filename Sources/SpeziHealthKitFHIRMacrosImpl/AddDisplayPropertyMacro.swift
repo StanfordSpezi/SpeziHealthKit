@@ -1,15 +1,15 @@
 //
-// This source file is part of the HealthKitOnFHIR open source project
+// This source file is part of the Stanford Spezi open source project
 //
 // SPDX-FileCopyrightText: 2025 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
 // SPDX-License-Identifier: MIT
 //
 
-import Algorithms
-import SwiftDiagnostics
-import SwiftSyntax
-import SwiftSyntaxMacros
+private import Algorithms
+private import SwiftDiagnostics
+public import SwiftSyntax
+public import SwiftSyntaxMacros
 
 
 /// The `@SynthesizeDisplayPropertyMacro` macro.

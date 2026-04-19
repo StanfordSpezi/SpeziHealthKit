@@ -2202,7 +2202,7 @@ struct HKQuantitySampleTests {
 //            start: try startDate,
 //            end: try endDate
 //        )
-//        #expect(throws: HealthKitOnFHIRError.self) {
+//        #expect(throws: SpeziHealthKitFHIRError.self) {
 //            try quantitySample.resource().get(if: Observation.self)
 //        }
 //    }
@@ -2232,14 +2232,14 @@ struct HKQuantitySampleTests {
             // in this case we simplu skip the test
             return
         }
-        #expect(throws: HealthKitOnFHIRError.self) {
+        #expect(throws: SpeziHealthKitFHIRError.self) {
             try correlation.resource()
         }
     }
     
     @Test
     func unsupportedType() throws {
-        #expect(throws: HealthKitOnFHIRError.self) {
+        #expect(throws: SpeziHealthKitFHIRError.self) {
             try HKVisionPrescription(
                 type: .glasses,
                 dateIssued: try startDate,
@@ -2356,7 +2356,7 @@ struct HKQuantitySampleTests {
 //            try makeSample(numSteps: 17, date: .init(year: 2025, month: 1, day: 1, hour: 5)),
 //            HKQuantitySample(type: HKQuantityType(.nikeFuel), quantity: HKQuantity(unit: .count(), doubleValue: 123), start: .now, end: .now)
 //        ]
-//        #expect(throws: HealthKitOnFHIRError.self) {
+//        #expect(throws: SpeziHealthKitFHIRError.self) {
 //            try samples.mapIntoResourceProxies()
 //        }
 //        let resources = try samples.compactMapIntoResourceProxies()

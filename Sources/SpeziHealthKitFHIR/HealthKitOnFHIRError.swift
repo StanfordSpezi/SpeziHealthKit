@@ -1,5 +1,5 @@
 //
-// This source file is part of the HealthKitOnFHIR open source project
+// This source file is part of the Stanford Spezi open source project
 //
 // SPDX-FileCopyrightText: 2022 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
@@ -7,9 +7,9 @@
 //
 
 
-/// Error thrown by the HealthKitOnFHIR module if transforming a specific `HKSample` type to an FHIR  resource was not possible.
-public enum HealthKitOnFHIRError: Error {
-    /// Indicates that a specific `HKSample` type is currently not supported by HealthKitOnFHIR.
+/// Error thrown by the SpeziHealthKitFHIR module if transforming a specific `HKSample` type to an FHIR resource was not possible.
+public enum SpeziHealthKitFHIRError: Error {
+    /// Indicates that a specific `HKSample` type is currently not supported by SpeziHealthKitFHIIR.
     case notSupported
     /// Indicates that a specific value is not valid
     case invalidValue

@@ -1,5 +1,4 @@
 // swift-tools-version:6.2
-
 //
 // This source file is part of the Stanford Spezi open-source project
 // 
@@ -126,7 +125,10 @@ var package = Package(
                 .product(name: "SwiftDiagnostics", package: "swift-syntax"),
                 .product(name: "Algorithms", package: "swift-algorithms")
             ],
-            swiftSettings: [.enableUpcomingFeature("ExistentialAny")],
+            swiftSettings: [
+                .enableUpcomingFeature("ExistentialAny"),
+                .enableUpcomingFeature("InternalImportsByDefault")
+            ],
             plugins: [] + swiftLintPlugin
         ),
         .target(
@@ -147,7 +149,10 @@ var package = Package(
                 .product(name: "ModelsDSTU2", package: "FHIRModels"),
                 .product(name: "FHIRModelsExtensions", package: "SpeziFHIR")
             ],
-            swiftSettings: [.enableUpcomingFeature("ExistentialAny")],
+            swiftSettings: [
+                .enableUpcomingFeature("ExistentialAny"),
+                .enableUpcomingFeature("InternalImportsByDefault")
+            ],
             plugins: [] + swiftLintPlugin
         ),
         .testTarget(

@@ -6,10 +6,10 @@
 // SPDX-License-Identifier: MIT
 //
 
-import HealthKit
+public import HealthKit
 @_spi(Internal)
-import SpeziFHIR
-import SpeziHealthKit
+public import SpeziFHIR
+public import SpeziHealthKit
 
 
 extension FHIRStore {

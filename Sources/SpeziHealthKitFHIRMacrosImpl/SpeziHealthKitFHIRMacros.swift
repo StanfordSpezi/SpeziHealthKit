@@ -1,5 +1,5 @@
 //
-// This source file is part of the HealthKitOnFHIR open source project
+// This source file is part of the Stanford Spezi open source project
 //
 // SPDX-FileCopyrightText: 2025 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
@@ -11,7 +11,7 @@ import SwiftSyntaxMacros
 
 
 @main
-struct HealthKitOnFHIRMacros: CompilerPlugin {
+struct SpeziHealthKitFHIRMacros: CompilerPlugin {
     var providingMacros: [any Macro.Type] = [
         SynthesizeDisplayPropertyMacro.self
     ]

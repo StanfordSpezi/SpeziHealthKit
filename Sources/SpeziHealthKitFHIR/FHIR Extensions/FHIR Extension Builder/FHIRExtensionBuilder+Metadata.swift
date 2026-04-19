@@ -1,5 +1,5 @@
 //
-// This source file is part of the HealthKitOnFHIR open source project
+// This source file is part of the Stanford Spezi open source project
 //
 // SPDX-FileCopyrightText: 2025 Stanford University and the project authors (see CONTRIBUTORS.md)
 //
@@ -8,9 +8,9 @@
 
 // swiftlint:disable file_length
 
-import FHIRModelsExtensions
+public import FHIRModelsExtensions
 import Foundation
-import HealthKit
+public import HealthKit
 import ModelsR4
 import SpeziHealthKit
 
