@@ -9,15 +9,21 @@
 import Foundation
 import HealthKit
 import ModelsR4
+import SpeziHealthKit
 
 
 extension HKQuantityType {
     // TODO remove?!
     /// Converts an HKQuantityType into corresponding FHIR Coding(s) based on a specified mapping
-    func codes(mappings: [HKQuantityType: HKQuantitySampleMapping] = HKQuantitySampleMapping.default) -> [Coding] {
-        guard let mapping = mappings[self] else {
+    func codes(
+        mapping: QuantityTypesFHIRMapping = .default
+    ) -> [Coding] {
+        guard let sampleType = self.sampleType as? SampleType<HKQuantitySample> else {
             return []
         }
-        return mapping.codings.map(\.coding)
+        guard let mapping = mapping[sampleType] else {
+            return []
+        }
+        return mapping.codings
     }
 }

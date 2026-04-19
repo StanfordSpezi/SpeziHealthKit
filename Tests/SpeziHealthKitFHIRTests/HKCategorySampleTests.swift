@@ -97,10 +97,10 @@ struct HKCategorySampleTests {
             value: value.rawValue,
             metadata: [HKMetadataKeyMenstrualCycleStart: true]
         )
-        #expect(observation.code.coding?.first == createCategoryCoding(
+        #expect((observation.code.coding ?? []).contains(createCategoryCoding(
             categoryType: .menstrualFlow,
             display: "Menstrual Flow"
-        ))
+        )))
         #expect(observation.value == .codeableConcept(CodeableConcept(coding: [
             Coding(
                 code: expectedCode.asFHIRStringPrimitive(),
@@ -300,7 +300,7 @@ struct HKCategorySampleTests {
         #expect(component.code.coding == [
             Coding(
                 code: "HKQuantityTypeIdentifierVO2Max".asFHIRStringPrimitive(),
-                display: "VO2 Max".asFHIRStringPrimitive(),
+                display: "VO2Max".asFHIRStringPrimitive(),
                 system: SupportedCodeSystem.apple.rawValue.asFHIRURIPrimitive()
             )
         ])
@@ -376,6 +376,11 @@ struct HKCategorySampleTests {
                 code: "8867-4".asFHIRStringPrimitive(),
                 display: "Heart rate".asFHIRStringPrimitive(),
                 system: SupportedCodeSystem.loinc.rawValue.asFHIRURIPrimitive()
+            ),
+            Coding(
+                code: "364075005",
+                display: "Heart rate",
+                system: .snomedCT
             ),
             Coding(
                 code: "HKQuantityTypeIdentifierHeartRate".asFHIRStringPrimitive(),
@@ -711,7 +716,7 @@ struct HKCategorySampleTests {
 
     @Test
     func chestTightnessOrPain() throws {
-        try testSymptoms(type: .chestTightnessOrPain, display: "Chest Tightness Or Pain")
+        try testSymptoms(type: .chestTightnessOrPain, display: "Chest Tightness/Pain")
     }
 
     @Test
@@ -776,12 +781,12 @@ struct HKCategorySampleTests {
 
     @Test
     func lossOfSmell() throws {
-        try testSymptoms(type: .lossOfSmell, display: "Loss Of Smell")
+        try testSymptoms(type: .lossOfSmell, display: "Loss of Smell")
     }
 
     @Test
     func lossOfTaste() throws {
-        try testSymptoms(type: .lossOfTaste, display: "Loss Of Taste")
+        try testSymptoms(type: .lossOfTaste, display: "Loss of Taste")
     }
 
     @Test
@@ -881,7 +886,7 @@ struct HKCategorySampleTests {
 
     @Test
     func rapidPoundingOrFlutteringHeartbeat() throws {
-        try testSymptoms(type: .rapidPoundingOrFlutteringHeartbeat, display: "Rapid Pounding Or Fluttering Heartbeat")
+        try testSymptoms(type: .rapidPoundingOrFlutteringHeartbeat, display: "Rapid/Pounding/Fluttering Heartbeat")
     }
 
     @Test
@@ -891,7 +896,7 @@ struct HKCategorySampleTests {
 
     @Test
     func shortnessOfBreath() throws {
-        try testSymptoms(type: .shortnessOfBreath, display: "Shortness Of Breath")
+        try testSymptoms(type: .shortnessOfBreath, display: "Shortness of Breath")
     }
 
     @Test
@@ -926,10 +931,10 @@ struct HKCategorySampleTests {
 }
 
 
-func product<C1: Collection, C2: Collection>(
+func product<C1: Collection & Sendable, C2: Collection & Sendable>(
     _ first: C1,
     _ second: C2
-) -> some Collection<(C1.Element, C2.Element)> & Sendable where C1: Sendable, C2: Sendable, C1.Element: Sendable, C2.Element: Sendable {
+) -> some Collection<(C1.Element, C2.Element)> & Sendable where C1.Element: Sendable, C2.Element: Sendable {
     first.lazy.flatMap { element1 in
         second.lazy.map { element2 in
             (element1, element2)

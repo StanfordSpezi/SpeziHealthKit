@@ -80,40 +80,55 @@ extension StateOfMindTypeFHIRMapping {
                 system: "http://terminology.hl7.org/CodeSystem/observation-category"
             )
         ],
-        kind: CategoryTypeFHIRMapping(codings: [
-            Coding(
-                code: "HKStateOfMindKind",
-                display: "State of Mind Kind",
-                system: "http://developer.apple.com/documentation/healthkit"
-            )
-        ]),
-        valence: CategoryTypeFHIRMapping(codings: [
-            Coding(
-                code: "HKStateOfMindValence",
-                display: "State of Mind Valence",
-                system: "http://developer.apple.com/documentation/healthkit"
-            )
-        ]),
-        valenceClassification: CategoryTypeFHIRMapping(codings: [
-            Coding(
-                code: "HKStateOfMindValenceClassification",
-                display: "State of Mind Valence Classification",
-                system: "http://developer.apple.com/documentation/healthkit"
-            )
-        ]),
-        label: CategoryTypeFHIRMapping(codings: [
-            Coding(
-                code: "HKStateOfMindLabel",
-                display: "State of Mind Label",
-                system: "http://developer.apple.com/documentation/healthkit"
-            )
-        ]),
-        association: CategoryTypeFHIRMapping(codings: [
-            Coding(
-                code: "HKStateOfMindAssociation",
-                display: "State of Mind Association",
-                system: "http://developer.apple.com/documentation/healthkit"
-            )
-        ])
+        kind: CategoryTypeFHIRMapping(
+            codings: [
+                Coding(
+                    code: "HKStateOfMindKind",
+                    display: "State of Mind Kind",
+                    system: "http://developer.apple.com/documentation/healthkit"
+                )
+            ],
+            categories: []
+        ),
+        valence: CategoryTypeFHIRMapping(
+            codings: [
+                Coding(
+                    code: "HKStateOfMindValence",
+                    display: "State of Mind Valence",
+                    system: "http://developer.apple.com/documentation/healthkit"
+                )
+            ],
+            categories: []
+        ),
+        valenceClassification: CategoryTypeFHIRMapping(
+            codings: [
+                Coding(
+                    code: "HKStateOfMindValenceClassification",
+                    display: "State of Mind Valence Classification",
+                    system: "http://developer.apple.com/documentation/healthkit"
+                )
+            ],
+            categories: []
+        ),
+        label: CategoryTypeFHIRMapping(
+            codings: [
+                Coding(
+                    code: "HKStateOfMindLabel",
+                    display: "State of Mind Label",
+                    system: "http://developer.apple.com/documentation/healthkit"
+                )
+            ],
+            categories: []
+        ),
+        association: CategoryTypeFHIRMapping(
+            codings: [
+                Coding(
+                    code: "HKStateOfMindAssociation",
+                    display: "State of Mind Association",
+                    system: "http://developer.apple.com/documentation/healthkit"
+                )
+            ],
+            categories: []
+        )
     )
 }

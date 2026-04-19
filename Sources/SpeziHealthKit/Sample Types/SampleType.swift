@@ -41,6 +41,8 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType, Sendab
     
     public let displayTitle: String
     
+    public let canonicalTitle: String
+    
     /// Variant-specific additional information.
     @usableFromInline let variant: Variant
     
@@ -57,10 +59,12 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType, Sendab
     /// Use this initializer only if the sample type you want to work with isn't already defined by SpeziHealthKit, and only if none of the static factory methods are suitable.
     /// - parameter hkSampleType: The sample type's underlying `HKSampleType`
     /// - parameter displayTitle: The localized string which should be used when displaying this sample type's title in a user-visible context.
+    /// - parameter canonicalTitle: The sample type's canonical, non-localized title.
     /// - parameter variant: The internal variant that should be used for storing any additional data associated with the sample type's specific underlying HealthKit sample type.
     @usableFromInline init(
         _ hkSampleType: Sample._SampleType,
         displayTitle: LocalizedStringResource? = nil, // swiftlint:disable:this function_default_parameter_at_end
+        canonicalTitle: String,
         variant: Variant
     ) {
         self.hkSampleType = hkSampleType
@@ -72,6 +76,7 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType, Sendab
         #else
         self.displayTitle = displayTitle?.value ?? Self.localizedTitle(for: hkSampleType) ?? hkSampleType.identifier
         #endif
+        self.canonicalTitle = canonicalTitle
     }
     
     #if canImport(HealthKit)
@@ -189,6 +194,7 @@ extension SampleType {
     @inlinable public static func quantity(
         _ identifier: HKQuantityTypeIdentifier,
         displayTitle: LocalizedStringResource? = nil, // swiftlint:disable:this function_default_parameter_at_end
+        canonicalTitle: String,
         canonicalUnit: HKUnit,
         displayUnits: LocalizedUnit,
         expectedValuesRange: ClosedRange<Double>? = nil
@@ -196,6 +202,7 @@ extension SampleType {
         .init(
             HKQuantityType(identifier),
             displayTitle: displayTitle,
+            canonicalTitle: canonicalTitle,
             variant: .quantity(canonicalUnit: canonicalUnit, displayUnits: displayUnits, expectedValuesRange: expectedValuesRange)
         )
     }
@@ -208,9 +215,15 @@ extension SampleType {
     @inlinable public static func correlation(
         _ identifier: HKCorrelationTypeIdentifier,
         displayTitle: LocalizedStringResource? = nil, // swiftlint:disable:this function_default_parameter_at_end
+        canonicalTitle: String,
         associatedQuantityTypes: Set<SampleType<HKQuantitySample>>
     ) -> SampleType<HKCorrelation> {
-        .init(HKCorrelationType(identifier), displayTitle: displayTitle, variant: .correlation(associatedQuantityTypes: associatedQuantityTypes))
+        .init(
+            HKCorrelationType(identifier),
+            displayTitle: displayTitle,
+            canonicalTitle: canonicalTitle,
+            variant: .correlation(associatedQuantityTypes: associatedQuantityTypes)
+        )
     }
     
     /// Creates a new category sample type.
@@ -219,9 +232,10 @@ extension SampleType {
     /// - parameter displayTitle: The localized string which should be used when displaying this sample type's title in a user-visible context.
     @inlinable public static func category(
         _ identifier: HKCategoryTypeIdentifier,
-        displayTitle: LocalizedStringResource? = nil
+        displayTitle: LocalizedStringResource? = nil,
+        canonicalTitle: String
     ) -> SampleType<HKCategorySample> {
-        .init(HKCategoryType(identifier), displayTitle: displayTitle, variant: .category)
+        .init(HKCategoryType(identifier), displayTitle: displayTitle, canonicalTitle: canonicalTitle, variant: .category)
     }
     
     /// Creates a new clinical record sample type.
@@ -231,8 +245,9 @@ extension SampleType {
     @available(watchOS, unavailable)
     @inlinable public static func clinical(
         _ identifier: HKClinicalTypeIdentifier,
-        displayTitle: LocalizedStringResource? = nil
+        displayTitle: LocalizedStringResource? = nil,
+        canonicalTitle: String
     ) -> SampleType<HKClinicalRecord> {
-        .init(HKClinicalType(identifier), displayTitle: displayTitle, variant: .other)
+        .init(HKClinicalType(identifier), displayTitle: displayTitle, canonicalTitle: canonicalTitle, variant: .other)
     }
 }

@@ -14,31 +14,41 @@ import HealthKit
 #endif
 
 
+/// Locale-aware `HKUnit`.
 public struct LocalizedUnit: Sendable {
+    /// The metric variant of the unit..
     public let metric: HKUnit
-    public let us: HKUnit?
-    public let uk: HKUnit?
+    /// The US variant of the unit.
+    public let us: HKUnit
+    /// The UK variant of the unit.
+    public let uk: HKUnit
     
+    /// Creates a new LocalizedUnit
+    ///
+    /// - parameter metric: The metric variant of the unit.
+    /// - parameter us: The US variant of the unit.
+    /// - parameter uk: The UK variant of the unit.
+    ///
+    /// - Note: This initializer will default the ``us`` and ``uk`` variants to the `metric` input, if their inputs in the init are `nil`.
     @inlinable
     public init(metric: HKUnit, us: HKUnit? = nil, uk: HKUnit? = nil) {
-        // TODO we could make self.us and self.uk non-optional, and assign them to metric here in the init if their respecive args are nil.
-        // that would save us the extra fallback each time the unit is resolved.
         self.metric = metric
-        self.us = us
-        self.uk = uk
+        self.us = us ?? metric
+        self.uk = uk ?? metric
+    }
+    
+    @inlinable
+    public subscript(_ system: Locale.MeasurementSystem) -> HKUnit {
+        switch system {
+        case .metric: metric
+        case .us: us
+        case .uk: uk
+        default: metric
+        }
     }
     
     @inlinable
     public subscript(_ locale: Locale) -> HKUnit {
-        switch locale.measurementSystem {
-        case .metric:
-            metric
-        case .us:
-            us ?? metric
-        case .uk:
-            uk ?? metric
-        default:
-            metric
-        }
+        self[locale.measurementSystem]
     }
 }

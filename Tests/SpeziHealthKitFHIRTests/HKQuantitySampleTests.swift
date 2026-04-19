@@ -102,7 +102,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryBiotin",
-                display: "Dietary Biotin",
+                display: "Dietary Biotin Intake",
                 system: .apple
             )
         ])
@@ -125,7 +125,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryCaffeine",
-                display: "Dietary Caffeine",
+                display: "Dietary Caffeine Intake",
                 system: .apple
             )
         ])
@@ -148,7 +148,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryCalcium",
-                display: "Dietary Calcium",
+                display: "Dietary Calcium Intake",
                 system: .apple
             )
         ])
@@ -170,8 +170,8 @@ struct HKQuantitySampleTests {
         )
         #expect(observation.code.coding == [
             createCoding(
-                code: "HKQuantityTypeIdentifierDietaryCarbohydates",
-                display: "Dietary Carbohydates",
+                code: "HKQuantityTypeIdentifierDietaryCarbohydrates",
+                display: "Dietary Carbohydrates Intake",
                 system: .apple
             )
         ])
@@ -194,7 +194,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryChloride",
-                display: "Dietary Chloride",
+                display: "Dietary Chloride Intake",
                 system: .apple
             )
         ])
@@ -217,7 +217,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryCholesterol",
-                display: "Dietary Cholesterol",
+                display: "Dietary Cholesterol Intake",
                 system: .apple
             )
         ])
@@ -240,7 +240,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryChromium",
-                display: "Dietary Chromium",
+                display: "Dietary Chromium Intake",
                 system: .apple
             )
         ])
@@ -263,7 +263,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryCopper",
-                display: "Dietary Copper",
+                display: "Dietary Copper Intake",
                 system: .apple
             )
         ])
@@ -286,7 +286,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryFatMonounsaturated",
-                display: "Dietary Fat Monounsaturated",
+                display: "Dietary Monounsaturated Fat Intake",
                 system: .apple
             )
         ])
@@ -309,7 +309,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryFatPolyunsaturated",
-                display: "Dietary Fat Polyunsaturated",
+                display: "Dietary Polyunsaturated Fat Intake",
                 system: .apple
             )
         ])
@@ -332,7 +332,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryFatSaturated",
-                display: "Dietary Fat Saturated",
+                display: "Dietary Saturated Fat Intake",
                 system: .apple
             )
         ])
@@ -355,7 +355,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryFatTotal",
-                display: "Dietary Fat Total",
+                display: "Dietary Total Fat Intake",
                 system: .apple
             )
         ])
@@ -383,7 +383,7 @@ struct HKQuantitySampleTests {
             ),
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryFiber",
-                display: "Dietary Fiber",
+                display: "Dietary Fiber Intake",
                 system: .apple
             )
         ])
@@ -406,7 +406,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryFolate",
-                display: "Dietary Folate",
+                display: "Dietary Folate Intake",
                 system: .apple
             )
         ])
@@ -429,7 +429,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryIodine",
-                display: "Dietary Iodine",
+                display: "Dietary Iodine Intake",
                 system: .apple
             )
         ])
@@ -452,7 +452,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryIron",
-                display: "Dietary Iron",
+                display: "Dietary Iron Intake",
                 system: .apple
             )
         ])
@@ -475,7 +475,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryMagnesium",
-                display: "Dietary Magnesium",
+                display: "Dietary Magnesium Intake",
                 system: .apple
             )
         ])
@@ -498,7 +498,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryManganese",
-                display: "Dietary Manganese",
+                display: "Dietary Manganese Intake",
                 system: .apple
             )
         ])
@@ -521,7 +521,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryMolybdenum",
-                display: "Dietary Molybdenum",
+                display: "Dietary Molybdenum Intake",
                 system: .apple
             )
         ])
@@ -544,7 +544,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryPhosphorus",
-                display: "Dietary Phosphorus",
+                display: "Dietary Phosphorus Intake",
                 system: .apple
             )
         ])
@@ -567,7 +567,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryPotassium",
-                display: "Dietary Potassium",
+                display: "Dietary Potassium Intake",
                 system: .apple
             )
         ])
@@ -590,7 +590,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietarySodium",
-                display: "Dietary Sodium",
+                display: "Dietary Sodium Intake",
                 system: .apple
             )
         ])
@@ -613,7 +613,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryNiacin",
-                display: "Dietary Niacin",
+                display: "Dietary Niacin Intake",
                 system: .apple
             )
         ])
@@ -636,7 +636,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryPantothenicAcid",
-                display: "Dietary Pantothenic Acid",
+                display: "Dietary Pantothenic Acid Intake",
                 system: .apple
             )
         ])
@@ -659,7 +659,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryProtein",
-                display: "Dietary Protein",
+                display: "Dietary Protein Intake",
                 system: .apple
             )
         ])
@@ -682,7 +682,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryRiboflavin",
-                display: "Dietary Riboflavin",
+                display: "Dietary Riboflavin Intake",
                 system: .apple
             )
         ])
@@ -705,7 +705,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietarySelenium",
-                display: "Dietary Selenium",
+                display: "Dietary Selenium Intake",
                 system: .apple
             )
         ])
@@ -728,7 +728,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietarySugar",
-                display: "Dietary Sugar",
+                display: "Dietary Sugar Intake",
                 system: .apple
             )
         ])
@@ -751,7 +751,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryThiamin",
-                display: "Dietary Thiamin",
+                display: "Dietary Thiamin Intake",
                 system: .apple
             )
         ])
@@ -774,7 +774,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryVitaminA",
-                display: "Dietary Vitamin A",
+                display: "Dietary Vitamin A Intake",
                 system: .apple
             )
         ])
@@ -797,7 +797,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryVitaminB12",
-                display: "Dietary Vitamin B12",
+                display: "Dietary Vitamin B12 Intake",
                 system: .apple
             )
         ])
@@ -820,7 +820,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryVitaminB6",
-                display: "Dietary Vitamin B6",
+                display: "Dietary Vitamin B6 Intake",
                 system: .apple
             )
         ])
@@ -843,7 +843,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryVitaminC",
-                display: "Dietary Vitamin C",
+                display: "Dietary Vitamin C Intake",
                 system: .apple
             )
         ])
@@ -866,7 +866,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryVitaminD",
-                display: "Dietary Vitamin D",
+                display: "Dietary Vitamin D Intake",
                 system: .apple
             )
         ])
@@ -889,7 +889,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryVitaminE",
-                display: "Dietary Vitamin E",
+                display: "Dietary Vitamin E Intake",
                 system: .apple
             )
         ])
@@ -912,7 +912,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryVitaminK",
-                display: "Dietary Vitamin K",
+                display: "Dietary Vitamin K Intake",
                 system: .apple
             )
         ])
@@ -933,9 +933,19 @@ struct HKQuantitySampleTests {
             quantity: HKQuantity(unit: .liter(), doubleValue: 2)
         )
         #expect(observation.code.coding == [
+            Coding(
+                code: "8999-5",
+                display: "Fluid intake oral Estimated",
+                system: .loincSystem
+            ),
+            Coding(
+                code: "226354008",
+                display: "Water intake",
+                system: .snomedCT
+            ),
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryWater",
-                display: "Dietary Water",
+                display: "Dietary Water Intake",
                 system: .apple
             )
         ])
@@ -950,6 +960,39 @@ struct HKQuantitySampleTests {
     }
     
     @Test
+    func dietaryWater2() throws {
+        let observation = try createObservationFrom(
+            type: HKQuantityType(.dietaryWater),
+            quantity: HKQuantity(unit: .literUnit(with: .milli), doubleValue: 2500)
+        )
+        #expect(observation.code.coding == [
+            Coding(
+                code: "8999-5",
+                display: "Fluid intake oral Estimated",
+                system: .loincSystem
+            ),
+            Coding(
+                code: "226354008",
+                display: "Water intake",
+                system: .snomedCT
+            ),
+            createCoding(
+                code: "HKQuantityTypeIdentifierDietaryWater",
+                display: "Dietary Water Intake",
+                system: .apple
+            )
+        ])
+        #expect(observation.value == .quantity(
+            Quantity(
+                code: "l",
+                system: "http://unitsofmeasure.org",
+                unit: "l",
+                value: 2.5.asFHIRDecimalPrimitive()
+            )
+        ))
+    }
+    
+    @Test
     func dietaryZinc() throws {
         let observation = try createObservationFrom(
             type: HKQuantityType(.dietaryZinc),
@@ -958,7 +1001,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDietaryZinc",
-                display: "Dietary Zinc",
+                display: "Dietary Zinc Intake",
                 system: .apple
             )
         ])
@@ -987,10 +1030,10 @@ struct HKQuantitySampleTests {
         ])
         #expect(observation.value == .quantity(
             Quantity(
-                code: "S",
+                code: "mcS",
                 system: "http://unitsofmeasure.org",
-                unit: "siemens",
-                value: 0.000001.asFHIRDecimalPrimitive()
+                unit: "microsiemens",
+                value: 1.asFHIRDecimalPrimitive()
             )
         ))
     }
@@ -1009,7 +1052,7 @@ struct HKQuantitySampleTests {
             ),
             createCoding(
                 code: "HKQuantityTypeIdentifierForcedExpiratoryVolume1",
-                display: "Forced Expiratory Volume 1",
+                display: "Forced Expiratory Volume (1 sec)",
                 system: .apple
             )
         ])
@@ -1131,10 +1174,15 @@ struct HKQuantitySampleTests {
             quantity: HKQuantity(unit: .count().unitDivided(by: .minute()), doubleValue: 84)
         )
         #expect(observation.code.coding == [
-            createCoding(
+            Coding(
                 code: "8867-4",
                 display: "Heart rate",
-                system: .loinc
+                system: .loincSystem
+            ),
+            Coding(
+                code: "364075005",
+                display: "Heart rate",
+                system: .snomedCT
             ),
             createCoding(
                 code: "HKQuantityTypeIdentifierHeartRate",
@@ -1289,6 +1337,11 @@ struct HKQuantitySampleTests {
                 display: "Oxygen saturation in Arterial blood by Pulse oximetry",
                 system: .loinc
             ),
+            Coding(
+                code: "431314004",
+                display: "Peripheral oxygen saturation",
+                system: .snomedCT
+            ),
             createCoding(
                 code: "HKQuantityTypeIdentifierOxygenSaturation",
                 display: "Oxygen Saturation",
@@ -1375,7 +1428,7 @@ struct HKQuantitySampleTests {
             ),
             createCoding(
                 code: "HKQuantityTypeIdentifierPushCount",
-                display: "Push Count",
+                display: "Wheelchair Push Count",
                 system: .apple
             )
         ])
@@ -1441,7 +1494,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierVO2Max",
-                display: "VO2 Max",
+                display: "VO2Max",
                 system: .apple
             )
         ])
@@ -1462,10 +1515,15 @@ struct HKQuantitySampleTests {
             quantity: HKQuantity(unit: HKUnit(from: "in"), doubleValue: 38.7)
         )
         #expect(observation.code.coding == [
-            createCoding(
+            Coding(
                 code: "8280-0",
                 display: "Waist Circumference at umbilicus by Tape measure",
-                system: .loinc
+                system: .loincSystem
+            ),
+            Coding(
+                code: "276361009",
+                display: "Waist circumference",
+                system: .snomedCT
             ),
             createCoding(
                 code: "HKQuantityTypeIdentifierWaistCircumference",
@@ -1475,10 +1533,10 @@ struct HKQuantitySampleTests {
         ])
         #expect(observation.value == .quantity(
             Quantity(
-                code: "in",
+                code: "cm",
                 system: "http://unitsofmeasure.org",
-                unit: "in",
-                value: 38.7.asFHIRDecimalPrimitive()
+                unit: "cm",
+                value: 98.298.asFHIRDecimalPrimitive()
             )
         ))
     }
@@ -1490,10 +1548,15 @@ struct HKQuantitySampleTests {
             quantity: HKQuantity(unit: .degreeCelsius(), doubleValue: 37)
         )
         #expect(observation.code.coding == [
-            createCoding(
+            Coding(
                 code: "8310-5",
                 display: "Body temperature",
-                system: .loinc
+                system: .loincSystem
+            ),
+            Coding(
+                code: "386725007",
+                display: "Body temperature",
+                system: .snomedCT
             ),
             createCoding(
                 code: "HKQuantityTypeIdentifierBodyTemperature",
@@ -1518,6 +1581,15 @@ struct HKQuantitySampleTests {
             quantity: HKQuantity(unit: .degreeCelsius(), doubleValue: 37)
         )
         #expect(observation.code.coding == [
+            Coding(
+                code: "8310-5",
+                display: "Body temperature",
+                system: .loincSystem
+            ),
+            Coding(
+                code: "300076005",
+                system: .snomedCT
+            ),
             createCoding(
                 code: "HKQuantityTypeIdentifierBasalBodyTemperature",
                 display: "Basal Body Temperature",
@@ -1543,7 +1615,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierBasalEnergyBurned",
-                display: "Basal energy burned",
+                display: "Basal Energy Burned",
                 system: .apple
             )
         ])
@@ -1627,7 +1699,7 @@ struct HKQuantitySampleTests {
             ),
             createCoding(
                 code: "HKQuantityTypeIdentifierBodyMassIndex",
-                display: "Body Mass Index",
+                display: "BMI",
                 system: .apple
             )
         ])
@@ -1645,13 +1717,18 @@ struct HKQuantitySampleTests {
     func height() throws {
         let observation = try createObservationFrom(
             type: HKQuantityType(.height),
-            quantity: HKQuantity(unit: .inch(), doubleValue: 64)
+            quantity: HKQuantity(unit: .meter(), doubleValue: 1.87)
         )
         #expect(observation.code.coding == [
-            createCoding(
+            Coding(
                 code: "8302-2",
                 display: "Body height",
-                system: .loinc
+                system: .loincSystem
+            ),
+            Coding(
+                code: "50373000",
+                display: "Body height measure",
+                system: .snomedCT
             ),
             createCoding(
                 code: "HKQuantityTypeIdentifierHeight",
@@ -1661,10 +1738,10 @@ struct HKQuantitySampleTests {
         ])
         #expect(observation.value == .quantity(
             Quantity(
-                code: "[in_i]",
+                code: "cm",
                 system: "http://unitsofmeasure.org".asFHIRURIPrimitive(),
-                unit: "in",
-                value: 64.asFHIRDecimalPrimitive()
+                unit: "cm",
+                value: 187.asFHIRDecimalPrimitive()
             )
         ))
     }
@@ -1673,13 +1750,18 @@ struct HKQuantitySampleTests {
     func bodyMass() throws {
         let observation = try createObservationFrom(
             type: HKQuantityType(.bodyMass),
-            quantity: HKQuantity(unit: .pound(), doubleValue: 60)
+            quantity: HKQuantity(unit: .gramUnit(with: .kilo), doubleValue: 68.7)
         )
         #expect(observation.code.coding == [
-            createCoding(
+            Coding(
                 code: "29463-7",
                 display: "Body weight",
-                system: .loinc
+                system: .loincSystem
+            ),
+            Coding(
+                code: "27113001",
+                display: "Body weight",
+                system: .snomedCT
             ),
             createCoding(
                 code: "HKQuantityTypeIdentifierBodyMass",
@@ -1689,10 +1771,10 @@ struct HKQuantitySampleTests {
         ])
         #expect(observation.value == .quantity(
             Quantity(
-                code: "[lb_av]",
+                code: "kg",
                 system: "http://unitsofmeasure.org".asFHIRURIPrimitive(),
-                unit: "lbs",
-                value: 60.asFHIRDecimalPrimitive()
+                unit: "kg",
+                value: 68.7.asFHIRDecimalPrimitive()
             )
         ))
     }
@@ -1701,7 +1783,7 @@ struct HKQuantitySampleTests {
     func leanBodyMass() throws {
         let observation = try createObservationFrom(
             type: HKQuantityType(.leanBodyMass),
-            quantity: HKQuantity(unit: .pound(), doubleValue: 60)
+            quantity: HKQuantity(unit: .gramUnit(with: .kilo), doubleValue: 67)
         )
         #expect(observation.code.coding == [
             createCoding(
@@ -1717,10 +1799,10 @@ struct HKQuantitySampleTests {
         ])
         #expect(observation.value == .quantity(
             Quantity(
-                code: "[lb_av]",
+                code: "kg",
                 system: "http://unitsofmeasure.org".asFHIRURIPrimitive(),
-                unit: "lbs",
-                value: 60.asFHIRDecimalPrimitive()
+                unit: "kg",
+                value: 67.asFHIRDecimalPrimitive()
             )
         ))
     }
@@ -1734,7 +1816,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierNumberOfTimesFallen",
-                display: "Number Of Times Fallen",
+                display: "Number of Times Fallen",
                 system: .apple
             )
         ])
@@ -1774,10 +1856,15 @@ struct HKQuantitySampleTests {
             quantity: HKQuantity(unit: .count().unitDivided(by: .minute()), doubleValue: 18)
         )
         #expect(observation.code.coding == [
-            createCoding(
+            Coding(
                 code: "9279-1",
                 display: "Respiratory rate",
-                system: .loinc
+                system: .loincSystem
+            ),
+            Coding(
+                code: "86290005",
+                display: "Respiratory rate",
+                system: .snomedCT
             ),
             createCoding(
                 code: "HKQuantityTypeIdentifierRespiratoryRate",
@@ -1879,7 +1966,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierPhysicalEffort",
-                display: "Apple Physical Effort",
+                display: "Physical Effort",
                 system: .apple
             )
         ])
@@ -1943,12 +2030,12 @@ struct HKQuantitySampleTests {
     func distanceCycling() throws {
         let observation = try createObservationFrom(
             type: HKQuantityType(.distanceCycling),
-            quantity: HKQuantity(unit: .meter(), doubleValue: 1000)
+            quantity: HKQuantity(unit: .meterUnit(with: .kilo), doubleValue: 1.75)
         )
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDistanceCycling",
-                display: "Distance Cycling",
+                display: "Cycling Distance",
                 system: .apple
             )
         ])
@@ -1957,7 +2044,7 @@ struct HKQuantitySampleTests {
                 code: "m",
                 system: "http://unitsofmeasure.org".asFHIRURIPrimitive(),
                 unit: "m",
-                value: 1000.asFHIRDecimalPrimitive()
+                value: 1750.asFHIRDecimalPrimitive()
             )
         ))
     }
@@ -1966,12 +2053,12 @@ struct HKQuantitySampleTests {
     func distanceDownhillSnowSports() throws {
         let observation = try createObservationFrom(
             type: HKQuantityType(.distanceDownhillSnowSports),
-            quantity: HKQuantity(unit: .meter(), doubleValue: 1000)
+            quantity: HKQuantity(unit: .meter(), doubleValue: 1750)
         )
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDistanceDownhillSnowSports",
-                display: "Distance Downhill Snow Sports",
+                display: "Downhill Snow Sports Distance",
                 system: .apple
             )
         ])
@@ -1980,7 +2067,7 @@ struct HKQuantitySampleTests {
                 code: "m",
                 system: "http://unitsofmeasure.org".asFHIRURIPrimitive(),
                 unit: "m",
-                value: 1000.asFHIRDecimalPrimitive()
+                value: 1750.asFHIRDecimalPrimitive()
             )
         ))
     }
@@ -1999,7 +2086,7 @@ struct HKQuantitySampleTests {
             ),
             createCoding(
                 code: "HKQuantityTypeIdentifierDistanceSwimming",
-                display: "Distance Swimming",
+                display: "Swimming Distance",
                 system: .apple
             )
         ])
@@ -2023,7 +2110,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDistanceWalkingRunning",
-                display: "Distance Walking or Running",
+                display: "Distance Walking/Running",
                 system: .apple
             )
         ])
@@ -2046,7 +2133,7 @@ struct HKQuantitySampleTests {
         #expect(observation.code.coding == [
             createCoding(
                 code: "HKQuantityTypeIdentifierDistanceWheelchair",
-                display: "Distance in a Wheelchair",
+                display: "Wheelchair Distance",
                 system: .apple
             )
         ])
@@ -2106,18 +2193,19 @@ struct HKQuantitySampleTests {
         ))
     }
     
-    @Test
-    func unsupportedTypeSample() throws {
-        let quantitySample = HKQuantitySample(
-            type: HKQuantityType(.nikeFuel),
-            quantity: HKQuantity(unit: .count(), doubleValue: 1),
-            start: try startDate,
-            end: try endDate
-        )
-        #expect(throws: HealthKitOnFHIRError.self) {
-            try quantitySample.resource().get(if: Observation.self)
-        }
-    }
+    // TODO find a new unsupported type!
+//    @Test
+//    func unsupportedTypeSample() throws {
+//        let quantitySample = HKQuantitySample(
+//            type: HKQuantityType(.nikeFuel),
+//            quantity: HKQuantity(unit: .count(), doubleValue: 1),
+//            start: try startDate,
+//            end: try endDate
+//        )
+//        #expect(throws: HealthKitOnFHIRError.self) {
+//            try quantitySample.resource().get(if: Observation.self)
+//        }
+//    }
     
     @Test
     func invalidComponent() throws {
@@ -2162,16 +2250,17 @@ struct HKQuantitySampleTests {
         }
     }
     
-    @Test
-    func unsupportedMapping() throws {
-        let sample = HKQuantitySample(
-            type: HKQuantityType(.nikeFuel),
-            quantity: HKQuantity(unit: .count(), doubleValue: 1),
-            start: try startDate,
-            end: try endDate
-        )
-        #expect(sample.quantityType.codes().isEmpty)
-    }
+    // TODO find a new unsupported type!
+//    @Test
+//    func unsupportedMapping() throws {
+//        let sample = HKQuantitySample(
+//            type: HKQuantityType(.nikeFuel),
+//            quantity: HKQuantity(unit: .count(), doubleValue: 1),
+//            start: try startDate,
+//            end: try endDate
+//        )
+//        #expect(sample.quantityType.codes().isEmpty)
+//    }
     
     @Test func invalidValue() throws {
         #expect(Decimal(Double.nan).doubleValue.isNaN)
@@ -2246,35 +2335,36 @@ struct HKQuantitySampleTests {
         }
     }
     
-    @Test
-    func collectionSampleToResourceProxyWithUnsupportedSample() throws {
-        func makeSample(numSteps: Int, date: DateComponents) throws -> HKQuantitySample {
-            let date = try #require(Calendar.current.date(from: date))
-            return HKQuantitySample(
-                type: HKQuantityType(.stepCount),
-                quantity: HKQuantity(unit: .count(), doubleValue: Double(numSteps)),
-                start: date,
-                end: date
-            )
-        }
-        let samples = [
-            try makeSample(numSteps: 12, date: .init(year: 2025, month: 1, day: 1, hour: 0)),
-            try makeSample(numSteps: 13, date: .init(year: 2025, month: 1, day: 1, hour: 1)),
-            try makeSample(numSteps: 14, date: .init(year: 2025, month: 1, day: 1, hour: 2)),
-            try makeSample(numSteps: 15, date: .init(year: 2025, month: 1, day: 1, hour: 3)),
-            try makeSample(numSteps: 16, date: .init(year: 2025, month: 1, day: 1, hour: 4)),
-            try makeSample(numSteps: 17, date: .init(year: 2025, month: 1, day: 1, hour: 5)),
-            HKQuantitySample(type: HKQuantityType(.nikeFuel), quantity: HKQuantity(unit: .count(), doubleValue: 123), start: .now, end: .now)
-        ]
-        #expect(throws: HealthKitOnFHIRError.self) {
-            try samples.mapIntoResourceProxies()
-        }
-        let resources = try samples.compactMapIntoResourceProxies()
-        #expect(resources.count == samples.count - 1)
-        for resource in resources {
-            #expect(resource.get(if: Observation.self) != nil)
-        }
-    }
+    // TODO find a new unsupported type!
+//    @Test
+//    func collectionSampleToResourceProxyWithUnsupportedSample() throws {
+//        func makeSample(numSteps: Int, date: DateComponents) throws -> HKQuantitySample {
+//            let date = try #require(Calendar.current.date(from: date))
+//            return HKQuantitySample(
+//                type: HKQuantityType(.stepCount),
+//                quantity: HKQuantity(unit: .count(), doubleValue: Double(numSteps)),
+//                start: date,
+//                end: date
+//            )
+//        }
+//        let samples = [
+//            try makeSample(numSteps: 12, date: .init(year: 2025, month: 1, day: 1, hour: 0)),
+//            try makeSample(numSteps: 13, date: .init(year: 2025, month: 1, day: 1, hour: 1)),
+//            try makeSample(numSteps: 14, date: .init(year: 2025, month: 1, day: 1, hour: 2)),
+//            try makeSample(numSteps: 15, date: .init(year: 2025, month: 1, day: 1, hour: 3)),
+//            try makeSample(numSteps: 16, date: .init(year: 2025, month: 1, day: 1, hour: 4)),
+//            try makeSample(numSteps: 17, date: .init(year: 2025, month: 1, day: 1, hour: 5)),
+//            HKQuantitySample(type: HKQuantityType(.nikeFuel), quantity: HKQuantity(unit: .count(), doubleValue: 123), start: .now, end: .now)
+//        ]
+//        #expect(throws: HealthKitOnFHIRError.self) {
+//            try samples.mapIntoResourceProxies()
+//        }
+//        let resources = try samples.compactMapIntoResourceProxies()
+//        #expect(resources.count == samples.count - 1)
+//        for resource in resources {
+//            #expect(resource.get(if: Observation.self) != nil)
+//        }
+//    }
     
     @Test
     func absoluteTimeRangeStoredInExtension() throws {

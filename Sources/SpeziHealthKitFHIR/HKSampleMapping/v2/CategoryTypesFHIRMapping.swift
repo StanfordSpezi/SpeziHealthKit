@@ -25,9 +25,11 @@ public typealias CategoryTypesFHIRMapping = [SampleType<HKCategorySample>: Categ
 /// - ``codings``
 public struct CategoryTypeFHIRMapping: Hashable, Sendable {
     public var codings: [Coding]
+    public var categories: [Coding]
     
-    public init(codings: [Coding]) {
+    public init(codings: [Coding], categories: [Coding]) {
         self.codings = codings
+        self.categories = categories
     }
 }
 
@@ -39,12 +41,15 @@ extension CategoryTypesFHIRMapping {
             assertionFailure("Missing FHIR mapping entry for \(HKCategoryType.self) \(categoryType)!")
             return
         }
-        mapping[sampleType] = CategoryTypeFHIRMapping(codings: [
-            Coding(
-                code: categoryType.identifier.asFHIRStringPrimitive(),
-                display: sampleType.localizedTitle(in: Locale.Language(identifier: "en-US"))?.asFHIRStringPrimitive(),
-                system: "http://developer.apple.com/documentation/healthkit".asFHIRURIPrimitive()
-            )
-        ])
+        mapping[sampleType] = CategoryTypeFHIRMapping(
+            codings: [
+                Coding(
+                    code: categoryType.identifier.asFHIRStringPrimitive(),
+                    display: sampleType.canonicalTitle.asFHIRStringPrimitive(),
+                    system: .healthKitSystem
+                )
+            ],
+            categories: []
+        )
     }
 }

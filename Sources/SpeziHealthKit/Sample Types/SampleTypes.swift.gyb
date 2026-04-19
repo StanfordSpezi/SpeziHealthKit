@@ -40,6 +40,7 @@ extension SampleType where Sample == ${hk_class} {
             as: SampleType<${hk_class}>.self,
             default: .${ctor}(
                 .${ty.identifier},
+                canonicalTitle: "${ty.canonical_title}",
             % for idx, (key, value) in enumerate(ty.extra_init_params):
                 ${key}: ${value}${',' if idx < len(ty.extra_init_params) - 1 else ''}
             % end
@@ -158,7 +159,7 @@ extension SampleType where Sample == ${sample_type.hkSampleClass} {
         SampleTypeCache.get(
             identifier: ${sample_type.hkSampleType}.identifier,
             as: SampleType<${sample_type.hkSampleClass}>.self,
-            default: .init(${sample_type.hkSampleType}, variant: .other)
+            default: .init(${sample_type.hkSampleType}, canonicalTitle: "${sample_type.canonical_title}", variant: .other)
         )
     }
 }

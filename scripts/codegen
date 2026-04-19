@@ -7,6 +7,8 @@
 # SPDX-License-Identifier: MIT
 #
 
+set -ex
+
 # Execute this script on macOS, from the repo's root, to run the whole codegen pipeline associated with the SpeziHealthKit package:
 
 # 1: run the gyb, to generate the SampleType definitions (and some input sources for the Codegen)

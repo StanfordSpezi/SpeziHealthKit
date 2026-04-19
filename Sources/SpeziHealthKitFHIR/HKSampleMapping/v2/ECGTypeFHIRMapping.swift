@@ -96,20 +96,26 @@ extension ECGTypeFHIRMapping {
                 system: "http://terminology.hl7.org/CodeSystem/observation-category"
             )
         ],
-        classification: CategoryTypeFHIRMapping(codings: [
-            Coding(
-                code: "HKElectrocardiogram.Classification",
-                display: "Electrocardiogram Classification",
-                system: "http://developer.apple.com/documentation/healthkit"
-            )
-        ]),
-        symptomsStatus: CategoryTypeFHIRMapping(codings: [
-            Coding(
-                code: "HKElectrocardiogram.SymptomsStatus",
-                display: "Electrocardiogram Symptoms Status",
-                system: "http://developer.apple.com/documentation/healthkit"
-            )
-        ]),
+        classification: CategoryTypeFHIRMapping(
+            codings: [
+                Coding(
+                    code: "HKElectrocardiogram.Classification",
+                    display: "Electrocardiogram Classification",
+                    system: "http://developer.apple.com/documentation/healthkit"
+                )
+            ],
+            categories: []
+        ),
+        symptomsStatus: CategoryTypeFHIRMapping(
+            codings: [
+                Coding(
+                    code: "HKElectrocardiogram.SymptomsStatus",
+                    display: "Electrocardiogram Symptoms Status",
+                    system: "http://developer.apple.com/documentation/healthkit"
+                )
+            ],
+            categories: []
+        ),
         numberOfVoltageMeasurements: QuantityTypeFHIRMapping(
             codings: [
                 Coding(

@@ -38,6 +38,11 @@ extension WorkoutTypeFHIRMapping {
     public static let `default` = Self(
         codings: [
             Coding(
+                code: "HKWorkout",
+                display: "Workout",
+                system: .healthKitSystem
+            ),
+            Coding(
                 code: "73985-4",
                 display: "Exercise activity",
                 system: "http://loinc.org"

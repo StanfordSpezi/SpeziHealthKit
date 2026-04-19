@@ -71,7 +71,7 @@ extension Coding {
     init(_ sampleType: SampleType<HKQuantitySample>) {
         self.init(
             code: sampleType.identifier.rawValue.asFHIRStringPrimitive(),
-            display: sampleType.localizedTitle(in: Locale.Language(identifier: "en-US"))?.asFHIRStringPrimitive(),
+            display: sampleType.canonicalTitle.asFHIRStringPrimitive(),
             system: .healthKitSystem
         )
     }
@@ -230,8 +230,8 @@ extension QuantityTypesFHIRMapping {
                     system: .snomedCT
                 )
             ],
-            code: "[lb_av]",
-            unitString: "lbs",
+            code: "kg",
+            unitString: "kg",
             system: .unitsOfMeasureSystem
         )
         addMapping(
@@ -361,15 +361,21 @@ extension QuantityTypesFHIRMapping {
             system: .unitsOfMeasureSystem
         )
         
-        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
-            addMapping(for: .distanceCrossCountrySkiing, code: "m", unitString: "m", system: .unitsOfMeasureSystem)
-        }
-        addMapping(for: .distanceCycling, code: "m", unitString: "m", system: .unitsOfMeasureSystem)
-        addMapping(for: .distanceDownhillSnowSports, code: "m", unitString: "m", system: .unitsOfMeasureSystem)
-        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
-            addMapping(for: .distancePaddleSports, code: "m", unitString: "m", system: .unitsOfMeasureSystem)
-            addMapping(for: .distanceRowing, code: "m", unitString: "m", system: .unitsOfMeasureSystem)
-            addMapping(for: .distanceSkatingSports, code: "m", unitString: "m", system: .unitsOfMeasureSystem)
+        do {
+            var sampleTypes: [SampleType<HKQuantitySample>] = [
+                .distanceCycling, .distanceDownhillSnowSports
+            ]
+            if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
+                sampleTypes += [
+                    .distanceCrossCountrySkiing,
+                    .distancePaddleSports,
+                    .distanceRowing,
+                    .distanceSkatingSports
+                ]
+            }
+            for sampleType in sampleTypes {
+                addMapping(for: sampleType, code: "m", unitString: "m", system: .unitsOfMeasureSystem)
+            }
         }
         addMapping(
             for: .distanceSwimming,
@@ -387,9 +393,7 @@ extension QuantityTypesFHIRMapping {
         addMapping(
             for: .distanceWalkingRunning,
             extraCodings: [
-                Coding(
-                    // TODO SURELU THIS HAS A COPDE?
-                )
+                // TODO SURELU THIS HAS A COPDE?
             ],
             code: "m",
             unitString: "m",
@@ -398,16 +402,14 @@ extension QuantityTypesFHIRMapping {
         addMapping(
             for: .distanceWheelchair,
             extraCodings: [
-                Coding(
-                    // TODO SURELU THIS HAS A COPDE?
-                )
+                // TODO SURELU THIS HAS A COPDE?
             ],
             code: "m",
             unitString: "m",
             system: .unitsOfMeasureSystem
         )
         
-        addMapping(for: .electrodermalActivity, code: "S", unitString: "siemens", system: .unitsOfMeasureSystem)
+        addMapping(for: .electrodermalActivity, code: "mcS", unitString: "microsiemens", system: .unitsOfMeasureSystem)
         addMapping(for: .environmentalAudioExposure, code: "dB(SPL)", unitString: "dB(SPL)", system: .unitsOfMeasureSystem)
         addMapping(for: .environmentalSoundReduction, code: "dB(HL)", unitString: "dB(HL)", system: .unitsOfMeasureSystem)
         if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
@@ -499,8 +501,8 @@ extension QuantityTypesFHIRMapping {
                     system: .snomedCT
                 )
             ],
-            code: "[in_i]",
-            unitString: "in",
+            code: "cm",
+            unitString: "cm",
             system: .unitsOfMeasureSystem
         )
         addMapping(for: .inhalerUsage, code: nil, unitString: "count", system: nil)
@@ -514,8 +516,8 @@ extension QuantityTypesFHIRMapping {
                     system: .loincSystem
                 )
             ],
-            code: "[lb_av]",
-            unitString: "lbs",
+            code: "kg",
+            unitString: "kg",
             system: .unitsOfMeasureSystem
         )
         addMapping(for: .nikeFuel, code: nil, unitString: "nikeFuel", system: nil)
@@ -669,8 +671,8 @@ extension QuantityTypesFHIRMapping {
                     system: .snomedCT
                 )
             ],
-            code: "in", // TODO should use meters (or cm?) here!!!
-            unitString: "in",
+            code: "cm",
+            unitString: "cm",
             system: .unitsOfMeasureSystem
         )
         addMapping(for: .walkingAsymmetryPercentage, code: "%", unitString: "%", system: .unitsOfMeasureSystem)

@@ -58,6 +58,11 @@ struct CustomMappingsTests {
                 system: FHIRPrimitive(FHIRURI(stringLiteral: "http://loinc.org"))
             ),
             Coding(
+                code: "27113001",
+                display: "Body weight",
+                system: .snomedCT
+            ),
+            Coding(
                 code: "HKQuantityTypeIdentifierBodyMass",
                 display: "Body Mass",
                 system: FHIRPrimitive(FHIRURI(stringLiteral: "http://developer.apple.com/documentation/healthkit"))
