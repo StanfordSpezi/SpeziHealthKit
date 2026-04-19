@@ -208,6 +208,16 @@ extension QuantityTypeFHIRMapping {
                 code: "HKMetadataKeyHeartRateRecoveryMaxObservedRecoveryHeartRate",
                 display: "Heart Rate Recovery Max Observed Recovery Heart Rate",
                 system: .healthKitSystem
+            ),
+            Coding(
+                code: "8867-4",
+                display: "Heart rate",
+                system: .loincSystem
+            ),
+            Coding(
+                code: "364075005",
+                display: "Heart rate",
+                system: .snomedCT
             )
         ],
         unit: Unit(
@@ -352,6 +362,16 @@ extension QuantityTypeFHIRMapping {
                 code: "HKMetadataKeyHeartRateEventThreshold",
                 display: "Heart Rate Event Threshold",
                 system: .healthKitSystem
+            ),
+            Coding(
+                code: "8867-4",
+                display: "Heart rate",
+                system: .loincSystem
+            ),
+            Coding(
+                code: "364075005",
+                display: "Heart rate",
+                system: .snomedCT
             )
         ],
         unit: Unit(

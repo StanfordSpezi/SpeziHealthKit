@@ -174,6 +174,11 @@ extension QuantityTypesFHIRMapping {
                     code: "8462-4",
                     display: "Diastolic blood pressure",
                     system: .loincSystem
+                ),
+                Coding(
+                    code: "271650006",
+                    display: "Diastolic blood pressure",
+                    system: .snomedCT
                 )
             ],
             code: "mm[Hg]",
@@ -187,6 +192,11 @@ extension QuantityTypesFHIRMapping {
                     code: "8480-6",
                     display: "Systolic blood pressure",
                     system: .loincSystem
+                ),
+                Coding(
+                    code: "271649006",
+                    display: "Systolic blood pressure",
+                    system: .snomedCT
                 )
             ],
             code: "mm[Hg]",
@@ -213,6 +223,11 @@ extension QuantityTypesFHIRMapping {
                     code: "29463-7",
                     display: "Body weight",
                     system: .loincSystem
+                ),
+                Coding(
+                    code: "27113001",
+                    display: "Body weight",
+                    system: .snomedCT
                 )
             ],
             code: "[lb_av]",
@@ -239,6 +254,11 @@ extension QuantityTypesFHIRMapping {
                     code: "8310-5",
                     display: "Body temperature",
                     system: .loincSystem
+                ),
+                Coding(
+                    code: "386725007",
+                    display: "Body temperature",
+                    system: .snomedCT
                 )
             ],
             code: "Cel",
@@ -281,7 +301,7 @@ extension QuantityTypesFHIRMapping {
             let byUnit: [String: [SampleType<HKQuantitySample>]] = [
                 "ug": [.dietaryBiotin, .dietaryChromium, .dietaryCopper, .dietaryFolate, .dietaryIodine, .dietaryMolybdenum, .dietarySelenium, .dietaryVitaminA, .dietaryVitaminB12, .dietaryVitaminD, .dietaryVitaminK],
                 "mg": [.dietaryCaffeine, .dietaryCalcium, .dietaryChloride, .dietaryCholesterol, .dietaryIron, .dietaryMagnesium, .dietaryManganese, .dietaryNiacin, .dietaryPantothenicAcid, .dietaryPhosphorus, .dietaryPotassium, .dietaryRiboflavin, .dietarySodium, .dietaryThiamin, .dietaryVitaminB6, .dietaryVitaminC, .dietaryVitaminE, .dietaryZinc],
-                "g": [.dietaryCarbohydrates, .dietaryFatMonounsaturated, .dietaryFatPolyunsaturated, .dietaryFatSaturated, .dietaryFatTotal, .dietaryFiber, .dietaryProtein, .dietarySugar]
+                "g": [.dietaryCarbohydrates, .dietaryFatMonounsaturated, .dietaryFatPolyunsaturated, .dietaryFatSaturated, .dietaryFatTotal, .dietaryProtein, .dietarySugar]
             ]
             for (unit, sampleTypes) in byUnit {
                 for sampleType in sampleTypes {
@@ -306,6 +326,19 @@ extension QuantityTypesFHIRMapping {
             ],
             code: "kcal",
             unitString: "kcal",
+            system: .unitsOfMeasureSystem
+        )
+        addMapping(
+            for: .dietaryFiber,
+            extraCodings: [
+                Coding(
+                    code: "LP203183-1",
+                    display: "Fiber intake",
+                    system: .loincSystem
+                )
+            ],
+            code: "g",
+            unitString: "g",
             system: .unitsOfMeasureSystem
         )
         
@@ -428,6 +461,11 @@ extension QuantityTypesFHIRMapping {
                     code: "8867-4",
                     display: "Heart rate",
                     system: .loincSystem
+                ),
+                Coding(
+                    code: "364075005",
+                    display: "Heart rate",
+                    system: .snomedCT
                 )
             ],
             code: "/min",
@@ -454,6 +492,11 @@ extension QuantityTypesFHIRMapping {
                     code: "8302-2",
                     display: "Body height",
                     system: .loincSystem
+                ),
+                Coding(
+                    code: "50373000",
+                    display: "Body height measure",
+                    system: .snomedCT
                 )
             ],
             code: "[in_i]",
@@ -485,6 +528,11 @@ extension QuantityTypesFHIRMapping {
                     code: "59408-5",
                     display: "Oxygen saturation in Arterial blood by Pulse oximetry",
                     system: .loincSystem
+                ),
+                Coding(
+                    code: "431314004",
+                    display: "Peripheral oxygen saturation",
+                    system: .snomedCT
                 )
             ],
             code: "%",
@@ -541,6 +589,11 @@ extension QuantityTypesFHIRMapping {
                     code: "9279-1",
                     display: "Respiratory rate",
                     system: .loincSystem
+                ),
+                Coding(
+                    code: "86290005",
+                    display: "Respiratory rate",
+                    system: .snomedCT
                 )
             ],
             code: "/min",
@@ -568,7 +621,19 @@ extension QuantityTypesFHIRMapping {
         addMapping(for: .runningSpeed, code: "km/h", unitString: "km/h", system: .unitsOfMeasureSystem)
         addMapping(for: .runningStrideLength, code: "m", unitString: "meters", system: .unitsOfMeasureSystem)
         addMapping(for: .runningVerticalOscillation, code: "m", unitString: "m", system: .unitsOfMeasureSystem)
-        addMapping(for: .sixMinuteWalkTestDistance, code: "m", unitString: "m", system: .unitsOfMeasureSystem)
+        addMapping(
+            for: .sixMinuteWalkTestDistance,
+            extraCodings: [
+                Coding(
+                    code: "55430-3",
+                    display: "6 minute walk test Distance",
+                    system: .loincSystem
+                )
+            ],
+            code: "m",
+            unitString: "m",
+            system: .unitsOfMeasureSystem
+        )
         addMapping(for: .stairAscentSpeed, code: "m/s", unitString: "m/s", system: .unitsOfMeasureSystem)
         addMapping(for: .stairDescentSpeed, code: "m/s", unitString: "m/s", system: .unitsOfMeasureSystem)
         addMapping(
@@ -597,6 +662,11 @@ extension QuantityTypesFHIRMapping {
                     code: "8280-0",
                     display: "Waist Circumference at umbilicus by Tape measure",
                     system: .loincSystem
+                ),
+                Coding(
+                    code: "276361009",
+                    display: "Waist circumference",
+                    system: .snomedCT
                 )
             ],
             code: "in", // TODO should use meters (or cm?) here!!!
