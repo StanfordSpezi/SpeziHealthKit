@@ -15,5 +15,5 @@ protocol FHIRObservationBuildable: HKSample {
     /// Populates the observation with the contents of the HealthKit sample.
     ///
     /// - throws: if the sample cannot be expressed as a FHIR Observation
-    func build(_ observation: inout Observation, mapping: HKSampleMapping) throws
+    func build(_ observation: inout Observation, mapping: SampleTypesFHIRMapping) throws
 }

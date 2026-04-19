@@ -9,10 +9,26 @@
 public import ModelsR4
 public import SpeziHealthKit
 
+// TODO use HKQuantityType or SampleType<...> as the key here? (perf impact?!)
+/// Controls how `HKQuantitySample`s are mapped into FHIR Observations.
 public typealias QuantityTypesFHIRMapping = [SampleType<HKQuantitySample>: QuantityTypeFHIRMapping]
 
 
+/// Controls how an `HKQuantitySample` is mapped into a FHIR Observation.
+///
+/// ## Topics
+///
+/// ### Initializers
+/// - ``init(codings:unit:)``
+///
+/// ### Instance Properties
+/// - ``codings``
+/// - ``unit``
+///
+/// ### Supporting Types
+/// - ``Unit``
 public struct QuantityTypeFHIRMapping: Hashable, Sendable {
+    // TODO docs!
     public struct Unit: Hashable, Sendable {
         public let hkUnit: HKUnit
         public let unit: String
@@ -40,22 +56,31 @@ public struct QuantityTypeFHIRMapping: Hashable, Sendable {
 
 extension FHIRPrimitive<FHIRURI> {
     // swiftlint:disable force_unwrapping
-    fileprivate static let loincSystem: Self = "http://loinc.org".asFHIRURIPrimitive()!
-    fileprivate static let unitsOfMeasureSystem: Self = "http://unitsofmeasure.org".asFHIRURIPrimitive()!
-    fileprivate static let healthKitSystem: Self = "http://developer.apple.com/documentation/healthkit".asFHIRURIPrimitive()!
+    internal static let loincSystem: Self = "http://loinc.org".asFHIRURIPrimitive()!
+    internal static let unitsOfMeasureSystem: Self = "http://unitsofmeasure.org".asFHIRURIPrimitive()!
+    internal static let healthKitSystem: Self = "http://developer.apple.com/documentation/healthkit".asFHIRURIPrimitive()!
     // swiftlint:enable force_unwrapping
 }
 
 
-extension QuantityTypesFHIRMapping {
-    private static func defaultCoding(for sampleType: SampleType<HKQuantitySample>) -> Coding {
-        Coding(
+extension Coding {
+    init(_ sampleType: SampleType<HKQuantitySample>) {
+        self.init(
             code: sampleType.identifier.rawValue.asFHIRStringPrimitive(),
             display: sampleType.localizedTitle(in: Locale.Language(identifier: "en-US"))?.asFHIRStringPrimitive(),
             system: .healthKitSystem
         )
     }
+}
+
+
+extension QuantityTypesFHIRMapping {
+//    @available(*, deprecated, renamed: "Coding.init(_:)")
+//    private static func defaultCoding(for sampleType: SampleType<HKQuantitySample>) -> Coding {
+//        .init(sampleType)
+//    }
     
+    /// The default FHIR mapping for HealthKit Quantity types
     public static let `default`: Self = {
         var mapping: Self = [:]
         func addMapping(
@@ -66,7 +91,7 @@ extension QuantityTypesFHIRMapping {
             system: FHIRPrimitive<FHIRURI>?
         ) {
             mapping[sampleType] = QuantityTypeFHIRMapping(
-                codings: extraCodings + [defaultCoding(for: sampleType)],
+                codings: extraCodings + [Coding(sampleType)],
                 unit: QuantityTypeFHIRMapping.Unit(
                     hkUnit: sampleType.canonicalUnit,
                     unit: unitString,

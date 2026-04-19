@@ -13,35 +13,33 @@ import ModelsR4
 
 @available(iOS 18.0, watchOS 11.0, macCatalyst 18.0, macOS 15.0, visionOS 2.0, *)
 extension HKStateOfMind: FHIRObservationBuildable {
-    func build(_ observation: inout Observation, mapping: HKSampleMapping) throws {
-        let mapping = mapping.stateOfMindMapping
-        for code in mapping.codings {
-            observation.append(coding: code.coding)
-        }
+    func build(_ observation: inout Observation, mapping: SampleTypesFHIRMapping) throws {
+        let mapping = mapping.stateOfMindTypeMapping
+        observation.append(codings: mapping.codings)
         for category in mapping.categories {
-            observation.append(category: CodeableConcept(coding: [category.coding]))
+            observation.append(category: CodeableConcept(coding: [category]))
         }
         observation.append(component: .init(
-            code: CodeableConcept(coding: mapping.kind.codings.map(\.coding)),
+            code: CodeableConcept(coding: mapping.kind.codings),
             value: .string(self.kind.stringValue.asFHIRStringPrimitive())
         ))
         observation.append(component: .init(
-            code: CodeableConcept(coding: mapping.valence.codings.map(\.coding)),
+            code: CodeableConcept(coding: mapping.valence.codings),
             value: .quantity(.init(value: try self.valence.asFHIRDecimalPrimitiveSafe()))
         ))
         observation.append(component: .init(
-            code: CodeableConcept(coding: mapping.valenceClassification.codings.map(\.coding)),
+            code: CodeableConcept(coding: mapping.valenceClassification.codings),
             value: .string(self.valenceClassification.stringValue.asFHIRStringPrimitive())
         ))
         for label in self.labels {
             observation.append(component: .init(
-                code: CodeableConcept(coding: mapping.label.codings.map(\.coding)),
+                code: CodeableConcept(coding: mapping.label.codings),
                 value: .string(label.stringValue.asFHIRStringPrimitive())
             ))
         }
         for association in self.associations {
             observation.append(component: .init(
-                code: CodeableConcept(coding: mapping.association.codings.map(\.coding)),
+                code: CodeableConcept(coding: mapping.association.codings),
                 value: .string(association.stringValue.asFHIRStringPrimitive())
             ))
         }

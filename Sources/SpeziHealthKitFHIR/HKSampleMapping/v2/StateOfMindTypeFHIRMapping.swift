@@ -9,6 +9,24 @@
 public import ModelsR4
 
 
+/// Controls how `HKStateOfMind`s are mapped into FHIR Observations.
+///
+/// ## Topics
+///
+/// ### Static Properties
+/// - ``default``
+///
+/// ### Initializers
+/// - ``init(codings:categories:kind:valence:valenceClassification:label:association:)``
+///
+/// ### Instance Properties
+/// - ``codings``
+/// - ``categories``
+/// - ``kind``
+/// - ``valence``
+/// - ``valenceClassification``
+/// - ``label``
+/// - ``association``
 public struct StateOfMindTypeFHIRMapping: Hashable, Sendable {
     /// The FHIR codings defined as ``MappedCode``s to be used for `HKStateOfMind` samples
     public let codings: [Coding]
@@ -46,6 +64,7 @@ public struct StateOfMindTypeFHIRMapping: Hashable, Sendable {
 
 
 extension StateOfMindTypeFHIRMapping {
+    /// The default FHIR mapping for `HKStateOfMind` samples.
     public static let `default` = Self(
         codings: [
             Coding(

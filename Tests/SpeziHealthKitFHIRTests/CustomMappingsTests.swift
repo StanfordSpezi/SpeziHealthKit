@@ -12,7 +12,7 @@ import ModelsR4
 import Testing
 
 
-@MainActor // to work around https://github.com/apple/FHIRModels/issues/36
+@MainActor // to work around https://github.com/apple/FHIRModels/issues/36 // TODO remove the isolation!
 struct CustomMappingsTests {
     @Test
     func customMappings() throws {
@@ -24,37 +24,28 @@ struct CustomMappingsTests {
             start: Date(),
             end: Date()
         )
-
+        
         let ucumSystem = try #require(URL(string: "http://unitsofmeasure.org"))
         let stanfordURL = try #require(URL(string: "http://stanford.edu"))
-
-        var customMapping = [
-            HKQuantityType(.bodyMass):
-            HKQuantitySampleMapping(
+        
+        var hkSampleMapping = SampleTypesFHIRMapping.default
+        hkSampleMapping.quantityTypesMapping = [
+            .bodyMass: QuantityTypeFHIRMapping(
                 codings: [
-                    MappedCode(
+                    Coding(
                         code: "SU-01",
                         display: "Stanford University",
-                        system: stanfordURL
+                        system: stanfordURL.asFHIRURIPrimitive()
                     )
                 ],
-                unit: MappedUnit(
-                    hkunit: .ounce(),
+                unit: QuantityTypeFHIRMapping.Unit(
+                    hkUnit: .ounce(),
                     unit: "oz",
-                    system: ucumSystem,
+                    system: ucumSystem.asFHIRURIPrimitive(),
                     code: "[oz_av]"
                 )
             )
         ]
-        customMapping[HKQuantityType(.bodyMass)]?.unit.removeSystemAndCode()
-        #expect(customMapping[HKQuantityType(.bodyMass)]?.unit.system == nil)
-        #expect(customMapping[HKQuantityType(.bodyMass)]?.unit.code == nil)
-        
-        customMapping[HKQuantityType(.bodyMass)]?.unit.update(system: ucumSystem, code: "[oz_av]")
-        #expect(customMapping[HKQuantityType(.bodyMass)]?.unit.system == ucumSystem)
-        #expect(customMapping[HKQuantityType(.bodyMass)]?.unit.code == "[oz_av]")
-
-        let hkSampleMapping = HKSampleMapping(quantitySampleMapping: customMapping)
         
         let observation = try quantitySample
             .resource(withMapping: hkSampleMapping)

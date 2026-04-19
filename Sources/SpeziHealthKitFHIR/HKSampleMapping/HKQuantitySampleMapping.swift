@@ -10,6 +10,7 @@ import HealthKit
 
 
 /// An ``HKQuantitySampleMapping`` allows developers to customize the mapping of `HKQuantitySample`s to an FHIR observations.
+@available(*, deprecated, renamed: "QuantityTypeFHIRMapping")
 public struct HKQuantitySampleMapping: Decodable, Sendable {
     /// A default instance of an ``HKQuantitySampleMapping`` instance allowing developers to customize the ``HKQuantitySampleMapping``.
     ///

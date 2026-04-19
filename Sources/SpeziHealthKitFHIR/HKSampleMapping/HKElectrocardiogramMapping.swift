@@ -8,6 +8,7 @@
 
 
 /// An ``HKElectrocardiogramMapping`` allows developers to customize the mapping of an`HKElectrocardiogram` to an FHIR  observation.
+@available(*, deprecated, renamed: "ECGTypeFHIRMapping")
 public struct HKElectrocardiogramMapping: Decodable, Sendable {
     /// A default instance of an ``HKElectrocardiogramMapping`` instance allowing developers to customize the ``HKElectrocardiogramMapping``.
     ///

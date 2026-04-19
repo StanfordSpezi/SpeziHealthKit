@@ -11,6 +11,7 @@ import SpeziHealthKit
 
 
 /// A ``HKSampleMapping`` instance is used to specify the mapping of `HKSample`s to FHIR observations allowing the customization of, e.g., codings and units.
+@available(*, deprecated, renamed: "SampleTypesFHIRMapping")
 public struct HKSampleMapping: Decodable, Sendable {
     private enum CodingKeys: String, CodingKey {
         case quantitySample = "HKQuantitySample"

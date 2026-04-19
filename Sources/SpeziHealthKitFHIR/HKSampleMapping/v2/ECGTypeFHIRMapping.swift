@@ -10,25 +10,45 @@ public import ModelsR4
 private import SpeziHealthKit
 
 
+/// Controls how a `HKElectrocardiogram` is mapped into a FHIR Observation.
+///
+/// ## Topics
+///
+/// ### Static Properties
+/// - ``default``
+///
+/// ### Initializers
+/// - ``init(codings:categories:classification:symptomsStatus:numberOfVoltageMeasurements:samplingFrequency:averageHeartRate:voltageMeasurements:voltagePrecision:)``
+///
+/// ### Instance Properties
+/// - ``codings``
+/// - ``categories``
+/// - ``classification``
+/// - ``symptomsStatus``
+/// - ``numberOfVoltageMeasurements``
+/// - ``samplingFrequency``
+/// - ``averageHeartRate``
+/// - ``voltageMeasurements``
+/// - ``voltagePrecision``
 public struct ECGTypeFHIRMapping: Hashable, Sendable {
     /// The FHIR codings defined as `Coding`s used for the `HKElectrocardiogram`.
-    public let codings: [Coding]
+    public var codings: [Coding]
     /// The FHIR categories defined as `Coding`s used for the `HKElectrocardiogram`.
-    public let categories: [Coding]
+    public var categories: [Coding]
     /// Defines the mapping of the `classification` category sample  of an `HKElectrocardiogram` to an FHIR  observation.
-    public let classification: CategoryTypeFHIRMapping
+    public var classification: CategoryTypeFHIRMapping
     /// Defines the mapping of the `symptomsStatus` category sample  of an `HKElectrocardiogram` to an FHIR  observation.
-    public let symptomsStatus: CategoryTypeFHIRMapping
+    public var symptomsStatus: CategoryTypeFHIRMapping
     /// Defines the mapping of the `numberOfVoltageMeasurements` quantity property of an `HKElectrocardiogram` to an FHIR  observation.
-    public let numberOfVoltageMeasurements: QuantityTypeFHIRMapping
+    public var numberOfVoltageMeasurements: QuantityTypeFHIRMapping
     /// Defines the mapping of the `samplingFrequency` quantity property of an `HKElectrocardiogram` to an FHIR  observation.
-    public let samplingFrequency: QuantityTypeFHIRMapping
+    public var samplingFrequency: QuantityTypeFHIRMapping
     /// Defines the mapping of the `averageHeartRate` quantity property of an `HKElectrocardiogram` to an FHIR observation.
-    public let averageHeartRate: QuantityTypeFHIRMapping
+    public var averageHeartRate: QuantityTypeFHIRMapping
     /// Defines the mapping of the `voltageMeasurements` of an `HKElectrocardiogram` to an FHIR observation.
-    public let voltageMeasurements: QuantityTypeFHIRMapping
+    public var voltageMeasurements: QuantityTypeFHIRMapping
     /// Defines the precision represented as the number of decimal values for the voltage measurement mapping of an `HKElectrocardiogram` to an FHIR observation.
-    public let voltagePrecision: UInt
+    public var voltagePrecision: UInt
     
     public init(
         codings: [Coding],
@@ -55,6 +75,7 @@ public struct ECGTypeFHIRMapping: Hashable, Sendable {
 
 
 extension ECGTypeFHIRMapping {
+    /// The default FHIR mapping for `HKElectrocardiogram` samples.
     public static let `default` = Self(
         codings: [
             Coding(

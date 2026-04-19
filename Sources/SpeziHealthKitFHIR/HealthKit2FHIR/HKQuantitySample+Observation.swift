@@ -9,16 +9,18 @@
 import FHIRModelsExtensions
 import HealthKit
 import ModelsR4
+import SpeziHealthKit
 
 
 extension HKQuantitySample: FHIRObservationBuildable {
-    func build(_ observation: inout Observation, mapping: HKSampleMapping) throws {
-        guard let mapping = mapping.quantitySampleMapping[self.quantityType] else {
+    func build(_ observation: inout Observation, mapping: SampleTypesFHIRMapping) throws {
+        guard let quantityType = SampleType(self.quantityType) else {
+            preconditionFailure("Missing \(self.quantityType)")
+        }
+        guard let mapping = mapping.quantityTypesMapping[quantityType] else {
             throw HealthKitOnFHIRError.notSupported
         }
-        for code in mapping.codings {
-            observation.append(coding: code.coding)
-        }
+        observation.append(codings: mapping.codings)
         observation.value = .quantity(try quantity.buildQuantity(mapping: mapping))
     }
 }
@@ -26,8 +28,8 @@ extension HKQuantitySample: FHIRObservationBuildable {
 
 extension HKQuantity {
     func buildObservationComponent(
-        for quantityType: HKQuantityType,
-        mappings: [HKQuantityType: HKQuantitySampleMapping] = HKQuantitySampleMapping.default
+        for quantityType: SampleType<HKQuantitySample>,
+        mappings: QuantityTypesFHIRMapping = .default
     ) throws -> ObservationComponent {
         guard let mapping = mappings[quantityType] else {
             throw HealthKitOnFHIRError.notSupported
@@ -35,19 +37,19 @@ extension HKQuantity {
         return try buildObservationComponent(mapping: mapping)
     }
     
-    func buildObservationComponent(mapping: HKQuantitySampleMapping) throws -> ObservationComponent {
+    func buildObservationComponent(mapping: QuantityTypeFHIRMapping) throws -> ObservationComponent {
         ObservationComponent(
-            code: CodeableConcept(coding: mapping.codings.map(\.coding)),
+            code: CodeableConcept(coding: mapping.codings),
             value: .quantity(try buildQuantity(mapping: mapping))
         )
     }
     
-    func buildQuantity(mapping: HKQuantitySampleMapping) throws -> Quantity {
+    func buildQuantity(mapping: QuantityTypeFHIRMapping) throws -> Quantity {
         Quantity(
-            code: mapping.unit.code?.asFHIRStringPrimitive(),
-            system: mapping.unit.system?.asFHIRURIPrimitive(),
+            code: mapping.unit.code,
+            system: mapping.unit.system,
             unit: mapping.unit.unit.asFHIRStringPrimitive(),
-            value: try self.doubleValue(for: mapping.unit.hkunit).asFHIRDecimalPrimitiveSafe()
+            value: try self.doubleValue(for: mapping.unit.hkUnit).asFHIRDecimalPrimitiveSafe()
         )
     }
 }

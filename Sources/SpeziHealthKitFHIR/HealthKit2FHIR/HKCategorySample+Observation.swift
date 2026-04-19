@@ -8,17 +8,16 @@
 
 import HealthKit
 import ModelsR4
+import SpeziHealthKit
 
 
 extension HKCategorySample: FHIRObservationBuildable {
-    func build(_ observation: inout Observation, mapping: HKSampleMapping) throws {
-        guard let mapping = mapping.categorySampleMapping[self.categoryType] else {
+    func build(_ observation: inout Observation, mapping: SampleTypesFHIRMapping) throws {
+        guard let mapping = mapping.categoryTypesMapping[SampleType(self.categoryType)!] else {
             throw HealthKitOnFHIRError.notSupported
         }
+        observation.append(codings: mapping.codings)
         let assocDataInfo = try categoryType.associatedDataInfo
-        for code in mapping.codings {
-            observation.append(coding: code.coding)
-        }
         if let valueType = assocDataInfo.valueType {
             guard let value = valueType.init(rawValue: self.value) else {
                 throw HealthKitOnFHIRError.invalidValue
@@ -36,7 +35,7 @@ extension HKCategorySample: FHIRObservationBuildable {
                 guard let quantityType = HKCategoryType.quantityType(forMetadataKey: metadataKey) else {
                     continue
                 }
-                observation.append(component: try quantity.buildObservationComponent(for: quantityType))
+                observation.append(component: try quantity.buildObservationComponent(for: SampleType(quantityType)!))
             } else if let value = value as? Bool {
                 guard let coding = HKCategoryType.coding(forMetadataKey: metadataKey) else {
                     continue

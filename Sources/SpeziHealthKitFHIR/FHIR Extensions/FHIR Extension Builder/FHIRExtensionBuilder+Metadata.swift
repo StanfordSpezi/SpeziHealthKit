@@ -10,6 +10,7 @@ import FHIRModelsExtensions
 import Foundation
 import HealthKit
 import ModelsR4
+import SpeziHealthKit
 
 
 extension FHIRExtensionURL {
@@ -52,7 +53,7 @@ extension FHIRExtensionBuilderProtocol where Self == FHIRExtensionBuilder<HKObje
                         extensionValue = .quantity(try value.buildQuantity(mapping: .weatherHumidity))
                     case HKMetadataKeySessionEstimate:
                         guard let sample = object as? HKQuantitySample,
-                              let mapping = HKQuantitySampleMapping.default[sample.quantityType] else {
+                              let mapping = QuantityTypesFHIRMapping.default[SampleType(sample.quantityType)!] else {
                             continue // should be unreachable. skipping
                         }
                         extensionValue = .quantity(try value.buildQuantity(mapping: mapping))
@@ -152,344 +153,339 @@ extension FHIRExtensionBuilderProtocol where Self == FHIRExtensionBuilder<HKObje
 }
 
 
-extension HKQuantitySampleMapping {
-    // swiftlint:disable:next force_unwrapping
-    private static let healthKitCodingSystemUrl = URL(string: "http://developer.apple.com/documentation/healthkit")!
-    // swiftlint:disable:next force_unwrapping
-    private static let unitsOfMeasureCodingSystemUrl = URL(string: "http://unitsofmeasure.org")!
-    
-    fileprivate static let weatherTemperature = HKQuantitySampleMapping(
+extension QuantityTypeFHIRMapping {
+    fileprivate static let weatherTemperature = Self(
         codings: [
-            MappedCode(
+            Coding(
                 code: "HKMetadataKeyWeatherTemperature",
                 display: "Weather Temperature",
-                system: healthKitCodingSystemUrl
+                system: .healthKitSystem
             )
         ],
-        unit: MappedUnit(
-            hkunit: .degreeCelsius(),
+        unit: Unit(
+            hkUnit: .degreeCelsius(),
             unit: "C",
-            system: unitsOfMeasureCodingSystemUrl,
+            system: .unitsOfMeasureSystem,
             code: "Cel"
         )
     )
     
-    fileprivate static let weatherHumidity = HKQuantitySampleMapping(
+    fileprivate static let weatherHumidity = Self(
         codings: [
-            MappedCode(
+            Coding(
                 code: "HKMetadataKeyWeatherHumidity",
                 display: "Weather Humidity",
-                system: healthKitCodingSystemUrl
+                system: .healthKitSystem
             )
         ],
-        unit: MappedUnit(
-            hkunit: .percent(),
+        unit: Unit(
+            hkUnit: .percent(),
             unit: "%",
-            system: unitsOfMeasureCodingSystemUrl,
+            system: .unitsOfMeasureSystem,
             code: "%"
         )
     )
     
-    fileprivate static let heartRateRecoveryActivityDuration = HKQuantitySampleMapping(
+    fileprivate static let heartRateRecoveryActivityDuration = Self(
         codings: [
-            MappedCode(
+            Coding(
                 code: "HKMetadataKeyHeartRateRecoveryActivityDuration",
                 display: "Heart Rate Recovery Activity Duration",
-                system: healthKitCodingSystemUrl
+                system: .healthKitSystem
             )
         ],
-        unit: MappedUnit(
-            hkunit: .second(),
+        unit: Unit(
+            hkUnit: .second(),
             unit: "s",
-            system: unitsOfMeasureCodingSystemUrl,
+            system: .unitsOfMeasureSystem,
             code: "s"
         )
     )
     
-    fileprivate static let heartRateRecoveryMaxObservedRecoveryHeartRate = HKQuantitySampleMapping( // swiftlint:disable:this identifier_name
+    fileprivate static let heartRateRecoveryMaxObservedRecoveryHeartRate = Self( // swiftlint:disable:this identifier_name
         codings: [
-            MappedCode(
+            Coding(
                 code: "HKMetadataKeyHeartRateRecoveryMaxObservedRecoveryHeartRate",
                 display: "Heart Rate Recovery Max Observed Recovery Heart Rate",
-                system: healthKitCodingSystemUrl
+                system: .healthKitSystem
             )
         ],
-        unit: MappedUnit(
-            hkunit: .count().unitDivided(by: .minute()),
+        unit: Unit(
+            hkUnit: .count().unitDivided(by: .minute()),
             unit: "beats/minute",
-            system: unitsOfMeasureCodingSystemUrl,
+            system: .unitsOfMeasureSystem,
             code: "/min"
         )
     )
     
-    fileprivate static let averageSpeed = HKQuantitySampleMapping(
+    fileprivate static let averageSpeed = Self(
         codings: [
-            MappedCode(
+            Coding(
                 code: "HKMetadataKeyAverageSpeed",
                 display: "Average Speed",
-                system: healthKitCodingSystemUrl
+                system: .healthKitSystem
             )
         ],
-        unit: MappedUnit(
-            hkunit: .meter().unitDivided(by: .second()),
+        unit: Unit(
+            hkUnit: .meter().unitDivided(by: .second()),
             unit: "m/sec",
-            system: unitsOfMeasureCodingSystemUrl,
+            system: .unitsOfMeasureSystem,
             code: "m/s"
         )
     )
     
-    fileprivate static let maximumSpeed = HKQuantitySampleMapping(
+    fileprivate static let maximumSpeed = Self(
         codings: [
-            MappedCode(
+            Coding(
                 code: "HKMetadataKeyMaximumSpeed",
                 display: "Maximum Speed",
-                system: healthKitCodingSystemUrl
+                system: .healthKitSystem
             )
         ],
-        unit: MappedUnit(
-            hkunit: .meter().unitDivided(by: .second()),
+        unit: Unit(
+            hkUnit: .meter().unitDivided(by: .second()),
             unit: "m/sec",
-            system: unitsOfMeasureCodingSystemUrl,
+            system: .unitsOfMeasureSystem,
             code: "m/s"
         )
     )
     
-    fileprivate static let alpineSlopeGrade = HKQuantitySampleMapping(
+    fileprivate static let alpineSlopeGrade = Self(
         codings: [
-            MappedCode(
+            Coding(
                 code: "HKMetadataKeyAlpineSlopeGrade",
                 display: "Alpine Slope Grade",
-                system: healthKitCodingSystemUrl
+                system: .healthKitSystem
             )
         ],
-        unit: MappedUnit(
-            hkunit: .percent(),
+        unit: Unit(
+            hkUnit: .percent(),
             unit: "%",
-            system: unitsOfMeasureCodingSystemUrl,
+            system: .unitsOfMeasureSystem,
             code: "%"
         )
     )
     
-    fileprivate static let elevationAscended = HKQuantitySampleMapping(
+    fileprivate static let elevationAscended = Self(
         codings: [
-            MappedCode(
+            Coding(
                 code: "HKMetadataKeyElevationAscended",
                 display: "Elevation Ascended",
-                system: healthKitCodingSystemUrl
+                system: .healthKitSystem
             )
         ],
-        unit: MappedUnit(
-            hkunit: .meter(),
+        unit: Unit(
+            hkUnit: .meter(),
             unit: "m",
-            system: unitsOfMeasureCodingSystemUrl,
+            system: .unitsOfMeasureSystem,
             code: "m"
         )
     )
     
-    fileprivate static let elevationDescended = HKQuantitySampleMapping(
+    fileprivate static let elevationDescended = Self(
         codings: [
-            MappedCode(
+            Coding(
                 code: "HKMetadataKeyElevationDescended",
                 display: "Elevation Descended",
-                system: healthKitCodingSystemUrl
+                system: .healthKitSystem
             )
         ],
-        unit: MappedUnit(
-            hkunit: .meter(),
+        unit: Unit(
+            hkUnit: .meter(),
             unit: "m",
-            system: unitsOfMeasureCodingSystemUrl,
+            system: .unitsOfMeasureSystem,
             code: "m"
         )
     )
     
-    fileprivate static let fitnessMachineDuration = HKQuantitySampleMapping(
+    fileprivate static let fitnessMachineDuration = Self(
         codings: [
-            MappedCode(
+            Coding(
                 code: "HKMetadataKeyFitnessMachineDuration",
                 display: "Fitness Machine Duration",
-                system: healthKitCodingSystemUrl
+                system: .healthKitSystem
             )
         ],
-        unit: MappedUnit(
-            hkunit: .second(),
+        unit: Unit(
+            hkUnit: .second(),
             unit: "s",
-            system: unitsOfMeasureCodingSystemUrl,
+            system: .unitsOfMeasureSystem,
             code: "s"
         )
     )
     
-    fileprivate static let indoorBikeDistance = HKQuantitySampleMapping(
+    fileprivate static let indoorBikeDistance = Self(
         codings: [
-            MappedCode(
+            Coding(
                 code: "HKMetadataKeyIndoorBikeDistance",
                 display: "Indoor Bike Distance",
-                system: healthKitCodingSystemUrl
+                system: .healthKitSystem
             )
         ],
-        unit: MappedUnit(
-            hkunit: .meter(),
+        unit: Unit(
+            hkUnit: .meter(),
             unit: "m",
-            system: unitsOfMeasureCodingSystemUrl,
+            system: .unitsOfMeasureSystem,
             code: "m"
         )
     )
     
-    fileprivate static let crossTrainerDistance = HKQuantitySampleMapping(
+    fileprivate static let crossTrainerDistance = Self(
         codings: [
-            MappedCode(
+            Coding(
                 code: "HKMetadataKeyCrossTrainerDistance",
                 display: "Cross Trainer Distance",
-                system: healthKitCodingSystemUrl
+                system: .healthKitSystem
             )
         ],
-        unit: MappedUnit(
-            hkunit: .meter(),
+        unit: Unit(
+            hkUnit: .meter(),
             unit: "m",
-            system: unitsOfMeasureCodingSystemUrl,
+            system: .unitsOfMeasureSystem,
             code: "m"
         )
     )
     
-    fileprivate static let highHeartRateEventThreshold = HKQuantitySampleMapping(
+    fileprivate static let highHeartRateEventThreshold = Self(
         codings: [
-            MappedCode(
+            Coding(
                 code: "HKMetadataKeyHeartRateEventThreshold",
                 display: "Heart Rate Event Threshold",
-                system: healthKitCodingSystemUrl
+                system: .healthKitSystem
             )
         ],
-        unit: MappedUnit(
-            hkunit: .count().unitDivided(by: .minute()),
+        unit: Unit(
+            hkUnit: .count().unitDivided(by: .minute()),
             unit: "beats/min",
-            system: unitsOfMeasureCodingSystemUrl,
+            system: .unitsOfMeasureSystem,
             code: "/min"
         )
     )
     
-    fileprivate static let averageMETs = HKQuantitySampleMapping(
+    fileprivate static let averageMETs = Self(
         codings: [
-            MappedCode(
+            Coding(
                 code: "HKMetadataKeyAverageMETs",
                 display: "Average METs",
-                system: healthKitCodingSystemUrl
+                system: .healthKitSystem
             )
         ],
-        unit: MappedUnit(
-            hkunit: .largeCalorie().unitDivided(by: .gramUnit(with: .kilo).unitMultiplied(by: .hour())),
+        unit: Unit(
+            hkUnit: .largeCalorie().unitDivided(by: .gramUnit(with: .kilo).unitMultiplied(by: .hour())),
             unit: "kcal/(kg*hr)",
-            system: unitsOfMeasureCodingSystemUrl,
+            system: .unitsOfMeasureSystem,
             code: "kcal/(kg*hr)"
         )
     )
     
-    fileprivate static let audioExposureLevel = HKQuantitySampleMapping(
+    fileprivate static let audioExposureLevel = Self(
         codings: [
-            MappedCode(
+            Coding(
                 code: "HKMetadataKeyAudioExposureLevel",
                 display: "Audio Exposure Level",
-                system: healthKitCodingSystemUrl
+                system: .healthKitSystem
             )
         ],
-        unit: MappedUnit(
-            hkunit: .init(from: "dBASPL"),
+        unit: Unit(
+            hkUnit: .init(from: "dBASPL"),
             unit: "dB(SPL)",
-            system: unitsOfMeasureCodingSystemUrl,
+            system: .unitsOfMeasureSystem,
             code: "dB(SPL)"
         )
     )
     
-    fileprivate static let audioExposureDuration = HKQuantitySampleMapping(
+    fileprivate static let audioExposureDuration = Self(
         codings: [
-            MappedCode(
+            Coding(
                 code: "HKMetadataKeyAudioExposureDuration",
                 display: "Audio Exposure Duration",
-                system: healthKitCodingSystemUrl
+                system: .healthKitSystem
             )
         ],
-        unit: MappedUnit(
-            hkunit: .second(),
+        unit: Unit(
+            hkUnit: .second(),
             unit: "s",
-            system: unitsOfMeasureCodingSystemUrl,
+            system: .unitsOfMeasureSystem,
             code: "s"
         )
     )
     
-    fileprivate static let barometricPressure = HKQuantitySampleMapping(
+    fileprivate static let barometricPressure = Self(
         codings: [
-            MappedCode(
+            Coding(
                 code: "HKMetadataKeyBarometricPressure",
                 display: "Barometric Pressure",
-                system: healthKitCodingSystemUrl
+                system: .healthKitSystem
             )
         ],
-        unit: MappedUnit(
-            hkunit: .millimeterOfMercury(),
+        unit: Unit(
+            hkUnit: .millimeterOfMercury(),
             unit: "mmHg",
-            system: unitsOfMeasureCodingSystemUrl,
+            system: .unitsOfMeasureSystem,
             code: "mm[Hg]"
         )
     )
     
-    fileprivate static let vo2MaxValue = HKQuantitySampleMapping(
+    fileprivate static let vo2MaxValue = Self(
         codings: [
-            MappedCode(
+            Coding(
                 code: "HKMetadataKeyVO2MaxValue",
                 display: "VO2Max Value",
-                system: healthKitCodingSystemUrl
+                system: .healthKitSystem
             )
         ],
-        unit: MappedUnit(
-            hkunit: .init(from: "mL/kg*min"),
+        unit: Unit(
+            hkUnit: .init(from: "mL/kg*min"),
             unit: "mL/kg/min",
-            system: unitsOfMeasureCodingSystemUrl,
+            system: .unitsOfMeasureSystem,
             code: "mL/kg/min"
         )
     )
     
-    fileprivate static let lowCardioFitnessEventThreshold = HKQuantitySampleMapping(
+    fileprivate static let lowCardioFitnessEventThreshold = Self(
         codings: [
-            MappedCode(
+            Coding(
                 code: "HKMetadataKeyLowCardioFitnessEventThreshold",
                 display: "Low Cardio Fitness Event Threshold",
-                system: healthKitCodingSystemUrl
+                system: .healthKitSystem
             )
         ],
-        unit: MappedUnit(
-            hkunit: .init(from: "mL/kg*min"),
+        unit: Unit(
+            hkUnit: .init(from: "mL/kg*min"),
             unit: "mL/kg/min",
-            system: unitsOfMeasureCodingSystemUrl,
+            system: .unitsOfMeasureSystem,
             code: "mL/kg/min"
         )
     )
     
-    fileprivate static let headphoneGain = HKQuantitySampleMapping(
+    fileprivate static let headphoneGain = Self(
         codings: [
-            MappedCode(
+            Coding(
                 code: "HKMetadataKeyHeadphoneGain",
                 display: "Headphone Gain",
-                system: healthKitCodingSystemUrl
+                system: .healthKitSystem
             )
         ],
-        unit: MappedUnit(
-            hkunit: .decibelAWeightedSoundPressureLevel(),
+        unit: Unit(
+            hkUnit: .decibelAWeightedSoundPressureLevel(),
             unit: "dB(SPL)",
-            system: unitsOfMeasureCodingSystemUrl,
+            system: .unitsOfMeasureSystem,
             code: "dB(SPL)"
         )
     )
     
-    fileprivate static let maximumLightIntensity = HKQuantitySampleMapping(
+    fileprivate static let maximumLightIntensity = Self(
         codings: [
-            MappedCode(
+            Coding(
                 code: "HKMetadataKeyMaximumLightIntensity",
                 display: "Maximum Light Intensity",
-                system: healthKitCodingSystemUrl
+                system: .healthKitSystem
             )
         ],
-        unit: MappedUnit(
-            hkunit: .lux(),
+        unit: Unit(
+            hkUnit: .lux(),
             unit: "lux",
-            system: unitsOfMeasureCodingSystemUrl,
+            system: .unitsOfMeasureSystem,
             code: "lux"
         )
     )

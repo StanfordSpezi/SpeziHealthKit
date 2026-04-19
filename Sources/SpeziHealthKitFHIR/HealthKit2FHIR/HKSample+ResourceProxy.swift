@@ -24,7 +24,7 @@ extension HKSample {
     ///
     /// - Important: When mapping an array of HKSample objects into ResourceProxies, for performance reasons always prefer ``Swift/Sequence/mapIntoResourceProxies(using:extensions:)`` or ``Swift/Sequence/mapIntoResourceProxies(using:extensions:)``.
     public func resource(
-        withMapping mapping: HKSampleMapping = .default,
+        withMapping mapping: SampleTypesFHIRMapping = .default,
         issuedDate: FHIRPrimitive<Instant>? = nil,
         extensions: [any FHIRExtensionBuilderProtocol] = []
     ) throws -> ResourceProxy {
@@ -78,7 +78,7 @@ extension Sequence where Element: HKSample {
     /// - parameter extensions: Any ``FHIRExtensionBuilder``s that should be applied to each of the produced observations.
     ///     The ``FHIRExtensionBuilder/sourceDevice-9m1t7``, ``FHIRExtensionBuilder/sourceRevision-8b3xb``, and ``FHIRExtensionBuilder/metadata`` extension builders are always enabled when creating a FHIR `Observation`s from a `HKSample`.
     public func mapIntoResourceProxies(
-        using mapping: HKSampleMapping = .default,
+        using mapping: SampleTypesFHIRMapping = .default,
         issuedDate: FHIRPrimitive<Instant>? = nil,
         extensions: [any FHIRExtensionBuilderProtocol] = []
     ) throws -> [ResourceProxy] {
@@ -97,7 +97,7 @@ extension Sequence where Element: HKSample {
     /// - parameter extensions: Any ``FHIRExtensionBuilder``s that should be applied to each of the produced observations.
     ///     The ``FHIRExtensionBuilder/sourceDevice-9m1t7``, ``FHIRExtensionBuilder/sourceRevision-8b3xb``, and ``FHIRExtensionBuilder/metadata`` extension builders are always enabled when creating a FHIR `Observation`s from a `HKSample`.
     public func compactMapIntoResourceProxies(
-        using mapping: HKSampleMapping = .default,
+        using mapping: SampleTypesFHIRMapping = .default,
         issuedDate: FHIRPrimitive<Instant>? = nil,
         extensions: [any FHIRExtensionBuilderProtocol] = []
     ) throws -> [ResourceProxy] {

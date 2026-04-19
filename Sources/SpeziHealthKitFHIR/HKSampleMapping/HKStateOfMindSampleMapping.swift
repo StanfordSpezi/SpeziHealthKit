@@ -10,6 +10,7 @@ import HealthKit
 
 
 /// An ``HKStateOfMindMapping`` allows developers to customize the mapping of `HKStateOfMind` samples to FHIR Observations.
+@available(*, deprecated, renamed: "StateOfMindTypeFHIRMapping")
 public struct HKStateOfMindMapping: Decodable, Sendable {
     /// A default instance of an ``HKStateOfMindMapping`` allowing developers to customize the ``HKStateOfMindMapping``
     /// The default values are loaded from the `HKSampleMapping.json` resource in the ``HealthKitOnFHIR`` Swift Package.

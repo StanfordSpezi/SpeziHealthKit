@@ -8,26 +8,31 @@
 
 import HealthKit
 import ModelsR4
+import SpeziHealthKit
 
 
 extension HKCorrelation: FHIRObservationBuildable {
-    func build(_ observation: inout Observation, mapping: HKSampleMapping) throws {
-        guard let mapping = mapping.correlationMapping[self.correlationType] else {
+    func build(_ observation: inout Observation, mapping: SampleTypesFHIRMapping) throws {
+        guard let sampleType = SampleType(self.correlationType) else {
+            preconditionFailure() // TODO msg
+        }
+        guard let mapping = mapping.correlationTypesMapping[sampleType] else {
             throw HealthKitOnFHIRError.notSupported
         }
-        for code in mapping.codings {
-            observation.append(coding: code.coding)
-        }
+        observation.append(codings: mapping.codings)
         for category in mapping.categories {
             observation.append(
-                category: CodeableConcept(coding: [category.coding])
+                category: CodeableConcept(coding: [category])
             )
         }
         for object in self.objects {
             guard let sample = object as? HKQuantitySample else {
                 throw HealthKitOnFHIRError.notSupported
             }
-            observation.append(component: try sample.quantity.buildObservationComponent(for: sample.quantityType))
+            guard let sampleType = SampleType(sample.quantityType) else {
+                preconditionFailure() // TODO msg
+            }
+            observation.append(component: try sample.quantity.buildObservationComponent(for: sampleType))
         }
     }
 }

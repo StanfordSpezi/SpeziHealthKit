@@ -10,11 +10,21 @@ public import ModelsR4
 public import SpeziHealthKit
 
 
+/// Controls how `HKCategorySample`s are mapped into FHIR Observations.
 public typealias CategoryTypesFHIRMapping = [SampleType<HKCategorySample>: CategoryTypeFHIRMapping]
 
 
+/// Controls how an `HKCategorySample` is mapped into a FHIR Observation.
+///
+/// ## Topics
+///
+/// ### Initializers
+/// - ``init(codings:)``
+///
+/// ### Instance Properties
+/// - ``codings``
 public struct CategoryTypeFHIRMapping: Hashable, Sendable {
-    public let codings: [Coding]
+    public var codings: [Coding]
     
     public init(codings: [Coding]) {
         self.codings = codings
@@ -23,6 +33,7 @@ public struct CategoryTypeFHIRMapping: Hashable, Sendable {
 
 
 extension CategoryTypesFHIRMapping {
+    /// The default FHIR mapping for HealthKit Category types
     public static let `default`: Self = HKCategoryType.allKnownCategories.reduce(into: [:]) { mapping, categoryType in
         guard let sampleType = categoryType.sampleType as? SampleType<HKCategorySample> else {
             assertionFailure("Missing FHIR mapping entry for \(HKCategoryType.self) \(categoryType)!")

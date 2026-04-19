@@ -9,6 +9,19 @@
 public import ModelsR4
 
 
+/// Controls how `HKWorkout`s are mapped into FHIR Observations.
+///
+/// ## Topics
+///
+/// ### Static Properties
+/// - ``default``
+///
+/// ### Initializers
+/// - ``init(codings:categories:)``
+///
+/// ### Instance Properties
+/// - ``codings``
+/// - ``categories``
 public struct WorkoutTypeFHIRMapping: Hashable, Sendable {
     public let codings: [Coding]
     public let categories: [Coding]
@@ -21,6 +34,7 @@ public struct WorkoutTypeFHIRMapping: Hashable, Sendable {
 
 
 extension WorkoutTypeFHIRMapping {
+    /// The default FHIR mapping for `HKWorkout` samples
     public static let `default` = Self(
         codings: [
             Coding(

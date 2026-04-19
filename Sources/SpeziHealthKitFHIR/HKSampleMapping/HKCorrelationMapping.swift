@@ -10,6 +10,7 @@ import HealthKit
 
 
 /// An ``HKCorrelationMapping`` allows developers to customize the mapping of `HKCorrelation`s to an FHIR observations.
+@available(*, deprecated, renamed: "CorrelationTypeFHIRMapping")
 public struct HKCorrelationMapping: Decodable, Sendable {
     /// A default instance of an ``HKCorrelationMapping`` instance allowing developers to customize the ``HKCorrelationMapping``.
     ///

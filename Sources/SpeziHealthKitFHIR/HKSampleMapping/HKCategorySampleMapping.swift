@@ -10,6 +10,7 @@ import HealthKit
 
 
 /// An ``HKCategorySampleMapping`` allows developers to customize the mapping of `HKCategorySample`s to FHIR observations.
+@available(*, deprecated, renamed: "CategoryTypeFHIRMapping")
 public struct HKCategorySampleMapping: Decodable, Sendable {
     /// A default instance of an ``HKCategorySampleMapping`` instance allowing developers to customize the ``HKCategorySampleMapping``.
     ///

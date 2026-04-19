@@ -10,9 +10,20 @@ public import ModelsR4
 public import SpeziHealthKit
 
 
+/// Controls how `HKCorrelation` samples are mapped into FHIR Observations.
 public typealias CorrelationTypesFHIRMapping = [SampleType<HKCorrelation>: CorrelationTypeFHIRMapping]
 
 
+/// Controls how a `HKCorrelation` sample is mapped into a FHIR Observation.
+///
+/// ## Topics
+///
+/// ### Initializers
+/// - ``init(codings:categories:)``
+///
+/// ### Instance Properties
+/// - ``codings``
+/// - ``categories``
 public struct CorrelationTypeFHIRMapping: Hashable, Sendable {
     public let codings: [Coding]
     public let categories: [Coding]
@@ -25,6 +36,7 @@ public struct CorrelationTypeFHIRMapping: Hashable, Sendable {
 
 
 extension CorrelationTypesFHIRMapping {
+    /// The default FHIR mapping for HealthKit Correlation types
     public static let `default`: Self = [
         .bloodPressure: CorrelationTypeFHIRMapping(
             codings: [

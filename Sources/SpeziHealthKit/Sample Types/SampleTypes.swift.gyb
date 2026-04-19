@@ -61,6 +61,12 @@ def make_hashtag_available(availability: Availability, *, trailing_comma: bool) 
 def make_at_available(availability: Availability) -> str:
     return _make_availability_decl_imp('@', availability, False)
 }%
+    /// Returns the shared ${display_title} type for the specified ${hk_sampletype_class}.
+    @inlinable
+    public init?(_ hkType: ${hk_sampletype_class}) {
+        self.init(${hk_sampletype_class}Identifier(rawValue: hkType.identifier))
+    }
+
     /// Returns the shared ${display_title} type for the specified identifier.
     public init?(_ identifier: ${hk_sampletype_class}Identifier) where Sample == ${hk_class} {
         if ${make_hashtag_available(types[0].availability, trailing_comma=True)}identifier == .${types[0].identifier} {

@@ -1462,6 +1462,12 @@ extension SampleType where Sample == HKQuantitySample {
         )
     }
 
+    /// Returns the shared Quantity type for the specified HKQuantityType.
+    @inlinable
+    public init?(_ hkType: HKQuantityType) {
+        self.init(HKQuantityTypeIdentifier(rawValue: hkType.identifier))
+    }
+
     /// Returns the shared Quantity type for the specified identifier.
     public init?(_ identifier: HKQuantityTypeIdentifier) where Sample == HKQuantitySample {
         if identifier == .stepCount {
@@ -2564,6 +2570,12 @@ extension SampleType where Sample == HKCategorySample {
         )
     }
 
+    /// Returns the shared Category type for the specified HKCategoryType.
+    @inlinable
+    public init?(_ hkType: HKCategoryType) {
+        self.init(HKCategoryTypeIdentifier(rawValue: hkType.identifier))
+    }
+
     /// Returns the shared Category type for the specified identifier.
     public init?(_ identifier: HKCategoryTypeIdentifier) where Sample == HKCategorySample {
         if identifier == .appleStandHour {
@@ -2838,6 +2850,12 @@ extension SampleType where Sample == HKCorrelation {
         )
     }
 
+    /// Returns the shared Correlation type for the specified HKCorrelationType.
+    @inlinable
+    public init?(_ hkType: HKCorrelationType) {
+        self.init(HKCorrelationTypeIdentifier(rawValue: hkType.identifier))
+    }
+
     /// Returns the shared Correlation type for the specified identifier.
     public init?(_ identifier: HKCorrelationTypeIdentifier) where Sample == HKCorrelation {
         if identifier == .bloodPressure {
@@ -2975,6 +2993,12 @@ extension SampleType where Sample == HKClinicalRecord {
                 .coverageRecord,
             )
         )
+    }
+
+    /// Returns the shared Clinical Record type for the specified HKClinicalType.
+    @inlinable
+    public init?(_ hkType: HKClinicalType) {
+        self.init(HKClinicalTypeIdentifier(rawValue: hkType.identifier))
     }
 
     /// Returns the shared Clinical Record type for the specified identifier.

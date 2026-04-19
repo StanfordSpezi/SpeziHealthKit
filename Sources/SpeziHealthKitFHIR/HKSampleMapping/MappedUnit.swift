@@ -10,6 +10,7 @@ import HealthKit
 
 
 /// A ``MappedUnit`` instance is used to specify a unit mapping for FHIR observations mapped from HealthKit's `HKUnit`s.
+@available(*, deprecated)
 public struct MappedUnit: Decodable, Sendable {
     private enum CodingKeys: String, CodingKey {
         case hkunit

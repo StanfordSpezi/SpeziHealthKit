@@ -7,13 +7,16 @@
 //
 
 
+/// Controls how HealthKit samples are mapped into FHIR resources.
+///
+/// TODO explain how exactly this influences the conversion process!!!
 public struct SampleTypesFHIRMapping: Hashable, Sendable {
-    public let quantityTypesMapping: QuantityTypesFHIRMapping
-    public let categoryTypesMapping: CategoryTypesFHIRMapping
-    public let correlationTypesMapping: CorrelationTypesFHIRMapping
-    public let ecgTypeMapping: ECGTypeFHIRMapping
-    public let workoutTypeMapping: WorkoutTypeFHIRMapping
-    public let stateOfMindTypeMapping: StateOfMindTypeFHIRMapping
+    public var quantityTypesMapping: QuantityTypesFHIRMapping
+    public var categoryTypesMapping: CategoryTypesFHIRMapping
+    public var correlationTypesMapping: CorrelationTypesFHIRMapping
+    public var ecgTypeMapping: ECGTypeFHIRMapping
+    public var workoutTypeMapping: WorkoutTypeFHIRMapping
+    public var stateOfMindTypeMapping: StateOfMindTypeFHIRMapping
     
     
     public init(

@@ -10,6 +10,7 @@ import HealthKit
 
 
 /// An ``HKWorkoutSampleMapping`` allows developers to customize the mapping of `HKWorkout` samples to FHIR Observations.
+@available(*, deprecated, renamed: "WorkoutTypeFHIRMapping")
 public struct HKWorkoutSampleMapping: Decodable, Sendable {
     /// A default instance of an ``HKWorkoutSampleMapping`` allowing developers to customize the ``HKWorkoutSampleMapping``
     /// The default values are loaded from the `HKSampleMapping.json` resource in the ``HealthKitOnFHIR`` Swift Package.
