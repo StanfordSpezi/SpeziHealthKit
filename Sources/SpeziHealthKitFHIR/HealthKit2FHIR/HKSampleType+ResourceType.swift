@@ -11,36 +11,42 @@ import ModelsR4
 
 
 extension HKSampleType {
-    /// Converts an `HKSampleType` into the corresponding FHIR resource type, defined as a `ResourceType`
-    public var resourceType: ResourceType {
-        get throws {
-            switch self {
-            case is HKQuantityType, is HKCorrelationType, is HKCategoryType:
-                return ResourceType.observation
-            case let clinicalType as HKClinicalType:
-                switch clinicalType {
-                case HKClinicalType(.allergyRecord):
-                    return ResourceType.allergyIntolerance
-                case HKClinicalType(.conditionRecord):
-                    return ResourceType.condition
-                case HKClinicalType(.coverageRecord):
-                    return ResourceType.coverage
-                case HKClinicalType(.immunizationRecord):
-                    return ResourceType.immunization
-                case HKClinicalType(.labResultRecord):
-                    return ResourceType.observation
-                case HKClinicalType(.medicationRecord):
-                    return ResourceType.medication
-                case HKClinicalType(.procedureRecord):
-                    return ResourceType.procedure
-                case HKClinicalType(.vitalSignRecord):
-                    return ResourceType.observation
-                default:
-                    throw HealthKitOnFHIRError.notSupported
-                }
+    private static let fhirObservationMappedTypes: [HKSampleType.Type] = {
+        var types = [
+            HKQuantityType.self, HKCorrelationType.self, HKCategoryType.self, HKElectrocardiogramType.self, HKWorkoutType.self
+        ]
+        if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
+            types.append(HKStateOfMindType.self)
+        }
+        return types
+    }()
+    
+    
+    /// The sample type's corresponding FHIR resource type, if supported.
+    public var fhirResourceType: ResourceType? {
+        if self is HKClinicalType {
+            switch HKClinicalTypeIdentifier(rawValue: self.identifier) {
+            case .allergyRecord:
+                .allergyIntolerance
+            case .conditionRecord:
+                .condition
+            case .coverageRecord:
+                .coverage
+            case .immunizationRecord:
+                .immunization
+            case .labResultRecord:
+                .observation
+            case .medicationRecord:
+                .medication
+            case .procedureRecord:
+                .procedure
+            case .vitalSignRecord:
+                .observation
             default:
-                throw HealthKitOnFHIRError.notSupported
+                nil
             }
+        } else {
+            Self.fhirObservationMappedTypes.contains { self.isKind(of: $0) } ? .observation : nil
         }
     }
 }

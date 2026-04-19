@@ -18,6 +18,7 @@ public import Foundation
 #if canImport(HealthKit)
 public import HealthKit
 #endif
+private import SpeziFoundation
 
 
 % for (display_title, display_title_plural, hk_class, hk_sampletype_class, ctor, types) in gen_inputs:
@@ -74,11 +75,27 @@ def make_at_available(availability: Availability) -> str:
     }
 }
 
+extension SampleType where Sample == ${hk_class} {
+    /// All well-known ${display_title} types.
+    @inlinable public static var allKnown${''.join(display_title_plural.split())}: Set<SampleType<${hk_class}>> {
+        ${hk_sampletype_class}._allKnown${''.join(display_title_plural.split())}
+    }
+}
+
 extension ${hk_sampletype_class} {
     /// All well-known `${hk_sampletype_class}`s
     public static let allKnown${''.join(display_title_plural.split())}: Set<${hk_sampletype_class}> = Set(
         ${hk_sampletype_class}Identifier.allKnownIdentifiers.map { ${hk_sampletype_class}($0) }
     )
+    
+    /// The set of all well-known ${hk_sampletype_class} instances.
+    ///
+    /// Stored here rather than in `SampleType` bc that type is generic and the static property would get re-computed on each access,
+    /// which is expensive.
+    @usableFromInline static let _allKnown${''.join(display_title_plural.split())}: Set<SampleType<${hk_class}>> = {
+        % # TODO could also just have a giant literal here?!
+        ${hk_sampletype_class}.allKnown${''.join(display_title_plural.split())}.compactMapIntoSet { $0.sampleType as? SampleType<${hk_class}> }
+    }()
 }
 
 extension ${hk_sampletype_class}Identifier {

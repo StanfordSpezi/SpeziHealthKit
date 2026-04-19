@@ -13,7 +13,7 @@ import Foundation
 import HealthKit
 #endif
 
-
+@dynamicMemberLookup
 public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType, Sendable {
     @_documentation(visibility: internal)
     public typealias Sample = Sample
@@ -80,6 +80,21 @@ public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType, Sendab
         Sample._makeSamplePredicateInternal(type: hkSampleType, filter: filterPredicate)
     }
     #endif
+}
+
+
+extension SampleType: CustomStringConvertible {
+    public var description: String {
+        "\(Self.self)(\(id))"
+    }
+}
+
+
+extension SampleType {
+    @inlinable
+    public subscript<T>(dynamicMember keyPath: KeyPath<Sample._SampleType, T>) -> T {
+        hkSampleType[keyPath: keyPath]
+    }
 }
 
 

@@ -14,6 +14,7 @@ public import Foundation
 #if canImport(HealthKit)
 public import HealthKit
 #endif
+private import SpeziFoundation
 
 
 
@@ -1707,11 +1708,26 @@ extension SampleType where Sample == HKQuantitySample {
     }
 }
 
+extension SampleType where Sample == HKQuantitySample {
+    /// All well-known Quantity types.
+    @inlinable public static var allKnownQuantities: Set<SampleType<HKQuantitySample>> {
+        HKQuantityType._allKnownQuantities
+    }
+}
+
 extension HKQuantityType {
     /// All well-known `HKQuantityType`s
     public static let allKnownQuantities: Set<HKQuantityType> = Set(
         HKQuantityTypeIdentifier.allKnownIdentifiers.map { HKQuantityType($0) }
     )
+    
+    /// The set of all well-known HKQuantityType instances.
+    ///
+    /// Stored here rather than in `SampleType` bc that type is generic and the static property would get re-computed on each access,
+    /// which is expensive.
+    @usableFromInline static let _allKnownQuantities: Set<SampleType<HKQuantitySample>> = {
+        HKQuantityType.allKnownQuantities.compactMapIntoSet { $0.sampleType as? SampleType<HKQuantitySample> }
+    }()
 }
 
 extension HKQuantityTypeIdentifier {
@@ -2692,11 +2708,26 @@ extension SampleType where Sample == HKCategorySample {
     }
 }
 
+extension SampleType where Sample == HKCategorySample {
+    /// All well-known Category types.
+    @inlinable public static var allKnownCategories: Set<SampleType<HKCategorySample>> {
+        HKCategoryType._allKnownCategories
+    }
+}
+
 extension HKCategoryType {
     /// All well-known `HKCategoryType`s
     public static let allKnownCategories: Set<HKCategoryType> = Set(
         HKCategoryTypeIdentifier.allKnownIdentifiers.map { HKCategoryType($0) }
     )
+    
+    /// The set of all well-known HKCategoryType instances.
+    ///
+    /// Stored here rather than in `SampleType` bc that type is generic and the static property would get re-computed on each access,
+    /// which is expensive.
+    @usableFromInline static let _allKnownCategories: Set<SampleType<HKCategorySample>> = {
+        HKCategoryType.allKnownCategories.compactMapIntoSet { $0.sampleType as? SampleType<HKCategorySample> }
+    }()
 }
 
 extension HKCategoryTypeIdentifier {
@@ -2819,11 +2850,26 @@ extension SampleType where Sample == HKCorrelation {
     }
 }
 
+extension SampleType where Sample == HKCorrelation {
+    /// All well-known Correlation types.
+    @inlinable public static var allKnownCorrelations: Set<SampleType<HKCorrelation>> {
+        HKCorrelationType._allKnownCorrelations
+    }
+}
+
 extension HKCorrelationType {
     /// All well-known `HKCorrelationType`s
     public static let allKnownCorrelations: Set<HKCorrelationType> = Set(
         HKCorrelationTypeIdentifier.allKnownIdentifiers.map { HKCorrelationType($0) }
     )
+    
+    /// The set of all well-known HKCorrelationType instances.
+    ///
+    /// Stored here rather than in `SampleType` bc that type is generic and the static property would get re-computed on each access,
+    /// which is expensive.
+    @usableFromInline static let _allKnownCorrelations: Set<SampleType<HKCorrelation>> = {
+        HKCorrelationType.allKnownCorrelations.compactMapIntoSet { $0.sampleType as? SampleType<HKCorrelation> }
+    }()
 }
 
 extension HKCorrelationTypeIdentifier {
@@ -2957,11 +3003,26 @@ extension SampleType where Sample == HKClinicalRecord {
     }
 }
 
+extension SampleType where Sample == HKClinicalRecord {
+    /// All well-known Clinical Record types.
+    @inlinable public static var allKnownClinicalRecords: Set<SampleType<HKClinicalRecord>> {
+        HKClinicalType._allKnownClinicalRecords
+    }
+}
+
 extension HKClinicalType {
     /// All well-known `HKClinicalType`s
     public static let allKnownClinicalRecords: Set<HKClinicalType> = Set(
         HKClinicalTypeIdentifier.allKnownIdentifiers.map { HKClinicalType($0) }
     )
+    
+    /// The set of all well-known HKClinicalType instances.
+    ///
+    /// Stored here rather than in `SampleType` bc that type is generic and the static property would get re-computed on each access,
+    /// which is expensive.
+    @usableFromInline static let _allKnownClinicalRecords: Set<SampleType<HKClinicalRecord>> = {
+        HKClinicalType.allKnownClinicalRecords.compactMapIntoSet { $0.sampleType as? SampleType<HKClinicalRecord> }
+    }()
 }
 
 extension HKClinicalTypeIdentifier {
