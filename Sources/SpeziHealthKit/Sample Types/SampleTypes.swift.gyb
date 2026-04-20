@@ -82,6 +82,9 @@ def make_at_available(availability: Availability) -> str:
     }
 }
 
+% if hk_class == 'HKClinicalRecord':
+@available(watchOS, unavailable)
+% end
 extension SampleType where Sample == ${hk_class} {
     /// All well-known ${display_title} types.
     @inlinable public static var allKnown${''.join(display_title_plural.split())}: Set<SampleType<${hk_class}>> {
@@ -99,7 +102,17 @@ extension ${hk_sampletype_class} {
     ///
     /// Stored here rather than in `SampleType` bc that type is generic and the static property would get re-computed on each access,
     /// which is expensive.
-    @usableFromInline static let _allKnown${''.join(display_title_plural.split())}: Set<SampleType<${hk_class}>> = {
+    % if hk_class == 'HKClinicalRecord':
+    @available(watchOS, unavailable)
+    % end
+    @usableFromInline
+    % if hk_class == 'HKClinicalRecord':
+    % # we need to add this here to stop the compiler from complaining about the property not being concurrency-safe
+    % # because it thinks that `Set<SampleType<HKClinicalRecord>>` isn't Sendable.
+    % # (apparently the compiler can't pick up HKSample's @unchecked Sendable conformance if the specific subclass isn't available on the platform?)
+    nonisolated(unsafe)
+    % end
+    static let _allKnown${''.join(display_title_plural.split())}: Set<SampleType<${hk_class}>> = {
         % # TODO could also just have a giant literal here?!
         ${hk_sampletype_class}.allKnown${''.join(display_title_plural.split())}.compactMapIntoSet { $0.sampleType as? SampleType<${hk_class}> }
     }()

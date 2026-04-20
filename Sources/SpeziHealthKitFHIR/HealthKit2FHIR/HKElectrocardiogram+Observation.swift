@@ -43,7 +43,7 @@ extension HKElectrocardiogram {
             throw SpeziHealthKitFHIRError.notSupported
         }
         if !symptoms.isEmpty {
-            try appendSymptomsComponent(to: &observation, symptoms: symptoms, mappings: mapping)
+            try appendSymptomsComponent(to: &observation, symptoms: symptoms, mapping: mapping)
         }
         if !voltageMeasurements.isEmpty {
             try appendVoltageMeasurementsComponent(to: &observation, voltageMeasurements: voltageMeasurements, mapping: mapping.ecgTypeMapping)
@@ -156,11 +156,11 @@ extension HKElectrocardiogram: FHIRObservationBuildable {
     private func appendSymptomsComponent(
         to observation: inout Observation,
         symptoms: Symptoms,
-        mappings: SampleTypesFHIRMapping
+        mapping: SampleTypesFHIRMapping
     ) throws {
         for symptom in symptoms {
             guard let sampleType = SampleType(symptom.key),
-                  let mapping = mappings.categoryTypesMapping[sampleType] else {
+                  let mapping = mapping.categoryTypesMapping[sampleType] else {
                 throw SpeziHealthKitFHIRError.notSupported
             }
             let component = ObservationComponent(

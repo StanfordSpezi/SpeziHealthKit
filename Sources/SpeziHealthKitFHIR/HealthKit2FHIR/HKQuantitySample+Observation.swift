@@ -15,7 +15,7 @@ import SpeziHealthKit
 extension HKQuantitySample: FHIRObservationBuildable {
     func build(_ observation: inout Observation, mapping: SampleTypesFHIRMapping) throws {
         guard let quantityType = SampleType(self.quantityType) else {
-            preconditionFailure("Missing \(self.quantityType)")
+            throw SpeziHealthKitFHIRError.notSupported
         }
         guard let mapping = mapping.quantityTypesMapping[quantityType] else {
             throw SpeziHealthKitFHIRError.notSupported
@@ -30,9 +30,9 @@ extension HKQuantitySample: FHIRObservationBuildable {
 extension HKQuantity {
     func buildObservationComponent(
         for quantityType: SampleType<HKQuantitySample>,
-        mappings: QuantityTypesFHIRMapping = .default
+        mapping: QuantityTypesFHIRMapping = .default
     ) throws -> ObservationComponent {
-        guard let mapping = mappings[quantityType] else {
+        guard let mapping = mapping[quantityType] else {
             throw SpeziHealthKitFHIRError.notSupported
         }
         return try buildObservationComponent(mapping: mapping)

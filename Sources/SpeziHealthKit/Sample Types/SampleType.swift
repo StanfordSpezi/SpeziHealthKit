@@ -141,7 +141,7 @@ extension SampleType where Sample == HKQuantitySample {
         case .correlation, .category, .other:
             // SAFETY:
             // This branch is unreachable; the initializers are defined and structured in a way that all
-            // `SampleType<HKQuantitySample>` objects always must specify a displayUnit.
+            // `SampleType<HKQuantitySample>` objects always must specify a canonicalUnit.
             preconditionFailure("Cannot provide '\(#function)' for '\(Self.self)'")
         }
     }

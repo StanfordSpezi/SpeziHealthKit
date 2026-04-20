@@ -41,7 +41,8 @@ extension HKSample {
         )
         // Set basic elements applicable to all observations
         observation.id = self.uuid.uuidString.asFHIRStringPrimitive()
-        observation.append(identifier: Identifier(id: observation.id))
+        // NOTE: we really need only the value param here, but we also set id since we previously were setting just `id` and we want to maintain backward compatibility.
+        observation.append(identifier: Identifier(id: observation.id, value: observation.id))
         try observation.setEffective(
             startDate: self.startDate,
             endDate: self.endDate,

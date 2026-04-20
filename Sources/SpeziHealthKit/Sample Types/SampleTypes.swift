@@ -1865,7 +1865,8 @@ extension HKQuantityType {
     ///
     /// Stored here rather than in `SampleType` bc that type is generic and the static property would get re-computed on each access,
     /// which is expensive.
-    @usableFromInline static let _allKnownQuantities: Set<SampleType<HKQuantitySample>> = {
+    @usableFromInline
+    static let _allKnownQuantities: Set<SampleType<HKQuantitySample>> = {
         HKQuantityType.allKnownQuantities.compactMapIntoSet { $0.sampleType as? SampleType<HKQuantitySample> }
     }()
 }
@@ -2940,7 +2941,8 @@ extension HKCategoryType {
     ///
     /// Stored here rather than in `SampleType` bc that type is generic and the static property would get re-computed on each access,
     /// which is expensive.
-    @usableFromInline static let _allKnownCategories: Set<SampleType<HKCategorySample>> = {
+    @usableFromInline
+    static let _allKnownCategories: Set<SampleType<HKCategorySample>> = {
         HKCategoryType.allKnownCategories.compactMapIntoSet { $0.sampleType as? SampleType<HKCategorySample> }
     }()
 }
@@ -3090,7 +3092,8 @@ extension HKCorrelationType {
     ///
     /// Stored here rather than in `SampleType` bc that type is generic and the static property would get re-computed on each access,
     /// which is expensive.
-    @usableFromInline static let _allKnownCorrelations: Set<SampleType<HKCorrelation>> = {
+    @usableFromInline
+    static let _allKnownCorrelations: Set<SampleType<HKCorrelation>> = {
         HKCorrelationType.allKnownCorrelations.compactMapIntoSet { $0.sampleType as? SampleType<HKCorrelation> }
     }()
 }
@@ -3241,6 +3244,7 @@ extension SampleType where Sample == HKClinicalRecord {
     }
 }
 
+@available(watchOS, unavailable)
 extension SampleType where Sample == HKClinicalRecord {
     /// All well-known Clinical Record types.
     @inlinable public static var allKnownClinicalRecords: Set<SampleType<HKClinicalRecord>> {
@@ -3258,7 +3262,10 @@ extension HKClinicalType {
     ///
     /// Stored here rather than in `SampleType` bc that type is generic and the static property would get re-computed on each access,
     /// which is expensive.
-    @usableFromInline static let _allKnownClinicalRecords: Set<SampleType<HKClinicalRecord>> = {
+    @available(watchOS, unavailable)
+    @usableFromInline
+    nonisolated(unsafe)
+    static let _allKnownClinicalRecords: Set<SampleType<HKClinicalRecord>> = {
         HKClinicalType.allKnownClinicalRecords.compactMapIntoSet { $0.sampleType as? SampleType<HKClinicalRecord> }
     }()
 }
