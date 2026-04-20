@@ -111,7 +111,7 @@ var package = Package(
                 "SpeziHealthKitBulkExport",
                 "SpeziHealthKitUI",
                 .product(name: "XCTSpezi", package: "Spezi"),
-                .product(name: "SnapshotTesting", package: "swift-snapshot-testing")
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing", condition: .when(platforms: [.iOS]))
             ],
             resources: [.process("__Snapshots__")],
             swiftSettings: [.enableUpcomingFeature("ExistentialAny")],

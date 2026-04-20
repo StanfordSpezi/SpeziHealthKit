@@ -33,6 +33,7 @@ struct SampleTypeFHIRResourceTypeMapping {
     }
     
     
+    @available(watchOS, unavailable)
     @Test
     func hkClinicalType() throws {
         #expect(SampleType.allergyRecord.fhirResourceType == .allergyIntolerance)
