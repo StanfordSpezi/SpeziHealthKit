@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import HealthKit
 
 
@@ -19,3 +21,5 @@ extension HKSample {
         return TimeZone(identifier: timeZoneIdentifier)
     }
 }
+
+#endif

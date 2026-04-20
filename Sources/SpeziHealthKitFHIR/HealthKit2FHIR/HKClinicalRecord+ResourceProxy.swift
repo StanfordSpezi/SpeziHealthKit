@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import HealthKit
 import ModelsR4
 
@@ -23,3 +25,5 @@ extension HKClinicalRecord {
         return try JSONDecoder().decode(ResourceProxy.self, from: fhirResource.data)
     }
 }
+
+#endif

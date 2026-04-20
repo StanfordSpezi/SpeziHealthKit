@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 public import FHIRModelsExtensions
 import Foundation
 public import HealthKit
@@ -30,3 +32,5 @@ extension FHIRExtensionBuilderProtocol where Self == FHIRExtensionBuilder<HKSamp
         }
     }
 }
+
+#endif

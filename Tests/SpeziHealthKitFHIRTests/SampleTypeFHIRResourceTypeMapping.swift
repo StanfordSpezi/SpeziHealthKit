@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import SpeziHealthKit
 import SpeziHealthKitFHIR
 import Testing
@@ -46,3 +48,5 @@ struct SampleTypeFHIRResourceTypeMapping {
         #expect(SampleType.vitalSignRecord.fhirResourceType == .observation)
     }
 }
+
+#endif

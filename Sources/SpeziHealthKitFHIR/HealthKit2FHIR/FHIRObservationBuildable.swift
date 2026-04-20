@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import HealthKit
 import ModelsR4
 
@@ -17,3 +19,5 @@ protocol FHIRObservationBuildable: HKSample {
     /// - throws: if the sample cannot be expressed as a FHIR Observation
     func build(_ observation: inout Observation, mapping: SampleTypesFHIRMapping) throws
 }
+
+#endif

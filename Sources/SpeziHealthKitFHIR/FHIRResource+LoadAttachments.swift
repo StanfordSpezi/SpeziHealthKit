@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import HealthKit
 import ModelsDSTU2
 import ModelsR4
@@ -176,3 +178,5 @@ extension FHIRResource {
 
 
 extension HKAttachmentStore: @retroactive @unchecked Sendable {}
+
+#endif

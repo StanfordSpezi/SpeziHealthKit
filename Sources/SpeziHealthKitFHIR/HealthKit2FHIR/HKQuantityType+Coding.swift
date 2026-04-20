@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import Foundation
 import HealthKit
 import ModelsR4
@@ -26,3 +28,5 @@ extension HKQuantityType {
         return mapping.codings
     }
 }
+
+#endif

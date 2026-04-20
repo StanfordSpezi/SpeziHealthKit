@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 public import FHIRModelsExtensions
 public import Foundation
 public import HealthKit
@@ -247,3 +249,5 @@ extension HKElectrocardiogram.Classification: FHIRCodingConvertibleHKEnum {}
     .notSet, .none, .present
 )
 extension HKElectrocardiogram.SymptomsStatus: FHIRCodingConvertibleHKEnum {}
+
+#endif

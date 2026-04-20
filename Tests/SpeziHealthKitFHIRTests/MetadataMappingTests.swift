@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import HealthKit
 import ModelsR4
 @testable import SpeziHealthKitFHIR
@@ -68,3 +70,5 @@ struct MetadataMappingTests {
 extension Date {
     fileprivate static let referenceDate = Date(timeIntervalSinceReferenceDate: 0)
 }
+
+#endif

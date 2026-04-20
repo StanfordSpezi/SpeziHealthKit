@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import HealthKit
 import ModelsR4
 import SpeziHealthKitFHIRMacros
@@ -153,3 +155,5 @@ extension HKCategoryValueSeverity: FHIRCodingConvertibleHKEnum {}
     .present, .notPresent
 )
 extension HKCategoryValuePresence: FHIRCodingConvertibleHKEnum {}
+
+#endif

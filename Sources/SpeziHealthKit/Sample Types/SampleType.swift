@@ -8,10 +8,11 @@
 
 // swiftlint:disable file_types_order
 
-import Foundation
+public import Foundation
 #if canImport(HealthKit)
-import HealthKit
+public import HealthKit
 #endif
+
 
 @dynamicMemberLookup
 public struct SampleType<Sample: _HKSampleWithSampleType>: AnySampleType, Sendable {

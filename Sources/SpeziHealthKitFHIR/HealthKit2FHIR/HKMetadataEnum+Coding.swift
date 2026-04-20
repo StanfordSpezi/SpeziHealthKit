@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import HealthKit
 import SpeziHealthKitFHIRMacros
 
@@ -109,3 +111,5 @@ extension HKWeatherCondition: FHIRCodingConvertibleHKEnum {}
     .unknown, .pool, .openWater
 )
 extension HKWorkoutSwimmingLocationType: FHIRCodingConvertibleHKEnum {}
+
+#endif

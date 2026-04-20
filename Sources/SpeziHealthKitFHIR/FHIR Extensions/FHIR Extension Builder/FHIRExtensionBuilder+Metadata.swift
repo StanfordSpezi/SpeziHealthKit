@@ -8,6 +8,8 @@
 
 // swiftlint:disable file_length
 
+#if canImport(HealthKit)
+
 public import FHIRModelsExtensions
 import Foundation
 public import HealthKit
@@ -522,3 +524,5 @@ extension QuantityTypeFHIRMapping {
         )
     )
 }
+
+#endif

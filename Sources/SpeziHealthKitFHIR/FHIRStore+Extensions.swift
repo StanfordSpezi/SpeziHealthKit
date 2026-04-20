@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 public import HealthKit
 @_spi(Internal)
 public import SpeziFHIR
@@ -37,3 +39,5 @@ extension FHIRStore {
         removeResource(withHealthKitUUID: deletedObject.uuid.uuidString)
     }
 }
+
+#endif

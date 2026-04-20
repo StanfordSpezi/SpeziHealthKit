@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import HealthKit
 @testable import SpeziHealthKitFHIR
 import Testing
@@ -29,3 +31,5 @@ struct HKElectrocardiogramTests {
         #expect(HKElectrocardiogram.Classification.unrecognized.display == "unrecognized")
     }
 }
+
+#endif

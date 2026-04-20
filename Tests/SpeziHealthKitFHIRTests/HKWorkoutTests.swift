@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import HealthKit
 import ModelsR4
 @testable import SpeziHealthKitFHIR
@@ -150,3 +152,5 @@ struct HKWorkoutTests {
         #expect(observation.value == .codeableConcept(expectedValue))
     }
 }
+
+#endif

@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import FHIRModelsExtensions
 import HealthKit
 import ModelsR4
@@ -54,3 +56,5 @@ extension HKQuantity {
         )
     }
 }
+
+#endif

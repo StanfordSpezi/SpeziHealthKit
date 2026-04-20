@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 public import FHIRModelsExtensions
 public import HealthKit
 public import ModelsR4
@@ -106,3 +108,5 @@ extension Sequence where Element: HKSample {
         return compactMap { try? $0.resource(withMapping: mapping, issuedDate: issuedDate, extensions: extensions) }
     }
 }
+
+#endif

@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import HealthKit
 import ModelsR4
 import SpeziHealthKit
@@ -34,3 +36,5 @@ extension HKCorrelation: FHIRObservationBuildable {
         }
     }
 }
+
+#endif

@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import HealthKit
 import ModelsR4
 @testable import SpeziHealthKitFHIR
@@ -354,3 +356,5 @@ struct TimeZoneTests { // swiftlint:disable:this type_body_length
         #expect(try #require(period1.end?.value).asNSDate() == #require(period2.end?.value).asNSDate())
     }
 }
+
+#endif

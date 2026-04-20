@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 import ModelsR4
 import SpeziHealthKit
 @testable import SpeziHealthKitFHIR
@@ -28,3 +30,5 @@ struct SampleTypeFHIRMappingTests {
         #expect(missingCategories.isEmpty, "Missing entries in Category Type FHIR Mapping: \(missingCategories.map(\.identifier).sorted())")
     }
 }
+
+#endif

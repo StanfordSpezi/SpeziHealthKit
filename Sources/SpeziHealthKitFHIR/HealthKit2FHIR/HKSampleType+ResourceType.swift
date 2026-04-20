@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 public import HealthKit
 public import ModelsR4
 
@@ -50,3 +52,5 @@ extension HKSampleType {
         }
     }
 }
+
+#endif

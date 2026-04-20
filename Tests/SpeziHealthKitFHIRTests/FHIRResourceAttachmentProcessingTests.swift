@@ -6,9 +6,11 @@
 // SPDX-License-Identifier: MIT
 //
 
-// TOOO!!!
+#if canImport(HealthKit)
 
 // swiftlint:disable all
+
+// TODO!
 
 import HealthKit
 import ModelsDSTU2
@@ -429,3 +431,6 @@ import Testing
 //        }
 //    }
 //}
+
+
+#endif

@@ -8,6 +8,8 @@
 
 // swiftlint:disable file_length
 
+#if canImport(HealthKit)
+
 import FHIRModelsExtensions
 import HealthKit
 import ModelsR4
@@ -2521,3 +2523,5 @@ func checkProperty(
     let value = try #require(ext.value)
     #expect(value == expectedValue, sourceLocation: loc)
 }
+
+#endif

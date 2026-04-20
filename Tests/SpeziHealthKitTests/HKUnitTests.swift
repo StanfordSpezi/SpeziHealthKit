@@ -991,12 +991,16 @@ extension HKUnitTests {
         #expect(try HKUnitA.parse("Cal") == .largeCalorie())
         #expect(try HKUnitB.parse("Cal") == .largeCalorie())
         
+        #if canImport(HealthKit)
         try withKnownIssue("FB22552256") { () throws in
             #expect(try HKUnitA.largeCalorie() == HKUnitA.parse("kcal"))
         }
+        #endif
         #expect(try HKUnitB.largeCalorie() == HKUnitB.parse("kcal"))
         
+        #if canImport(HealthKit)
         #expect(try HKUnitA.parse("kcal").unitString == "kcal")
+        #endif
         #expect(try HKUnitB.parse("kcal").unitString == "Cal")
         
         #expect(try HKUnitA.parse("cal") == .smallCalorie())

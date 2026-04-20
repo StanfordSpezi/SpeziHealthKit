@@ -6,6 +6,8 @@
 // SPDX-License-Identifier: MIT
 //
 
+#if canImport(HealthKit)
+
 public import FHIRModelsExtensions
 import Foundation
 public import HealthKit
@@ -130,3 +132,5 @@ extension HKSourceRevision {
         return "\(version.majorVersion).\(version.minorVersion).\(version.patchVersion)"
     }
 }
+
+#endif

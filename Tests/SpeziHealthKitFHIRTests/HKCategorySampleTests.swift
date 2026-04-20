@@ -8,6 +8,8 @@
 
 // swiftlint:disable file_length type_body_length
 
+#if canImport(HealthKit)
+
 import HealthKit
 import ModelsR4
 @testable import SpeziHealthKitFHIR
@@ -942,3 +944,5 @@ func product<C1: Collection & Sendable, C2: Collection & Sendable>(
         }
     }
 }
+
+#endif
