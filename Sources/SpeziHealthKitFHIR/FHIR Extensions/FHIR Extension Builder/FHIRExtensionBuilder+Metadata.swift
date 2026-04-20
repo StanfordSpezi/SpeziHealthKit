@@ -41,7 +41,16 @@ extension FHIRExtensionBuilderProtocol where Self == FHIRExtensionBuilder<HKObje
                     if let type = Self.type(forMetadataKey: key), let value = type.init(rawValue: value.intValue) {
                         extensionValue = .coding(value.asCoding)
                     } else {
-                        extensionValue = .decimal(FHIRPrimitive(FHIRDecimal(value.decimalValue)))
+                        @_transparent
+                        func typeEncoding(_ type: (some Any).Type) -> String {
+                            String(cString: _getObjCTypeEncoding(type))
+                        }
+                        switch String(cString: value.objCType) {
+                        case "c", typeEncoding(Bool.self), typeEncoding(ObjCBool.self):
+                            extensionValue = .boolean(value.boolValue.asPrimitive())
+                        default:
+                            extensionValue = .decimal(FHIRPrimitive(FHIRDecimal(value.decimalValue)))
+                        }
                     }
                 case let value as Date:
                     extensionValue = .dateTime(FHIRPrimitive(try DateTime(date: value)))

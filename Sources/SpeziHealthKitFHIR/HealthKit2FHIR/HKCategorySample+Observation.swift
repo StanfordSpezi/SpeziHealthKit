@@ -182,7 +182,8 @@ extension HKCategoryTypeIdentifier {
                 return .init(valueType: HKCategoryValuePresence.self)
             default:
                 // we need to put these in here, in the default, since we can't do the #available check as part of the switch cases above...
-                if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *), self == .bleedingDuringPregnancy || self == .bleedingAfterPregnancy {
+                if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *),
+                   self == .bleedingDuringPregnancy || self == .bleedingAfterPregnancy {
                     return .init(valueType: HKCategoryValueVaginalBleeding.self)
                 } else {
                     throw SpeziHealthKitFHIRError.notSupported

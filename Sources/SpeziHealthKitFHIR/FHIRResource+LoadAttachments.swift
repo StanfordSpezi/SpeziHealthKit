@@ -71,8 +71,10 @@ extension FHIRResource {
         switch versionedResource {
         case .r4(var resource):
             try processAttachments(for: &resource, encodedAttachments: encodedAttachments)
+            self = .init(versionedResource: .r4(resource), displayName: self.displayName)
         case .dstu2(var resource):
             try processAttachments(for: &resource, encodedAttachments: encodedAttachments)
+            self = .init(versionedResource: .dstu2(resource), displayName: self.displayName)
         }
     }
 
@@ -125,7 +127,10 @@ extension FHIRResource {
         for resource: inout any ModelsDSTU2.Resource,
         encodedAttachments: [(identifier: String, base64EncodedString: String)]
     ) throws {
-        // TODO(DSTU2)
+        throw NSError(domain: "edu.stanford.SpeziFHIR", code: 0, userInfo: [
+            NSLocalizedDescriptionKey: "DSTU2 resource attachment processing is currently unavailable"
+        ])
+        // TODO(DSTU2) // swiftlint:disable:this todo
 //        switch resource {
 //        case let reference as ModelsDSTU2.DocumentReference:
 //            for attachment in encodedAttachments {
