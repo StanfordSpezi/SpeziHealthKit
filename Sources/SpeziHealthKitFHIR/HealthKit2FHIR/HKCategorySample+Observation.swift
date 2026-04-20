@@ -78,7 +78,7 @@ extension HKCategoryType {
         switch key {
         case HKMetadataKeyHeartRateEventThreshold:
             .heartRate
-        case HKMetadataKeyLowCardioFitnessEventThreshold:
+        case HKMetadataKeyLowCardioFitnessEventThreshold, HKMetadataKeyVO2MaxValue:
             .vo2Max
         default:
             nil
