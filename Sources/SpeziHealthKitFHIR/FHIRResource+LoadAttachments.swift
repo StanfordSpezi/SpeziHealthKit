@@ -15,108 +15,92 @@ import SpeziFHIR
 import SpeziHealthKit
 
 
-protocol HealthKitAttachmentsProvider {
-    func getEncodedAttachments(
-        for sample: HKSample
-    ) async throws -> [(identifier: String, base64EncodedString: String)]
-}
-
-
-struct DefaultHealthKitAttachmentsProvider: HealthKitAttachmentsProvider {
-    private let healthKit: HealthKit
-    
-    init(healthKit: HealthKit) {
-        self.healthKit = healthKit
+extension HKSample {
+    /// An attachment that was loaded from the health store
+    fileprivate struct LoadedAttachment: Sendable {
+        let id: UUID
+        let contentType: UTType
+        let data: Data
     }
-
-    func getEncodedAttachments(
-        for sample: HKSample
-    ) async throws -> [(identifier: String, base64EncodedString: String)] {
-        try await withThrowingTaskGroup(of: (String, String).self, returning: [(String, String)].self) { taskGroup in
-            let attachmentStore = HKAttachmentStore(healthStore: healthKit.healthStore)
-            let attachments = try await attachmentStore.attachments(for: sample)
-            for attachment in attachments {
+    
+    fileprivate func loadAttachments(using healthKit: HealthKit) async throws -> [LoadedAttachment] {
+        try await withThrowingTaskGroup/*(of: LoadedAttachment.self, returning: [LoadedAttachment].self)*/ { taskGroup in
+            let store = HKAttachmentStore(healthStore: healthKit.healthStore)
+            for attachment in try await store.attachments(for: self) {
                 taskGroup.addTask {
-                    let mimeType = attachment.contentType.preferredMIMEType ?? attachment.contentType.identifier
-                    let dataReader = attachmentStore.dataReader(for: attachment)
-                    return (mimeType, try await dataReader.data.base64EncodedString())
+                    let dataReader = store.dataReader(for: attachment)
+                    return LoadedAttachment(
+                        id: attachment.identifier,
+                        contentType: attachment.contentType,
+                        data: try await dataReader.data
+                    )
                 }
             }
-            var base64Attachments: [(String, String)] = []
-            while let base64Attachment = try await taskGroup.next() {
-                base64Attachments.append(base64Attachment)
+            var results: [LoadedAttachment] = []
+            while let result = try await taskGroup.next() {
+                results.append(result)
             }
-            return base64Attachments
+            return results
         }
     }
 }
+
 
 extension FHIRResource {
     /// Loads attachments for the FHIR resource from a HealthKit sample.
     /// - Parameters:
     ///   - healthKitSample: The HealthKit sample containing attachments.
     ///   - store: The health store to use. Defaults to a new `HKHealthStore` instance.
-    ///   - attachmentsProvider: Optional custom provider for attachments. If nil, a default provider will be created.
-    mutating func loadAttachments(
-        for healthKitSample: HKSample,
-        using healthKit: HealthKit,
-        attachmentsProvider: (any HealthKitAttachmentsProvider)? = nil
-    ) async throws {
+    mutating func loadAttachments(from sample: HKSample, using healthKit: HealthKit) async throws {
         guard category == .document || category == .diagnostic else {
             return
         }
-        let provider = attachmentsProvider ?? DefaultHealthKitAttachmentsProvider(healthKit: healthKit)
-        let encodedAttachments = try await provider.getEncodedAttachments(for: healthKitSample)
+        let attachments = try await sample.loadAttachments(using: healthKit)
         // We inject the data right in the resource if it has the same content type.
         // We assume that the content type is a MIME type, we would need to more checks around the content.format to be fully correct.
         // Otherwise we create a new content entry to inject this information in here.
         switch versionedResource {
         case .r4(var resource):
-            try processAttachments(for: &resource, encodedAttachments: encodedAttachments)
+            try Self.process(attachments, into: &resource)
             self = .init(versionedResource: .r4(resource), displayName: self.displayName)
         case .dstu2(var resource):
-            try processAttachments(for: &resource, encodedAttachments: encodedAttachments)
+            try Self.process(attachments, into: &resource)
             self = .init(versionedResource: .dstu2(resource), displayName: self.displayName)
         }
     }
-
-    func processAttachments(
-        for resource: inout any ModelsR4.Resource,
-        encodedAttachments: [(identifier: String, base64EncodedString: String)]
-    ) throws {
+    
+    /// Adds attachments into the resource
+    private static func process(_ attachments: [HKSample.LoadedAttachment], into resource: inout any ModelsR4.Resource) throws {
         switch resource {
         case var reference as ModelsR4.DocumentReference:
-            for attachment in encodedAttachments {
-                let data = FHIRPrimitive(ModelsR4.Base64Binary(attachment.base64EncodedString))
+            for attachment in attachments {
+                let b64Binary = FHIRPrimitive(ModelsR4.Base64Binary(attachment.data.base64EncodedString()))
+                let attachmentContentType: ModelsR4.FHIRPrimitive = (attachment.contentType.preferredMIMEType ?? attachment.contentType.identifier).asFHIRStringPrimitive()
                 if let matchingContentIdx = reference.content.firstIndex(where: {
-                    $0.attachment.contentType?.value?.string == attachment.identifier && $0.attachment.data == nil
+                    $0.attachment.contentType == attachmentContentType && $0.attachment.data == nil
                 }) {
-                    reference.content[matchingContentIdx].attachment.data = data
+                    reference.content[matchingContentIdx].attachment.data = b64Binary
                 } else {
-                    reference.content.append(
-                        DocumentReferenceContent(
-                            attachment: Attachment(contentType: FHIRPrimitive(stringLiteral: attachment.identifier), data: data)
-                        )
-                    )
+                    reference.content.append(DocumentReferenceContent(attachment: Attachment(contentType: attachmentContentType, data: b64Binary)))
                 }
                 resource = reference
             }
         case var report as ModelsR4.DiagnosticReport:
-            for attachment in encodedAttachments {
-                let data = FHIRPrimitive(ModelsR4.Base64Binary(attachment.base64EncodedString))
+            for attachment in attachments {
+                let b64Binary = FHIRPrimitive(ModelsR4.Base64Binary(attachment.data.base64EncodedString()))
+                let attachmentContentType: ModelsR4.FHIRPrimitive = (attachment.contentType.preferredMIMEType ?? attachment.contentType.identifier).asFHIRStringPrimitive()
                 if let matchingAttachmentIdx = (report.presentedForm ?? []).firstIndex(where: {
-                    $0.contentType?.value?.string == attachment.identifier && $0.data == nil
+                    $0.contentType == attachmentContentType && $0.data == nil
                 }) {
                     // SAFETY: if there is an index, we know that the array is not nil.
                     // swiftlint:disable:next force_unwrapping
-                    report.presentedForm![matchingAttachmentIdx].data = data
+                    report.presentedForm![matchingAttachmentIdx].data = b64Binary
                 } else {
                     if report.presentedForm == nil {
                         report.presentedForm = []
                     }
-                    report.presentedForm!.append( // swiftlint:disable:this force_unwrapping
-                        Attachment(contentType: FHIRPrimitive(stringLiteral: attachment.identifier), data: data)
-                    )
+                    // swiftlint:disable:next force_unwrapping
+                    report.presentedForm!.append(Attachment(contentType: attachmentContentType, data: b64Binary))
                 }
                 resource = report
             }
@@ -125,10 +109,7 @@ extension FHIRResource {
         }
     }
 
-    func processAttachments(
-        for resource: inout any ModelsDSTU2.Resource,
-        encodedAttachments: [(identifier: String, base64EncodedString: String)]
-    ) throws {
+    private static func process(_ attachments: [HKSample.LoadedAttachment], into resource: inout any ModelsDSTU2.Resource) throws {
         throw NSError(domain: "edu.stanford.SpeziFHIR", code: 0, userInfo: [
             NSLocalizedDescriptionKey: "DSTU2 resource attachment processing is currently unavailable"
         ])

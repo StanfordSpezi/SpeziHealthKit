@@ -868,7 +868,7 @@ quantity_types: list[SampleType] = [
     quantity_type(
         availability=Availability(iOS='18.0', macOS='15.0', watchOS='11.0', visionOS='2.0'),
         identifier='distanceCrossCountrySkiing',
-        canonical_title='Cross-Country Skiing Speed',
+        canonical_title='Cross-Country Skiing Distance',
         unit='.meter()',
         display_unit=LocaleDependentUnit(us='.mile()', metric='.meterUnit(with: .kilo)'),
         doc='A quantity sample that records cross-country skiing distance.'

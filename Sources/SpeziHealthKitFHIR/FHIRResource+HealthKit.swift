@@ -55,7 +55,7 @@ extension FHIRResource {
                     displayName: record.displayName
                 )
                 if loadHealthKitAttachments, let healthKit {
-                    try await fhirResource.loadAttachments(for: record, using: healthKit)
+                    try await fhirResource.loadAttachments(from: record, using: healthKit)
                 }
                 return fhirResource
             case .r4:
@@ -77,7 +77,7 @@ extension FHIRResource {
                     displayName: record.displayName
                 )
                 if loadHealthKitAttachments, let healthKit {
-                    try await fhirResource.loadAttachments(for: record, using: healthKit)
+                    try await fhirResource.loadAttachments(from: record, using: healthKit)
                 }
                 return fhirResource
             case .unknown:
@@ -90,10 +90,8 @@ extension FHIRResource {
             guard let healthKit = healthKit else {
                 fallthrough
             }
-            
             async let symptoms = try electrocardiogram.symptoms(from: healthKit)
             async let voltageMeasurements = try electrocardiogram.voltageMeasurements(from: healthKit.healthStore)
-            
             let electrocardiogramResource = try await electrocardiogram.observation(
                 symptoms: symptoms,
                 voltageMeasurements: voltageMeasurements.map { ($0.timeOffset, $0.voltage) }

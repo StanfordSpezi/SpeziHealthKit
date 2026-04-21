@@ -1450,7 +1450,7 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .distanceCrossCountrySkiing,
-                canonicalTitle: "Cross-Country Skiing Speed",
+                canonicalTitle: "Cross-Country Skiing Distance",
                 canonicalUnit: .meter(),
                 displayUnits: LocalizedUnit(metric: .meterUnit(with: .kilo), us: .mile())
             )

@@ -110,11 +110,11 @@ extension FHIRExtensionBuilderProtocol where Self == FHIRExtensionBuilder<HKObje
                     case HKMetadataKeyMaximumLightIntensity:
                         extensionValue = .quantity(try value.buildQuantity(mapping: .maximumLightIntensity))
                     default:
-                        print("Encountered unexpected HKQuantity metadata value for key '\(key)': \(value). Skipping.")
+                        print("Encountered unexpected HKQuantity metadata value for key '\(key)'. Skipping.")
                         continue
                     }
                 default:
-                    print("Encountered unexpected HKSample metadata value of type \(Swift.type(of: value)), for key '\(key)': \(value). Skipping.")
+                    print("Encountered unexpected HKSample metadata value of type \(Swift.type(of: value)), for key '\(key)'. Skipping.")
                     continue
                 }
                 metadataExtension.append(
@@ -408,7 +408,7 @@ extension QuantityTypeFHIRMapping {
             hkUnit: .largeCalorie().unitDivided(by: .gramUnit(with: .kilo).unitMultiplied(by: .hour())),
             unit: "kcal/(kg*hr)",
             system: .unitsOfMeasureSystem,
-            code: "kcal/(kg*hr)"
+            code: "kcal/(kg.h)"
         )
     )
     

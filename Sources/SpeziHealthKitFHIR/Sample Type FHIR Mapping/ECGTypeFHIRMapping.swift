@@ -143,7 +143,7 @@ extension ECGTypeFHIRMapping {
                 hkUnit: .hertz(),
                 unit: "Hz",
                 system: "http://unitsofmeasure.org",
-                code: "hertz"
+                code: "Hz"
             )
         ),
         averageHeartRate: QuantityTypeFHIRMapping(
@@ -161,9 +161,9 @@ extension ECGTypeFHIRMapping {
             ],
             unit: QuantityTypeFHIRMapping.Unit(
                 hkUnit: .count() / .minute(),
-                unit: "/min",
+                unit: "beats/minute",
                 system: "http://unitsofmeasure.org",
-                code: "beats/minute"
+                code: "/minute"
             )
         ),
         voltageMeasurements: QuantityTypeFHIRMapping(

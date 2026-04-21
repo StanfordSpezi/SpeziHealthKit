@@ -571,7 +571,7 @@ extension QuantityTypesFHIRMapping {
             unitString: "%",
             system: .unitsOfMeasureSystem
         )
-        addMapping(for: .physicalEffort, code: "kcal/hr/kg", unitString: "kcal/hr/kg", system: .unitsOfMeasureSystem)
+        addMapping(for: .physicalEffort, code: "kcal/(kg.h)", unitString: "kcal/(kg.h)", system: .unitsOfMeasureSystem)
         addMapping(
             for: .pushCount,
             extraCodings: [
