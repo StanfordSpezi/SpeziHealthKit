@@ -6,7 +6,7 @@
 // SPDX-License-Identifier: MIT
 //
 
-#if canImport(HealthKit) && canImport(SwiftUI)
+#if os(iOS) && !targetEnvironment(macCatalyst)
 
 import HealthKit
 import SnapshotTesting
@@ -22,7 +22,6 @@ struct SpeziHealthKitUITests {
     // the UI stuff works fine on catalyst, but the charts render slightly differently
     // (different device scale, different line lengths for dotted axis lines, etc...),
     // so we skip that for the time being.
-    #if os(iOS) && !targetEnvironment(macCatalyst)
     @MainActor
     @Test("Simple HealthChart View Snapshot")
     func simpleHealthChartViewSnapshot() throws {
@@ -159,7 +158,6 @@ struct SpeziHealthKitUITests {
         let healthChart2 = makeHealthChart(flag: false)
         assertSnapshot(of: healthChart2, as: .image)
     }
-    #endif
 }
 
 #endif

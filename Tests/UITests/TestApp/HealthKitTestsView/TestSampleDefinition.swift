@@ -24,7 +24,7 @@ extension TestDataDefinition {
         let value: Double
         let unit: HKUnit
         
-        init(date: Date, duration: TimeInterval = 0, value: Double, unit: HKUnit) { // swiftlint:disable:this function_default_parameter_at_end
+        init(date: Date, duration: TimeInterval = 0, value: Double, unit: HKUnit) {
             self.date = date
             self.duration = duration
             self.value = value
@@ -33,7 +33,7 @@ extension TestDataDefinition {
         
         init(
             date components: DateComponents,
-            duration: TimeInterval = 0, // swiftlint:disable:this function_default_parameter_at_end
+            duration: TimeInterval = 0,
             value: Double,
             unit: HKUnit
         ) {

@@ -14,21 +14,7 @@ public import Foundation
 #if canImport(HealthKit)
 public import HealthKit
 #endif
-
-
-/// Selects one of the specified units, based on the current locale.
-@inlinable func localeDependentUnit(
-    us: @autoclosure () -> HKUnit,
-    uk: @autoclosure () -> HKUnit? = nil,
-    metric: @autoclosure () -> HKUnit
-) -> HKUnit {
-    switch Locale.current.measurementSystem {
-    case .us: us()
-    case .uk: uk() ?? metric()
-    case .metric: metric()
-    default: metric()
-    }
-}
+private import SpeziFoundation
 
 
 
@@ -42,7 +28,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .stepCount,
-                displayUnit: .count()
+                canonicalTitle: "Step Count",
+                canonicalUnit: .count(),
+                displayUnits: LocalizedUnit(metric: .count(), us: .count())
             )
         )
     }
@@ -53,7 +41,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .distanceWalkingRunning,
-                displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo))
+                canonicalTitle: "Distance Walking/Running",
+                canonicalUnit: .meter(),
+                displayUnits: LocalizedUnit(metric: .meterUnit(with: .kilo), us: .mile())
             )
         )
     }
@@ -64,7 +54,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .runningGroundContactTime,
-                displayUnit: .secondUnit(with: .milli)
+                canonicalTitle: "Ground Contact Time",
+                canonicalUnit: .secondUnit(with: .milli),
+                displayUnits: LocalizedUnit(metric: .secondUnit(with: .milli), us: .secondUnit(with: .milli))
             )
         )
     }
@@ -75,7 +67,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .runningPower,
-                displayUnit: .watt()
+                canonicalTitle: "Running Power",
+                canonicalUnit: .watt(),
+                displayUnits: LocalizedUnit(metric: .watt(), us: .watt())
             )
         )
     }
@@ -86,7 +80,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .runningSpeed,
-                displayUnit: localeDependentUnit(us: .mile() / .hour(), metric: .meterUnit(with: .kilo) / .hour())
+                canonicalTitle: "Running Speed",
+                canonicalUnit: .meterUnit(with: .kilo) / .hour(),
+                displayUnits: LocalizedUnit(metric: .meterUnit(with: .kilo) / .hour(), us: .mile() / .hour())
             )
         )
     }
@@ -97,7 +93,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .runningStrideLength,
-                displayUnit: localeDependentUnit(us: .foot(), metric: .meter())
+                canonicalTitle: "Running Stride Length",
+                canonicalUnit: .meter(),
+                displayUnits: LocalizedUnit(metric: .meter(), us: .foot())
             )
         )
     }
@@ -108,7 +106,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .runningVerticalOscillation,
-                displayUnit: localeDependentUnit(us: .inch(), metric: .meterUnit(with: .centi))
+                canonicalTitle: "Running Vertical Oscillation",
+                canonicalUnit: .meterUnit(with: .centi),
+                displayUnits: LocalizedUnit(metric: .meterUnit(with: .centi), us: .inch())
             )
         )
     }
@@ -119,7 +119,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .distanceCycling,
-                displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo))
+                canonicalTitle: "Cycling Distance",
+                canonicalUnit: .meter(),
+                displayUnits: LocalizedUnit(metric: .meterUnit(with: .kilo), us: .mile())
             )
         )
     }
@@ -130,7 +132,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .pushCount,
-                displayUnit: .count()
+                canonicalTitle: "Wheelchair Push Count",
+                canonicalUnit: .count(),
+                displayUnits: LocalizedUnit(metric: .count(), us: .count())
             )
         )
     }
@@ -141,7 +145,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .distanceWheelchair,
-                displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo))
+                canonicalTitle: "Wheelchair Distance",
+                canonicalUnit: .meter(),
+                displayUnits: LocalizedUnit(metric: .meterUnit(with: .kilo), us: .mile())
             )
         )
     }
@@ -152,7 +158,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .swimmingStrokeCount,
-                displayUnit: .count()
+                canonicalTitle: "Swimming Stroke Count",
+                canonicalUnit: .count(),
+                displayUnits: LocalizedUnit(metric: .count(), us: .count())
             )
         )
     }
@@ -163,7 +171,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .distanceSwimming,
-                displayUnit: localeDependentUnit(us: .yard(), uk: .yard(), metric: .meter())
+                canonicalTitle: "Swimming Distance",
+                canonicalUnit: .meter(),
+                displayUnits: LocalizedUnit(metric: .meter(), us: .yard(), uk: .yard())
             )
         )
     }
@@ -174,7 +184,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .distanceDownhillSnowSports,
-                displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo))
+                canonicalTitle: "Downhill Snow Sports Distance",
+                canonicalUnit: .meter(),
+                displayUnits: LocalizedUnit(metric: .meterUnit(with: .kilo), us: .mile())
             )
         )
     }
@@ -185,7 +197,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .basalEnergyBurned,
-                displayUnit: .largeCalorie()
+                canonicalTitle: "Basal Energy Burned",
+                canonicalUnit: .largeCalorie(),
+                displayUnits: LocalizedUnit(metric: .largeCalorie(), us: .largeCalorie())
             )
         )
     }
@@ -196,7 +210,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .activeEnergyBurned,
-                displayUnit: .largeCalorie()
+                canonicalTitle: "Active Energy Burned",
+                canonicalUnit: .largeCalorie(),
+                displayUnits: LocalizedUnit(metric: .largeCalorie(), us: .largeCalorie())
             )
         )
     }
@@ -207,7 +223,22 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .flightsClimbed,
-                displayUnit: .count()
+                canonicalTitle: "Flights Climbed",
+                canonicalUnit: .count(),
+                displayUnits: LocalizedUnit(metric: .count(), us: .count())
+            )
+        )
+    }
+    /// A quantity sample type that measures the number of NikeFuel points the user has earned.
+    @inlinable public static var nikeFuel: SampleType<HKQuantitySample> {
+        SampleTypeCache.get(
+            identifier: Sample._SampleType._Identifier.nikeFuel.rawValue,
+            as: SampleType<HKQuantitySample>.self,
+            default: .quantity(
+                .nikeFuel,
+                canonicalTitle: "NikeFuel",
+                canonicalUnit: .count(),
+                displayUnits: LocalizedUnit(metric: .count(), us: .count())
             )
         )
     }
@@ -218,7 +249,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .appleExerciseTime,
-                displayUnit: .minute()
+                canonicalTitle: "Apple Exercise Time",
+                canonicalUnit: .minute(),
+                displayUnits: LocalizedUnit(metric: .minute(), us: .minute())
             )
         )
     }
@@ -229,7 +262,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .appleMoveTime,
-                displayUnit: .minute()
+                canonicalTitle: "Apple Move Time",
+                canonicalUnit: .minute(),
+                displayUnits: LocalizedUnit(metric: .minute(), us: .minute())
             )
         )
     }
@@ -240,7 +275,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .appleStandTime,
-                displayUnit: .hour()
+                canonicalTitle: "Apple Stand Time",
+                canonicalUnit: .minute(),
+                displayUnits: LocalizedUnit(metric: .minute(), us: .minute())
             )
         )
     }
@@ -251,7 +288,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .vo2Max,
-                displayUnit: .literUnit(with: .milli) / (.gramUnit(with: .kilo) * .minute())
+                canonicalTitle: "VO2Max",
+                canonicalUnit: .literUnit(with: .milli) / (.gramUnit(with: .kilo) * .minute()),
+                displayUnits: LocalizedUnit(metric: .literUnit(with: .milli) / (.gramUnit(with: .kilo) * .minute()), us: .literUnit(with: .milli) / (.gramUnit(with: .kilo) * .minute()))
             )
         )
     }
@@ -262,7 +301,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .height,
-                displayUnit: localeDependentUnit(us: .foot(), metric: .meterUnit(with: .centi))
+                canonicalTitle: "Height",
+                canonicalUnit: .meterUnit(with: .centi),
+                displayUnits: LocalizedUnit(metric: .meterUnit(with: .centi), us: .foot())
             )
         )
     }
@@ -273,7 +314,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .bodyMass,
-                displayUnit: localeDependentUnit(us: .pound(), uk: .pound(), metric: .gramUnit(with: .kilo))
+                canonicalTitle: "Body Mass",
+                canonicalUnit: .gramUnit(with: .kilo),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .kilo), us: .pound(), uk: .pound())
             )
         )
     }
@@ -284,7 +327,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .bodyMassIndex,
-                displayUnit: .count()
+                canonicalTitle: "BMI",
+                canonicalUnit: .count(),
+                displayUnits: LocalizedUnit(metric: .count(), us: .count())
             )
         )
     }
@@ -295,7 +340,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .leanBodyMass,
-                displayUnit: localeDependentUnit(us: .pound(), uk: .pound(), metric: .gramUnit(with: .kilo))
+                canonicalTitle: "Lean Body Mass",
+                canonicalUnit: .gramUnit(with: .kilo),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .kilo), us: .pound(), uk: .pound())
             )
         )
     }
@@ -306,7 +353,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .bodyFatPercentage,
-                displayUnit: .percent()
+                canonicalTitle: "Body Fat Percentage",
+                canonicalUnit: .percent(),
+                displayUnits: LocalizedUnit(metric: .percent(), us: .percent())
             )
         )
     }
@@ -317,7 +366,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .waistCircumference,
-                displayUnit: localeDependentUnit(us: .inch(), metric: .meterUnit(with: .centi))
+                canonicalTitle: "Waist Circumference",
+                canonicalUnit: .meterUnit(with: .centi),
+                displayUnits: LocalizedUnit(metric: .meterUnit(with: .centi), us: .inch())
             )
         )
     }
@@ -328,7 +379,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .appleSleepingWristTemperature,
-                displayUnit: localeDependentUnit(us: .degreeFahrenheit(), metric: .degreeCelsius())
+                canonicalTitle: "Apple Sleeping Wrist Temperature",
+                canonicalUnit: .degreeCelsius(),
+                displayUnits: LocalizedUnit(metric: .degreeCelsius(), us: .degreeFahrenheit(), uk: .degreeCelsius())
             )
         )
     }
@@ -339,7 +392,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .basalBodyTemperature,
-                displayUnit: localeDependentUnit(us: .degreeFahrenheit(), metric: .degreeCelsius())
+                canonicalTitle: "Basal Body Temperature",
+                canonicalUnit: .degreeCelsius(),
+                displayUnits: LocalizedUnit(metric: .degreeCelsius(), us: .degreeFahrenheit(), uk: .degreeCelsius())
             )
         )
     }
@@ -350,7 +405,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .environmentalAudioExposure,
-                displayUnit: .decibelHearingLevel()
+                canonicalTitle: "Environmental Audio Exposure",
+                canonicalUnit: .decibelAWeightedSoundPressureLevel(),
+                displayUnits: LocalizedUnit(metric: .decibelAWeightedSoundPressureLevel(), us: .decibelAWeightedSoundPressureLevel())
             )
         )
     }
@@ -361,7 +418,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .headphoneAudioExposure,
-                displayUnit: .decibelHearingLevel()
+                canonicalTitle: "Headphone Audio Exposure",
+                canonicalUnit: .decibelAWeightedSoundPressureLevel(),
+                displayUnits: LocalizedUnit(metric: .decibelAWeightedSoundPressureLevel(), us: .decibelAWeightedSoundPressureLevel())
             )
         )
     }
@@ -372,7 +431,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .heartRate,
-                displayUnit: .count() / .minute(),
+                canonicalTitle: "Heart Rate",
+                canonicalUnit: .count() / .minute(),
+                displayUnits: LocalizedUnit(metric: .count() / .minute(), us: .count() / .minute()),
                 expectedValuesRange: 0...175
             )
         )
@@ -384,7 +445,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .restingHeartRate,
-                displayUnit: .count() / .minute()
+                canonicalTitle: "Resting Heart Rate",
+                canonicalUnit: .count() / .minute(),
+                displayUnits: LocalizedUnit(metric: .count() / .minute(), us: .count() / .minute())
             )
         )
     }
@@ -395,7 +458,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .walkingHeartRateAverage,
-                displayUnit: .count() / .minute()
+                canonicalTitle: "Walking Heart Rate Average",
+                canonicalUnit: .count() / .minute(),
+                displayUnits: LocalizedUnit(metric: .count() / .minute(), us: .count() / .minute())
             )
         )
     }
@@ -406,7 +471,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .heartRateVariabilitySDNN,
-                displayUnit: .secondUnit(with: .milli)
+                canonicalTitle: "Heart Rate Variability SDNN",
+                canonicalUnit: .secondUnit(with: .milli),
+                displayUnits: LocalizedUnit(metric: .secondUnit(with: .milli), us: .secondUnit(with: .milli))
             )
         )
     }
@@ -417,7 +484,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .heartRateRecoveryOneMinute,
-                displayUnit: .count() / .minute()
+                canonicalTitle: "Heart Rate Recovery (1 min)",
+                canonicalUnit: .count() / .minute(),
+                displayUnits: LocalizedUnit(metric: .count() / .minute(), us: .count() / .minute())
             )
         )
     }
@@ -428,7 +497,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .atrialFibrillationBurden,
-                displayUnit: .percent()
+                canonicalTitle: "AFib Burden",
+                canonicalUnit: .percent(),
+                displayUnits: LocalizedUnit(metric: .percent(), us: .percent())
             )
         )
     }
@@ -439,7 +510,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .oxygenSaturation,
-                displayUnit: .percent(),
+                canonicalTitle: "Oxygen Saturation",
+                canonicalUnit: .percent(),
+                displayUnits: LocalizedUnit(metric: .percent(), us: .percent()),
                 expectedValuesRange: 80...105
             )
         )
@@ -451,7 +524,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .bodyTemperature,
-                displayUnit: localeDependentUnit(us: .degreeFahrenheit(), metric: .degreeCelsius())
+                canonicalTitle: "Body Temperature",
+                canonicalUnit: .degreeCelsius(),
+                displayUnits: LocalizedUnit(metric: .degreeCelsius(), us: .degreeFahrenheit(), uk: .degreeCelsius())
             )
         )
     }
@@ -462,7 +537,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .bloodPressureDiastolic,
-                displayUnit: .millimeterOfMercury()
+                canonicalTitle: "Blood Pressure (Diastolic)",
+                canonicalUnit: .millimeterOfMercury(),
+                displayUnits: LocalizedUnit(metric: .millimeterOfMercury(), us: .millimeterOfMercury())
             )
         )
     }
@@ -473,7 +550,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .bloodPressureSystolic,
-                displayUnit: .millimeterOfMercury()
+                canonicalTitle: "Blood Pressure (Systolic)",
+                canonicalUnit: .millimeterOfMercury(),
+                displayUnits: LocalizedUnit(metric: .millimeterOfMercury(), us: .millimeterOfMercury())
             )
         )
     }
@@ -484,7 +563,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .respiratoryRate,
-                displayUnit: .count() / .minute()
+                canonicalTitle: "Respiratory Rate",
+                canonicalUnit: .count() / .minute(),
+                displayUnits: LocalizedUnit(metric: .count() / .minute(), us: .count() / .minute())
             )
         )
     }
@@ -495,7 +576,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .bloodGlucose,
-                displayUnit: .gramUnit(with: .milli) / .literUnit(with: .deci)
+                canonicalTitle: "Blood Glucose",
+                canonicalUnit: .gramUnit(with: .milli) / .literUnit(with: .deci),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .milli) / .literUnit(with: .deci), us: .gramUnit(with: .milli) / .literUnit(with: .deci))
             )
         )
     }
@@ -506,7 +589,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .electrodermalActivity,
-                displayUnit: .siemenUnit(with: .micro)
+                canonicalTitle: "Electrodermal Activity",
+                canonicalUnit: .siemenUnit(with: .micro),
+                displayUnits: LocalizedUnit(metric: .siemenUnit(with: .micro), us: .siemenUnit(with: .micro))
             )
         )
     }
@@ -517,7 +602,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .forcedExpiratoryVolume1,
-                displayUnit: .liter()
+                canonicalTitle: "Forced Expiratory Volume (1 sec)",
+                canonicalUnit: .liter(),
+                displayUnits: LocalizedUnit(metric: .liter(), us: .liter())
             )
         )
     }
@@ -528,7 +615,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .forcedVitalCapacity,
-                displayUnit: .liter()
+                canonicalTitle: "Forced Vital Capacity",
+                canonicalUnit: .liter(),
+                displayUnits: LocalizedUnit(metric: .liter(), us: .liter())
             )
         )
     }
@@ -539,7 +628,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .inhalerUsage,
-                displayUnit: .count()
+                canonicalTitle: "Inhaler Usage",
+                canonicalUnit: .count(),
+                displayUnits: LocalizedUnit(metric: .count(), us: .count())
             )
         )
     }
@@ -550,7 +641,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .insulinDelivery,
-                displayUnit: .internationalUnit()
+                canonicalTitle: "Insulin Delivery",
+                canonicalUnit: .internationalUnit(),
+                displayUnits: LocalizedUnit(metric: .internationalUnit(), us: .internationalUnit())
             )
         )
     }
@@ -561,7 +654,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .numberOfTimesFallen,
-                displayUnit: .count()
+                canonicalTitle: "Number of Times Fallen",
+                canonicalUnit: .count(),
+                displayUnits: LocalizedUnit(metric: .count(), us: .count())
             )
         )
     }
@@ -572,7 +667,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .peakExpiratoryFlowRate,
-                displayUnit: .liter() / .minute()
+                canonicalTitle: "Peak Expiratory Flow Rate",
+                canonicalUnit: .liter() / .minute(),
+                displayUnits: LocalizedUnit(metric: .liter() / .minute(), us: .liter() / .minute())
             )
         )
     }
@@ -583,7 +680,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .peripheralPerfusionIndex,
-                displayUnit: .percent()
+                canonicalTitle: "Peripheral Perfusion Index",
+                canonicalUnit: .percent(),
+                displayUnits: LocalizedUnit(metric: .percent(), us: .percent())
             )
         )
     }
@@ -594,7 +693,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryBiotin,
-                displayUnit: .gramUnit(with: .micro)
+                canonicalTitle: "Dietary Biotin Intake",
+                canonicalUnit: .gramUnit(with: .micro),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .micro), us: .gramUnit(with: .micro))
             )
         )
     }
@@ -605,7 +706,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryCaffeine,
-                displayUnit: .gramUnit(with: .milli)
+                canonicalTitle: "Dietary Caffeine Intake",
+                canonicalUnit: .gramUnit(with: .milli),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .milli), us: .gramUnit(with: .milli))
             )
         )
     }
@@ -616,7 +719,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryCalcium,
-                displayUnit: .gramUnit(with: .milli)
+                canonicalTitle: "Dietary Calcium Intake",
+                canonicalUnit: .gramUnit(with: .milli),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .milli), us: .gramUnit(with: .milli))
             )
         )
     }
@@ -627,7 +732,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryCarbohydrates,
-                displayUnit: .gram()
+                canonicalTitle: "Dietary Carbohydrates Intake",
+                canonicalUnit: .gram(),
+                displayUnits: LocalizedUnit(metric: .gram(), us: .gram())
             )
         )
     }
@@ -638,7 +745,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryChloride,
-                displayUnit: .gramUnit(with: .milli)
+                canonicalTitle: "Dietary Chloride Intake",
+                canonicalUnit: .gramUnit(with: .milli),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .milli), us: .gramUnit(with: .milli))
             )
         )
     }
@@ -649,7 +758,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryCholesterol,
-                displayUnit: .gramUnit(with: .milli)
+                canonicalTitle: "Dietary Cholesterol Intake",
+                canonicalUnit: .gramUnit(with: .milli),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .milli), us: .gramUnit(with: .milli))
             )
         )
     }
@@ -660,7 +771,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryChromium,
-                displayUnit: .gramUnit(with: .micro)
+                canonicalTitle: "Dietary Chromium Intake",
+                canonicalUnit: .gramUnit(with: .micro),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .micro), us: .gramUnit(with: .micro))
             )
         )
     }
@@ -671,7 +784,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryCopper,
-                displayUnit: .gramUnit(with: .milli)
+                canonicalTitle: "Dietary Copper Intake",
+                canonicalUnit: .gramUnit(with: .micro),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .micro), us: .gramUnit(with: .micro))
             )
         )
     }
@@ -682,7 +797,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryEnergyConsumed,
-                displayUnit: .largeCalorie()
+                canonicalTitle: "Dietary Energy Consumed",
+                canonicalUnit: .largeCalorie(),
+                displayUnits: LocalizedUnit(metric: .largeCalorie(), us: .largeCalorie())
             )
         )
     }
@@ -693,7 +810,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryFatMonounsaturated,
-                displayUnit: .gram()
+                canonicalTitle: "Dietary Monounsaturated Fat Intake",
+                canonicalUnit: .gram(),
+                displayUnits: LocalizedUnit(metric: .gram(), us: .gram())
             )
         )
     }
@@ -704,7 +823,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryFatPolyunsaturated,
-                displayUnit: .gram()
+                canonicalTitle: "Dietary Polyunsaturated Fat Intake",
+                canonicalUnit: .gram(),
+                displayUnits: LocalizedUnit(metric: .gram(), us: .gram())
             )
         )
     }
@@ -715,7 +836,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryFatSaturated,
-                displayUnit: .gram()
+                canonicalTitle: "Dietary Saturated Fat Intake",
+                canonicalUnit: .gram(),
+                displayUnits: LocalizedUnit(metric: .gram(), us: .gram())
             )
         )
     }
@@ -726,7 +849,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryFatTotal,
-                displayUnit: .gram()
+                canonicalTitle: "Dietary Total Fat Intake",
+                canonicalUnit: .gram(),
+                displayUnits: LocalizedUnit(metric: .gram(), us: .gram())
             )
         )
     }
@@ -737,7 +862,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryFiber,
-                displayUnit: .gram()
+                canonicalTitle: "Dietary Fiber Intake",
+                canonicalUnit: .gram(),
+                displayUnits: LocalizedUnit(metric: .gram(), us: .gram())
             )
         )
     }
@@ -748,7 +875,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryFolate,
-                displayUnit: .gramUnit(with: .micro)
+                canonicalTitle: "Dietary Folate Intake",
+                canonicalUnit: .gramUnit(with: .micro),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .micro), us: .gramUnit(with: .micro))
             )
         )
     }
@@ -759,7 +888,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryIodine,
-                displayUnit: .gramUnit(with: .micro)
+                canonicalTitle: "Dietary Iodine Intake",
+                canonicalUnit: .gramUnit(with: .micro),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .micro), us: .gramUnit(with: .micro))
             )
         )
     }
@@ -770,7 +901,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryIron,
-                displayUnit: .gramUnit(with: .milli)
+                canonicalTitle: "Dietary Iron Intake",
+                canonicalUnit: .gramUnit(with: .milli),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .milli), us: .gramUnit(with: .milli))
             )
         )
     }
@@ -781,7 +914,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryMagnesium,
-                displayUnit: .gramUnit(with: .milli)
+                canonicalTitle: "Dietary Magnesium Intake",
+                canonicalUnit: .gramUnit(with: .milli),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .milli), us: .gramUnit(with: .milli))
             )
         )
     }
@@ -792,7 +927,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryManganese,
-                displayUnit: .gramUnit(with: .milli)
+                canonicalTitle: "Dietary Manganese Intake",
+                canonicalUnit: .gramUnit(with: .milli),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .milli), us: .gramUnit(with: .milli))
             )
         )
     }
@@ -803,7 +940,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryMolybdenum,
-                displayUnit: .gramUnit(with: .micro)
+                canonicalTitle: "Dietary Molybdenum Intake",
+                canonicalUnit: .gramUnit(with: .micro),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .micro), us: .gramUnit(with: .micro))
             )
         )
     }
@@ -814,7 +953,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryNiacin,
-                displayUnit: .gramUnit(with: .milli)
+                canonicalTitle: "Dietary Niacin Intake",
+                canonicalUnit: .gramUnit(with: .milli),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .milli), us: .gramUnit(with: .milli))
             )
         )
     }
@@ -825,7 +966,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryPantothenicAcid,
-                displayUnit: .gramUnit(with: .milli)
+                canonicalTitle: "Dietary Pantothenic Acid Intake",
+                canonicalUnit: .gramUnit(with: .milli),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .milli), us: .gramUnit(with: .milli))
             )
         )
     }
@@ -836,7 +979,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryPhosphorus,
-                displayUnit: .gramUnit(with: .milli)
+                canonicalTitle: "Dietary Phosphorus Intake",
+                canonicalUnit: .gramUnit(with: .milli),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .milli), us: .gramUnit(with: .milli))
             )
         )
     }
@@ -847,7 +992,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryPotassium,
-                displayUnit: .gramUnit(with: .milli)
+                canonicalTitle: "Dietary Potassium Intake",
+                canonicalUnit: .gramUnit(with: .milli),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .milli), us: .gramUnit(with: .milli))
             )
         )
     }
@@ -858,7 +1005,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryProtein,
-                displayUnit: .gram()
+                canonicalTitle: "Dietary Protein Intake",
+                canonicalUnit: .gram(),
+                displayUnits: LocalizedUnit(metric: .gram(), us: .gram())
             )
         )
     }
@@ -869,7 +1018,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryRiboflavin,
-                displayUnit: .gramUnit(with: .milli)
+                canonicalTitle: "Dietary Riboflavin Intake",
+                canonicalUnit: .gramUnit(with: .milli),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .milli), us: .gramUnit(with: .milli))
             )
         )
     }
@@ -880,7 +1031,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietarySelenium,
-                displayUnit: .gramUnit(with: .micro)
+                canonicalTitle: "Dietary Selenium Intake",
+                canonicalUnit: .gramUnit(with: .micro),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .micro), us: .gramUnit(with: .micro))
             )
         )
     }
@@ -891,7 +1044,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietarySodium,
-                displayUnit: .gramUnit(with: .milli)
+                canonicalTitle: "Dietary Sodium Intake",
+                canonicalUnit: .gramUnit(with: .milli),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .milli), us: .gramUnit(with: .milli))
             )
         )
     }
@@ -902,7 +1057,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietarySugar,
-                displayUnit: .gram()
+                canonicalTitle: "Dietary Sugar Intake",
+                canonicalUnit: .gram(),
+                displayUnits: LocalizedUnit(metric: .gram(), us: .gram())
             )
         )
     }
@@ -913,7 +1070,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryThiamin,
-                displayUnit: .gramUnit(with: .milli)
+                canonicalTitle: "Dietary Thiamin Intake",
+                canonicalUnit: .gramUnit(with: .milli),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .milli), us: .gramUnit(with: .milli))
             )
         )
     }
@@ -924,7 +1083,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryVitaminA,
-                displayUnit: .gramUnit(with: .micro)
+                canonicalTitle: "Dietary Vitamin A Intake",
+                canonicalUnit: .gramUnit(with: .micro),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .micro), us: .gramUnit(with: .micro))
             )
         )
     }
@@ -935,7 +1096,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryVitaminB12,
-                displayUnit: .gramUnit(with: .micro)
+                canonicalTitle: "Dietary Vitamin B12 Intake",
+                canonicalUnit: .gramUnit(with: .micro),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .micro), us: .gramUnit(with: .micro))
             )
         )
     }
@@ -946,7 +1109,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryVitaminB6,
-                displayUnit: .gramUnit(with: .milli)
+                canonicalTitle: "Dietary Vitamin B6 Intake",
+                canonicalUnit: .gramUnit(with: .milli),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .milli), us: .gramUnit(with: .milli))
             )
         )
     }
@@ -957,7 +1122,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryVitaminC,
-                displayUnit: .gramUnit(with: .milli)
+                canonicalTitle: "Dietary Vitamin C Intake",
+                canonicalUnit: .gramUnit(with: .milli),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .milli), us: .gramUnit(with: .milli))
             )
         )
     }
@@ -968,7 +1135,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryVitaminD,
-                displayUnit: .gramUnit(with: .micro)
+                canonicalTitle: "Dietary Vitamin D Intake",
+                canonicalUnit: .gramUnit(with: .micro),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .micro), us: .gramUnit(with: .micro))
             )
         )
     }
@@ -979,7 +1148,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryVitaminE,
-                displayUnit: .gramUnit(with: .milli)
+                canonicalTitle: "Dietary Vitamin E Intake",
+                canonicalUnit: .gramUnit(with: .milli),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .milli), us: .gramUnit(with: .milli))
             )
         )
     }
@@ -990,7 +1161,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryVitaminK,
-                displayUnit: .gramUnit(with: .micro)
+                canonicalTitle: "Dietary Vitamin K Intake",
+                canonicalUnit: .gramUnit(with: .micro),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .micro), us: .gramUnit(with: .micro))
             )
         )
     }
@@ -1001,7 +1174,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryWater,
-                displayUnit: localeDependentUnit(us: .fluidOunceUS(), metric: .literUnit(with: .milli))
+                canonicalTitle: "Dietary Water Intake",
+                canonicalUnit: .liter(),
+                displayUnits: LocalizedUnit(metric: .literUnit(with: .milli), us: .fluidOunceUS())
             )
         )
     }
@@ -1012,7 +1187,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .dietaryZinc,
-                displayUnit: .gramUnit(with: .milli)
+                canonicalTitle: "Dietary Zinc Intake",
+                canonicalUnit: .gramUnit(with: .milli),
+                displayUnits: LocalizedUnit(metric: .gramUnit(with: .milli), us: .gramUnit(with: .milli))
             )
         )
     }
@@ -1023,7 +1200,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .bloodAlcoholContent,
-                displayUnit: .percent()
+                canonicalTitle: "Blood Alcohol Content",
+                canonicalUnit: .percent(),
+                displayUnits: LocalizedUnit(metric: .percent(), us: .percent())
             )
         )
     }
@@ -1034,7 +1213,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .numberOfAlcoholicBeverages,
-                displayUnit: .count()
+                canonicalTitle: "Number of Alcoholic Beverages",
+                canonicalUnit: .count(),
+                displayUnits: LocalizedUnit(metric: .count(), us: .count())
             )
         )
     }
@@ -1045,7 +1226,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .appleWalkingSteadiness,
-                displayUnit: .percent()
+                canonicalTitle: "Apple Walking Steadiness",
+                canonicalUnit: .percent(),
+                displayUnits: LocalizedUnit(metric: .percent(), us: .percent())
             )
         )
     }
@@ -1056,7 +1239,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .sixMinuteWalkTestDistance,
-                displayUnit: .meter()
+                canonicalTitle: "6 Minute Walk Test Distance",
+                canonicalUnit: .meter(),
+                displayUnits: LocalizedUnit(metric: .meter(), us: .meter())
             )
         )
     }
@@ -1067,7 +1252,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .walkingSpeed,
-                displayUnit: localeDependentUnit(us: .mile() / .hour(), metric: .meterUnit(with: .kilo) / .hour())
+                canonicalTitle: "Walking Speed",
+                canonicalUnit: .meter() / .second(),
+                displayUnits: LocalizedUnit(metric: .meterUnit(with: .kilo) / .hour(), us: .mile() / .hour())
             )
         )
     }
@@ -1078,7 +1265,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .walkingStepLength,
-                displayUnit: localeDependentUnit(us: .inch(), metric: .meterUnit(with: .centi))
+                canonicalTitle: "Walking Step Length",
+                canonicalUnit: .meterUnit(with: .centi),
+                displayUnits: LocalizedUnit(metric: .meterUnit(with: .centi), us: .inch())
             )
         )
     }
@@ -1089,7 +1278,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .walkingAsymmetryPercentage,
-                displayUnit: .percent()
+                canonicalTitle: "Walking Asymmetry Percentage",
+                canonicalUnit: .percent(),
+                displayUnits: LocalizedUnit(metric: .percent(), us: .percent())
             )
         )
     }
@@ -1100,7 +1291,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .walkingDoubleSupportPercentage,
-                displayUnit: .percent()
+                canonicalTitle: "Walking Double Support Percentage",
+                canonicalUnit: .percent(),
+                displayUnits: LocalizedUnit(metric: .percent(), us: .percent())
             )
         )
     }
@@ -1111,7 +1304,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .stairAscentSpeed,
-                displayUnit: localeDependentUnit(us: .foot() / .second(), metric: .meter() / .second())
+                canonicalTitle: "Stair Ascent Speed",
+                canonicalUnit: .meter() / .second(),
+                displayUnits: LocalizedUnit(metric: .meter() / .second(), us: .foot() / .second())
             )
         )
     }
@@ -1122,7 +1317,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .stairDescentSpeed,
-                displayUnit: localeDependentUnit(us: .foot() / .second(), metric: .meter() / .second())
+                canonicalTitle: "Stair Descent Speed",
+                canonicalUnit: .meter() / .second(),
+                displayUnits: LocalizedUnit(metric: .meter() / .second(), us: .foot() / .second())
             )
         )
     }
@@ -1133,7 +1330,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .uvExposure,
-                displayUnit: .count()
+                canonicalTitle: "UV Exposure",
+                canonicalUnit: .count(),
+                displayUnits: LocalizedUnit(metric: .count(), us: .count())
             )
         )
     }
@@ -1144,7 +1343,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .underwaterDepth,
-                displayUnit: localeDependentUnit(us: .foot(), metric: .meter())
+                canonicalTitle: "Underwater Depth",
+                canonicalUnit: .meter(),
+                displayUnits: LocalizedUnit(metric: .meter(), us: .foot())
             )
         )
     }
@@ -1155,7 +1356,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .waterTemperature,
-                displayUnit: localeDependentUnit(us: .degreeFahrenheit(), metric: .degreeCelsius())
+                canonicalTitle: "Water Temperature",
+                canonicalUnit: .degreeCelsius(),
+                displayUnits: LocalizedUnit(metric: .degreeCelsius(), us: .degreeFahrenheit(), uk: .degreeCelsius())
             )
         )
     }
@@ -1167,7 +1370,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .appleSleepingBreathingDisturbances,
-                displayUnit: .count()
+                canonicalTitle: "Apple Sleeping Breathing Disturbances",
+                canonicalUnit: .count(),
+                displayUnits: LocalizedUnit(metric: .count(), us: .count())
             )
         )
     }
@@ -1179,7 +1384,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .crossCountrySkiingSpeed,
-                displayUnit: localeDependentUnit(us: .mile() / .hour(), metric: .meterUnit(with: .kilo) / .hour())
+                canonicalTitle: "Cross Country Skiing Speed",
+                canonicalUnit: .meterUnit(with: .kilo) / .hour(),
+                displayUnits: LocalizedUnit(metric: .meterUnit(with: .kilo) / .hour(), us: .mile() / .hour())
             )
         )
     }
@@ -1190,7 +1397,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .cyclingCadence,
-                displayUnit: .count() / .minute()
+                canonicalTitle: "Cycling Cadence",
+                canonicalUnit: .count() / .minute(),
+                displayUnits: LocalizedUnit(metric: .count() / .minute(), us: .count() / .minute())
             )
         )
     }
@@ -1201,7 +1410,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .cyclingFunctionalThresholdPower,
-                displayUnit: .watt()
+                canonicalTitle: "Cycling Functional Threshold Power",
+                canonicalUnit: .watt(),
+                displayUnits: LocalizedUnit(metric: .watt(), us: .watt())
             )
         )
     }
@@ -1212,7 +1423,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .cyclingPower,
-                displayUnit: .watt()
+                canonicalTitle: "Cycling Power",
+                canonicalUnit: .watt(),
+                displayUnits: LocalizedUnit(metric: .watt(), us: .watt())
             )
         )
     }
@@ -1223,7 +1436,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .cyclingSpeed,
-                displayUnit: localeDependentUnit(us: .mile() / .hour(), metric: .meterUnit(with: .kilo) / .hour())
+                canonicalTitle: "Cycling Speed",
+                canonicalUnit: .meterUnit(with: .kilo) / .hour(),
+                displayUnits: LocalizedUnit(metric: .meterUnit(with: .kilo) / .hour(), us: .mile() / .hour())
             )
         )
     }
@@ -1235,7 +1450,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .distanceCrossCountrySkiing,
-                displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo))
+                canonicalTitle: "Cross-Country Skiing Distance",
+                canonicalUnit: .meter(),
+                displayUnits: LocalizedUnit(metric: .meterUnit(with: .kilo), us: .mile())
             )
         )
     }
@@ -1247,7 +1464,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .distancePaddleSports,
-                displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo))
+                canonicalTitle: "Paddle Sports Distance",
+                canonicalUnit: .meter(),
+                displayUnits: LocalizedUnit(metric: .meterUnit(with: .kilo), us: .mile())
             )
         )
     }
@@ -1259,7 +1478,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .distanceRowing,
-                displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo))
+                canonicalTitle: "Rowing Distance",
+                canonicalUnit: .meter(),
+                displayUnits: LocalizedUnit(metric: .meterUnit(with: .kilo), us: .mile())
             )
         )
     }
@@ -1271,7 +1492,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .distanceSkatingSports,
-                displayUnit: localeDependentUnit(us: .mile(), metric: .meterUnit(with: .kilo))
+                canonicalTitle: "Skating Sports Distance",
+                canonicalUnit: .meter(),
+                displayUnits: LocalizedUnit(metric: .meterUnit(with: .kilo), us: .mile())
             )
         )
     }
@@ -1282,7 +1505,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .environmentalSoundReduction,
-                displayUnit: .decibelHearingLevel()
+                canonicalTitle: "Environmental Sound Reduction",
+                canonicalUnit: .decibelHearingLevel(),
+                displayUnits: LocalizedUnit(metric: .decibelHearingLevel(), us: .decibelHearingLevel())
             )
         )
     }
@@ -1294,7 +1519,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .estimatedWorkoutEffortScore,
-                displayUnit: .count()
+                canonicalTitle: "Estimated Workout Effort",
+                canonicalUnit: .count(),
+                displayUnits: LocalizedUnit(metric: .count(), us: .count())
             )
         )
     }
@@ -1306,7 +1533,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .paddleSportsSpeed,
-                displayUnit: localeDependentUnit(us: .mile() / .hour(), metric: .meterUnit(with: .kilo) / .hour())
+                canonicalTitle: "Paddle Sports Speed",
+                canonicalUnit: .meterUnit(with: .kilo) / .hour(),
+                displayUnits: LocalizedUnit(metric: .meterUnit(with: .kilo) / .hour(), us: .mile() / .hour())
             )
         )
     }
@@ -1317,7 +1546,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .physicalEffort,
-                displayUnit: .kilocalorie() / (.gramUnit(with: .kilo) * .hour())
+                canonicalTitle: "Physical Effort",
+                canonicalUnit: .kilocalorie() / (.gramUnit(with: .kilo) * .hour()),
+                displayUnits: LocalizedUnit(metric: .kilocalorie() / (.gramUnit(with: .kilo) * .hour()), us: .kilocalorie() / (.gramUnit(with: .kilo) * .hour()))
             )
         )
     }
@@ -1329,7 +1560,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .rowingSpeed,
-                displayUnit: localeDependentUnit(us: .mile() / .hour(), metric: .meterUnit(with: .kilo) / .hour())
+                canonicalTitle: "Rowing Speed",
+                canonicalUnit: .meterUnit(with: .kilo) / .hour(),
+                displayUnits: LocalizedUnit(metric: .meterUnit(with: .kilo) / .hour(), us: .mile() / .hour())
             )
         )
     }
@@ -1340,7 +1573,9 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .timeInDaylight,
-                displayUnit: .minute()
+                canonicalTitle: "Time in Daylight",
+                canonicalUnit: .minute(),
+                displayUnits: LocalizedUnit(metric: .minute(), us: .minute())
             )
         )
     }
@@ -1352,9 +1587,17 @@ extension SampleType where Sample == HKQuantitySample {
             as: SampleType<HKQuantitySample>.self,
             default: .quantity(
                 .workoutEffortScore,
-                displayUnit: .count()
+                canonicalTitle: "Workout Effort",
+                canonicalUnit: .count(),
+                displayUnits: LocalizedUnit(metric: .count(), us: .count())
             )
         )
+    }
+
+    /// Returns the shared Quantity type for the specified HKQuantityType.
+    @inlinable
+    public init?(_ hkType: HKQuantityType) {
+        self.init(HKQuantityTypeIdentifier(rawValue: hkType.identifier))
     }
 
     /// Returns the shared Quantity type for the specified identifier.
@@ -1391,6 +1634,8 @@ extension SampleType where Sample == HKQuantitySample {
             self = .activeEnergyBurned
         } else if identifier == .flightsClimbed {
             self = .flightsClimbed
+        } else if identifier == .nikeFuel {
+            self = .nikeFuel
         } else if identifier == .appleExerciseTime {
             self = .appleExerciseTime
         } else if identifier == .appleMoveTime {
@@ -1603,11 +1848,27 @@ extension SampleType where Sample == HKQuantitySample {
     }
 }
 
+extension SampleType where Sample == HKQuantitySample {
+    /// All well-known Quantity types.
+    @inlinable public static var allKnownQuantities: Set<SampleType<HKQuantitySample>> {
+        HKQuantityType._allKnownQuantities
+    }
+}
+
 extension HKQuantityType {
     /// All well-known `HKQuantityType`s
     public static let allKnownQuantities: Set<HKQuantityType> = Set(
         HKQuantityTypeIdentifier.allKnownIdentifiers.map { HKQuantityType($0) }
     )
+    
+    /// The set of all well-known HKQuantityType instances.
+    ///
+    /// Stored here rather than in `SampleType` bc that type is generic and the static property would get re-computed on each access,
+    /// which is expensive.
+    @usableFromInline
+    static let _allKnownQuantities: Set<SampleType<HKQuantitySample>> = {
+        HKQuantityType.allKnownQuantities.compactMapIntoSet { $0.sampleType as? SampleType<HKQuantitySample> }
+    }()
 }
 
 extension HKQuantityTypeIdentifier {
@@ -1630,6 +1891,7 @@ extension HKQuantityTypeIdentifier {
         identifiers.insert(Self.basalEnergyBurned)
         identifiers.insert(Self.activeEnergyBurned)
         identifiers.insert(Self.flightsClimbed)
+        identifiers.insert(Self.nikeFuel)
         identifiers.insert(Self.appleExerciseTime)
         identifiers.insert(Self.appleMoveTime)
         identifiers.insert(Self.appleStandTime)
@@ -1767,6 +2029,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .appleStandHour,
+                canonicalTitle: "Apple Stand Hour",
             )
         )
     }
@@ -1777,6 +2040,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .lowCardioFitnessEvent,
+                canonicalTitle: "Low Cardio Fitness Event",
             )
         )
     }
@@ -1787,6 +2051,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .menstrualFlow,
+                canonicalTitle: "Menstrual Flow",
             )
         )
     }
@@ -1797,6 +2062,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .intermenstrualBleeding,
+                canonicalTitle: "Intermenstrual Bleeding",
             )
         )
     }
@@ -1807,6 +2073,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .infrequentMenstrualCycles,
+                canonicalTitle: "Infrequent Menstrual Cycles",
             )
         )
     }
@@ -1817,6 +2084,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .irregularMenstrualCycles,
+                canonicalTitle: "Irregular Menstrual Cycles",
             )
         )
     }
@@ -1827,6 +2095,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .persistentIntermenstrualBleeding,
+                canonicalTitle: "Persistent Intermenstrual Bleeding",
             )
         )
     }
@@ -1837,6 +2106,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .prolongedMenstrualPeriods,
+                canonicalTitle: "Prolonged Menstrual Periods",
             )
         )
     }
@@ -1847,6 +2117,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .cervicalMucusQuality,
+                canonicalTitle: "Cervical Mucus Quality",
             )
         )
     }
@@ -1857,6 +2128,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .ovulationTestResult,
+                canonicalTitle: "Ovulation Test Result",
             )
         )
     }
@@ -1867,6 +2139,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .progesteroneTestResult,
+                canonicalTitle: "Progesterone Test Result",
             )
         )
     }
@@ -1877,6 +2150,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .sexualActivity,
+                canonicalTitle: "Sexual Activity",
             )
         )
     }
@@ -1887,6 +2161,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .contraceptive,
+                canonicalTitle: "Contraceptive",
             )
         )
     }
@@ -1897,6 +2172,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .pregnancy,
+                canonicalTitle: "Pregnancy",
             )
         )
     }
@@ -1907,6 +2183,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .pregnancyTestResult,
+                canonicalTitle: "Pregnancy Test Result",
             )
         )
     }
@@ -1917,6 +2194,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .lactation,
+                canonicalTitle: "Lactation",
             )
         )
     }
@@ -1927,6 +2205,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .environmentalAudioExposureEvent,
+                canonicalTitle: "Environmental Audio Exposure Event",
             )
         )
     }
@@ -1937,6 +2216,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .headphoneAudioExposureEvent,
+                canonicalTitle: "Headphone Audio Exposure Event",
             )
         )
     }
@@ -1947,6 +2227,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .lowHeartRateEvent,
+                canonicalTitle: "Low Heart Rate Event",
             )
         )
     }
@@ -1957,6 +2238,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .highHeartRateEvent,
+                canonicalTitle: "High Heart Rate Event",
             )
         )
     }
@@ -1967,6 +2249,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .irregularHeartRhythmEvent,
+                canonicalTitle: "Irregular Heart Rhythm Event",
             )
         )
     }
@@ -1977,6 +2260,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .appleWalkingSteadinessEvent,
+                canonicalTitle: "Apple Walking Steadiness Event",
             )
         )
     }
@@ -1987,6 +2271,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .mindfulSession,
+                canonicalTitle: "Mindful Session",
             )
         )
     }
@@ -1997,6 +2282,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .sleepAnalysis,
+                canonicalTitle: "Sleep Analysis",
             )
         )
     }
@@ -2007,6 +2293,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .toothbrushingEvent,
+                canonicalTitle: "Toothbrushing Event",
             )
         )
     }
@@ -2017,6 +2304,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .handwashingEvent,
+                canonicalTitle: "Handwashing Event",
             )
         )
     }
@@ -2027,6 +2315,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .abdominalCramps,
+                canonicalTitle: "Abdominal Cramps",
             )
         )
     }
@@ -2037,6 +2326,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .bloating,
+                canonicalTitle: "Bloating",
             )
         )
     }
@@ -2047,6 +2337,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .constipation,
+                canonicalTitle: "Constipation",
             )
         )
     }
@@ -2057,6 +2348,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .diarrhea,
+                canonicalTitle: "Diarrhea",
             )
         )
     }
@@ -2067,6 +2359,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .heartburn,
+                canonicalTitle: "Heartburn",
             )
         )
     }
@@ -2077,6 +2370,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .nausea,
+                canonicalTitle: "Nausea",
             )
         )
     }
@@ -2087,6 +2381,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .vomiting,
+                canonicalTitle: "Vomiting",
             )
         )
     }
@@ -2097,6 +2392,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .appetiteChanges,
+                canonicalTitle: "Appetite Changes",
             )
         )
     }
@@ -2107,6 +2403,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .chills,
+                canonicalTitle: "Chills",
             )
         )
     }
@@ -2117,6 +2414,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .dizziness,
+                canonicalTitle: "Dizziness",
             )
         )
     }
@@ -2127,6 +2425,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .fainting,
+                canonicalTitle: "Fainting",
             )
         )
     }
@@ -2137,6 +2436,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .fatigue,
+                canonicalTitle: "Fatigue",
             )
         )
     }
@@ -2147,6 +2447,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .fever,
+                canonicalTitle: "Fever",
             )
         )
     }
@@ -2157,6 +2458,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .generalizedBodyAche,
+                canonicalTitle: "Generalized Body Ache",
             )
         )
     }
@@ -2167,6 +2469,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .hotFlashes,
+                canonicalTitle: "Hot Flashes",
             )
         )
     }
@@ -2177,6 +2480,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .chestTightnessOrPain,
+                canonicalTitle: "Chest Tightness/Pain",
             )
         )
     }
@@ -2187,6 +2491,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .coughing,
+                canonicalTitle: "Coughing",
             )
         )
     }
@@ -2197,6 +2502,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .rapidPoundingOrFlutteringHeartbeat,
+                canonicalTitle: "Rapid/Pounding/Fluttering Heartbeat",
             )
         )
     }
@@ -2207,6 +2513,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .shortnessOfBreath,
+                canonicalTitle: "Shortness of Breath",
             )
         )
     }
@@ -2217,6 +2524,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .skippedHeartbeat,
+                canonicalTitle: "Skipped Heartbeat",
             )
         )
     }
@@ -2227,6 +2535,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .wheezing,
+                canonicalTitle: "Wheezing",
             )
         )
     }
@@ -2237,6 +2546,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .lowerBackPain,
+                canonicalTitle: "Lower Back Pain",
             )
         )
     }
@@ -2247,6 +2557,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .headache,
+                canonicalTitle: "Headache",
             )
         )
     }
@@ -2257,6 +2568,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .memoryLapse,
+                canonicalTitle: "Memory Lapse",
             )
         )
     }
@@ -2267,6 +2579,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .moodChanges,
+                canonicalTitle: "Mood Changes",
             )
         )
     }
@@ -2277,6 +2590,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .lossOfSmell,
+                canonicalTitle: "Loss of Smell",
             )
         )
     }
@@ -2287,6 +2601,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .lossOfTaste,
+                canonicalTitle: "Loss of Taste",
             )
         )
     }
@@ -2297,6 +2612,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .runnyNose,
+                canonicalTitle: "Runny Nose",
             )
         )
     }
@@ -2307,6 +2623,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .soreThroat,
+                canonicalTitle: "Sore Throat",
             )
         )
     }
@@ -2317,6 +2634,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .sinusCongestion,
+                canonicalTitle: "Sinus Congestion",
             )
         )
     }
@@ -2327,6 +2645,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .breastPain,
+                canonicalTitle: "Breast Pain",
             )
         )
     }
@@ -2337,6 +2656,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .pelvicPain,
+                canonicalTitle: "Pelvic Pain",
             )
         )
     }
@@ -2347,6 +2667,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .vaginalDryness,
+                canonicalTitle: "Vaginal Dryness",
             )
         )
     }
@@ -2358,6 +2679,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .bleedingDuringPregnancy,
+                canonicalTitle: "Bleeding During Pregnancy",
             )
         )
     }
@@ -2369,6 +2691,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .bleedingAfterPregnancy,
+                canonicalTitle: "Bleeding After Pregnancy",
             )
         )
     }
@@ -2379,6 +2702,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .acne,
+                canonicalTitle: "Acne",
             )
         )
     }
@@ -2389,6 +2713,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .drySkin,
+                canonicalTitle: "Dry Skin",
             )
         )
     }
@@ -2399,6 +2724,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .hairLoss,
+                canonicalTitle: "Hair Loss",
             )
         )
     }
@@ -2409,6 +2735,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .nightSweats,
+                canonicalTitle: "Night Sweats",
             )
         )
     }
@@ -2419,6 +2746,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .sleepChanges,
+                canonicalTitle: "Sleep Changes",
             )
         )
     }
@@ -2430,6 +2758,7 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .sleepApneaEvent,
+                canonicalTitle: "Sleep Apnea Event",
             )
         )
     }
@@ -2440,8 +2769,15 @@ extension SampleType where Sample == HKCategorySample {
             as: SampleType<HKCategorySample>.self,
             default: .category(
                 .bladderIncontinence,
+                canonicalTitle: "Bladder Incontinence",
             )
         )
+    }
+
+    /// Returns the shared Category type for the specified HKCategoryType.
+    @inlinable
+    public init?(_ hkType: HKCategoryType) {
+        self.init(HKCategoryTypeIdentifier(rawValue: hkType.identifier))
     }
 
     /// Returns the shared Category type for the specified identifier.
@@ -2588,11 +2924,27 @@ extension SampleType where Sample == HKCategorySample {
     }
 }
 
+extension SampleType where Sample == HKCategorySample {
+    /// All well-known Category types.
+    @inlinable public static var allKnownCategories: Set<SampleType<HKCategorySample>> {
+        HKCategoryType._allKnownCategories
+    }
+}
+
 extension HKCategoryType {
     /// All well-known `HKCategoryType`s
     public static let allKnownCategories: Set<HKCategoryType> = Set(
         HKCategoryTypeIdentifier.allKnownIdentifiers.map { HKCategoryType($0) }
     )
+    
+    /// The set of all well-known HKCategoryType instances.
+    ///
+    /// Stored here rather than in `SampleType` bc that type is generic and the static property would get re-computed on each access,
+    /// which is expensive.
+    @usableFromInline
+    static let _allKnownCategories: Set<SampleType<HKCategorySample>> = {
+        HKCategoryType.allKnownCategories.compactMapIntoSet { $0.sampleType as? SampleType<HKCategorySample> }
+    }()
 }
 
 extension HKCategoryTypeIdentifier {
@@ -2687,6 +3039,7 @@ extension SampleType where Sample == HKCorrelation {
             as: SampleType<HKCorrelation>.self,
             default: .correlation(
                 .bloodPressure,
+                canonicalTitle: "Blood Pressure",
                 associatedQuantityTypes: [.bloodPressureDiastolic, .bloodPressureSystolic]
             )
         )
@@ -2698,9 +3051,16 @@ extension SampleType where Sample == HKCorrelation {
             as: SampleType<HKCorrelation>.self,
             default: .correlation(
                 .food,
+                canonicalTitle: "Food",
                 associatedQuantityTypes: [.dietaryEnergyConsumed, .dietaryCarbohydrates, .dietaryFiber, .dietarySugar, .dietaryFatTotal, .dietaryFatMonounsaturated, .dietaryFatPolyunsaturated, .dietaryFatSaturated, .dietaryCholesterol, .dietaryProtein, .dietaryVitaminA, .dietaryThiamin, .dietaryRiboflavin, .dietaryNiacin, .dietaryPantothenicAcid, .dietaryVitaminB6, .dietaryBiotin, .dietaryVitaminB12, .dietaryVitaminC, .dietaryVitaminD, .dietaryVitaminE, .dietaryVitaminK, .dietaryFolate, .dietaryCalcium, .dietaryChloride, .dietaryIron, .dietaryMagnesium, .dietaryPhosphorus, .dietaryPotassium, .dietarySodium, .dietaryZinc, .dietaryWater, .dietaryCaffeine, .dietaryChromium, .dietaryCopper, .dietaryIodine, .dietaryManganese, .dietaryMolybdenum, .dietarySelenium]
             )
         )
+    }
+
+    /// Returns the shared Correlation type for the specified HKCorrelationType.
+    @inlinable
+    public init?(_ hkType: HKCorrelationType) {
+        self.init(HKCorrelationTypeIdentifier(rawValue: hkType.identifier))
     }
 
     /// Returns the shared Correlation type for the specified identifier.
@@ -2715,11 +3075,27 @@ extension SampleType where Sample == HKCorrelation {
     }
 }
 
+extension SampleType where Sample == HKCorrelation {
+    /// All well-known Correlation types.
+    @inlinable public static var allKnownCorrelations: Set<SampleType<HKCorrelation>> {
+        HKCorrelationType._allKnownCorrelations
+    }
+}
+
 extension HKCorrelationType {
     /// All well-known `HKCorrelationType`s
     public static let allKnownCorrelations: Set<HKCorrelationType> = Set(
         HKCorrelationTypeIdentifier.allKnownIdentifiers.map { HKCorrelationType($0) }
     )
+    
+    /// The set of all well-known HKCorrelationType instances.
+    ///
+    /// Stored here rather than in `SampleType` bc that type is generic and the static property would get re-computed on each access,
+    /// which is expensive.
+    @usableFromInline
+    static let _allKnownCorrelations: Set<SampleType<HKCorrelation>> = {
+        HKCorrelationType.allKnownCorrelations.compactMapIntoSet { $0.sampleType as? SampleType<HKCorrelation> }
+    }()
 }
 
 extension HKCorrelationTypeIdentifier {
@@ -2743,6 +3119,7 @@ extension SampleType where Sample == HKClinicalRecord {
             as: SampleType<HKClinicalRecord>.self,
             default: .clinical(
                 .allergyRecord,
+                canonicalTitle: "Allergy Record",
             )
         )
     }
@@ -2753,6 +3130,7 @@ extension SampleType where Sample == HKClinicalRecord {
             as: SampleType<HKClinicalRecord>.self,
             default: .clinical(
                 .clinicalNoteRecord,
+                canonicalTitle: "Clinical Note Record",
             )
         )
     }
@@ -2763,6 +3141,7 @@ extension SampleType where Sample == HKClinicalRecord {
             as: SampleType<HKClinicalRecord>.self,
             default: .clinical(
                 .conditionRecord,
+                canonicalTitle: "Condition Record",
             )
         )
     }
@@ -2773,6 +3152,7 @@ extension SampleType where Sample == HKClinicalRecord {
             as: SampleType<HKClinicalRecord>.self,
             default: .clinical(
                 .immunizationRecord,
+                canonicalTitle: "Immunization Record",
             )
         )
     }
@@ -2783,6 +3163,7 @@ extension SampleType where Sample == HKClinicalRecord {
             as: SampleType<HKClinicalRecord>.self,
             default: .clinical(
                 .labResultRecord,
+                canonicalTitle: "Lab Result Record",
             )
         )
     }
@@ -2793,6 +3174,7 @@ extension SampleType where Sample == HKClinicalRecord {
             as: SampleType<HKClinicalRecord>.self,
             default: .clinical(
                 .medicationRecord,
+                canonicalTitle: "Medication Record",
             )
         )
     }
@@ -2803,6 +3185,7 @@ extension SampleType where Sample == HKClinicalRecord {
             as: SampleType<HKClinicalRecord>.self,
             default: .clinical(
                 .procedureRecord,
+                canonicalTitle: "Procedure Record",
             )
         )
     }
@@ -2813,6 +3196,7 @@ extension SampleType where Sample == HKClinicalRecord {
             as: SampleType<HKClinicalRecord>.self,
             default: .clinical(
                 .vitalSignRecord,
+                canonicalTitle: "Vital Sign Record",
             )
         )
     }
@@ -2823,8 +3207,15 @@ extension SampleType where Sample == HKClinicalRecord {
             as: SampleType<HKClinicalRecord>.self,
             default: .clinical(
                 .coverageRecord,
+                canonicalTitle: "Coverage Record",
             )
         )
+    }
+
+    /// Returns the shared Clinical Record type for the specified HKClinicalType.
+    @inlinable
+    public init?(_ hkType: HKClinicalType) {
+        self.init(HKClinicalTypeIdentifier(rawValue: hkType.identifier))
     }
 
     /// Returns the shared Clinical Record type for the specified identifier.
@@ -2853,11 +3244,30 @@ extension SampleType where Sample == HKClinicalRecord {
     }
 }
 
+@available(watchOS, unavailable)
+extension SampleType where Sample == HKClinicalRecord {
+    /// All well-known Clinical Record types.
+    @inlinable public static var allKnownClinicalRecords: Set<SampleType<HKClinicalRecord>> {
+        HKClinicalType._allKnownClinicalRecords
+    }
+}
+
 extension HKClinicalType {
     /// All well-known `HKClinicalType`s
     public static let allKnownClinicalRecords: Set<HKClinicalType> = Set(
         HKClinicalTypeIdentifier.allKnownIdentifiers.map { HKClinicalType($0) }
     )
+    
+    /// The set of all well-known HKClinicalType instances.
+    ///
+    /// Stored here rather than in `SampleType` bc that type is generic and the static property would get re-computed on each access,
+    /// which is expensive.
+    @available(watchOS, unavailable)
+    @usableFromInline
+    nonisolated(unsafe)
+    static let _allKnownClinicalRecords: Set<SampleType<HKClinicalRecord>> = {
+        HKClinicalType.allKnownClinicalRecords.compactMapIntoSet { $0.sampleType as? SampleType<HKClinicalRecord> }
+    }()
 }
 
 extension HKClinicalTypeIdentifier {
@@ -2915,7 +3325,7 @@ extension SampleType where Sample == HKElectrocardiogram {
         SampleTypeCache.get(
             identifier: HKSampleType.electrocardiogramType().identifier,
             as: SampleType<HKElectrocardiogram>.self,
-            default: .init(HKSampleType.electrocardiogramType(), variant: .other)
+            default: .init(HKSampleType.electrocardiogramType(), canonicalTitle: "ECG", variant: .other)
         )
     }
 }
@@ -2926,7 +3336,7 @@ extension SampleType where Sample == HKAudiogramSample {
         SampleTypeCache.get(
             identifier: HKSampleType.audiogramSampleType().identifier,
             as: SampleType<HKAudiogramSample>.self,
-            default: .init(HKSampleType.audiogramSampleType(), variant: .other)
+            default: .init(HKSampleType.audiogramSampleType(), canonicalTitle: "Audiogram", variant: .other)
         )
     }
 }
@@ -2937,7 +3347,7 @@ extension SampleType where Sample == HKWorkout {
         SampleTypeCache.get(
             identifier: HKSampleType.workoutType().identifier,
             as: SampleType<HKWorkout>.self,
-            default: .init(HKSampleType.workoutType(), variant: .other)
+            default: .init(HKSampleType.workoutType(), canonicalTitle: "Workout", variant: .other)
         )
     }
 }
@@ -2948,7 +3358,7 @@ extension SampleType where Sample == HKVisionPrescription {
         SampleTypeCache.get(
             identifier: HKSampleType.visionPrescriptionType().identifier,
             as: SampleType<HKVisionPrescription>.self,
-            default: .init(HKSampleType.visionPrescriptionType(), variant: .other)
+            default: .init(HKSampleType.visionPrescriptionType(), canonicalTitle: "Vision Prescription", variant: .other)
         )
     }
 }
@@ -2960,7 +3370,7 @@ extension SampleType where Sample == HKStateOfMind {
         SampleTypeCache.get(
             identifier: HKSampleType.stateOfMindType().identifier,
             as: SampleType<HKStateOfMind>.self,
-            default: .init(HKSampleType.stateOfMindType(), variant: .other)
+            default: .init(HKSampleType.stateOfMindType(), canonicalTitle: "State of Mind", variant: .other)
         )
     }
 }
@@ -2971,7 +3381,7 @@ extension SampleType where Sample == HKHeartbeatSeriesSample {
         SampleTypeCache.get(
             identifier: HKSeriesType.heartbeat().identifier,
             as: SampleType<HKHeartbeatSeriesSample>.self,
-            default: .init(HKSeriesType.heartbeat(), variant: .other)
+            default: .init(HKSeriesType.heartbeat(), canonicalTitle: "Heartbeat Series", variant: .other)
         )
     }
 }
@@ -2982,7 +3392,7 @@ extension SampleType where Sample == HKWorkoutRoute {
         SampleTypeCache.get(
             identifier: HKSeriesType.workoutRoute().identifier,
             as: SampleType<HKWorkoutRoute>.self,
-            default: .init(HKSeriesType.workoutRoute(), variant: .other)
+            default: .init(HKSeriesType.workoutRoute(), canonicalTitle: "Workout Route", variant: .other)
         )
     }
 }
@@ -2994,7 +3404,7 @@ extension SampleType where Sample == HKGAD7Assessment {
         SampleTypeCache.get(
             identifier: HKScoredAssessmentType(.GAD7).identifier,
             as: SampleType<HKGAD7Assessment>.self,
-            default: .init(HKScoredAssessmentType(.GAD7), variant: .other)
+            default: .init(HKScoredAssessmentType(.GAD7), canonicalTitle: "GAD-7", variant: .other)
         )
     }
 }
@@ -3006,7 +3416,7 @@ extension SampleType where Sample == HKPHQ9Assessment {
         SampleTypeCache.get(
             identifier: HKScoredAssessmentType(.PHQ9).identifier,
             as: SampleType<HKPHQ9Assessment>.self,
-            default: .init(HKScoredAssessmentType(.PHQ9), variant: .other)
+            default: .init(HKScoredAssessmentType(.PHQ9), canonicalTitle: "PHQ-9", variant: .other)
         )
     }
 }

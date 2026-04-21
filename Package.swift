@@ -1,5 +1,4 @@
 // swift-tools-version:6.2
-
 //
 // This source file is part of the Stanford Spezi open-source project
 // 
@@ -28,7 +27,8 @@ var package = Package(
     products: [
         .library(name: "SpeziHealthKit", targets: ["SpeziHealthKit"]),
         .library(name: "SpeziHealthKitBulkExport", targets: ["SpeziHealthKitBulkExport"]),
-        .library(name: "SpeziHealthKitUI", targets: ["SpeziHealthKitUI"])
+        .library(name: "SpeziHealthKitUI", targets: ["SpeziHealthKitUI"]),
+        .library(name: "SpeziHealthKitFHIR", targets: ["SpeziHealthKitFHIR"])
     ],
     dependencies: [
         .package(url: "https://github.com/StanfordSpezi/Spezi.git", from: "1.10.0"),
@@ -37,7 +37,13 @@ var package = Package(
         .package(url: "https://github.com/apple/swift-algorithms.git", from: "1.2.1"),
         .package(url: "https://github.com/apple/swift-async-algorithms.git", from: "1.1.3"),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.17.7"),
-        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.6.1")
+        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.6.1"),
+        
+//        .package(url: "https://github.com/apple/FHIRModels.git", "0.8.0"..<"0.9.0"),
+        .package(url: "https://github.com/StanfordSpezi/SpeziFHIR.git", revision: "4fa72a2d89ac4762a152607d0cc7cfee5db4f023"),
+        .package(url: "https://github.com/lukaskollmer/FHIRModels.git", branch: "lukas/try-to-fix"),
+//        .package(path: "../SpeziFHIR"),
+        .package(url: "https://github.com/swiftlang/swift-syntax.git", "602.0.0"..<"605.0.0")
     ] + swiftLintPackage,
     targets: [
         .target(
@@ -72,7 +78,7 @@ var package = Package(
         .target(
             name: "SpeziHealthKitBulkExport",
             dependencies: [
-                .target(name: "SpeziHealthKit"),
+                "SpeziHealthKit",
                 .product(name: "SpeziFoundation", package: "SpeziFoundation"),
                 .product(
                     name: "SpeziLocalStorage",
@@ -89,7 +95,7 @@ var package = Package(
         .target(
             name: "SpeziHealthKitUI",
             dependencies: [
-                .target(name: "SpeziHealthKit"),
+                "SpeziHealthKit",
                 .product(name: "SpeziFoundation", package: "SpeziFoundation")
             ],
             swiftSettings: [
@@ -101,14 +107,72 @@ var package = Package(
         .testTarget(
             name: "SpeziHealthKitTests",
             dependencies: [
+                "SpeziHealthKit",
+                "SpeziHealthKitBulkExport",
+                "SpeziHealthKitUI",
                 .product(name: "XCTSpezi", package: "Spezi"),
-                .target(name: "SpeziHealthKit"),
-                .target(name: "SpeziHealthKitBulkExport"),
-                .target(name: "SpeziHealthKitUI"),
-                .product(name: "SnapshotTesting", package: "swift-snapshot-testing")
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing", condition: .when(platforms: [.iOS]))
             ],
             resources: [.process("__Snapshots__")],
             swiftSettings: [.enableUpcomingFeature("ExistentialAny")],
+            plugins: [] + swiftLintPlugin
+        ),
+        .macro(
+            name: "SpeziHealthKitFHIRMacrosImpl",
+            dependencies: [
+                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+                .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
+                .product(name: "SwiftDiagnostics", package: "swift-syntax"),
+                .product(name: "Algorithms", package: "swift-algorithms")
+            ],
+            swiftSettings: [
+                .enableUpcomingFeature("ExistentialAny"),
+                .enableUpcomingFeature("InternalImportsByDefault")
+            ],
+            plugins: [] + swiftLintPlugin
+        ),
+        .target(
+            name: "SpeziHealthKitFHIRMacros",
+            dependencies: [
+                .target(name: "SpeziHealthKitFHIRMacrosImpl")
+            ],
+            plugins: [] + swiftLintPlugin
+        ),
+        .target(
+            name: "SpeziHealthKitFHIR",
+            dependencies: [
+                "SpeziHealthKitFHIRMacros",
+                "SpeziHealthKit",
+                .product(name: "SpeziFoundation", package: "SpeziFoundation"),
+                .product(name: "SpeziFHIR", package: "SpeziFHIR"),
+                .product(name: "ModelsR4", package: "FHIRModels"),
+                .product(name: "ModelsDSTU2", package: "FHIRModels"),
+                .product(name: "FHIRModelsExtensions", package: "SpeziFHIR")
+            ],
+            swiftSettings: [
+                .enableUpcomingFeature("ExistentialAny"),
+                .enableUpcomingFeature("InternalImportsByDefault")
+            ],
+            plugins: [] + swiftLintPlugin
+        ),
+        .testTarget(
+            name: "SpeziHealthKitFHIRTests",
+            dependencies: [
+                .target(name: "SpeziHealthKitFHIR"),
+                .product(name: "SpeziFoundation", package: "SpeziFoundation")
+            ],
+            swiftSettings: [.enableUpcomingFeature("ExistentialAny")],
+            plugins: [] + swiftLintPlugin
+        ),
+        .testTarget(
+            name: "SpeziHealthKitFHIRMacrosTests",
+            dependencies: [
+                .target(name: "SpeziHealthKitFHIRMacros"),
+                .target(name: "SpeziHealthKitFHIRMacrosImpl"),
+                .product(name: "FHIRModelsExtensions", package: "SpeziFHIR"),
+                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+                .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax")
+            ],
             plugins: [] + swiftLintPlugin
         )
     ]

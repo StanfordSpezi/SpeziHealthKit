@@ -66,7 +66,7 @@ extension BulkHealthExporter {
         for exportSampleTypes: SampleTypesCollection,
         startDate: ExportSessionStartDate,
         endDate: Date = .now,
-        batchSize: ExportSessionBatchSize = .automatic, // swiftlint:disable:this function_default_parameter_at_end
+        batchSize: ExportSessionBatchSize = .automatic,
         using batchProcessor: Processor
     ) async throws -> some BulkExportSession<Processor> {
         if let session = sessions.first(where: { $0.sessionId == id }) {

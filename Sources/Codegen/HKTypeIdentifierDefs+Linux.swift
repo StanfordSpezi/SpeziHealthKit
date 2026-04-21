@@ -166,6 +166,14 @@ extension SampleTypeIdentifierDefinition {
         .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
             IdentifierConstDef(
+                identifierName: "nikeFuel",
+                rawValue: HKQuantityTypeIdentifier.nikeFuel.rawValue,
+                docComment: "A quantity sample type that measures the number of NikeFuel points the user has earned."
+            )
+        ),
+        .staticProperty(
+            parentStruct: "HKQuantityTypeIdentifier",
+            IdentifierConstDef(
                 identifierName: "appleExerciseTime",
                 rawValue: HKQuantityTypeIdentifier.appleExerciseTime.rawValue,
                 docComment: "A quantity sample type that measures the amount of time the user spent exercising."

@@ -973,6 +973,57 @@ extension HKUnitTests {
     
     
     @Test
+    func calorie() throws {
+        #expect(try HKUnitA.parse(HKUnitA.largeCalorie().unitString) == HKUnitA.largeCalorie())
+        #expect(try HKUnitB.parse(HKUnitB.largeCalorie().unitString) == HKUnitB.largeCalorie())
+        
+        #expect(try HKUnitA.parse(HKUnitA.smallCalorie().unitString) == HKUnitA.smallCalorie())
+        #expect(try HKUnitB.parse(HKUnitB.smallCalorie().unitString) == HKUnitB.smallCalorie())
+        
+        #expect(try HKUnitA.parse(HKUnitA.calorie().unitString) == HKUnitA.calorie())
+        #expect(try HKUnitB.parse(HKUnitB.calorie().unitString) == HKUnitB.calorie())
+        
+        // HKUnit docs: "The large calorie is the same as a kilocalorie (1 Cal = 4184.0 J)."
+        
+        #expect(HKUnitA.largeCalorie().unitString == "Cal")
+        #expect(HKUnitB.largeCalorie().unitString == "Cal")
+        
+        #expect(try HKUnitA.parse("Cal") == .largeCalorie())
+        #expect(try HKUnitB.parse("Cal") == .largeCalorie())
+        
+        #if canImport(HealthKit)
+        try withKnownIssue("FB22552256") { () throws in
+            #expect(try HKUnitA.largeCalorie() == HKUnitA.parse("kcal"))
+        }
+        #endif
+        #expect(try HKUnitB.largeCalorie() == HKUnitB.parse("kcal"))
+        
+        #if canImport(HealthKit)
+        #expect(try HKUnitA.parse("kcal").unitString == "kcal")
+        #endif
+        #expect(try HKUnitB.parse("kcal").unitString == "Cal")
+        
+        #expect(try HKUnitA.parse("cal") == .smallCalorie())
+        #expect(try HKUnitB.parse("cal") == .smallCalorie())
+        
+        #expect(HKUnitA.largeCalorie().convert(1, to: .joule()) == 4184)
+        #expect(HKUnitB.largeCalorie().convert(1, to: .joule()) == 4184)
+        
+        #expect(try HKUnitA.parse("Cal").convert(1, to: .joule()) == 4184)
+        #expect(try HKUnitB.parse("Cal").convert(1, to: .joule()) == 4184)
+        
+        #expect(try HKUnitA.parse("kcal").convert(1, to: .joule()) == 4184)
+        #expect(try HKUnitB.parse("kcal").convert(1, to: .joule()) == 4184)
+        
+        #expect(HKUnitA.smallCalorie().convert(1, to: .joule()) == 4.184)
+        #expect(HKUnitB.smallCalorie().convert(1, to: .joule()) == 4.184)
+        
+        #expect(try HKUnitA.parse("cal").convert(1, to: .joule()) == 4.184)
+        #expect(try HKUnitB.parse("cal").convert(1, to: .joule()) == 4.184)
+    }
+    
+    
+    @Test
     func mole() throws {
         #expect(try HKUnitB.parse("mol") == HKUnitB.masslessMole(with: .none))
         #expect(try HKUnitB.parse("Gmol") == HKUnitB.masslessMole(with: .giga))

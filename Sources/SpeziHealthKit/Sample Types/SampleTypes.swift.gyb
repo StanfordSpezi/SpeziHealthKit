@@ -18,21 +18,7 @@ public import Foundation
 #if canImport(HealthKit)
 public import HealthKit
 #endif
-
-
-/// Selects one of the specified units, based on the current locale.
-@inlinable func localeDependentUnit(
-    us: @autoclosure () -> HKUnit,
-    uk: @autoclosure () -> HKUnit? = nil,
-    metric: @autoclosure () -> HKUnit
-) -> HKUnit {
-    switch Locale.current.measurementSystem {
-    case .us: us()
-    case .uk: uk() ?? metric()
-    case .metric: metric()
-    default: metric()
-    }
-}
+private import SpeziFoundation
 
 
 % for (display_title, display_title_plural, hk_class, hk_sampletype_class, ctor, types) in gen_inputs:
@@ -54,6 +40,7 @@ extension SampleType where Sample == ${hk_class} {
             as: SampleType<${hk_class}>.self,
             default: .${ctor}(
                 .${ty.identifier},
+                canonicalTitle: "${ty.canonical_title}",
             % for idx, (key, value) in enumerate(ty.extra_init_params):
                 ${key}: ${value}${',' if idx < len(ty.extra_init_params) - 1 else ''}
             % end
@@ -75,6 +62,12 @@ def make_hashtag_available(availability: Availability, *, trailing_comma: bool) 
 def make_at_available(availability: Availability) -> str:
     return _make_availability_decl_imp('@', availability, False)
 }%
+    /// Returns the shared ${display_title} type for the specified ${hk_sampletype_class}.
+    @inlinable
+    public init?(_ hkType: ${hk_sampletype_class}) {
+        self.init(${hk_sampletype_class}Identifier(rawValue: hkType.identifier))
+    }
+
     /// Returns the shared ${display_title} type for the specified identifier.
     public init?(_ identifier: ${hk_sampletype_class}Identifier) where Sample == ${hk_class} {
         if ${make_hashtag_available(types[0].availability, trailing_comma=True)}identifier == .${types[0].identifier} {
@@ -89,11 +82,40 @@ def make_at_available(availability: Availability) -> str:
     }
 }
 
+% if hk_class == 'HKClinicalRecord':
+@available(watchOS, unavailable)
+% end
+extension SampleType where Sample == ${hk_class} {
+    /// All well-known ${display_title} types.
+    @inlinable public static var allKnown${''.join(display_title_plural.split())}: Set<SampleType<${hk_class}>> {
+        ${hk_sampletype_class}._allKnown${''.join(display_title_plural.split())}
+    }
+}
+
 extension ${hk_sampletype_class} {
     /// All well-known `${hk_sampletype_class}`s
     public static let allKnown${''.join(display_title_plural.split())}: Set<${hk_sampletype_class}> = Set(
         ${hk_sampletype_class}Identifier.allKnownIdentifiers.map { ${hk_sampletype_class}($0) }
     )
+    
+    /// The set of all well-known ${hk_sampletype_class} instances.
+    ///
+    /// Stored here rather than in `SampleType` bc that type is generic and the static property would get re-computed on each access,
+    /// which is expensive.
+    % if hk_class == 'HKClinicalRecord':
+    @available(watchOS, unavailable)
+    % end
+    @usableFromInline
+    % if hk_class == 'HKClinicalRecord':
+    % # we need to add this here to stop the compiler from complaining about the property not being concurrency-safe
+    % # because it thinks that `Set<SampleType<HKClinicalRecord>>` isn't Sendable.
+    % # (apparently the compiler can't pick up HKSample's @unchecked Sendable conformance if the specific subclass isn't available on the platform?)
+    nonisolated(unsafe)
+    % end
+    static let _allKnown${''.join(display_title_plural.split())}: Set<SampleType<${hk_class}>> = {
+        % # TODO could also just have a giant literal here?!
+        ${hk_sampletype_class}.allKnown${''.join(display_title_plural.split())}.compactMapIntoSet { $0.sampleType as? SampleType<${hk_class}> }
+    }()
 }
 
 extension ${hk_sampletype_class}Identifier {
@@ -150,7 +172,7 @@ extension SampleType where Sample == ${sample_type.hkSampleClass} {
         SampleTypeCache.get(
             identifier: ${sample_type.hkSampleType}.identifier,
             as: SampleType<${sample_type.hkSampleClass}>.self,
-            default: .init(${sample_type.hkSampleType}, variant: .other)
+            default: .init(${sample_type.hkSampleType}, canonicalTitle: "${sample_type.canonical_title}", variant: .other)
         )
     }
 }

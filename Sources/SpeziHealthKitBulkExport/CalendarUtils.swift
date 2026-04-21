@@ -58,7 +58,7 @@ extension Calendar.Component {
 extension Calendar {
     func ranges(
         of component: ComponentForIteration,
-        multiplier: Int = 1, // swiftlint:disable:this function_default_parameter_at_end
+        multiplier: Int = 1,
         startingAt start: Date,
         in limitRange: Range<Date>,
         clampToLimits: Bool

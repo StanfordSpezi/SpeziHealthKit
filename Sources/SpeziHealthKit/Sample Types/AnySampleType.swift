@@ -39,6 +39,13 @@ public protocol AnySampleType<Sample>: Hashable, Identifiable, Sendable where ID
     /// The recommended user-displayable name of this sample type.
     var displayTitle: String { get }
     
+    /// A non-localized, english title for the sample type.
+    ///
+    /// This title is not necessarily intended for user display, but still suitable.
+    /// It serves as an alternative, more descriptive title.
+    /// For example, where ``displayTitle`` would be "Noise Notifications", the canonical title is "Environmental Audio Exposure Event".
+    var canonicalTitle: String { get }
+    
     #if canImport(HealthKit)
     /// Creates a properly-typed `HKSamplePredicate` object, for the current sample type.
     func _makeSamplePredicateInternal(filter filterPredicate: NSPredicate?) -> HKSamplePredicate<Sample._QueryResult>

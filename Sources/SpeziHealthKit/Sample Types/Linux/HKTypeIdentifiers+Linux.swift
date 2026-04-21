@@ -562,6 +562,9 @@ public struct HKQuantityTypeIdentifier: Hashable, RawRepresentable, Sendable {
     /// A quantity sample type that measures the user’s lean body mass.
     public static let leanBodyMass = Self(rawValue: "HKQuantityTypeIdentifierLeanBodyMass")
 
+    /// A quantity sample type that measures the number of NikeFuel points the user has earned.
+    public static let nikeFuel = Self(rawValue: "HKQuantityTypeIdentifierNikeFuel")
+
     /// A quantity sample type that measures the number of standard alcoholic drinks that the user has consumed.
     public static let numberOfAlcoholicBeverages = Self(rawValue: "HKQuantityTypeIdentifierNumberOfAlcoholicBeverages")
 
