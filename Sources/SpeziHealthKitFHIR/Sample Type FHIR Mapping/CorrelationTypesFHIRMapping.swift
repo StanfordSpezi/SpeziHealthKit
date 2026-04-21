@@ -61,15 +61,5 @@ extension CorrelationTypesFHIRMapping {
                 )
             ]
         )
-//        .food: CorrelationTypeFHIRMapping(
-//            codings: [],
-//            categories: [
-//                Coding(
-//                    code: "activity",
-//                    display: "Activity",
-//                    system: "http://terminology.hl7.org/CodeSystem/observation-category"
-//                )
-//            ]
-//        )
     ]
 }

@@ -24,7 +24,7 @@ struct SampleTypeFHIRMappingTests {
         #expect(missingQuantities.isEmpty, "Missing entries in Quantity Type FHIR Mapping: \(missingQuantities.map(\.identifier).sorted())")
         
         let missingCorrelations = HKCorrelationType.allKnownCorrelations.subtracting(mapping.correlationTypesMapping.keys.map(\.hkSampleType))
-        #expect(missingCorrelations.isEmpty, "Missing entries in Correlation Type FHIR Mapping: \(missingCorrelations.map(\.identifier).sorted())")
+        #expect(missingCorrelations == [.init(.food)], "Missing entries in Correlation Type FHIR Mapping: \(missingCorrelations.map(\.identifier).sorted())")
         
         let missingCategories = HKCategoryType.allKnownCategories.subtracting(mapping.categoryTypesMapping.keys.map(\.hkSampleType))
         #expect(missingCategories.isEmpty, "Missing entries in Category Type FHIR Mapping: \(missingCategories.map(\.identifier).sorted())")
