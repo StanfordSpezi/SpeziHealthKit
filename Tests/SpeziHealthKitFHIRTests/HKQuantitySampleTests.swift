@@ -1974,9 +1974,9 @@ struct HKQuantitySampleTests {
         ])
         #expect(observation.value == .quantity(
             Quantity(
-                code: "kcal/hr/kg",
+                code: "kcal/(kg.h)",
                 system: "http://unitsofmeasure.org".asFHIRURIPrimitive(),
-                unit: "kcal/hr/kg",
+                unit: "kcal/(kg.h)",
                 value: 2.asFHIRDecimalPrimitive()
             )
         ))
