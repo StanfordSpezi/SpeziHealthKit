@@ -27,6 +27,7 @@ struct HealthKitTestsView: View {
         case deferredAuthorization = "Deferred Authorization"
         case localizedSampleTypeNames = "Localized Sample Type Names"
         case ecg = "ECG"
+        case medications = "Medications"
     }
     
     @Environment(HealthKit.self) var healthKit
@@ -80,6 +81,12 @@ struct HealthKitTestsView: View {
                 LocalizedSampleTypeNames()
             case .ecg:
                 ECGQuery()
+            case .medications:
+                if #available(iOS 26.0, *) {
+                    MedicationsView()
+                } else {
+                    Text("Requires iOS 26")
+                }
             }
         }
         .viewStateAlert(state: $viewState)

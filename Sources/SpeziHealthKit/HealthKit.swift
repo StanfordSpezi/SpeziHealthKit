@@ -54,6 +54,7 @@ import SwiftUI
 /// - ``isFullyAuthorized``
 /// - ``askForAuthorization()``
 /// - ``askForAuthorization(for:)``
+/// - ``askForMedicationsAuthorization(predicate:)``
 /// - ``isAuthorized(toWrite:)-4a3vx``
 /// - ``isAuthorized(toWrite:)-1v3ch``
 /// - ``didAskForAuthorization(for:)``
@@ -305,10 +306,10 @@ extension HealthKit {
     /// - Note: A `true` return value does **not** imply that the user actually granted access; it just means that the user was asked.
     @MainActor
     public func didAskForAuthorization(toRead objectTypes: Set<HKObjectType>) async -> Bool {
+        let objectTypes = objectTypes.flatMapIntoSet { $0.effectiveObjectTypesForAuthorization }
         guard !objectTypes.isEmpty else {
             return true
         }
-        let objectTypes = objectTypes.flatMapIntoSet { $0.effectiveObjectTypesForAuthorization }
         do {
             // status: whether the user would be presented with an authorization request sheet, were we to request access
             let status = try await healthStore.statusForAuthorizationRequest(toShare: [], read: objectTypes)
@@ -430,6 +431,17 @@ extension HealthKit {
             }
         }
         return stream
+    }
+    
+    @available(iOS 26.0, watchOS 26.0, macOS 26.0, visionOS 26.0, *)
+    @MainActor
+    func notifyMedicationsAuthorizationObservers() {
+        for observer in authorizationEventObservers.values {
+            guard observer.accessRequirements.implicitlyAuthorizedRead.contains(HKObjectType.medicationDoseEventType()) else {
+                continue
+            }
+            observer.continuation.yield(observer.accessRequirements)
+        }
     }
     
     private func authorizationRequestStates(for accessRequirements: DataAccessRequirements) async -> [HKObjectType: HKAuthorizationRequestStatus] {
@@ -606,7 +618,8 @@ extension HealthKit.DataAccessRequirements {
     func intersection(_ other: Self) -> Self {
         Self(
             read: read.intersection(other.read),
-            write: write.intersection(other.write)
+            write: write.intersection(other.write),
+            implicitlyAuthorizedRead: implicitlyAuthorizedRead.intersection(other.implicitlyAuthorizedRead)
         )
     }
 }

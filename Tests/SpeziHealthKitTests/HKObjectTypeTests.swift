@@ -43,5 +43,8 @@ struct HKObjectTypeTests {
         #if !canImport(HealthKit)
         #expect(HKStateOfMindType.stateOfMindType().identifier == "HKDataTypeStateOfMind")
         #endif
+        if #available(iOS 26.0, watchOS 26.0, macOS 26.0, visionOS 26.0, *) {
+            #expect(HKObjectType.medicationDoseEventType().identifier == "HKMedicationDoseEventTypeIdentifierMedicationDoseEvent")
+        }
     }
 }

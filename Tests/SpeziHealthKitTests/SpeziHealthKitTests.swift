@@ -30,7 +30,11 @@ struct SpeziHealthKitTests {
         #expect(HKQuantityType.allKnownQuantities.count == HKQuantityTypeIdentifier.allKnownIdentifiers.count)
         #expect(HKCorrelationType.allKnownCorrelations.count == HKCorrelationTypeIdentifier.allKnownIdentifiers.count)
         #expect(HKCategoryType.allKnownCategories.count == HKCategoryTypeIdentifier.allKnownIdentifiers.count)
-        #expect(HKObjectType.allKnownObjectTypes.count == 213)
+        if #available(iOS 26.0, watchOS 26.0, macOS 26.0, visionOS 26.0, *) {
+            #expect(HKObjectType.allKnownObjectTypes.count == 214)
+        } else {
+            #expect(HKObjectType.allKnownObjectTypes.count == 213)
+        }
     }
 
 

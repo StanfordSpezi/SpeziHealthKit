@@ -52,7 +52,7 @@ struct_based_defs = [
 }%
 
 extension SampleTypeIdentifierDefinition {
-    @available(iOS 18, macOS 15, tvOS 18, watchOS 11, visionOS 2, *)
+    @available(iOS 26, macOS 26, tvOS 26, watchOS 26, visionOS 26, *)
     public static let definitions: [SampleTypeIdentifierDefinition] = [
         % for (typename, types) in struct_based_defs:
         % for type in types:

@@ -97,6 +97,7 @@
 "HKDataTypeIdentifierElectrocardiogram" = "Électrocardiogrammes (ECG)";
 "HKDataTypeIdentifierHeartbeatSeries" = "Mesures d’intervalle R-R";
 "HKDataTypeStateOfMind" = "État d’esprit";
+"HKMedicationDoseEventTypeIdentifierMedicationDoseEvent" = "Évènement de dose de traitement";
 "HKQuantityTypeIdentifierActiveEnergyBurned" = "Énergie en activité";
 "HKQuantityTypeIdentifierAppleExerciseTime" = "Minutes d’exercice";
 "HKQuantityTypeIdentifierAppleMoveTime" = "Minutes « Bouger »";

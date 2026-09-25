@@ -14,3 +14,4 @@ SpeziHealthKit contributors
 * [Lukas Kollmer](https://github.com/lukaskollmer)
 * [Andreas Bauer](https://github.com/bauer-andreas)
 * [Paul Schmiedmayer](https://github.com/PSchmiedmayer)
+* [Anastasiia Vaganova](https://github.com/asynclet)

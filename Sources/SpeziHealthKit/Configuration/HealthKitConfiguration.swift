@@ -39,6 +39,7 @@ extension HealthKit {
         /// The ``HealthKit-swift.class`` module will include these object types in the
         /// request when the app calls ``HealthKit-swift.class/askForAuthorization()``
         public let write: Set<HKSampleType>
+        let implicitlyAuthorizedRead: Set<HKObjectType>
         
         /// Whether the data access requirements is empty
         public var isEmpty: Bool {
@@ -49,6 +50,7 @@ extension HealthKit {
         public init() {
             read = Set()
             write = Set()
+            implicitlyAuthorizedRead = Set()
         }
         
         /// Creates a new instance, with the specified read and write sample types.
@@ -58,8 +60,16 @@ extension HealthKit {
             // E.g.:
             // - HKCorrelationTypeBloodPressure --> HKQuantityTypeBloodPressure{Systolic,Diastolic}
             // - HKDataTypeIdentifierHeartbeatSeries implies that we also need to request HKQuantityTypeIdentifierHeartRateVariabilitySDNN
-            self.read = read.flatMapIntoSet { $0.effectiveObjectTypesForAuthorization }
+            let effectiveRead = read.flatMapIntoSet { $0.effectiveObjectTypes }
+            self.read = effectiveRead.filter(\.allowsAuthorizationRequests)
+            self.implicitlyAuthorizedRead = effectiveRead.subtracting(self.read)
             self.write = write.flatMapIntoSet { $0.effectiveObjectTypesForAuthorization.compactMap { $0 as? HKSampleType } }
+        }
+        
+        init(read: Set<HKObjectType>, write: Set<HKSampleType>, implicitlyAuthorizedRead: Set<HKObjectType>) {
+            self.read = read
+            self.write = write
+            self.implicitlyAuthorizedRead = implicitlyAuthorizedRead
         }
         
         /// Creates a new instance, specifying read and write access to the same set of sample types.
@@ -82,7 +92,8 @@ extension HealthKit {
         public func merging(with other: Self) -> Self {
             Self(
                 read: read.union(other.read),
-                write: write.union(other.write)
+                write: write.union(other.write),
+                implicitlyAuthorizedRead: implicitlyAuthorizedRead.union(other.implicitlyAuthorizedRead)
             )
         }
         
@@ -95,11 +106,23 @@ extension HealthKit {
 
 
 extension HKObjectType {
-    var effectiveObjectTypesForAuthorization: Set<HKObjectType> {
+    var effectiveObjectTypes: Set<HKObjectType> {
         if let sampleType = self.sampleType {
             sampleType.effectiveSampleTypesForAuthentication.mapIntoSet { $0.hkSampleType }
         } else {
             [self]
+        }
+    }
+    
+    var effectiveObjectTypesForAuthorization: Set<HKObjectType> {
+        effectiveObjectTypes.filter(\.allowsAuthorizationRequests)
+    }
+    
+    var allowsAuthorizationRequests: Bool {
+        if #available(iOS 26.0, watchOS 26.0, macOS 26.0, visionOS 26.0, *), self is HKMedicationDoseEventType {
+            false
+        } else {
+            true
         }
     }
 }

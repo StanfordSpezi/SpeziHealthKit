@@ -2902,6 +2902,9 @@ extension HKObjectType {
         if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
             types.insert(SampleType.phq9.hkSampleType)
         }
+        if #available(iOS 26.0, macOS 26.0, watchOS 26.0, visionOS 26.0, *) {
+            types.insert(SampleType.medicationDoseEvent.hkSampleType)
+        }
         return types
     }()
 }
@@ -3011,6 +3014,18 @@ extension SampleType where Sample == HKPHQ9Assessment {
     }
 }
 
+@available(iOS 26.0, macOS 26.0, watchOS 26.0, visionOS 26.0, *)
+extension SampleType where Sample == HKMedicationDoseEvent {
+    /// The medication dose event sample type. Read access is granted per medication, via ``HealthKit-swift.class/askForMedicationsAuthorization(predicate:)``.
+    @inlinable public static var medicationDoseEvent: SampleType<HKMedicationDoseEvent> {
+        SampleTypeCache.get(
+            identifier: HKSampleType.medicationDoseEventType().identifier,
+            as: SampleType<HKMedicationDoseEvent>.self,
+            default: .init(HKSampleType.medicationDoseEventType(), variant: .other)
+        )
+    }
+}
+
 
 extension SampleType {
     /// All currently-known "other" sample types, which are not quantity, correlation, category, or clinical samples.
@@ -3032,6 +3047,9 @@ extension SampleType {
         }
         if #available(iOS 18.0, macOS 15.0, watchOS 11.0, visionOS 2.0, *) {
             retval.append(SpeziHealthKit.SampleType.phq9)
+        }
+        if #available(iOS 26.0, macOS 26.0, watchOS 26.0, visionOS 26.0, *) {
+            retval.append(SpeziHealthKit.SampleType.medicationDoseEvent)
         }
         return retval
     }

@@ -210,3 +210,21 @@ extension HKPHQ9Assessment: _HKSampleWithSampleType {
     }
     #endif
 }
+
+@available(iOS 26.0, watchOS 26.0, macOS 26.0, visionOS 26.0, *)
+extension HKMedicationDoseEvent: _HKSampleWithSampleType {
+    public typealias _SampleType = HKMedicationDoseEventType
+    
+    #if canImport(HealthKit)
+    public static func _makeSamplePredicateInternal(
+        type sampleType: HKMedicationDoseEventType,
+        filter filterPredicate: NSPredicate?
+    ) -> HKSamplePredicate<HKMedicationDoseEvent> {
+        // SAFETY: HealthKit has no typed factory for dose events; `HKSamplePredicate`'s generic parameter doesn't affect its layout.
+        unsafeBitCast(
+            HKSamplePredicate<HKSample>.sample(type: sampleType, predicate: filterPredicate),
+            to: HKSamplePredicate<HKMedicationDoseEvent>.self
+        )
+    }
+    #endif
+}

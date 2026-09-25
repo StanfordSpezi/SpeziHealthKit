@@ -51,6 +51,9 @@ public enum SampleTypeProxy: Identifiable, Sendable {
     case phq9(any AnySampleType)
     case heartbeatSeries(SampleType<HKHeartbeatSeriesSample>)
     case visionPrescription(SampleType<HKVisionPrescription>)
+    /// - Note: The associated value here is of type `SampleType<HKMedicationDoseEvent>`, but this cannot expressed this way because the `HKMedicationDoseEvent` type is only available starting with iOS 26.
+    ///     The type will be changed in an upcoming release, and should always be treated as `SampleType<HKMedicationDoseEvent>`.
+    case medicationDoseEvent(any AnySampleType)
     
     /// The type-erased underlying ``AnySampleType``.
     ///
@@ -93,6 +96,8 @@ public enum SampleTypeProxy: Identifiable, Sendable {
         case .heartbeatSeries(let sampleType):
             sampleType
         case .visionPrescription(let sampleType):
+            sampleType
+        case .medicationDoseEvent(let sampleType):
             sampleType
         }
     }
@@ -184,7 +189,9 @@ extension SampleTypeProxy: Codable {
                 throw SampleTypeDecodingError.unknownSampleTypeIdentifier(sampleTypeIdentifier)
             }
         case .some(let cls):
-            if #available(iOS 18.0, watchOS 11.0, macOS 15.0, visionOS 2.0, *) {
+            if #available(iOS 26.0, watchOS 26.0, macOS 26.0, visionOS 26.0, *), cls is HKMedicationDoseEventType.Type {
+                self = .medicationDoseEvent(SampleType.medicationDoseEvent)
+            } else if #available(iOS 18.0, watchOS 11.0, macOS 15.0, visionOS 2.0, *) {
                 switch cls {
                 case is HKStateOfMindType.Type:
                     self = .stateOfMind(SampleType.stateOfMind)

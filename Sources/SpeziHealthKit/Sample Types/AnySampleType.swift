@@ -180,7 +180,9 @@ extension HKObjectType {
         case is HKCharacteristicType, is HKDocumentType, is HKActivitySummaryType:
             nil
         default:
-            if #available(iOS 18.0, watchOS 11.0, macOS 15.0, visionOS 2.0, *) {
+            if #available(iOS 26.0, watchOS 26.0, macOS 26.0, visionOS 26.0, *), self is HKMedicationDoseEventType {
+                SampleType.medicationDoseEvent
+            } else if #available(iOS 18.0, watchOS 11.0, macOS 15.0, visionOS 2.0, *) {
                 switch self {
                 case is HKStateOfMindType:
                     SampleType.stateOfMind

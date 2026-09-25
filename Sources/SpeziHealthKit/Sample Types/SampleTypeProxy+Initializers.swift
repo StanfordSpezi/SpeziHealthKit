@@ -39,7 +39,10 @@ extension SampleTypeProxy {
         case let sampleType as SampleType<HKVisionPrescription>:
             self = .visionPrescription(sampleType)
         default:
-            if #available(iOS 18.0, watchOS 11.0, macOS 15.0, visionOS 2.0, *) {
+            if #available(iOS 26.0, watchOS 26.0, macOS 26.0, visionOS 26.0, *),
+               let sampleType = sampleType as? SampleType<HKMedicationDoseEvent> {
+                self = .medicationDoseEvent(sampleType)
+            } else if #available(iOS 18.0, watchOS 11.0, macOS 15.0, visionOS 2.0, *) {
                 switch sampleType {
                 case let sampleType as SampleType<HKStateOfMind>:
                     self = .stateOfMind(sampleType)

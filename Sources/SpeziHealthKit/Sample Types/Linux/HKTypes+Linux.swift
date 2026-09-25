@@ -29,6 +29,7 @@ public class HKWorkoutRoute: HKSample, @unchecked Sendable {}
 public class HKVisionPrescription: HKSample, @unchecked Sendable {}
 public class HKClinicalRecord: HKSample, @unchecked Sendable {}
 public class HKStateOfMind: HKSample, @unchecked Sendable {}
+public class HKMedicationDoseEvent: HKSample, @unchecked Sendable {}
 
 public class HKSeriesSample: HKSample, @unchecked Sendable {}
 public class HKHeartbeatSeriesSample: HKSeriesSample, @unchecked Sendable {}
@@ -135,6 +136,11 @@ public class HKStateOfMindType: HKSampleType, @unchecked Sendable {
 }
 
 
+public class HKMedicationDoseEventType: HKSampleType, @unchecked Sendable {
+    fileprivate static let shared = HKMedicationDoseEventType(identifier: HKMedicationDoseEventTypeIdentifierMedicationDoseEvent)
+}
+
+
 public class HKDocumentType: HKSampleType, @unchecked Sendable {
     public init(_ identifier: HKDocumentTypeIdentifier) {
         super.init(identifier: identifier.rawValue)
@@ -146,7 +152,6 @@ public class HKActivitySummaryType: HKObjectType, @unchecked Sendable {
     fileprivate static let shared = HKActivitySummaryType(identifier: HKActivitySummaryTypeIdentifier)
 }
 
-public class HKMedicationDoseEventType: HKSampleType, @unchecked Sendable {}
 public class HKUserAnnotatedMedicationType: HKObjectType, @unchecked Sendable {}
 
 
@@ -204,10 +209,8 @@ extension HKObjectType {
         HKStateOfMindType.shared
     }
     
-    @available(macOS 26.0, *)
-    @available(*, unavailable, message: "Not yet implemented")
     public static func medicationDoseEventType() -> HKMedicationDoseEventType {
-        fatalError("Not yet implemented")
+        HKMedicationDoseEventType.shared
     }
     
     @available(macOS 26.0, *)

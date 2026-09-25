@@ -33,7 +33,7 @@ public enum SampleTypeIdentifierDefinition: Sendable {
 
 
 extension SampleTypeIdentifierDefinition {
-    @available(iOS 18, macOS 15, tvOS 18, watchOS 11, visionOS 2, *)
+    @available(iOS 26, macOS 26, tvOS 26, watchOS 26, visionOS 26, *)
     public static let definitions: [SampleTypeIdentifierDefinition] = [
         .staticProperty(
             parentStruct: "HKQuantityTypeIdentifier",
@@ -1718,6 +1718,11 @@ extension SampleTypeIdentifierDefinition {
                 docComment: "The PHQ-9 (nine-item Patient Health Questionnaire) score type"
             )
         ),
+        .globalVariable(IdentifierConstDef(
+            identifierName: "HKMedicationDoseEventTypeIdentifierMedicationDoseEvent",
+            rawValue: HKSampleType.medicationDoseEventType().identifier,
+            docComment: "The medication dose event sample type. Read access is granted per medication, via ``HealthKit-swift.class/askForMedicationsAuthorization(predicate:)``."
+        )),
     ]
 }
 

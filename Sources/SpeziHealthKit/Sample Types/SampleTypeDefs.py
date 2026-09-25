@@ -1322,5 +1322,14 @@ other_sample_types = [
         hkSampleType='HKScoredAssessmentType(.PHQ9)',
         variant='.other',
         identifier_def='HKScoredAssessmentTypeIdentifier.PHQ9'
+    ),
+    OtherSampleType(
+        availability=Availability(iOS='26.0', watchOS='26.0', macOS='26.0', visionOS='26.0'),
+        sampleTypePropertyName='medicationDoseEvent',
+        hkSampleClass='HKMedicationDoseEvent',
+        doc='The medication dose event sample type. Read access is granted per medication, via ``HealthKit-swift.class/askForMedicationsAuthorization(predicate:)``.',
+        hkSampleType='HKSampleType.medicationDoseEventType()',
+        variant='.other',
+        identifier_def='HKMedicationDoseEventTypeIdentifierMedicationDoseEvent'
     )
 ]

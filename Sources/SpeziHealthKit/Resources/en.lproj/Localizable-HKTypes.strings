@@ -97,6 +97,7 @@
 "HKDataTypeIdentifierElectrocardiogram" = "Electrocardiograms (ECG)";
 "HKDataTypeIdentifierHeartbeatSeries" = "Beat-to-Beat Measurements";
 "HKDataTypeStateOfMind" = "State of Mind";
+"HKMedicationDoseEventTypeIdentifierMedicationDoseEvent" = "Medication Dose Event";
 "HKQuantityTypeIdentifierActiveEnergyBurned" = "Active Energy";
 "HKQuantityTypeIdentifierAppleExerciseTime" = "Exercise Minutes";
 "HKQuantityTypeIdentifierAppleMoveTime" = "Move Minutes";

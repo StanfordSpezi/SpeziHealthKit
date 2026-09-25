@@ -702,6 +702,9 @@ public let HKDataTypeIdentifierStateOfMind = "HKDataTypeStateOfMind"
 /// The electrocardiogram sample type
 public let HKElectrocardiogramTypeIdentifier = "HKDataTypeIdentifierElectrocardiogram"
 
+/// The medication dose event sample type. Read access is granted per medication, via ``HealthKit-swift.class/askForMedicationsAuthorization(predicate:)``.
+public let HKMedicationDoseEventTypeIdentifierMedicationDoseEvent = "HKMedicationDoseEventTypeIdentifierMedicationDoseEvent"
+
 /// The vision prescription sample type
 public let HKVisionPrescriptionTypeIdentifier = "HKVisionPrescriptionTypeIdentifier"
 
