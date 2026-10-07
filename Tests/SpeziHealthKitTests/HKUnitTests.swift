@@ -522,8 +522,15 @@ struct HKUnitTests {
         #expect(HKUnitA._nullUnit.isCompatible(with: ._nullUnit))
         #expect(HKUnitB._nullUnit.isCompatible(with: ._nullUnit))
         
+        // HealthKit used to give the null unit a factorization of `null: 1`, making it compatible with any other
+        // unitless dimension, and `_HKUnit` deliberately diverged with an empty factorization. OS 27 adopts the
+        // empty factorization, so both now agree. Both answers are asserted so the suite says which OS does what.
         if hasHealthKit {
-            #expect(HKUnitA._nullUnit.isCompatible(with: .count()))
+            if #available(iOS 27, macOS 27, watchOS 27, visionOS 27, *) {
+                #expect(!HKUnitA._nullUnit.isCompatible(with: .count()))
+            } else {
+                #expect(HKUnitA._nullUnit.isCompatible(with: .count()))
+            }
         }
         #expect(!HKUnitB._nullUnit.isCompatible(with: .count()))
         
@@ -539,7 +546,11 @@ struct HKUnitTests {
         #expect(!HKUnitB._nullUnit.isCompatible(with: .count().unitRaised(toPower: 2)))
         
         if hasHealthKit {
-            #expect(HKUnitA._nullUnit.isCompatible(with: .percent()))
+            if #available(iOS 27, macOS 27, watchOS 27, visionOS 27, *) {
+                #expect(!HKUnitA._nullUnit.isCompatible(with: .percent()))
+            } else {
+                #expect(HKUnitA._nullUnit.isCompatible(with: .percent()))
+            }
         }
         #expect(!HKUnitB._nullUnit.isCompatible(with: .percent()))
         
@@ -572,8 +583,13 @@ struct HKUnitTests {
         #expect(!(HKUnitB.percent() / .count()).isNull())
         
         if hasHealthKit {
-            #expect(HKQuantityA(unit: ._nullUnit, doubleValue: 1).doubleValue(for: .count()) == 1)
-            #expect(HKQuantityA(unit: ._nullUnit, doubleValue: 1).doubleValue(for: .percent()) == 1)
+            // Same OS 27 change as above: with the null unit no longer compatible with `count` or `percent`,
+            // HealthKit raises on the conversion rather than returning a value, and an Objective-C exception here
+            // would abort the whole test process.
+            if #unavailable(iOS 27, macOS 27, watchOS 27, visionOS 27) {
+                #expect(HKQuantityA(unit: ._nullUnit, doubleValue: 1).doubleValue(for: .count()) == 1)
+                #expect(HKQuantityA(unit: ._nullUnit, doubleValue: 1).doubleValue(for: .percent()) == 1)
+            }
             #expect(HKQuantityA(unit: .count(), doubleValue: 1.1).doubleValue(for: .percent()) == 1.1)
             #expect(HKQuantityA(unit: .percent(), doubleValue: 0.5).doubleValue(for: .count()) == 0.5)
         }
