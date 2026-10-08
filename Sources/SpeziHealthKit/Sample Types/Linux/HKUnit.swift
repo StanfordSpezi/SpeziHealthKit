@@ -24,9 +24,8 @@ public let HKUnitMolarMassBloodGlucose = _HKUnitMolarMassBloodGlucose
 @_documentation(visibility: internal)
 public final class _HKUnit: NSObject, @unchecked Sendable {
     private static let nullUnit = _HKUnit(
-        // NOTE: Before OS 27, HealthKit represented the null unit as having a factorization of `null: 1`.
-        // We diverged from this, instead giving it an empty factorization. OS 27 adopts the empty
-        // factorization as well, so the two now agree.
+        // NOTE: HealthKit represents the null unit as having a factorization of `null: 1`.
+        // We diverge from this, instead giving it an empty factorization.
         factorization: .init([:]),
         dimension: .null,
         scaleOffset: 0,
