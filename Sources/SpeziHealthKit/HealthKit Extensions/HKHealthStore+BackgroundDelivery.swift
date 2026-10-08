@@ -108,7 +108,11 @@ extension HKHealthStore {
                     if newActiveObservation <= 0 {
                         Self.activeObservations[objectType] = nil
                         Task { @MainActor in
-                            try await self.disableBackgroundDelivery(for: objectType)
+                            do {
+                                try await self.disableBackgroundDelivery(for: objectType)
+                            } catch {
+                                HealthKit.logger.error("Could not disable HealthKit background delivery for \(objectType): \(error)")
+                            }
                         }
                     } else {
                         Self.activeObservations[objectType] = newActiveObservation
