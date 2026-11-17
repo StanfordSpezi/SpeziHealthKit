@@ -492,6 +492,8 @@ extension HealthKit {
     public func resetSampleCollection<Sample>(for sampleType: SampleType<Sample>) async {
         defer {
             do {
+                // this takes the same per-sample-type lock as the collector's conditional anchor write,
+                // so a batch that is still being handled can't interleave with the reset, and won't restore its anchor afterwards.
                 try queryAnchors.store(nil, for: sampleType)
             } catch {
                 logger.error("Failed to reset query anchor for \(sampleType.hkSampleType): \(error)")

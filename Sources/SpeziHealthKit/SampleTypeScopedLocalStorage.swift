@@ -57,6 +57,10 @@ private enum LocalStorageKeysHandling {
 }
 
 
+/// Thrown internally by ``SampleTypeScopedLocalStorage/compareAndStore(_:for:ifCurrentValue:)`` to abort the write if the check fails.
+private struct CompareAndStoreMismatch: Error {}
+
+
 struct SampleTypeScopedLocalStorage<Value: SendableMetatype> {
     private let localStorage: LocalStorage
     private let makeStorageKey: @Sendable (any AnySampleType) -> LocalStorageKey<Value>
@@ -94,6 +98,35 @@ struct SampleTypeScopedLocalStorage<Value: SendableMetatype> {
     /// Stores `value` for `sampleType`, or removes the stored value if `value` is `nil`.
     func store(_ value: Value?, for sampleType: SampleType<some Any>) throws {
         try localStorage.store(value, for: storageKey(for: sampleType))
+    }
+    
+    /// Atomically stores `newValue` for `sampleType`, but only if the currently stored value satisfies `isExpected`.
+    ///
+    /// The check and the write happen while holding the storage key's write lock, i.e., no other ``load(for:)``, ``store(_:for:)``,
+    /// or `compareAndStore` call for the same `sampleType` (and value type) can interleave with it.
+    ///
+    /// - parameter newValue: The value to store, or `nil` to remove the stored value.
+    /// - parameter isExpected: Called with the currently stored value (or `nil`, if no value is stored).
+    /// - returns: `true` if `newValue` was stored; `false` if the stored value didn't satisfy `isExpected`, in which case nothing was written.
+    /// - throws: if the stored value could not be read, or `newValue` could not be written.
+    func compareAndStore(
+        _ newValue: Value?,
+        for sampleType: SampleType<some Any>,
+        ifCurrentValue isExpected: (Value?) -> Bool
+    ) throws -> Bool {
+        do {
+            // `LocalStorage.modify` holds the key's write lock for the whole read-check-write sequence.
+            // We abort it by throwing, so that nothing gets written if the check fails.
+            try localStorage.modify(storageKey(for: sampleType)) { value in
+                guard isExpected(value) else {
+                    throw CompareAndStoreMismatch()
+                }
+                value = newValue
+            }
+            return true
+        } catch is CompareAndStoreMismatch {
+            return false
+        }
     }
     
     /// Error-swallowing convenience accessor.

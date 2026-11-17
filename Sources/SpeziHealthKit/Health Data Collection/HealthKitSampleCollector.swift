@@ -53,6 +53,21 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
         case collectSamples
     }
     
+    /// The result of processing a batch of query results.
+    enum BatchOutcome: Equatable {
+        /// The standard handled the batch, and the persisted anchor was advanced to the batch's new anchor.
+        case anchorAdvanced
+        /// The standard handled the batch, but the persisted anchor was changed by someone else while the batch was being handled
+        /// (e.g., the sample collection was reset, or an overlapping query for the same sample type advanced it),
+        /// so the batch's new anchor was not persisted.
+        case superseded
+    }
+    
+    private enum ContinuousQueryOutcome {
+        case finished
+        case superseded
+    }
+    
     private enum QueryVariant {
         case anchorQuery(Task<Void, Never>)
         case backgroundDelivery(HKHealthStore.BackgroundObserverQueryInvalidator)
@@ -176,7 +191,8 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
     /// the changes will be delivered again the next time this function is called.
     @MainActor
     private func anchoredSingleObjectQuery() async throws {
-        var anchor = try persistedAnchor
+        let previousAnchor = try persistedAnchor
+        var anchor = previousAnchor
         nonisolated(unsafe) let predicate = self.predicate
         let (added, deleted) = try await healthKit.query(
             sampleType,
@@ -184,7 +200,7 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
             anchor: &anchor,
             predicate: predicate
         )
-        try await processQueryResult(added: added, deleted: deleted, newAnchor: anchor)
+        try await processQueryResult(added: added, deleted: deleted, previousAnchor: previousAnchor, newAnchor: anchor)
     }
 
     
@@ -193,6 +209,8 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
     /// The results stream of a long-running anchored object query cannot re-deliver a batch.
     /// Therefore, if processing a batch fails, we stop the query and, after a backoff delay,
     /// start a new one from the last successfully persisted anchor, which re-delivers the failed batch.
+    /// If a batch is superseded (i.e., the persisted anchor was changed by someone else while the batch was being handled),
+    /// the query is restarted immediately from the now-persisted anchor, since the stream's subsequent batches would build on an anchor that is no longer current.
     /// Stopping the data collection cancels the task, including any pending restart.
     @MainActor
     private func startAnchoredContinuousObjectQuery() {
@@ -201,10 +219,12 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
             var backoff = RetryBackoff()
             while isActive && !Task.isCancelled {
                 do {
-                    try await runAnchoredContinuousObjectQuery {
-                        backoff.reset()
+                    switch try await runAnchoredContinuousObjectQuery(onBatchProcessed: { backoff.reset() }) {
+                    case .finished:
+                        return
+                    case .superseded:
+                        continue
                     }
-                    return
                 } catch {
                     guard isActive && !Task.isCancelled else {
                         return
@@ -226,46 +246,79 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
     
     
     @MainActor
-    private func runAnchoredContinuousObjectQuery(onBatchProcessed: () -> Void) async throws {
+    private func runAnchoredContinuousObjectQuery(onBatchProcessed: () -> Void) async throws -> ContinuousQueryOutcome {
+        var currentAnchor = try persistedAnchor
         let samplePredicate = sampleType._makeSamplePredicate(
             filter: NSCompoundPredicate(andPredicateWithSubpredicates: [timeRange.predicate, predicate].compactMap(\.self))
         )
         let queryDescriptor = HKAnchoredObjectQueryDescriptor(
             predicates: [samplePredicate],
-            anchor: try persistedAnchor.hkAnchor
+            anchor: currentAnchor.hkAnchor
         )
         for try await update in queryDescriptor.results(for: healthStore) {
             guard isActive && !Task.isCancelled else {
-                return
+                return .finished
             }
-            try await processQueryResult(
+            let newAnchor = QueryAnchor(update.newAnchor)
+            let outcome = try await processQueryResult(
                 added: update.addedSamples,
                 deleted: update.deletedObjects,
-                newAnchor: QueryAnchor(update.newAnchor)
+                previousAnchor: currentAnchor,
+                newAnchor: newAnchor
             )
             onBatchProcessed()
+            switch outcome {
+            case .anchorAdvanced:
+                currentAnchor = newAnchor
+            case .superseded:
+                return .superseded
+            }
         }
+        return .finished
     }
     
     
     /// Hands a batch of query results to the standard, and advances the persisted anchor to `newAnchor` only if the standard successfully handled the batch.
     ///
-    /// - throws: if either of the standard's handlers throws, or if the new anchor could not be persisted.
+    /// The anchor is advanced only if the persisted anchor still is `previousAnchor`, i.e. the anchor the batch was queried from.
+    /// The check and the write are a single atomic operation with respect to all other reads and writes of this sample type's anchor
+    /// (including ``HealthKit-swift.class/resetSampleCollection(for:)``).
+    /// If the persisted anchor was changed while the standard was handling the batch (e.g., because the sample collection was reset,
+    /// or because an overlapping query for the same sample type already advanced it), the batch is superseded and `newAnchor` is not persisted;
+    /// otherwise, a stale batch could undo a reset or move the anchor backwards.
+    /// The batch's samples have already been handed to the standard in that case, which is fine given the at-least-once delivery semantics.
+    ///
+    /// - parameter previousAnchor: The anchor the batch was queried from.
+    /// - parameter newAnchor: The anchor returned by the query for this batch.
+    /// - returns: Whether the persisted anchor was advanced, or the batch was superseded.
+    /// - throws: if either of the standard's handlers throws, or if the anchor could not be read or persisted.
     ///     In both cases, the persisted anchor is left unchanged (or, if persisting failed, may not reflect `newAnchor`),
     ///     meaning that the batch will be delivered again by the next query.
     @MainActor
+    @discardableResult
     func processQueryResult(
         added: some Collection<Sample> & Sendable,
         deleted: some Collection<HKDeletedObject> & Sendable,
+        previousAnchor: QueryAnchor,
         newAnchor: QueryAnchor
-    ) async throws {
+    ) async throws -> BatchOutcome {
         if !deleted.isEmpty {
             try await standard.handleDeletedObjects(deleted, ofType: sampleType)
         }
         if !added.isEmpty {
             try await standard.handleNewSamples(added, ofType: sampleType)
         }
-        try healthKit.queryAnchors.store(newAnchor, for: sampleType)
+        let didStore = try healthKit.queryAnchors.compareAndStore(newAnchor, for: sampleType) { currentAnchor in
+            // no stored anchor is equivalent to an empty anchor (see `persistedAnchor`).
+            (currentAnchor ?? QueryAnchor()).representsSamePosition(as: previousAnchor)
+        }
+        guard didStore else {
+            healthKit.logger.notice(
+                "Not advancing query anchor for \(self.sampleType.hkSampleType): it was changed while the batch was being handled (e.g., by a reset or an overlapping query)."
+            )
+            return .superseded
+        }
+        return .anchorAdvanced
     }
 }
 
