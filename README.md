@@ -42,7 +42,7 @@ actor ExampleStandard: Standard, HealthKitConstraint {
     func handleNewSamples<Sample>(
         _ addedSamples: some Collection<Sample> & Sendable,
         ofType sampleType: SampleType<Sample>
-    ) async {
+    ) async throws {
         // ...
     }
 
@@ -50,11 +50,14 @@ actor ExampleStandard: Standard, HealthKitConstraint {
     func handleDeletedObjects<Sample>(
         _ deletedObjects: some Collection<HKDeletedObject> & Sendable,
         ofType sampleType: SampleType<Sample>
-    ) async {
+    ) async throws {
         // ...
     }
 }
 ```
+
+If your standard cannot store a batch (e.g., due to a network or disk error), throw an error from the handler: the batch is then not considered delivered, and SpeziHealthKit will deliver it again later.
+Because a batch may therefore be delivered more than once, your handlers should be idempotent (e.g., deduplicate using the samples' `uuid`).
 
 
 Then, you can configure the [`HealthKit`](https://swiftpackageindex.com/stanfordspezi/spezihealthkit/documentation/spezihealthkit/healthkit-swift.class) module in the configuration section of your `SpeziAppDelegate`.

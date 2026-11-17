@@ -83,4 +83,23 @@ public struct QueryAnchor: Hashable, Codable, Sendable {
     }
 }
 
+
+extension QueryAnchor {
+    /// Whether this anchor and `other` represent the same position in the HealthKit database.
+    ///
+    /// `HKQueryAnchor` doesn't document its equality semantics, so in addition to `==` (which uses `-[NSObject isEqual:]`),
+    /// this also treats two anchors as equal if their archived representations (i.e., what gets persisted) are identical.
+    func representsSamePosition(as other: QueryAnchor) -> Bool {
+        if self == other {
+            return true
+        }
+        guard let lhs = hkAnchor, let rhs = other.hkAnchor else {
+            return false
+        }
+        let lhsData = try? NSKeyedArchiver.archivedData(withRootObject: lhs, requiringSecureCoding: true)
+        let rhsData = try? NSKeyedArchiver.archivedData(withRootObject: rhs, requiringSecureCoding: true)
+        return lhsData != nil && lhsData == rhsData
+    }
+}
+
 #endif
