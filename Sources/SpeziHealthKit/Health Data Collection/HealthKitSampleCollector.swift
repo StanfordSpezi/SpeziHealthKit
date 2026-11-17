@@ -14,6 +14,33 @@ import Spezi
 import SwiftUI
 
 
+/// Exponential backoff used when restarting a failed sample collection query.
+struct RetryBackoff {
+    let initialDelay: Duration
+    let maxDelay: Duration
+    private var numAttempts = 0
+    
+    init(initialDelay: Duration = .seconds(5), maxDelay: Duration = .seconds(5 * 60)) {
+        self.initialDelay = initialDelay
+        self.maxDelay = maxDelay
+    }
+    
+    /// Returns the delay to wait before the next attempt, and increments the attempt counter.
+    mutating func nextDelay() -> Duration {
+        defer {
+            numAttempts += 1
+        }
+        // cap the exponent to avoid overflowing; the result is clamped to `maxDelay` anyway.
+        return min(initialDelay * (1 << min(numAttempts, 16)), maxDelay)
+    }
+    
+    /// Resets the backoff, e.g. after a successful attempt.
+    mutating func reset() {
+        numAttempts = 0
+    }
+}
+
+
 final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDataCollector {
     /// How this ``HealthKitSampleCollector`` was created, i.e. what it was created for.
     ///
@@ -27,7 +54,7 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
     }
     
     private enum QueryVariant {
-        case anchorQuery(Task<Void, any Error>)
+        case anchorQuery(Task<Void, Never>)
         case backgroundDelivery(HKHealthStore.BackgroundObserverQueryInvalidator)
     }
     
@@ -43,9 +70,13 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
     @MainActor private(set) var isActive = false
     private var queryVariant: QueryVariant?
     
-    @MainActor private var anchor: QueryAnchor {
-        get { healthKit.queryAnchors[sampleType] ?? QueryAnchor() }
-        set { healthKit.queryAnchors[sampleType] = newValue }
+    /// The last successfully-processed query anchor, as persisted in the ``HealthKit-swift.class`` module's anchor storage.
+    ///
+    /// - throws: if the anchor exists but could not be read. We intentionally don't fall back to an empty anchor in this case.
+    @MainActor var persistedAnchor: QueryAnchor {
+        get throws {
+            try healthKit.queryAnchors.load(for: sampleType) ?? QueryAnchor()
+        }
     }
     
     private var healthStore: HKHealthStore { healthKit.healthStore }
@@ -112,8 +143,8 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
                 queryVariant = .backgroundDelivery(queryInvalidator)
             } else {
                 // set up a non-background query
-                try await anchoredContinuousObjectQuery()
                 isActive = true
+                startAnchoredContinuousObjectQuery()
             }
         } catch {
             logger.error("Could not Process HealthKit data collection: \(error.localizedDescription)")
@@ -139,9 +170,13 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
     }
 
 
+    /// Fetches all changes since the last persisted anchor, and hands them to the standard.
+    ///
+    /// If the standard fails to handle the changes, the anchor is not advanced and this function throws;
+    /// the changes will be delivered again the next time this function is called.
     @MainActor
     private func anchoredSingleObjectQuery() async throws {
-        var anchor = self.anchor
+        var anchor = try persistedAnchor
         nonisolated(unsafe) let predicate = self.predicate
         let (added, deleted) = try await healthKit.query(
             sampleType,
@@ -149,28 +184,41 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
             anchor: &anchor,
             predicate: predicate
         )
-        await handleQueryResult(added: added, deleted: deleted)
-        self.anchor = anchor
+        try await processQueryResult(added: added, deleted: deleted, newAnchor: anchor)
     }
 
     
+    /// Starts a long-running anchored object query, which delivers all changes since the last persisted anchor, and then continues to deliver new changes.
+    ///
+    /// The results stream of a long-running anchored object query cannot re-deliver a batch.
+    /// Therefore, if processing a batch fails, we stop the query and, after a backoff delay,
+    /// start a new one from the last successfully persisted anchor, which re-delivers the failed batch.
+    /// Stopping the data collection cancels the task, including any pending restart.
     @MainActor
-    private func anchoredContinuousObjectQuery() async throws {
-        let samplePredicate = sampleType._makeSamplePredicate(
-            filter: NSCompoundPredicate(andPredicateWithSubpredicates: [timeRange.predicate, predicate].compactMap(\.self))
-        )
-        let queryDescriptor = HKAnchoredObjectQueryDescriptor(
-            predicates: [samplePredicate],
-            anchor: anchor.hkAnchor
-        )
-        let updateQueue = queryDescriptor.results(for: healthStore)
-        let task = Task {
-            for try await update in updateQueue {
-                guard isActive else {
+    private func startAnchoredContinuousObjectQuery() {
+        let logger = healthKit.logger
+        let task = Task { @MainActor in
+            var backoff = RetryBackoff()
+            while isActive && !Task.isCancelled {
+                do {
+                    try await runAnchoredContinuousObjectQuery {
+                        backoff.reset()
+                    }
                     return
+                } catch {
+                    guard isActive && !Task.isCancelled else {
+                        return
+                    }
+                    let delay = backoff.nextDelay()
+                    logger.error(
+                        "Failed to process HealthKit samples for \(self.sampleType.hkSampleType). Restarting from last persisted anchor in \(delay). Error: \(error)"
+                    )
+                    do {
+                        try await Task.sleep(for: delay)
+                    } catch {
+                        return
+                    }
                 }
-                await handleQueryResult(added: update.addedSamples, deleted: update.deletedObjects)
-                self.anchor = QueryAnchor(update.newAnchor)
             }
         }
         queryVariant = .anchorQuery(task)
@@ -178,13 +226,46 @@ final class HealthKitSampleCollector<Sample: _HKSampleWithSampleType>: HealthDat
     
     
     @MainActor
-    private func handleQueryResult(added: some Collection<Sample> & Sendable, deleted: some Collection<HKDeletedObject> & Sendable) async {
+    private func runAnchoredContinuousObjectQuery(onBatchProcessed: () -> Void) async throws {
+        let samplePredicate = sampleType._makeSamplePredicate(
+            filter: NSCompoundPredicate(andPredicateWithSubpredicates: [timeRange.predicate, predicate].compactMap(\.self))
+        )
+        let queryDescriptor = HKAnchoredObjectQueryDescriptor(
+            predicates: [samplePredicate],
+            anchor: try persistedAnchor.hkAnchor
+        )
+        for try await update in queryDescriptor.results(for: healthStore) {
+            guard isActive && !Task.isCancelled else {
+                return
+            }
+            try await processQueryResult(
+                added: update.addedSamples,
+                deleted: update.deletedObjects,
+                newAnchor: QueryAnchor(update.newAnchor)
+            )
+            onBatchProcessed()
+        }
+    }
+    
+    
+    /// Hands a batch of query results to the standard, and advances the persisted anchor to `newAnchor` only if the standard successfully handled the batch.
+    ///
+    /// - throws: if either of the standard's handlers throws, or if the new anchor could not be persisted.
+    ///     In both cases, the persisted anchor is left unchanged (or, if persisting failed, may not reflect `newAnchor`),
+    ///     meaning that the batch will be delivered again by the next query.
+    @MainActor
+    func processQueryResult(
+        added: some Collection<Sample> & Sendable,
+        deleted: some Collection<HKDeletedObject> & Sendable,
+        newAnchor: QueryAnchor
+    ) async throws {
         if !deleted.isEmpty {
-            await standard.handleDeletedObjects(deleted, ofType: sampleType)
+            try await standard.handleDeletedObjects(deleted, ofType: sampleType)
         }
         if !added.isEmpty {
-            await standard.handleNewSamples(added, ofType: sampleType)
+            try await standard.handleNewSamples(added, ofType: sampleType)
         }
+        try healthKit.queryAnchors.store(newAnchor, for: sampleType)
     }
 }
 

@@ -83,12 +83,29 @@ struct SampleTypeScopedLocalStorage<Value: SendableMetatype> {
         LocalStorageKeysHandling.localStorageKey(forValueType: Value.self, sampleType: sampleType, defaultValue: makeStorageKey(sampleType))
     }
     
+    /// Loads the value stored for `sampleType`.
+    ///
+    /// - returns: `nil` if no value is stored.
+    /// - throws: if a value exists but could not be read or decoded.
+    func load(for sampleType: SampleType<some Any>) throws -> Value? {
+        try localStorage.load(storageKey(for: sampleType))
+    }
+    
+    /// Stores `value` for `sampleType`, or removes the stored value if `value` is `nil`.
+    func store(_ value: Value?, for sampleType: SampleType<some Any>) throws {
+        try localStorage.store(value, for: storageKey(for: sampleType))
+    }
+    
+    /// Error-swallowing convenience accessor.
+    ///
+    /// - Important: Do not use this for values where a failed read or write needs to be detected (e.g., query anchors);
+    ///     use ``load(for:)`` and ``store(_:for:)`` instead.
     subscript(sampleType: SampleType<some Any>) -> Value? {
         get {
-            try? localStorage.load(storageKey(for: sampleType))
+            try? load(for: sampleType)
         }
         nonmutating set {
-            try? localStorage.store(newValue, for: storageKey(for: sampleType))
+            try? store(newValue, for: sampleType)
         }
     }
 }

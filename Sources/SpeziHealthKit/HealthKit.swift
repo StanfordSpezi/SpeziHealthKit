@@ -491,7 +491,11 @@ extension HealthKit {
     @MainActor
     public func resetSampleCollection<Sample>(for sampleType: SampleType<Sample>) async {
         defer {
-            queryAnchors[sampleType] = nil
+            do {
+                try queryAnchors.store(nil, for: sampleType)
+            } catch {
+                logger.error("Failed to reset query anchor for \(sampleType.hkSampleType): \(error)")
+            }
             sampleCollectionStartDates[sampleType] = nil
         }
         // we need to also stop the sample collector (and in fact we need to do so before resetting the query anchor and the start date),

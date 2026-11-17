@@ -75,23 +75,32 @@ public struct CollectSamples<Sample: _HKSampleWithSampleType>: HealthKitConfigur
     }
     
     public func configure(for healthKit: HealthKit, on standard: any HealthKitConstraint) async {
-        let timeRange: HealthKitQueryTimeRange = switch timeRange {
+        let timeRange: HealthKitQueryTimeRange
+        switch self.timeRange {
         case .newSamples:
-            if let startDate = healthKit.sampleCollectionStartDates[sampleType] {
-                .startingAt(startDate)
+            let persistedStartDate: Date?
+            do {
+                persistedStartDate = try healthKit.sampleCollectionStartDates.load(for: sampleType)
+            } catch {
+                // If we can't read the persisted start date (e.g., because the storage is temporarily inaccessible),
+                // we must not fall back to (and persist) a new start date, since that would permanently exclude
+                // all not-yet-collected samples prior to the new start date.
+                healthKit.logger.error("Unable to read sample collection start date for \(sampleType.hkSampleType); not starting collection: \(error)")
+                return
+            }
+            if let persistedStartDate {
+                timeRange = .startingAt(persistedStartDate)
             } else {
-                { () -> HealthKitQueryTimeRange in
-                    let cal = Calendar.current
-                    var components = cal.dateComponents(in: .current, from: .now)
-                    components.setValue(0, for: .second)
-                    components.setValue(0, for: .nanosecond)
-                    let defaultQueryDate = cal.date(from: components) ?? .now
-                    healthKit.sampleCollectionStartDates[sampleType] = defaultQueryDate
-                    return .init(defaultQueryDate...)
-                }()
+                let cal = Calendar.current
+                var components = cal.dateComponents(in: .current, from: .now)
+                components.setValue(0, for: .second)
+                components.setValue(0, for: .nanosecond)
+                let defaultQueryDate = cal.date(from: components) ?? .now
+                healthKit.sampleCollectionStartDates[sampleType] = defaultQueryDate
+                timeRange = .init(defaultQueryDate...)
             }
         case .startingAt(let date):
-            .init(date...)
+            timeRange = .init(date...)
         }
         let collector = HealthKitSampleCollector(
             source: .collectSamples,
