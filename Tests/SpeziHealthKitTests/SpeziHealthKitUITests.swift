@@ -9,7 +9,9 @@
 #if canImport(HealthKit) && canImport(SwiftUI)
 
 import HealthKit
+#if os(iOS) && !targetEnvironment(macCatalyst)
 import SnapshotTesting
+#endif
 @testable import SpeziHealthKit
 @testable import SpeziHealthKitUI
 import SpeziTesting
