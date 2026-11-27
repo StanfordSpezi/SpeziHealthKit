@@ -254,9 +254,11 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
         app.buttons["Source Filtering"].tap()
         sleep(for: .seconds(2))
         XCTAssert(app.staticTexts["Sample Counts Add Up, true"].waitForExistence(timeout: 1))
-        XCTAssert(app.staticTexts["# All Samples, 1"].waitForExistence(timeout: 1))
         XCTAssert(app.staticTexts["# Our Samples"].waitForNonExistence(timeout: 1))
-        XCTAssert(app.staticTexts["# Health.app Samples, 1"].waitForExistence(timeout: 1))
+        // Samples added through the Health app can't be deleted, so a reused simulator may already have some from earlier runs.
+        let numHealthAppSamples = try XCTUnwrap(app.numSourceFilteredSamples("Health.app"))
+        XCTAssertGreaterThanOrEqual(numHealthAppSamples, 1)
+        XCTAssertEqual(app.numSourceFilteredSamples("All"), numHealthAppSamples)
         
         app.navigationBars.buttons["HealthKit"].tap()
         addSample(.stepCount, in: app)
@@ -264,8 +266,21 @@ final class HealthKitQueryTests: SpeziHealthKitTests {
         app.buttons["Source Filtering"].tap()
         sleep(for: .seconds(2))
         XCTAssert(app.staticTexts["Sample Counts Add Up, true"].waitForExistence(timeout: 1))
-        XCTAssert(app.staticTexts["# All Samples, 2"].waitForExistence(timeout: 1))
-        XCTAssert(app.staticTexts["# Our Samples, 1"].waitForExistence(timeout: 1))
-        XCTAssert(app.staticTexts["# Health.app Samples, 1"].waitForExistence(timeout: 1))
+        XCTAssertEqual(app.numSourceFilteredSamples("All"), numHealthAppSamples + 1)
+        XCTAssertEqual(app.numSourceFilteredSamples("Our"), 1)
+        XCTAssertEqual(app.numSourceFilteredSamples("Health.app"), numHealthAppSamples)
+    }
+}
+
+
+extension XCUIApplication {
+    /// The sample count shown in the given section of the test app's Source Filtering view.
+    fileprivate func numSourceFilteredSamples(_ section: String) -> Int? {
+        let prefix = "# \(section) Samples, "
+        let element = staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", prefix)).firstMatch
+        guard element.waitForExistence(timeout: 1) else {
+            return nil
+        }
+        return Int(element.label.dropFirst(prefix.count))
     }
 }
