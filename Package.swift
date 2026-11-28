@@ -105,7 +105,8 @@ var package = Package(
                 .target(name: "SpeziHealthKit"),
                 .target(name: "SpeziHealthKitBulkExport"),
                 .target(name: "SpeziHealthKitUI"),
-                .product(name: "SnapshotTesting", package: "swift-snapshot-testing")
+                // Only the iOS snapshot tests use SnapshotTesting; it does not build for Mac Catalyst or visionOS with Xcode 27.
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing", condition: .when(platforms: [.iOS]))
             ],
             resources: [.process("__Snapshots__")],
             swiftSettings: [.enableUpcomingFeature("ExistentialAny")],
